@@ -83,6 +83,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Events\CommandHandler.cs" />
+    <Compile Include="Models\RegistryCurrency.cs" />
+    <Compile Include="Models\RegistryCurrencyList.cs" />
     <Compile Include="Models\RegistryOwner.cs" />
     <Compile Include="Models\RegistryOwnersList.cs" />
     <Compile Include="Models\RegistryShareType.cs" />
@@ -91,8 +93,12 @@
     <Compile Include="Services\RegistryService.cs" />
     <Compile Include="Services\SQL\DAF_Connection.cs" />
     <Compile Include="Services\SQL\RegistryScripts.cs" />
+    <Compile Include="ViewModels\RegistryCurrencyViewModel.cs" />
     <Compile Include="ViewModels\RegistryOwnerViewModel.cs" />
     <Compile Include="ViewModels\RegistryShareTypeViewModel.cs" />
+    <Compile Include="Views\RegistryCurrencyView.xaml.cs">
+      <DependentUpon>RegistryCurrencyView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\RegistryOwnerView.xaml.cs">
       <DependentUpon>RegistryOwnerView.xaml</DependentUpon>
     </Compile>
@@ -111,6 +117,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\RegistryCurrencyView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\RegistryOwnerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

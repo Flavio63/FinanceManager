@@ -252,5 +252,68 @@ namespace FinanceManager.Services
         }
 
         #endregion
+
+        #region Currency
+
+        public RegistryCurrencyList GetRegistryCurrencyList()
+        {
+            try
+            {
+                using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
+                {
+                    dbAdaptar.SelectCommand = new MySqlCommand();
+                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdaptar.SelectCommand.CommandType = CommandType.Text;
+                    dbAdaptar.SelectCommand.CommandText = SQL.RegistryScripts.GetRegistryCurrencyList;
+                    DataTable dt = new DataTable();
+                    dbAdaptar.Fill(dt);
+                    RegistryCurrencyList RcL = new RegistryCurrencyList();
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        RegistryCurrency Rc = new RegistryCurrency();
+                        Rc.IdCurrency = (int)dr.Field<uint>("id_valuta");
+                        Rc.DescCurrency = dr.Field<string>("desc_valuta");
+                        Rc.CodeCurrency = dr.Field<string>("cod_valuta");
+                        RcL.Add(Rc);
+                    }
+                    return RcL;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        public RegistryCurrency GetRegistryCurrencyByName(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public RegistryCurrency GetRegistryCurrencyById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateCurrency(RegistryCurrency registryCurrency)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddCurrency(RegistryCurrency registryCurrency)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteCurrency(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }

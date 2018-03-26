@@ -38,11 +38,18 @@ namespace FinanceManager
             mainGrid.Children.Add(ownerView);
         }
 
-        private void OnClicTipoTitoli(object sender, RoutedEventArgs e)
+        private void OnClickTipoTitoli(object sender, RoutedEventArgs e)
         {
             RegistryShareTypeViewModel registryShareTypeViewModel = new RegistryShareTypeViewModel(_registryServices);
             RegistryShareTypeView shareTypeView = new RegistryShareTypeView(registryShareTypeViewModel);
             mainGrid.Children.Add(shareTypeView);
+        }
+
+        private void OnClickCurrency(object sender, RoutedEventArgs e)
+        {
+            RegistryCurrencyViewModel registryCurrencyViewModel = new RegistryCurrencyViewModel(_registryServices);
+            RegistryCurrencyView currencyView = new RegistryCurrencyView(registryCurrencyViewModel);
+            mainGrid.Children.Add(currencyView);
         }
 
     }

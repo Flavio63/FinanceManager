@@ -15,8 +15,8 @@
             <MenuItem Header="Anagrafica" Margin="2,5" FontSize="12" FontWeight="Bold">
                 <MenuItem Header="Gestioni" Margin="2,0" FontSize="10" FontWeight="Normal" Click="OnClickGestioni"/>
                 <MenuItem Header="Titoli" Margin="2,0" FontSize="10" FontWeight="Normal"></MenuItem>
-                <MenuItem Header="Tipologia Titoli" Margin="2,0" FontSize="10" FontWeight="Normal" Click="OnClicTipoTitoli"></MenuItem>
-                <MenuItem Header="Valute" Margin="2,0" FontSize="10" FontWeight="Normal"></MenuItem>
+                <MenuItem Header="Tipologia Titoli" Margin="2,0" FontSize="10" FontWeight="Normal" Click="OnClickTipoTitoli"></MenuItem>
+                <MenuItem Header="Valute" Margin="2,0" FontSize="10" FontWeight="Normal" Click="OnClickCurrency"></MenuItem>
                 <MenuItem Header="Mercati" Margin="2,0" FontSize="10" FontWeight="Normal"></MenuItem>
             </MenuItem>
             <MenuItem Header="Gestione" Margin="2,5" FontSize="12" FontWeight="Bold">

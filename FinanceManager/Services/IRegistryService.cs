@@ -22,11 +22,11 @@ namespace FinanceManager.Services
         #endregion
 
         #region Currency
-        RegistryShareTypeList GetRegistryCurrencyList();
-        RegistryShareType GetRegistryCurrencyByName(string name);
-        RegistryShareType GetRegistryCurrencyById(int id);
-        void UpdateCurrency(RegistryShareType registryShareType);
-        void AddCurrency(string description);
+        RegistryCurrencyList GetRegistryCurrencyList();
+        RegistryCurrency GetRegistryCurrencyByName(string name);
+        RegistryCurrency GetRegistryCurrencyById(int id);
+        void UpdateCurrency(RegistryCurrency registryCurrency);
+        void AddCurrency(RegistryCurrency registryCurrency);
         void DeleteCurrency(int id);
         #endregion
     }
