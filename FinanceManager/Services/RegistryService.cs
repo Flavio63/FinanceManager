@@ -161,7 +161,7 @@ namespace FinanceManager.Services
         {
             try
             {
-                using(MySqlCommand dbComm = new MySqlCommand())
+                using (MySqlCommand dbComm = new MySqlCommand())
                 {
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.CommandType = CommandType.Text;
@@ -313,7 +313,274 @@ namespace FinanceManager.Services
         {
             throw new NotImplementedException();
         }
+        #endregion
+
+        #region Location
+        public RegistryLocationList GetRegistryLocationList()
+        {
+            try
+            {
+                using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
+                {
+                    dbAdaptar.SelectCommand = new MySqlCommand();
+                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdaptar.SelectCommand.CommandType = CommandType.Text;
+                    dbAdaptar.SelectCommand.CommandText = SQL.RegistryScripts.GetRegistryLocationList;
+                    DataTable dt = new DataTable();
+                    dbAdaptar.Fill(dt);
+                    RegistryLocationList RLL = new RegistryLocationList();
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        RegistryLocation RL = new RegistryLocation();
+                        RL.IdLocation = (int)dr.Field<uint>("id_location");
+                        RL.DescLocation = dr.Field<string>("desc_location");
+                        RLL.Add(RL);
+                    }
+                    return RLL;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        public RegistryLocation GetRegistryLocationByName(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public RegistryLocation GetRegistryLocationById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateLocation(RegistryLocation registryLocation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddLocation(string description)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteLocation(int id)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
+        #region Firm
+        public RegistryFirmList GetRegistryFirmList()
+        {
+            try
+            {
+                using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
+                {
+                    dbAdaptar.SelectCommand = new MySqlCommand();
+                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdaptar.SelectCommand.CommandType = CommandType.Text;
+                    dbAdaptar.SelectCommand.CommandText = SQL.RegistryScripts.GetRegistryFirmList;
+                    DataTable dt = new DataTable();
+                    dbAdaptar.Fill(dt);
+                    RegistryFirmList RFL = new RegistryFirmList();
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        RegistryFirm RF = new RegistryFirm();
+                        RF.IdFirm = (int)dr.Field<uint>("id_azienda");
+                        RF.DescFirm = dr.Field<string>("desc_azienda");
+                        RFL.Add(RF);
+                    }
+                    return RFL;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        public RegistryFirm GetRegistryFirmByName(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public RegistryFirm GetRegistryFirmById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateFirm(RegistryFirm registryFirm)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddFirm(string description)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteFirm(int id)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
+        #region Market
+        public RegistryMarketList GetRegistryMarketList()
+        {
+            try
+            {
+                using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
+                {
+                    dbAdaptar.SelectCommand = new MySqlCommand();
+                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdaptar.SelectCommand.CommandType = CommandType.Text;
+                    dbAdaptar.SelectCommand.CommandText = SQL.RegistryScripts.GetRegistryMarketList;
+                    DataTable dt = new DataTable();
+                    dbAdaptar.Fill(dt);
+                    RegistryMarketList RML = new RegistryMarketList();
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        RegistryMarket RM = new RegistryMarket();
+                        RM.IdMarket = (int)dr.Field<uint>("id_borsa");
+                        RM.DescMarket = dr.Field<string>("desc_borsa");
+                        RML.Add(RM);
+                    }
+                    return RML;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        public RegistryMarket GetRegistryMarketByName(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public RegistryMarket GetRegistryMarketById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateMarket(RegistryMarket registryMarket)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddMarket(string description)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteMarket(int id)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
+        #region Share
+
+        public RegistryShareList GetRegistryShareList()
+        {
+            try
+            {
+                using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
+                {
+                    dbAdaptar.SelectCommand = new MySqlCommand();
+                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdaptar.SelectCommand.CommandType = CommandType.Text;
+                    dbAdaptar.SelectCommand.CommandText = SQL.RegistryScripts.GetRegistryShareList;
+                    DataTable dt = new DataTable();
+                    dbAdaptar.Fill(dt);
+                    RegistryShareList RSL = new RegistryShareList();
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        RegistryShare RS = new RegistryShare();
+                        RS.IdShare = (int)dr.Field<uint>("id_tit");
+                        RS.DescShare = dr.Field<string>("desc_titolo");
+                        RS.Isin = dr.Field<string>("isin");
+                        RS.IdShareType = (int)dr.Field<uint>("id_tipo");
+                        RS.IdFirm = (int)dr.Field<uint>("id_azienda");
+                        RS.IdMarket = (int)dr.Field<uint>("id_borsa");
+                        RS.IdCurrency = (int)dr.Field<uint>("id_valuta");
+                        RSL.Add(RS);
+                    }
+                    return RSL;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        public RegistryShareList GetRegistryByShareType(int shareTypeID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public RegistryShareList GetRegistryByCurrency(int currencyID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public RegistryShareList GetRegistryByFirm(int firmID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public RegistryShare GetRegistryShareByName(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public RegistryShare GetRegistryShareById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public RegistryShare GetRegistryShareByIsin(string isin)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateShare(RegistryShare registryShare)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddShare(RegistryShare registryShare)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteShare(int id)
+        {
+            throw new NotImplementedException();
+        }
 
         #endregion
+
     }
 }

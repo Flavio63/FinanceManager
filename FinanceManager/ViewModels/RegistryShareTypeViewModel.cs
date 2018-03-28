@@ -127,7 +127,7 @@ namespace FinanceManager.ViewModels
         public void CloseMe(object param)
         {
             RegistryShareTypeView RSTV = param as RegistryShareTypeView;
-            WrapPanel wp = RSTV.Parent as WrapPanel;
+            DockPanel wp = RSTV.Parent as DockPanel;
             wp.Children.Remove(RSTV);
         }
 

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="FinanceManager.Views.RegistryShareTypeView"
+﻿<UserControl x:Class="FinanceManager.Views.RegistryShareView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,8 +6,9 @@
              xmlns:is="http://schemas.microsoft.com/expression/2010/interactions"
              xmlns:iy="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:local="clr-namespace:FinanceManager.Views"
-             mc:Ignorable="d" Name="_RegistryShareTypeView">
-    <Grid MaxWidth="350" Background="Beige" Margin="5,25">
+             mc:Ignorable="d" Name="_RegistryShareView"
+             >
+    <Grid MaxWidth="550" Background="Beige" Margin="5,25">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="*"/>
@@ -21,14 +22,14 @@
                    FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" 
                    Margin="60,0,60,0"/>
         <Button Content="X" Command="{Binding CloseMeCommand}" 
-                CommandParameter="{Binding ElementName=_RegistryShareTypeView}" 
+                CommandParameter="{Binding ElementName=_RegistryShareView}" 
                 HorizontalContentAlignment="Center" Grid.Column="1" HorizontalAlignment="Right"
                     VerticalContentAlignment="Center" Width="25" Height="25" Background="LightGray" 
                 Margin="0,0, 15, 0"></Button>
         <DataGrid Grid.Row="1" Grid.ColumnSpan="2" Name="Owner" CanUserAddRows="True" 
                   CanUserDeleteRows="True" AutoGenerateColumns="False" RowHeaderWidth="16"
-                  SelectionMode="Single" FontSize="14" ItemsSource="{Binding ShareTypeList, UpdateSourceTrigger=PropertyChanged}" 
-                  Width="265" HorizontalAlignment="Center" AlternatingRowBackground="#FFAEFF90">
+                  SelectionMode="Single" FontSize="14" ItemsSource="{Binding Path=ShareList, UpdateSourceTrigger=PropertyChanged}" 
+                  HorizontalAlignment="Center" AlternatingRowBackground="#FFAEFF90">
             <iy:Interaction.Triggers>
                 <iy:EventTrigger EventName="CellEditEnding">
                     <is:CallMethodAction TargetObject="{Binding}" MethodName="CellChanged"/>
@@ -38,11 +39,31 @@
                 </iy:EventTrigger>
             </iy:Interaction.Triggers>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" IsReadOnly="True" Binding="{Binding IdShareType, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                <DataGridTextColumn Header="ID" IsReadOnly="True" Binding="{Binding IdShare, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                                     Width="40"/>
-                <DataGridTextColumn Header="Tipologia del Titolo" IsReadOnly="False" 
-                                    Binding="{Binding TypeName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="190"/>
+                <DataGridTextColumn Header="Descrizione Titolo" IsReadOnly="False" 
+                                    Binding="{Binding DescShare, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="250"/>
+                <DataGridTextColumn Header="ISIN" IsReadOnly="False"
+                                    Binding="{Binding Isin, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="100"/>
+                <DataGridComboBoxColumn Header="Tipologia" IsReadOnly="False" Width="100"
+                                        SelectedValuePath="IdShareType" DisplayMemberPath="TypeName"
+                                        SelectedValueBinding="{Binding IdShareType}">
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.ShareTypeList}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.ShareTypeList}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
+                                        
+
+
             </DataGrid.Columns>
         </DataGrid>
+
     </Grid>
 </UserControl>

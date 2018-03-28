@@ -129,7 +129,7 @@ namespace FinanceManager.ViewModels
         public void CloseMe(object param)
         {
             RegistryCurrencyView ROV = param as RegistryCurrencyView;
-            WrapPanel wp = ROV.Parent as WrapPanel;
+            DockPanel wp = ROV.Parent as DockPanel;
             wp.Children.Remove(ROV);
         }
 

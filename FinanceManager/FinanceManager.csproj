@@ -85,8 +85,16 @@
     <Compile Include="Events\CommandHandler.cs" />
     <Compile Include="Models\RegistryCurrency.cs" />
     <Compile Include="Models\RegistryCurrencyList.cs" />
+    <Compile Include="Models\RegistryFirm.cs" />
+    <Compile Include="Models\RegistryFirmList.cs" />
+    <Compile Include="Models\RegistryLocation.cs" />
+    <Compile Include="Models\RegistryLocationList.cs" />
+    <Compile Include="Models\RegistryMarket.cs" />
+    <Compile Include="Models\RegistryMarketList.cs" />
     <Compile Include="Models\RegistryOwner.cs" />
     <Compile Include="Models\RegistryOwnersList.cs" />
+    <Compile Include="Models\RegistryShare.cs" />
+    <Compile Include="Models\RegistryShareList.cs" />
     <Compile Include="Models\RegistryShareType.cs" />
     <Compile Include="Models\RegistryShareTypeList.cs" />
     <Compile Include="Services\IRegistryService.cs" />
@@ -94,16 +102,32 @@
     <Compile Include="Services\SQL\DAF_Connection.cs" />
     <Compile Include="Services\SQL\RegistryScripts.cs" />
     <Compile Include="ViewModels\RegistryCurrencyViewModel.cs" />
+    <Compile Include="ViewModels\RegistryFirmViewModel.cs" />
+    <Compile Include="ViewModels\RegistryLocationViewModel.cs" />
+    <Compile Include="ViewModels\RegistryMarketViewModel.cs" />
     <Compile Include="ViewModels\RegistryOwnerViewModel.cs" />
     <Compile Include="ViewModels\RegistryShareTypeViewModel.cs" />
+    <Compile Include="ViewModels\RegistryShareViewModel.cs" />
     <Compile Include="Views\RegistryCurrencyView.xaml.cs">
       <DependentUpon>RegistryCurrencyView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RegistryFirmView.xaml.cs">
+      <DependentUpon>RegistryFirmView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RegistryLocationView.xaml.cs">
+      <DependentUpon>RegistryLocationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RegistryMarketView.xaml.cs">
+      <DependentUpon>RegistryMarketView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RegistryOwnerView.xaml.cs">
       <DependentUpon>RegistryOwnerView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RegistryShareTypeView.xaml.cs">
       <DependentUpon>RegistryShareTypeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RegistryShareView.xaml.cs">
+      <DependentUpon>RegistryShareView.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -121,11 +145,27 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\RegistryFirmView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RegistryLocationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RegistryMarketView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\RegistryOwnerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RegistryShareTypeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RegistryShareView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

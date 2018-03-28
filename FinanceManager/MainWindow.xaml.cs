@@ -52,5 +52,32 @@ namespace FinanceManager
             mainGrid.Children.Add(currencyView);
         }
 
+        private void OnClickLocation(object sender, RoutedEventArgs e)
+        {
+            RegistryLocationViewModel registryLocationViewModel = new RegistryLocationViewModel(_registryServices);
+            RegistryLocationView locationView = new RegistryLocationView(registryLocationViewModel);
+            mainGrid.Children.Add(locationView);
+        }
+
+        private void OnClickMarket(object sender, RoutedEventArgs e)
+        {
+            RegistryMarketViewModel registryMarketViewModel = new RegistryMarketViewModel(_registryServices);
+            RegistryMarketView marketView = new RegistryMarketView(registryMarketViewModel);
+            mainGrid.Children.Add(marketView);
+        }
+
+        private void OnClickFirm(object sender, RoutedEventArgs e)
+        {
+            RegistryFirmViewModel registryFirmViewModel = new RegistryFirmViewModel(_registryServices);
+            RegistryFirmView firmView = new RegistryFirmView(registryFirmViewModel);
+            mainGrid.Children.Add(firmView);
+        }
+
+        private void OnClickShare(object sender, RoutedEventArgs e)
+        {
+            RegistryShareViewModel registryShareViewModel = new RegistryShareViewModel(_registryServices);
+            RegistryShareView shareView = new RegistryShareView(registryShareViewModel);
+            mainGrid.Children.Add(shareView);
+        }
     }
 }

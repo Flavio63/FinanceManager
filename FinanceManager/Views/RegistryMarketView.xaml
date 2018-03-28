@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="FinanceManager.Views.RegistryCurrencyView"
+﻿<UserControl x:Class="FinanceManager.Views.RegistryMarketView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,7 +6,7 @@
              xmlns:is="http://schemas.microsoft.com/expression/2010/interactions"
              xmlns:iy="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:local="clr-namespace:FinanceManager.Views"
-             mc:Ignorable="d" Name="_RegistryCurrencyView"
+             mc:Ignorable="d" Name="_RegistryMarketView"
              >
     <Grid MaxWidth="350" Background="Beige" Margin="5,25">
         <Grid.RowDefinitions>
@@ -18,17 +18,17 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="60"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Registrazione Valute" FontWeight="Bold" 
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Registrazione Borsa Valori" FontWeight="Bold" 
                    FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" 
                    Margin="50,0,0,0"/>
         <Button Content="X" Command="{Binding CloseMeCommand}" 
-                CommandParameter="{Binding ElementName=_RegistryCurrencyView}" 
+                CommandParameter="{Binding ElementName=_RegistryMarketView}" 
                 HorizontalContentAlignment="Center" Grid.Column="1" HorizontalAlignment="Right"
                     VerticalContentAlignment="Center" Width="25" Height="25" Background="LightGray" 
                 Margin="0,0, 15, 0"></Button>
         <DataGrid Grid.Row="1" Grid.ColumnSpan="2" Name="Owner" CanUserAddRows="True" 
                   CanUserDeleteRows="True" AutoGenerateColumns="False" RowHeaderWidth="16"
-                  SelectionMode="Single" FontSize="14" ItemsSource="{Binding CurrencyList, UpdateSourceTrigger=PropertyChanged}" 
+                  SelectionMode="Single" FontSize="14" ItemsSource="{Binding MarketList, UpdateSourceTrigger=PropertyChanged}" 
                   Width="315" HorizontalAlignment="Center" AlternatingRowBackground="#FFAEFF90">
             <iy:Interaction.Triggers>
                 <iy:EventTrigger EventName="CellEditEnding">
@@ -39,12 +39,10 @@
                 </iy:EventTrigger>
             </iy:Interaction.Triggers>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" IsReadOnly="True" Binding="{Binding IdCurrency, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                <DataGridTextColumn Header="ID" IsReadOnly="True" Binding="{Binding IdMarket, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                                     Width="40"/>
-                <DataGridTextColumn Header="Nome Valuta" IsReadOnly="False" 
-                                    Binding="{Binding DescCurrency, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="190"/>
-                <DataGridTextColumn Header="Cod" IsReadOnly="False" 
-                                    Binding="{Binding CodeCurrency, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="50"/>
+                <DataGridTextColumn Header="Nome Mercato" IsReadOnly="False" 
+                                    Binding="{Binding DescMarket, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="230"/>
             </DataGrid.Columns>
         </DataGrid>
 

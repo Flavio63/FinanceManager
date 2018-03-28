@@ -1,40 +1,35 @@
-﻿using FinanceManager.Models;
+﻿using FinanceManager.Events;
+using FinanceManager.Models;
 using FinanceManager.Services;
-using FinanceManager.Events;
-using System;
-using System.ComponentModel;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Input;
-using System.Windows;
 using FinanceManager.Views;
-using System.Collections.Specialized;
+using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace FinanceManager.ViewModels
 {
-    public class RegistryOwnerViewModel : INotifyPropertyChanged
+    public class RegistryMarketViewModel : INotifyPropertyChanged
     {
         private IRegistryServices _services;
-        private RegistryOwner owner;
-        private ObservableCollection<RegistryOwner> _ownerList;
+        private RegistryMarket _market;
+        private ObservableCollection<RegistryMarket> _MarketList;
         public ICommand CloseMeCommand { get; set; }
 
-        /// <summary>
-        /// costruttore
-        /// </summary>
-        /// <param name="services">la gestione dei dati verso il database</param>
-        public RegistryOwnerViewModel(IRegistryServices services)
+        public RegistryMarketViewModel (IRegistryServices services)
         {
-            _services = services ?? throw new ArgumentNullException("RegistryOwnerViewModel With No Services");
-            OwnerList = new ObservableCollection<RegistryOwner>(services.GetRegistryOwners());
-            OwnerList.CollectionChanged += CollectionHasChanged;
+            _services = services ?? throw new ArgumentNullException("RegistryLocationViewModel With No Services");
+            MarketList = new ObservableCollection<RegistryMarket>(services.GetRegistryMarketList());
+            MarketList.CollectionChanged += CollectionHasChanged;
             CloseMeCommand = new CommandHandler(CloseMe);
         }
 
         public void CollectionHasChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            ListCollectionView ownerList = sender as ListCollectionView;
+            //ListCollectionView ownerList = sender as ListCollectionView;
         }
 
         /// <summary>
@@ -51,16 +46,16 @@ namespace FinanceManager.ViewModels
 
                 if (e.EditAction == DataGridEditAction.Commit)
                 {
-                    Owner = ((RegistryOwner)e.Row.Item);
-                    if (Owner.IdOwner > 0)
+                    Market = ((RegistryMarket)e.Row.Item);
+                    if (Market.IdMarket > 0)
                     {
-                        _services.UpdateOwner(Owner);
+                        _services.UpdateMarket(Market);
                     }
                     else
                     {
-                        _services.AddOwner(Owner.OwnerName);
-                        OwnerList = new ObservableCollection<RegistryOwner>(_services.GetRegistryOwners());
-                        
+                        _services.AddMarket(Market.DescMarket);
+                        MarketList = new ObservableCollection<RegistryMarket>(_services.GetRegistryMarketList());
+
                     }
                 }
             }
@@ -83,18 +78,18 @@ namespace FinanceManager.ViewModels
                 DataGrid dg = sender as DataGrid;
                 if (dg.SelectedIndex > 0)
                 {
-                    MessageBoxResult result = MessageBox.Show("Attenzione verrà elemininata la gestione: " +
-                        ((RegistryOwner)dg.SelectedItem).OwnerName, "DAF-C Gestione Gestioni", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    MessageBoxResult result = MessageBox.Show("Attenzione verrà elemininata il mercato: " +
+                        ((RegistryMarket)dg.SelectedItem).DescMarket, "DAF-C Gestione Mercato", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {
                         try
                         {
-                            _services.DeleteOwner(((RegistryOwner)dg.SelectedItem).IdOwner);
-                            OwnerList = new ObservableCollection<RegistryOwner>(_services.GetRegistryOwners());
+                            _services.DeleteMarket(((RegistryMarket)dg.SelectedItem).IdMarket);
+                            MarketList = new ObservableCollection<RegistryMarket>(_services.GetRegistryMarketList());
                         }
                         catch (Exception err)
                         {
-                            MessageBox.Show("Errore nell'eliminazione della gestione: " + Environment.NewLine + err.Message);
+                            MessageBox.Show("Errore nell'eliminazione del mercato: " + Environment.NewLine + err.Message);
                             e.Handled = true;
                         }
                     }
@@ -104,27 +99,27 @@ namespace FinanceManager.ViewModels
             }
         }
 
-        public ObservableCollection<RegistryOwner> OwnerList
+        public ObservableCollection<RegistryMarket> MarketList
         {
-            get { return _ownerList; }
+            get { return _MarketList; }
             private set
             {
-                _ownerList = value;
-                NotifyPropertyChanged("OwnerList");
+                _MarketList = value;
+                NotifyPropertyChanged("MarketList");
             }
         }
         /// <summary>
         /// il modello della gestione
         /// </summary>
-        public RegistryOwner Owner
+        public RegistryMarket Market
         {
-            get { return owner; }
+            get { return _market; }
             set
             {
                 if (value != null)
                 {
-                    owner = value;
-                    NotifyPropertyChanged("Owner");
+                    _market = value;
+                    NotifyPropertyChanged("Market");
                 }
             }
         }
@@ -134,9 +129,9 @@ namespace FinanceManager.ViewModels
         /// <param name="param">La view che ha inviato l'evento</param>
         public void CloseMe(object param)
         {
-            RegistryOwnerView ROV = param as RegistryOwnerView;
-            DockPanel wp = ROV.Parent as DockPanel;
-            wp.Children.Remove(ROV);
+            RegistryMarketView RMV = param as RegistryMarketView;
+            DockPanel wp = RMV.Parent as DockPanel;
+            wp.Children.Remove(RMV);
         }
 
 

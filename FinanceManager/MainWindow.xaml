@@ -5,19 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FinanceManager"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Menu VerticalAlignment="Top">
             <MenuItem Header="Anagrafica" Margin="2,5" FontSize="12" FontWeight="Bold">
                 <MenuItem Header="Gestioni" Margin="2,0" FontSize="10" FontWeight="Normal" Click="OnClickGestioni"/>
-                <MenuItem Header="Titoli" Margin="2,0" FontSize="10" FontWeight="Normal"></MenuItem>
+                <MenuItem Header="Conti di appoggio" Margin="2,0" FontSize="10" FontWeight="Normal" Click="OnClickLocation"/>
+                <MenuItem Header="Aziende" Margin="2,0" FontSize="10" FontWeight="Normal" Click="OnClickFirm"></MenuItem>
+                <MenuItem Header="Titoli" Margin="2,0" FontSize="10" FontWeight="Normal" Click="OnClickShare"></MenuItem>
                 <MenuItem Header="Tipologia Titoli" Margin="2,0" FontSize="10" FontWeight="Normal" Click="OnClickTipoTitoli"></MenuItem>
                 <MenuItem Header="Valute" Margin="2,0" FontSize="10" FontWeight="Normal" Click="OnClickCurrency"></MenuItem>
-                <MenuItem Header="Mercati" Margin="2,0" FontSize="10" FontWeight="Normal"></MenuItem>
+                <MenuItem Header="Mercati" Margin="2,0" FontSize="10" FontWeight="Normal" Click="OnClickMarket"></MenuItem>
             </MenuItem>
             <MenuItem Header="Gestione" Margin="2,5" FontSize="12" FontWeight="Bold">
                 <MenuItem Header="Portafoglio Euro" Margin="2,0" FontSize="10" FontWeight="Normal"></MenuItem>
@@ -34,6 +36,9 @@
                 </MenuItem>
             </MenuItem>
         </Menu>
-        <WrapPanel Name="mainGrid" Margin="5, 25, 5, 5"></WrapPanel>
+        <!--<ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <WrapPanel MinWidth="250" MinHeight="250" Name="mainGrid"></WrapPanel>
+        </ScrollViewer>-->
+        <DockPanel Grid.Row="1" MinHeight="250" MinWidth="250" Name="mainGrid"></DockPanel>
     </Grid>
 </Window>

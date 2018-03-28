@@ -1,40 +1,36 @@
-﻿using FinanceManager.Models;
+﻿using FinanceManager.Events;
+using FinanceManager.Models;
 using FinanceManager.Services;
-using FinanceManager.Events;
+using FinanceManager.Views;
 using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows;
-using FinanceManager.Views;
-using System.Collections.Specialized;
-using System.Collections.ObjectModel;
 
 namespace FinanceManager.ViewModels
 {
-    public class RegistryOwnerViewModel : INotifyPropertyChanged
+    public class RegistryLocationViewModel : INotifyPropertyChanged
     {
         private IRegistryServices _services;
-        private RegistryOwner owner;
-        private ObservableCollection<RegistryOwner> _ownerList;
+        private RegistryLocation _location;
+        private ObservableCollection<RegistryLocation> _LocationList;
         public ICommand CloseMeCommand { get; set; }
 
-        /// <summary>
-        /// costruttore
-        /// </summary>
-        /// <param name="services">la gestione dei dati verso il database</param>
-        public RegistryOwnerViewModel(IRegistryServices services)
+        public RegistryLocationViewModel(IRegistryServices services)
         {
-            _services = services ?? throw new ArgumentNullException("RegistryOwnerViewModel With No Services");
-            OwnerList = new ObservableCollection<RegistryOwner>(services.GetRegistryOwners());
-            OwnerList.CollectionChanged += CollectionHasChanged;
+            _services = services ?? throw new ArgumentNullException("RegistryLocationViewModel With No Services");
+            LocationList = new ObservableCollection<RegistryLocation>(services.GetRegistryLocationList());
+            LocationList.CollectionChanged += CollectionHasChanged;
             CloseMeCommand = new CommandHandler(CloseMe);
         }
 
         public void CollectionHasChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            ListCollectionView ownerList = sender as ListCollectionView;
+            //ListCollectionView ownerList = sender as ListCollectionView;
         }
 
         /// <summary>
@@ -51,16 +47,16 @@ namespace FinanceManager.ViewModels
 
                 if (e.EditAction == DataGridEditAction.Commit)
                 {
-                    Owner = ((RegistryOwner)e.Row.Item);
-                    if (Owner.IdOwner > 0)
+                    Location = ((RegistryLocation)e.Row.Item);
+                    if (Location.IdLocation > 0)
                     {
-                        _services.UpdateOwner(Owner);
+                        _services.UpdateLocation(Location);
                     }
                     else
                     {
-                        _services.AddOwner(Owner.OwnerName);
-                        OwnerList = new ObservableCollection<RegistryOwner>(_services.GetRegistryOwners());
-                        
+                        _services.AddLocation(Location.DescLocation);
+                        LocationList = new ObservableCollection<RegistryLocation>(_services.GetRegistryLocationList());
+
                     }
                 }
             }
@@ -83,18 +79,18 @@ namespace FinanceManager.ViewModels
                 DataGrid dg = sender as DataGrid;
                 if (dg.SelectedIndex > 0)
                 {
-                    MessageBoxResult result = MessageBox.Show("Attenzione verrà elemininata la gestione: " +
-                        ((RegistryOwner)dg.SelectedItem).OwnerName, "DAF-C Gestione Gestioni", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    MessageBoxResult result = MessageBox.Show("Attenzione verrà elemininata la location: " +
+                        ((RegistryLocation)dg.SelectedItem).DescLocation, "DAF-C Gestione Location", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {
                         try
                         {
-                            _services.DeleteOwner(((RegistryOwner)dg.SelectedItem).IdOwner);
-                            OwnerList = new ObservableCollection<RegistryOwner>(_services.GetRegistryOwners());
+                            _services.DeleteLocation(((RegistryLocation)dg.SelectedItem).IdLocation);
+                            LocationList = new ObservableCollection<RegistryLocation>(_services.GetRegistryLocationList());
                         }
                         catch (Exception err)
                         {
-                            MessageBox.Show("Errore nell'eliminazione della gestione: " + Environment.NewLine + err.Message);
+                            MessageBox.Show("Errore nell'eliminazione della location: " + Environment.NewLine + err.Message);
                             e.Handled = true;
                         }
                     }
@@ -104,27 +100,27 @@ namespace FinanceManager.ViewModels
             }
         }
 
-        public ObservableCollection<RegistryOwner> OwnerList
+        public ObservableCollection<RegistryLocation> LocationList
         {
-            get { return _ownerList; }
+            get { return _LocationList; }
             private set
             {
-                _ownerList = value;
-                NotifyPropertyChanged("OwnerList");
+                _LocationList = value;
+                NotifyPropertyChanged("LocationList");
             }
         }
         /// <summary>
         /// il modello della gestione
         /// </summary>
-        public RegistryOwner Owner
+        public RegistryLocation Location
         {
-            get { return owner; }
+            get { return _location; }
             set
             {
                 if (value != null)
                 {
-                    owner = value;
-                    NotifyPropertyChanged("Owner");
+                    _location = value;
+                    NotifyPropertyChanged("Location");
                 }
             }
         }
@@ -134,9 +130,9 @@ namespace FinanceManager.ViewModels
         /// <param name="param">La view che ha inviato l'evento</param>
         public void CloseMe(object param)
         {
-            RegistryOwnerView ROV = param as RegistryOwnerView;
-            DockPanel wp = ROV.Parent as DockPanel;
-            wp.Children.Remove(ROV);
+            RegistryLocationView RLV = param as RegistryLocationView;
+            DockPanel wp = RLV.Parent as DockPanel;
+            wp.Children.Remove(RLV);
         }
 
 

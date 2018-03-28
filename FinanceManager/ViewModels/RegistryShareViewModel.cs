@@ -1,40 +1,38 @@
-﻿using FinanceManager.Models;
+﻿using FinanceManager.Events;
+using FinanceManager.Models;
 using FinanceManager.Services;
-using FinanceManager.Events;
-using System;
-using System.ComponentModel;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Input;
-using System.Windows;
 using FinanceManager.Views;
-using System.Collections.Specialized;
+using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace FinanceManager.ViewModels
 {
-    public class RegistryOwnerViewModel : INotifyPropertyChanged
+    public class RegistryShareViewModel
     {
         private IRegistryServices _services;
-        private RegistryOwner owner;
-        private ObservableCollection<RegistryOwner> _ownerList;
+        private RegistryShare _share;
+        private ObservableCollection<RegistryShare> _ShareList;
+        private ObservableCollection<RegistryShareType> _ShareTypeList;
         public ICommand CloseMeCommand { get; set; }
 
-        /// <summary>
-        /// costruttore
-        /// </summary>
-        /// <param name="services">la gestione dei dati verso il database</param>
-        public RegistryOwnerViewModel(IRegistryServices services)
+        public RegistryShareViewModel(IRegistryServices services)
         {
-            _services = services ?? throw new ArgumentNullException("RegistryOwnerViewModel With No Services");
-            OwnerList = new ObservableCollection<RegistryOwner>(services.GetRegistryOwners());
-            OwnerList.CollectionChanged += CollectionHasChanged;
+            _services = services ?? throw new ArgumentNullException("RegistryLocationViewModel With No Services");
+            ShareList = new ObservableCollection<RegistryShare>(services.GetRegistryShareList());
+            ShareList.CollectionChanged += CollectionHasChanged;
+            ShareTypeList = new ObservableCollection<RegistryShareType>(services.GetRegistryShareTypeList());
+            ShareList.CollectionChanged += CollectionHasChanged;
             CloseMeCommand = new CommandHandler(CloseMe);
         }
 
         public void CollectionHasChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            ListCollectionView ownerList = sender as ListCollectionView;
+            //ListCollectionView ownerList = sender as ListCollectionView;
         }
 
         /// <summary>
@@ -51,16 +49,16 @@ namespace FinanceManager.ViewModels
 
                 if (e.EditAction == DataGridEditAction.Commit)
                 {
-                    Owner = ((RegistryOwner)e.Row.Item);
-                    if (Owner.IdOwner > 0)
+                    Share = ((RegistryShare)e.Row.Item);
+                    if (Share.IdShare > 0)
                     {
-                        _services.UpdateOwner(Owner);
+                        _services.UpdateShare(Share);
                     }
                     else
                     {
-                        _services.AddOwner(Owner.OwnerName);
-                        OwnerList = new ObservableCollection<RegistryOwner>(_services.GetRegistryOwners());
-                        
+                        _services.AddShare(Share);
+                        ShareList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
+
                     }
                 }
             }
@@ -83,18 +81,19 @@ namespace FinanceManager.ViewModels
                 DataGrid dg = sender as DataGrid;
                 if (dg.SelectedIndex > 0)
                 {
-                    MessageBoxResult result = MessageBox.Show("Attenzione verrà elemininata la gestione: " +
-                        ((RegistryOwner)dg.SelectedItem).OwnerName, "DAF-C Gestione Gestioni", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    MessageBoxResult result = MessageBox.Show("Attenzione verrà elemininata il seguente titolo: " +
+                        ((RegistryShare)dg.SelectedItem).DescShare + " - " + ((RegistryShare)dg.SelectedItem).Isin,
+                        "DAF-C Gestione Mercato", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {
                         try
                         {
-                            _services.DeleteOwner(((RegistryOwner)dg.SelectedItem).IdOwner);
-                            OwnerList = new ObservableCollection<RegistryOwner>(_services.GetRegistryOwners());
+                            _services.DeleteShare(((RegistryShare)dg.SelectedItem).IdShare);
+                            ShareList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
                         }
                         catch (Exception err)
                         {
-                            MessageBox.Show("Errore nell'eliminazione della gestione: " + Environment.NewLine + err.Message);
+                            MessageBox.Show("Errore nell'eliminazione del Titolo: " + Environment.NewLine + err.Message);
                             e.Handled = true;
                         }
                     }
@@ -104,27 +103,37 @@ namespace FinanceManager.ViewModels
             }
         }
 
-        public ObservableCollection<RegistryOwner> OwnerList
+        public ObservableCollection<RegistryShareType> ShareTypeList
         {
-            get { return _ownerList; }
+            get { return _ShareTypeList; }
+            set
+            {
+                _ShareTypeList = value;
+                NotifyPropertyChanged("ShareTypeList");
+            }
+        }
+
+        public ObservableCollection<RegistryShare> ShareList
+        {
+            get { return _ShareList; }
             private set
             {
-                _ownerList = value;
-                NotifyPropertyChanged("OwnerList");
+                _ShareList = value;
+                NotifyPropertyChanged("ShareList");
             }
         }
         /// <summary>
         /// il modello della gestione
         /// </summary>
-        public RegistryOwner Owner
+        public RegistryShare Share
         {
-            get { return owner; }
+            get { return _share; }
             set
             {
                 if (value != null)
                 {
-                    owner = value;
-                    NotifyPropertyChanged("Owner");
+                    _share = value;
+                    NotifyPropertyChanged("Share");
                 }
             }
         }
@@ -134,9 +143,9 @@ namespace FinanceManager.ViewModels
         /// <param name="param">La view che ha inviato l'evento</param>
         public void CloseMe(object param)
         {
-            RegistryOwnerView ROV = param as RegistryOwnerView;
-            DockPanel wp = ROV.Parent as DockPanel;
-            wp.Children.Remove(ROV);
+            RegistryShareView RSV = param as RegistryShareView;
+            DockPanel wp = RSV.Parent as DockPanel;
+            wp.Children.Remove(RSV);
         }
 
 
