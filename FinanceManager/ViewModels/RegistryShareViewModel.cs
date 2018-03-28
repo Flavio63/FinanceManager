@@ -18,6 +18,9 @@ namespace FinanceManager.ViewModels
         private RegistryShare _share;
         private ObservableCollection<RegistryShare> _ShareList;
         private ObservableCollection<RegistryShareType> _ShareTypeList;
+        private ObservableCollection<RegistryMarket> _MarketList;
+        private ObservableCollection<RegistryFirm> _FirmList;
+        private ObservableCollection<RegistryCurrency> _CurrencyList;
         public ICommand CloseMeCommand { get; set; }
 
         public RegistryShareViewModel(IRegistryServices services)
@@ -26,6 +29,9 @@ namespace FinanceManager.ViewModels
             ShareList = new ObservableCollection<RegistryShare>(services.GetRegistryShareList());
             ShareList.CollectionChanged += CollectionHasChanged;
             ShareTypeList = new ObservableCollection<RegistryShareType>(services.GetRegistryShareTypeList());
+            FirmList = new ObservableCollection<RegistryFirm>(services.GetRegistryFirmList());
+            MarketList = new ObservableCollection<RegistryMarket>(services.GetRegistryMarketList());
+            CurrencyList = new ObservableCollection<RegistryCurrency>(services.GetRegistryCurrencyList());
             ShareList.CollectionChanged += CollectionHasChanged;
             CloseMeCommand = new CommandHandler(CloseMe);
         }
@@ -100,6 +106,36 @@ namespace FinanceManager.ViewModels
                     else
                         e.Handled = true;
                 }
+            }
+        }
+
+        public ObservableCollection<RegistryCurrency> CurrencyList
+        {
+            get { return _CurrencyList; }
+            private set
+            {
+                _CurrencyList = value;
+                NotifyPropertyChanged("CurrencyList");
+            }
+        }
+
+        public ObservableCollection<RegistryMarket> MarketList
+        {
+            get { return _MarketList; }
+            private set
+            {
+                _MarketList = value;
+                NotifyPropertyChanged("MarketList");
+            }
+        }
+
+        public ObservableCollection<RegistryFirm> FirmList
+        {
+            get { return _FirmList; }
+            private set
+            {
+                _FirmList = value;
+                NotifyPropertyChanged("FirmList");
             }
         }
 
