@@ -301,17 +301,80 @@ namespace FinanceManager.Services
 
         public void UpdateCurrency(RegistryCurrency registryCurrency)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.RegistryScripts.UpdateCurrency;
+                    dbComm.Parameters.AddWithValue("desc", registryCurrency.DescCurrency);
+                    dbComm.Parameters.AddWithValue("code", registryCurrency.CodeCurrency);
+                    dbComm.Parameters.AddWithValue("id", registryCurrency.IdCurrency);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
 
         public void AddCurrency(RegistryCurrency registryCurrency)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.RegistryScripts.AddCurrency;
+                    dbComm.Parameters.AddWithValue("desc", registryCurrency.DescCurrency);
+                    dbComm.Parameters.AddWithValue("code", registryCurrency.CodeCurrency);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
 
         public void DeleteCurrency(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.RegistryScripts.DeleteCurrency;
+                    dbComm.Parameters.AddWithValue("id", id);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
         #endregion
 
@@ -361,17 +424,78 @@ namespace FinanceManager.Services
 
         public void UpdateLocation(RegistryLocation registryLocation)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.RegistryScripts.UpdateLocation;
+                    dbComm.Parameters.AddWithValue("desc", registryLocation.DescLocation);
+                    dbComm.Parameters.AddWithValue("id", registryLocation.IdLocation);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
 
         public void AddLocation(string description)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.RegistryScripts.AddLocation;
+                    dbComm.Parameters.AddWithValue("desc", description);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
 
         public void DeleteLocation(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.RegistryScripts.DeleteLocation;
+                    dbComm.Parameters.AddWithValue("id", id);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
         #endregion
 
@@ -421,17 +545,78 @@ namespace FinanceManager.Services
 
         public void UpdateFirm(RegistryFirm registryFirm)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.RegistryScripts.UpdateFirm;
+                    dbComm.Parameters.AddWithValue("desc", registryFirm.DescFirm);
+                    dbComm.Parameters.AddWithValue("id", registryFirm.IdFirm);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
 
         public void AddFirm(string description)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.RegistryScripts.AddFirm;
+                    dbComm.Parameters.AddWithValue("desc", description);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
 
         public void DeleteFirm(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.RegistryScripts.DeleteFirm;
+                    dbComm.Parameters.AddWithValue("id", id);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
         #endregion
 
@@ -481,17 +666,78 @@ namespace FinanceManager.Services
 
         public void UpdateMarket(RegistryMarket registryMarket)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.RegistryScripts.UpdateMarket;
+                    dbComm.Parameters.AddWithValue("desc", registryMarket.DescMarket);
+                    dbComm.Parameters.AddWithValue("id", registryMarket.IdMarket);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
 
         public void AddMarket(string description)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.RegistryScripts.AddMarket;
+                    dbComm.Parameters.AddWithValue("desc", description);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
 
         public void DeleteMarket(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.RegistryScripts.DeleteMarket;
+                    dbComm.Parameters.AddWithValue("id", id);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
         #endregion
 
@@ -567,17 +813,205 @@ namespace FinanceManager.Services
 
         public void UpdateShare(RegistryShare registryShare)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using(MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.RegistryScripts.UpdateShare;
+                    dbComm.Parameters.AddWithValue("desc", registryShare.DescShare);
+                    dbComm.Parameters.AddWithValue("isin", registryShare.Isin);
+                    dbComm.Parameters.AddWithValue("tipo", registryShare.IdShareType);
+                    dbComm.Parameters.AddWithValue("azienda", registryShare.IdFirm);
+                    dbComm.Parameters.AddWithValue("borsa", registryShare.IdMarket);
+                    dbComm.Parameters.AddWithValue("valuta", registryShare.IdCurrency);
+                    dbComm.Parameters.AddWithValue("id", registryShare.IdShare);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch(MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
 
         public void AddShare(RegistryShare registryShare)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.RegistryScripts.AddShare;
+                    dbComm.Parameters.AddWithValue("desc", registryShare.DescShare);
+                    dbComm.Parameters.AddWithValue("isin", registryShare.Isin);
+                    dbComm.Parameters.AddWithValue("tipo", registryShare.IdShareType);
+                    dbComm.Parameters.AddWithValue("azienda", registryShare.IdFirm);
+                    dbComm.Parameters.AddWithValue("borsa", registryShare.IdMarket);
+                    dbComm.Parameters.AddWithValue("valuta", registryShare.IdCurrency);
+                    dbComm.Parameters.AddWithValue("id", registryShare.IdShare);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
 
         public void DeleteShare(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.RegistryScripts.DeleteShare;
+                    dbComm.Parameters.AddWithValue("id", id);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        #endregion
+
+        #region MovementType
+
+        public RegistryMovementTypeList GetRegistryMovementTypesList()
+        {
+            try
+            {
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetRegistryMovementTypeList;
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    DataTable dt = new DataTable();
+                    dbAdapter.Fill(dt);
+                    RegistryMovementTypeList RMTL = new RegistryMovementTypeList();
+                    foreach(DataRow dr in dt.Rows)
+                    {
+                        RegistryMovementType RMT = new RegistryMovementType();
+                        RMT.IdMovement = (int)dr.Field<uint>("id_tipoMovimento");
+                        RMT.DescMovement = dr.Field<string>("desc_Movimento");
+                        RMTL.Add(RMT);
+                    }
+                    return RMTL;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        public void UpdateMovementType(RegistryMovementType registryMovementType)
+        {
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.RegistryScripts.UpdateMovementType;
+                    dbComm.Parameters.AddWithValue("desc", registryMovementType.DescMovement);
+                    dbComm.Parameters.AddWithValue("id", registryMovementType.IdMovement);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        public void AddMovementType(string name)
+        {
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.RegistryScripts.AddMovementType;
+                    dbComm.Parameters.AddWithValue("desc", name);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        /// <summary>
+        /// Delete Query
+        /// </summary>
+        /// <param name="id">id</param>
+        public void DeleteMovementType(int id)
+        {
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.RegistryScripts.DeleteMovementType;
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
 
         #endregion

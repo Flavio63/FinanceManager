@@ -8,7 +8,7 @@
              xmlns:local="clr-namespace:FinanceManager.Views"
              mc:Ignorable="d" Name="_RegistryShareView"
              >
-    <Grid MaxWidth="950" Background="Beige" Margin="5,25">
+    <Grid MaxWidth="1050" Background="Beige" Margin="5,25">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="*"/>
@@ -31,8 +31,8 @@
                   SelectionMode="Single" FontSize="14" ItemsSource="{Binding Path=ShareList, UpdateSourceTrigger=PropertyChanged}" 
                   HorizontalAlignment="Center" AlternatingRowBackground="#FFAEFF90">
             <iy:Interaction.Triggers>
-                <iy:EventTrigger EventName="CellEditEnding">
-                    <is:CallMethodAction TargetObject="{Binding}" MethodName="CellChanged"/>
+                <iy:EventTrigger EventName="RowEditEnding">
+                    <is:CallMethodAction TargetObject="{Binding}" MethodName="RowChanged"/>
                 </iy:EventTrigger>
                 <iy:EventTrigger EventName="PreviewKeyDown">
                     <is:CallMethodAction TargetObject="{Binding}" MethodName="DeleteRow"/>
@@ -47,7 +47,7 @@
                                     Binding="{Binding Isin, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="100"/>
                 <DataGridComboBoxColumn Header="Tipologia" IsReadOnly="False" Width="100"
                                         SelectedValuePath="IdShareType" DisplayMemberPath="TypeName"
-                                        SelectedValueBinding="{Binding IdShareType}">
+                                        SelectedValueBinding="{Binding IdShareType, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <DataGridComboBoxColumn.ElementStyle>
                         <Style TargetType="ComboBox">
                             <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.ShareTypeList}"/>
@@ -61,7 +61,7 @@
                 </DataGridComboBoxColumn>
                 <DataGridComboBoxColumn Header="Azienda" IsReadOnly="False" Width="200"
                                         SelectedValuePath="IdFirm" DisplayMemberPath="DescFirm"
-                                        SelectedValueBinding="{Binding IdFirm}">
+                                        SelectedValueBinding="{Binding IdFirm, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <DataGridComboBoxColumn.ElementStyle>
                         <Style TargetType="ComboBox">
                             <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.FirmList}"/>
@@ -75,7 +75,7 @@
                 </DataGridComboBoxColumn>
                 <DataGridComboBoxColumn Header="Mercato" IsReadOnly="False" Width="150"
                                         SelectedValuePath="IdMarket" DisplayMemberPath="DescMarket"
-                                        SelectedValueBinding="{Binding IdMarket}">
+                                        SelectedValueBinding="{Binding IdMarket, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <DataGridComboBoxColumn.ElementStyle>
                         <Style TargetType="ComboBox">
                             <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.MarketList}"/>
@@ -89,7 +89,7 @@
                 </DataGridComboBoxColumn>
                 <DataGridComboBoxColumn Header="Valuta" IsReadOnly="False" Width="75"
                                         SelectedValuePath="IdCurrency" DisplayMemberPath="CodeCurrency"
-                                        SelectedValueBinding="{Binding IdCurrency}">
+                                        SelectedValueBinding="{Binding IdCurrency, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <DataGridComboBoxColumn.ElementStyle>
                         <Style TargetType="ComboBox">
                             <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.CurrencyList}"/>

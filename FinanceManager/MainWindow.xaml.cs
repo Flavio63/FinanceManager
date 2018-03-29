@@ -1,20 +1,7 @@
 ﻿using FinanceManager.Services;
 using FinanceManager.ViewModels;
 using FinanceManager.Views;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace FinanceManager
 {
@@ -78,6 +65,13 @@ namespace FinanceManager
             RegistryShareViewModel registryShareViewModel = new RegistryShareViewModel(_registryServices);
             RegistryShareView shareView = new RegistryShareView(registryShareViewModel);
             mainGrid.Children.Add(shareView);
+        }
+
+        private void OnClickMovementType(object sender, RoutedEventArgs e)
+        {
+            RegistryMovementTypeViewModel registryMovementTypeViewModel = new RegistryMovementTypeViewModel(_registryServices);
+            RegistryMovementTypeView registryMovementTypeView = new RegistryMovementTypeView(registryMovementTypeViewModel);
+            mainGrid.Children.Add(registryMovementTypeView);
         }
     }
 }

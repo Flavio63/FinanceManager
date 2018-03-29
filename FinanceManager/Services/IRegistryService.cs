@@ -69,5 +69,12 @@ namespace FinanceManager.Services
         void AddShare(RegistryShare registryShare);
         void DeleteShare(int id);
         #endregion
+
+        #region MovementType
+        RegistryMovementTypeList GetRegistryMovementTypesList();
+        void UpdateMovementType(RegistryMovementType registryMovementType);
+        void AddMovementType(string name);
+        void DeleteMovementType(int id);
+        #endregion
     }
 }

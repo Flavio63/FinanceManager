@@ -83,6 +83,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Events\CommandHandler.cs" />
+    <Compile Include="Events\ViewModelBase.cs" />
     <Compile Include="Models\RegistryCurrency.cs" />
     <Compile Include="Models\RegistryCurrencyList.cs" />
     <Compile Include="Models\RegistryFirm.cs" />
@@ -91,6 +92,8 @@
     <Compile Include="Models\RegistryLocationList.cs" />
     <Compile Include="Models\RegistryMarket.cs" />
     <Compile Include="Models\RegistryMarketList.cs" />
+    <Compile Include="Models\RegistryMovementType.cs" />
+    <Compile Include="Models\RegistryMovementTypeList.cs" />
     <Compile Include="Models\RegistryOwner.cs" />
     <Compile Include="Models\RegistryOwnersList.cs" />
     <Compile Include="Models\RegistryShare.cs" />
@@ -105,6 +108,7 @@
     <Compile Include="ViewModels\RegistryFirmViewModel.cs" />
     <Compile Include="ViewModels\RegistryLocationViewModel.cs" />
     <Compile Include="ViewModels\RegistryMarketViewModel.cs" />
+    <Compile Include="ViewModels\RegistryMovementTypeViewModel.cs" />
     <Compile Include="ViewModels\RegistryOwnerViewModel.cs" />
     <Compile Include="ViewModels\RegistryShareTypeViewModel.cs" />
     <Compile Include="ViewModels\RegistryShareViewModel.cs" />
@@ -119,6 +123,9 @@
     </Compile>
     <Compile Include="Views\RegistryMarketView.xaml.cs">
       <DependentUpon>RegistryMarketView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RegistryMovementTypeView.xaml.cs">
+      <DependentUpon>RegistryMovementTypeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RegistryOwnerView.xaml.cs">
       <DependentUpon>RegistryOwnerView.xaml</DependentUpon>
@@ -154,6 +161,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RegistryMarketView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RegistryMovementTypeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

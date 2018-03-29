@@ -4,32 +4,24 @@ using FinanceManager.Services;
 using FinanceManager.Views;
 using System;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace FinanceManager.ViewModels
 {
-    public class RegistryFirmViewModel
+    public class RegistryMovementTypeViewModel : ViewModelBase
     {
         private IRegistryServices _services;
-        private RegistryFirm _firm;
-        private ObservableCollection<RegistryFirm> _FirmList;
+        private RegistryMovementType _movementType;
+        private ObservableCollection<RegistryMovementType> _MovementTypeList;
         public ICommand CloseMeCommand { get; set; }
 
-        public RegistryFirmViewModel(IRegistryServices services)
+        public RegistryMovementTypeViewModel(IRegistryServices services)
         {
-            _services = services ?? throw new ArgumentNullException("RegistryFirmViewModel With No Services");
-            FirmList = new ObservableCollection<RegistryFirm>(services.GetRegistryFirmList());
-            FirmList.CollectionChanged += CollectionHasChanged;
+            _services = services ?? throw new ArgumentNullException("RegistryMovementTypeViewModel With No Services");
+            MovementTypeList = new ObservableCollection<RegistryMovementType>(services.GetRegistryMovementTypesList());
             CloseMeCommand = new CommandHandler(CloseMe);
-        }
-
-        public void CollectionHasChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            //ListCollectionView ownerList = sender as ListCollectionView;
         }
 
         /// <summary>
@@ -46,15 +38,15 @@ namespace FinanceManager.ViewModels
 
                 if (e.EditAction == DataGridEditAction.Commit)
                 {
-                    Firm = ((RegistryFirm)e.Row.Item);
-                    if (Firm.IdFirm > 0)
+                    MovementType = ((RegistryMovementType)e.Row.Item);
+                    if (MovementType.IdMovement > 0)
                     {
-                        _services.UpdateFirm(Firm);
+                        _services.UpdateMovementType(MovementType);
                     }
                     else
                     {
-                        _services.AddFirm(Firm.DescFirm);
-                        FirmList = new ObservableCollection<RegistryFirm>(_services.GetRegistryFirmList());
+                        _services.AddMovementType(MovementType.DescMovement);
+                        MovementTypeList = new ObservableCollection<RegistryMovementType>(_services.GetRegistryMovementTypesList());
 
                     }
                 }
@@ -73,23 +65,24 @@ namespace FinanceManager.ViewModels
         /// <param name="e">tasto premuto</param>
         public void DeleteRow(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Delete)
+            DataGrid tmp = e.OriginalSource as DataGrid;
+            if (e.Key == Key.Delete && tmp != null)
             {
                 DataGrid dg = sender as DataGrid;
                 if (dg.SelectedIndex > 0)
                 {
-                    MessageBoxResult result = MessageBox.Show("Attenzione verrà elemininata la seguente azienda: " +
-                        ((RegistryFirm)dg.SelectedItem).DescFirm, "DAF-C Gestione Mercato", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    MessageBoxResult result = MessageBox.Show("Attenzione verrà elemininato la seguente tipologia: " +
+                        ((RegistryMovementType)dg.SelectedItem).DescMovement, "DAF-C Gestione Movimenti", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {
                         try
                         {
-                            _services.DeleteFirm(((RegistryFirm)dg.SelectedItem).IdFirm);
-                            FirmList = new ObservableCollection<RegistryFirm>(_services.GetRegistryFirmList());
+                            _services.DeleteMovementType(((RegistryMovementType)dg.SelectedItem).IdMovement);
+                            MovementTypeList = new ObservableCollection<RegistryMovementType>(_services.GetRegistryMovementTypesList());
                         }
                         catch (Exception err)
                         {
-                            MessageBox.Show("Errore nell'eliminazione dell'Azienda: " + Environment.NewLine + err.Message);
+                            MessageBox.Show("Errore nell'eliminazione della tipologia di movimento: " + Environment.NewLine + err.Message);
                             e.Handled = true;
                         }
                     }
@@ -99,46 +92,40 @@ namespace FinanceManager.ViewModels
             }
         }
 
-        public ObservableCollection<RegistryFirm> FirmList
+        public ObservableCollection<RegistryMovementType> MovementTypeList
         {
-            get { return _FirmList; }
+            get { return _MovementTypeList; }
             private set
             {
-                _FirmList = value;
-                NotifyPropertyChanged("FirmList");
+                _MovementTypeList = value;
+                NotifyPropertyChanged("MovementTypeList");
             }
         }
         /// <summary>
         /// il modello della gestione
         /// </summary>
-        public RegistryFirm Firm
+        public RegistryMovementType MovementType
         {
-            get { return _firm; }
+            get { return _movementType; }
             set
             {
                 if (value != null)
                 {
-                    _firm = value;
-                    NotifyPropertyChanged("Firm");
+                    _movementType = value;
+                    NotifyPropertyChanged("MovementType");
                 }
             }
         }
+
         /// <summary>
         /// Evento di chiusura della view Gestione gestioni
         /// </summary>
         /// <param name="param">La view che ha inviato l'evento</param>
         public void CloseMe(object param)
         {
-            RegistryFirmView RFV = param as RegistryFirmView;
+            RegistryMovementTypeView RFV = param as RegistryMovementTypeView;
             DockPanel wp = RFV.Parent as DockPanel;
             wp.Children.Remove(RFV);
-        }
-
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void NotifyPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

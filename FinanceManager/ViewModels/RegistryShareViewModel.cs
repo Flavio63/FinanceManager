@@ -6,13 +6,14 @@ using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace FinanceManager.ViewModels
 {
-    public class RegistryShareViewModel
+    public class RegistryShareViewModel : INotifyPropertyChanged
     {
         private IRegistryServices _services;
         private RegistryShare _share;
@@ -32,15 +33,13 @@ namespace FinanceManager.ViewModels
             FirmList = new ObservableCollection<RegistryFirm>(services.GetRegistryFirmList());
             MarketList = new ObservableCollection<RegistryMarket>(services.GetRegistryMarketList());
             CurrencyList = new ObservableCollection<RegistryCurrency>(services.GetRegistryCurrencyList());
-            ShareList.CollectionChanged += CollectionHasChanged;
             CloseMeCommand = new CommandHandler(CloseMe);
         }
 
         public void CollectionHasChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            //ListCollectionView ownerList = sender as ListCollectionView;
+         //   ListCollectionView ownerList = sender as ListCollectionView;
         }
-
         /// <summary>
         /// E' l'evento di edit nella cella di descrizione della gestione
         /// se il modello ha un valore di id vuol dire che è in modifica
@@ -48,7 +47,7 @@ namespace FinanceManager.ViewModels
         /// </summary>
         /// <param name="sender">la cella di descrizione</param>
         /// <param name="e">la conferma o meno della modifica</param>
-        public void CellChanged(object sender, DataGridCellEditEndingEventArgs e)
+        public void RowChanged(object sender, DataGridRowEditEndingEventArgs e)
         {
             try
             {
@@ -56,12 +55,28 @@ namespace FinanceManager.ViewModels
                 if (e.EditAction == DataGridEditAction.Commit)
                 {
                     Share = ((RegistryShare)e.Row.Item);
+
                     if (Share.IdShare > 0)
                     {
                         _services.UpdateShare(Share);
                     }
                     else
                     {
+                        PropertyInfo[] properties = typeof(RegistryShare).GetProperties();
+                        foreach (PropertyInfo pi in properties)
+                        {
+                            if ((pi.Name == "DescShare" || pi.Name == "Isin") && pi.GetValue(Share) == null)
+                            {
+                                e.Cancel = true;
+                                throw new Exception("Inserire tutti i valori prima di confermare cambiando riga.");
+                            }
+                            else if (pi.Name != "IdShare" && pi.GetValue(Share).ToString() == "0")
+                            {
+                                e.Cancel = true;
+                                throw new Exception("Inserire tutti i valori prima di confermare cambiando riga.");
+                            }
+                        }
+
                         _services.AddShare(Share);
                         ShareList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
 
@@ -70,9 +85,10 @@ namespace FinanceManager.ViewModels
             }
             catch (Exception err)
             {
-                MessageBox.Show("Errore nell'aggiornamento dei dati: " + err.Message);
+                MessageBox.Show("Errore nell'aggiornamento dei dati: " + err.Message, "DAF-C Gestione Titoli", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
         /// <summary>
         /// Resto in ascolto dei tasti premuti con la griglia attiva
         /// se è premuto il tasto delete lo intercetto e pongo la 
@@ -85,7 +101,7 @@ namespace FinanceManager.ViewModels
             if (e.Key == Key.Delete)
             {
                 DataGrid dg = sender as DataGrid;
-                if (dg.SelectedIndex > 0)
+                if (dg.SelectedIndex >= 0)
                 {
                     MessageBoxResult result = MessageBox.Show("Attenzione verrà elemininata il seguente titolo: " +
                         ((RegistryShare)dg.SelectedItem).DescShare + " - " + ((RegistryShare)dg.SelectedItem).Isin,
