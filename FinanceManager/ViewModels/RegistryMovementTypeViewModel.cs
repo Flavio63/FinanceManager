@@ -65,7 +65,7 @@ namespace FinanceManager.ViewModels
         /// <param name="e">tasto premuto</param>
         public void DeleteRow(object sender, KeyEventArgs e)
         {
-            DataGrid tmp = e.OriginalSource as DataGrid;
+            DataGridCell tmp = e.OriginalSource as DataGridCell;
             if (e.Key == Key.Delete && tmp != null)
             {
                 DataGrid dg = sender as DataGrid;

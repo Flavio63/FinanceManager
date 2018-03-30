@@ -999,6 +999,7 @@ namespace FinanceManager.Services
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.DeleteMovementType;
                     dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Parameters.AddWithValue("id", id);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();

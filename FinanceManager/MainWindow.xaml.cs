@@ -11,11 +11,13 @@ namespace FinanceManager
     public partial class MainWindow : Window
     {
         private IRegistryServices _registryServices;
+        private IManagerLiquidAssetServices _managerLiquidServices;
 
         public MainWindow()
         {
             InitializeComponent();
             _registryServices = new RegistryService();
+            _managerLiquidServices = new ManagerLiquidAssetServices();
         }
 
         private void OnClickGestioni(object sender, RoutedEventArgs e)
@@ -72,6 +74,13 @@ namespace FinanceManager
             RegistryMovementTypeViewModel registryMovementTypeViewModel = new RegistryMovementTypeViewModel(_registryServices);
             RegistryMovementTypeView registryMovementTypeView = new RegistryMovementTypeView(registryMovementTypeViewModel);
             mainGrid.Children.Add(registryMovementTypeView);
+        }
+
+        private void OnClickManagerPorfolioMovement(object sender, RoutedEventArgs e)
+        {
+            ManagerPortfolioMovementViewModel managerPortfolioMovementViewModel = new ManagerPortfolioMovementViewModel(_registryServices, _managerLiquidServices);
+            ManagerPortfolioMovementView managerPortfolioMovementView = new ManagerPortfolioMovementView(managerPortfolioMovementViewModel);
+            mainGrid.Children.Add(managerPortfolioMovementView);
         }
     }
 }

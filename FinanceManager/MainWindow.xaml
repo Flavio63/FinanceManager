@@ -23,7 +23,7 @@
                 <MenuItem Header="Tipologia Movimenti" Margin="2,0" FontSize="10" FontWeight="Normal" Click="OnClickMovementType"></MenuItem>
             </MenuItem>
             <MenuItem Header="Gestione" Margin="2,5" FontSize="12" FontWeight="Bold">
-                <MenuItem Header="Portafoglio Euro" Margin="2,0" FontSize="10" FontWeight="Normal"></MenuItem>
+                <MenuItem Header="Portafoglio Euro" Margin="2,0" FontSize="10" FontWeight="Normal" Click="OnClickManagerPorfolioMovement"></MenuItem>
                 <MenuItem Header="Cambio Valuta" Margin="2,0" FontSize="10" FontWeight="Normal"></MenuItem>
                 <MenuItem Header="Compravendita Titoli" Margin="2,0" FontSize="10" FontWeight="Normal"></MenuItem>
             </MenuItem>
