@@ -13,12 +13,61 @@ namespace FinanceManager.Services
     {
         public void AddManagerLiquidAsset(ManagerLiquidAsset managerLiquidAsset)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.ManagerScripts.AddManagerLiquidAsset;
+                    dbComm.Parameters.AddWithValue("id_portafoglio", managerLiquidAsset.IdOwner);
+                    dbComm.Parameters.AddWithValue("id_location", managerLiquidAsset.IdLocation);
+                    dbComm.Parameters.AddWithValue("id_valuta", managerLiquidAsset.IdCurrency);
+                    dbComm.Parameters.AddWithValue("id_tipoMovimento", managerLiquidAsset.IdMovement);
+                    dbComm.Parameters.AddWithValue("data_movimento", managerLiquidAsset.MovementDate.ToString("yyyy-MM-dd"));
+                    dbComm.Parameters.AddWithValue("ammontare", managerLiquidAsset.Amount);
+                    dbComm.Parameters.AddWithValue("valore_cambio", managerLiquidAsset.ExchangeValue);
+                    dbComm.Parameters.AddWithValue("disponibile", managerLiquidAsset.Available);
+                    dbComm.Parameters.AddWithValue("isin", managerLiquidAsset.Isin);
+                    dbComm.Parameters.AddWithValue("note", managerLiquidAsset.Note);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch(MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
 
         public void DeleteManagerLiquidAsset(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.ManagerScripts.DeleteManagerLiquidAsset;
+                    dbComm.Parameters.AddWithValue("id_liquid_movement", id);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
 
         public ManagerLiquidAsset GetManagerLiquidAssetById(int id)
@@ -75,7 +124,37 @@ namespace FinanceManager.Services
 
         public void UpdateManagerLiquidAsset(ManagerLiquidAsset managerLiquidAsset)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.ManagerScripts.UpdateManagerLiquidAsset;
+                    dbComm.Parameters.AddWithValue("id_portafoglio", managerLiquidAsset.IdOwner);
+                    dbComm.Parameters.AddWithValue("id_location", managerLiquidAsset.IdLocation);
+                    dbComm.Parameters.AddWithValue("id_valuta", managerLiquidAsset.IdCurrency);
+                    dbComm.Parameters.AddWithValue("id_tipoMovimento", managerLiquidAsset.IdMovement);
+                    dbComm.Parameters.AddWithValue("id_data_movimento", managerLiquidAsset.MovementDate);
+                    dbComm.Parameters.AddWithValue("ammontare", managerLiquidAsset.Amount);
+                    dbComm.Parameters.AddWithValue("valore_cambio", managerLiquidAsset.ExchangeValue);
+                    dbComm.Parameters.AddWithValue("disponibile", managerLiquidAsset.Available);
+                    dbComm.Parameters.AddWithValue("isin", managerLiquidAsset.Isin);
+                    dbComm.Parameters.AddWithValue("note", managerLiquidAsset.Note);
+                    dbComm.Parameters.AddWithValue("id_liquid_movement", managerLiquidAsset.idLiquidAsset);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
     }
 }
