@@ -20,12 +20,14 @@ namespace FinanceManager.Models
         
         public int IdMovement { get; set; }
         public string DescMovement { get; set; }
-        
+
+        public int? IdShare { get; set; }
+        public string Isin { get; set; }
+
         public DateTime MovementDate { get; set; }
         public double Amount { get; set; }
         public double ExchangeValue { get; set; }
         public bool Available { get; set; }
-        public string Isin { get; set; }
         public string Note { get; set; }
     }
 }

@@ -1,9 +1,9 @@
 ﻿<Application x:Class="FinanceManager.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:FinanceManager"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <sys:String x:Key="DAF_Caption">DAF-C Program</sys:String>
     </Application.Resources>
 </Application>

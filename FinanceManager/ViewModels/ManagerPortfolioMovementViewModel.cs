@@ -6,24 +6,26 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace FinanceManager.ViewModels
 {
     public class ManagerPortfolioMovementViewModel : ViewModelBase
     {
-        private static readonly string caption = "DAF-C Gestione Movimenti";
         private IRegistryServices _services;
         private IManagerLiquidAssetServices _liquidAssetServices;
         private ObservableCollection<RegistryOwner> _OwnerList;
         private ObservableCollection<RegistryMovementType> _MovementList;
         private ObservableCollection<RegistryLocation> _LocationList;
         private ObservableCollection<RegistryCurrency> _CurrencyList;
+        private ObservableCollection<RegistryShare> _ShareList;
 
         private ObservableCollection<ManagerLiquidAsset> _LiquidAssetList;
         public ICommand CloseMeCommand { get; set; }
@@ -39,6 +41,7 @@ namespace FinanceManager.ViewModels
             MovementList = new ObservableCollection<RegistryMovementType>(_services.GetRegistryMovementTypesList());
             LocationList = new ObservableCollection<RegistryLocation>(_services.GetRegistryLocationList());
             CurrencyList = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
+            SharesList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
             CloseMeCommand = new CommandHandler(CloseMe);
             RowLiquidAsset = new ManagerLiquidAsset();
         }
@@ -47,46 +50,64 @@ namespace FinanceManager.ViewModels
 
         public void CbSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            RegistryOwner RO = e.AddedItems[0] as RegistryOwner;
-            RegistryLocation RL = e.AddedItems[0] as RegistryLocation;
-            RegistryMovementType RMT = e.AddedItems[0] as RegistryMovementType;
-            RegistryCurrency RC = e.AddedItems[0] as RegistryCurrency;
-            DateTime DT = new DateTime();
-            bool dTime = false;
-            try
+            if (e.AddedItems.Count > 0)
             {
-                DT = (DateTime)e.AddedItems[0];
-                dTime = true;
-            }
-            catch { }
+                RegistryOwner RO = e.AddedItems[0] as RegistryOwner;
+                RegistryLocation RL = e.AddedItems[0] as RegistryLocation;
+                RegistryMovementType RMT = e.AddedItems[0] as RegistryMovementType;
+                RegistryCurrency RC = e.AddedItems[0] as RegistryCurrency;
+                RegistryShare RS = e.AddedItems[0] as RegistryShare;
+                DateTime DT = new DateTime();
+                ComboBoxItem CBI = e.AddedItems[0] as ComboBoxItem;
+                ManagerLiquidAsset MLA = e.AddedItems[0] as ManagerLiquidAsset;
 
-            if (RO != null)
-            {
-                SelectedOwner = RO.OwnerName;
+                bool dTime = false;
+                try
+                {
+                    DT = (DateTime)e.AddedItems[0];
+                    dTime = true;
+                }
+                catch { }
 
-                RowLiquidAsset.IdOwner = RO.IdOwner;
-                RowLiquidAsset.OwnerName = RO.OwnerName;
-                LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetList(RO.IdOwner));
-                NotifyPropertyChanged("CbSelectionChanged");
+                if (RO != null)
+                {
+                    SelectedOwner = RO.OwnerName;
+                    RowLiquidAsset = new ManagerLiquidAsset();
+                    RowLiquidAsset.IdOwner = RO.IdOwner;
+                    RowLiquidAsset.OwnerName = RO.OwnerName;
+                    LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetList(RO.IdOwner));
+                    NotifyPropertyChanged("CbSelectionChanged");
+                }
+                if (RL != null)
+                {
+                    RowLiquidAsset.IdLocation = RL.IdLocation;
+                    RowLiquidAsset.DescLocation = RL.DescLocation;
+                }
+                if (RMT != null)
+                {
+                    RowLiquidAsset.IdMovement = RMT.IdMovement;
+                    RowLiquidAsset.DescMovement = RMT.DescMovement;
+                }
+                if (RC != null)
+                {
+                    RowLiquidAsset.IdCurrency = RC.IdCurrency;
+                    RowLiquidAsset.CodeCurrency = RC.CodeCurrency;
+                }
+                if (RS != null)
+                {
+                    RowLiquidAsset.IdShare = RS.IdShare;
+                    RowLiquidAsset.Isin = RS.Isin;
+                }
+                if (dTime)
+                    RowLiquidAsset.MovementDate = DT.Date;
+                if (CBI != null)
+                    RowLiquidAsset.Available = Convert.ToBoolean(CBI.Content);
+                if (MLA != null)
+                {
+                    RowLiquidAsset = MLA;
+                    NotifyPropertyChanged("SelectedMovement");
+                }
             }
-            if (RL != null)
-            {
-                RowLiquidAsset.IdLocation = RL.IdLocation;
-                RowLiquidAsset.DescLocation = RL.DescLocation;
-            }
-            if (RMT != null)
-            {
-                RowLiquidAsset.IdMovement = RMT.IdMovement;
-                RowLiquidAsset.DescMovement = RMT.DescMovement;
-            }
-            if (RC != null)
-            {
-                RowLiquidAsset.IdCurrency = RC.IdCurrency;
-                RowLiquidAsset.CodeCurrency = RC.CodeCurrency;
-            }
-            if (dTime)
-                RowLiquidAsset.MovementDate = DT.Date;
-
         }
 
         public void OnClick(object sender, RoutedEventArgs e)
@@ -97,7 +118,7 @@ namespace FinanceManager.ViewModels
                 if (RowLiquidAsset.idLiquidAsset != 0)
                 {
                     MessageBoxResult R = MessageBox.Show("I dati della maschera provengono da un record esistente, vuoi inserirlo come nuovo?",
-                        caption, MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (R == MessageBoxResult.Yes)
                     {
                         RowLiquidAsset.idLiquidAsset = 0;
@@ -108,7 +129,7 @@ namespace FinanceManager.ViewModels
                 if (RowLiquidAsset.IdOwner == 0 || RowLiquidAsset.IdLocation == 0 ||
                     RowLiquidAsset.IdMovement == 0 || RowLiquidAsset.IdCurrency == 0)
                 {
-                    MessageBox.Show("I primi 4 campi devono essere tutti compilati.", caption, MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("I primi 4 campi devono essere tutti compilati.", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
                 else
@@ -116,12 +137,13 @@ namespace FinanceManager.ViewModels
                     try
                     {
                         _liquidAssetServices.AddManagerLiquidAsset(RowLiquidAsset);
-                        MessageBox.Show("Record caricato!");
+                        LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetList(RowLiquidAsset.IdOwner));
+                        MessageBox.Show("Record caricato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     catch (Exception err)
                     {
                         MessageBox.Show("Problemi nel caricamento del record: " + Environment.NewLine +
-                            err.Message, caption, MessageBoxButton.OK, MessageBoxImage.Error);
+                            err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
             }
@@ -177,6 +199,16 @@ namespace FinanceManager.ViewModels
         #endregion
 
         #region Collections
+
+        public ObservableCollection<RegistryShare> SharesList
+        {
+            get { return _ShareList; }
+            set
+            {
+                _ShareList = value;
+                NotifyPropertyChanged("SharesList");
+            }
+        }
 
         public ObservableCollection<ManagerLiquidAsset> LiquidAssetList
         {
@@ -234,6 +266,33 @@ namespace FinanceManager.ViewModels
             ManagerPortfolioMovementView MPMV = param as ManagerPortfolioMovementView;
             DockPanel wp = MPMV.Parent as DockPanel;
             wp.Children.Remove(MPMV);
+        }
+    }
+    /// Converter for disabling ComboboxItem
+    public class ComboboxDisableConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null)
+                return value;
+            if (value != null && value.GetType().Name == "RegistryMovementType")
+            {
+                RegistryMovementType RMT = value as RegistryMovementType;
+                if (RMT.IdMovement > 2 && RMT.IdMovement != 4)
+                    return true;
+            }
+            //if (value != null && value.GetType().Name == "RegistryCurrency")
+            //{
+            //    RegistryCurrency RC = value as RegistryCurrency;
+            //    if (RC.IdCurrency != 1)
+            //        return true;
+            //}
+            return false;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }

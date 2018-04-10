@@ -23,11 +23,11 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("id_location", managerLiquidAsset.IdLocation);
                     dbComm.Parameters.AddWithValue("id_valuta", managerLiquidAsset.IdCurrency);
                     dbComm.Parameters.AddWithValue("id_tipoMovimento", managerLiquidAsset.IdMovement);
+                    dbComm.Parameters.AddWithValue("id_titolo", managerLiquidAsset.IdShare);
                     dbComm.Parameters.AddWithValue("data_movimento", managerLiquidAsset.MovementDate.ToString("yyyy-MM-dd"));
                     dbComm.Parameters.AddWithValue("ammontare", managerLiquidAsset.Amount);
                     dbComm.Parameters.AddWithValue("valore_cambio", managerLiquidAsset.ExchangeValue);
                     dbComm.Parameters.AddWithValue("disponibile", managerLiquidAsset.Available);
-                    dbComm.Parameters.AddWithValue("isin", managerLiquidAsset.Isin);
                     dbComm.Parameters.AddWithValue("note", managerLiquidAsset.Note);
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.Connection.Open();
@@ -101,11 +101,12 @@ namespace FinanceManager.Services
                         MLA.CodeCurrency = dr.Field<string>("cod_valuta");
                         MLA.IdMovement = (int)dr.Field<uint>("id_tipoMovimento");
                         MLA.DescMovement = dr.Field<string>("desc_Movimento");
+                        MLA.IdShare = (int?)dr.Field<uint?>("id_titolo");
+                        MLA.Isin = dr.Field<string>("isin");
                         MLA.MovementDate = dr.Field<DateTime>("data_movimento");
                         MLA.Amount = dr.Field<double>("ammontare");
                         MLA.ExchangeValue = dr.Field<double>("valore_cambio");
                         MLA.Available = Convert.ToBoolean(dr.Field<string>("disp"));
-                        MLA.Isin = dr.Field<string>("isin");
                         MLA.Note = dr.Field<string>("note");
                         MLAL.Add(MLA);
                     }
@@ -134,11 +135,11 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("id_location", managerLiquidAsset.IdLocation);
                     dbComm.Parameters.AddWithValue("id_valuta", managerLiquidAsset.IdCurrency);
                     dbComm.Parameters.AddWithValue("id_tipoMovimento", managerLiquidAsset.IdMovement);
+                    dbComm.Parameters.AddWithValue("id_titolo", managerLiquidAsset.IdShare);
                     dbComm.Parameters.AddWithValue("id_data_movimento", managerLiquidAsset.MovementDate);
                     dbComm.Parameters.AddWithValue("ammontare", managerLiquidAsset.Amount);
                     dbComm.Parameters.AddWithValue("valore_cambio", managerLiquidAsset.ExchangeValue);
                     dbComm.Parameters.AddWithValue("disponibile", managerLiquidAsset.Available);
-                    dbComm.Parameters.AddWithValue("isin", managerLiquidAsset.Isin);
                     dbComm.Parameters.AddWithValue("note", managerLiquidAsset.Note);
                     dbComm.Parameters.AddWithValue("id_liquid_movement", managerLiquidAsset.idLiquidAsset);
                     dbComm.Connection = new MySqlConnection(DafConnection);
