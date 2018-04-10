@@ -75,7 +75,8 @@ namespace FinanceManager.ViewModels
                     RowLiquidAsset = new ManagerLiquidAsset();
                     RowLiquidAsset.IdOwner = RO.IdOwner;
                     RowLiquidAsset.OwnerName = RO.OwnerName;
-                    LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetList(RO.IdOwner));
+                    int[] movements = { 1, 2, 4 };
+                    LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwner_MovementType(RO.IdOwner, movements));
                     NotifyPropertyChanged("CbSelectionChanged");
                 }
                 if (RL != null)
@@ -137,7 +138,7 @@ namespace FinanceManager.ViewModels
                     try
                     {
                         _liquidAssetServices.AddManagerLiquidAsset(RowLiquidAsset);
-                        LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetList(RowLiquidAsset.IdOwner));
+                        LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwner(RowLiquidAsset.IdOwner));
                         MessageBox.Show("Record caricato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     catch (Exception err)

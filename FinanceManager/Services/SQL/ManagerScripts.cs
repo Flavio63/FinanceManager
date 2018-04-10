@@ -8,7 +8,7 @@ namespace FinanceManager.Services.SQL
 {
     public class ManagerScripts
     {
-        public static readonly string GetManagerLiquidAssetList = "SELECT id_liquid_movement, id_portafoglio, desc_portafoglio, id_location, desc_location, AA.id_valuta, cod_valuta, " +
+        public static readonly string GetManagerLiquidAssetListByOwner = "SELECT id_liquid_movement, id_portafoglio, desc_portafoglio, id_location, desc_location, AA.id_valuta, cod_valuta, " +
             "id_tipoMovimento, desc_Movimento, id_titolo, BB.Isin, data_movimento, ammontare, valore_cambio, disp, note FROM (" +
             "SELECT id_liquid_movement, id_portafoglio, desc_portafoglio, C.id_location, desc_location, D.id_valuta, " +
             "cod_valuta, E.id_tipoMovimento, desc_Movimento, id_titolo, data_movimento, ammontare, valore_cambio, " +
@@ -17,14 +17,14 @@ namespace FinanceManager.Services.SQL
             "WHERE A.id_gestione = B.id_portafoglio AND A.id_location = C.id_location AND A.id_valuta = D.id_valuta AND A.id_movimento = E.id_tipoMovimento AND B.id_portafoglio = @owner " +
             ") AA LEFT JOIN daf_titoli BB ON BB.id_tit = AA.id_titolo ORDER BY data_movimento DESC ";
 
-        public static readonly string GetManagerLiquidAssetById = "SELECT id_liquid_movement, id_portafoglio, desc_portafoglio, id_location, desc_location, AA.id_valuta, cod_valuta, " +
+        public static readonly string GetManagerLiquidAssetByOwnerByMovementType = "SELECT id_liquid_movement, id_portafoglio, desc_portafoglio, id_location, desc_location, AA.id_valuta, cod_valuta, " +
             "id_tipoMovimento, desc_Movimento, id_titolo, BB.Isin, data_movimento, ammontare, valore_cambio, disp, note FROM (" +
             "SELECT id_liquid_movement, id_portafoglio, desc_portafoglio, C.id_location, desc_location, D.id_valuta, " +
             "cod_valuta, E.id_tipoMovimento, desc_Movimento, id_titolo, data_movimento, ammontare, valore_cambio, " +
             "if(disponibile = 1, 'true', 'false') AS disp, note " +
             "FROM daf_portafoglio A, daf_portfolio_owner B, daf_location C, daf_valuta D, daf_tipo_movimento E " +
             "WHERE A.id_gestione = B.id_portafoglio AND A.id_location = C.id_location AND A.id_valuta = D.id_valuta AND A.id_movimento = E.id_tipoMovimento " +
-            "AND B.id_portafoglio = @owner AND id_liquid_movement = @id_liquid_movement " +
+            "AND B.id_portafoglio = @owner AND {0} " +
             ") AA LEFT JOIN daf_titoli BB ON BB.id_tit = AA.id_titolo ORDER BY data_movimento DESC ";
 
         public static readonly string AddManagerLiquidAsset = "INSERT INTO daf_portafoglio (id_liquid_movement, id_gestione, id_location, id_valuta, id_movimento, " +

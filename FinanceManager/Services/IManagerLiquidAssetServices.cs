@@ -9,8 +9,8 @@ namespace FinanceManager.Services
 {
     public interface IManagerLiquidAssetServices
     {
-        ManagerLiquidAssetList GetManagerLiquidAssetList(int IdOwner);
-        ManagerLiquidAsset GetManagerLiquidAssetById(int id);
+        ManagerLiquidAssetList GetManagerLiquidAssetListByOwner(int IdOwner);
+        ManagerLiquidAssetList GetManagerLiquidAssetListByOwner_MovementType(int IdOwner, int[] IdMovement);
         void AddManagerLiquidAsset(ManagerLiquidAsset managerLiquidAsset);
         void UpdateManagerLiquidAsset(ManagerLiquidAsset managerLiquidAsset);
         void DeleteManagerLiquidAsset(int id);
