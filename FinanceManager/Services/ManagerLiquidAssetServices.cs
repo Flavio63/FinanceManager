@@ -190,7 +190,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("id_valuta", managerLiquidAsset.IdCurrency);
                     dbComm.Parameters.AddWithValue("id_tipoMovimento", managerLiquidAsset.IdMovement);
                     dbComm.Parameters.AddWithValue("id_titolo", managerLiquidAsset.IdShare);
-                    dbComm.Parameters.AddWithValue("id_data_movimento", managerLiquidAsset.MovementDate);
+                    dbComm.Parameters.AddWithValue("data_movimento", managerLiquidAsset.MovementDate.ToString("yyyy-MM-dd"));
                     dbComm.Parameters.AddWithValue("ammontare", managerLiquidAsset.Amount);
                     dbComm.Parameters.AddWithValue("valore_cambio", managerLiquidAsset.ExchangeValue);
                     dbComm.Parameters.AddWithValue("disponibile", managerLiquidAsset.Available);

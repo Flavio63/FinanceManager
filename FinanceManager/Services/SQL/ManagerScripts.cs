@@ -32,7 +32,7 @@ namespace FinanceManager.Services.SQL
             "@data_movimento, @ammontare, @valore_cambio, @disponibile, @note);";
 
         public static readonly string UpdateManagerLiquidAsset = "UPDATE daf_portafoglio SET id_gestione = @id_portafoglio, id_location = @id_location, id_valuta = @id_valuta, " +
-            "id_movimento = @id_tipoMovimento, id_titolo = @it_titolo, data_movimento = @data_movimento, ammontare = @ammontare, valore_cambio = @valore_cambio, " +
+            "id_movimento = @id_tipoMovimento, id_titolo = @id_titolo, data_movimento = @data_movimento, ammontare = @ammontare, valore_cambio = @valore_cambio, " +
             "disponibile = @disponibile, note = @note WHERE id_liquid_movement = @id_liquid_movement";
 
         public static readonly string DeleteManagerLiquidAsset = "DELETE FROM daf_portafoglio WHERE id_liquid_movement = @id_liquid_movement;";

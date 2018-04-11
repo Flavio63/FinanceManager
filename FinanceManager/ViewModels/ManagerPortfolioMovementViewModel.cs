@@ -32,6 +32,7 @@ namespace FinanceManager.ViewModels
 
         private string _SelectedOwner;
         private ManagerLiquidAsset _RowLiquidAsset;
+        private int[] enabledMovement = { 1, 2, 4 };
 
         public ManagerPortfolioMovementViewModel(IRegistryServices services, IManagerLiquidAssetServices liquidAssetServices)
         {
@@ -44,6 +45,7 @@ namespace FinanceManager.ViewModels
             SharesList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
             CloseMeCommand = new CommandHandler(CloseMe);
             RowLiquidAsset = new ManagerLiquidAsset();
+            RowLiquidAsset.MovementDate = DateTime.Now;
         }
 
         #region Events
@@ -57,7 +59,7 @@ namespace FinanceManager.ViewModels
                 RegistryMovementType RMT = e.AddedItems[0] as RegistryMovementType;
                 RegistryCurrency RC = e.AddedItems[0] as RegistryCurrency;
                 RegistryShare RS = e.AddedItems[0] as RegistryShare;
-                DateTime DT = new DateTime();
+                DateTime DT = DateTime.Now;
                 ComboBoxItem CBI = e.AddedItems[0] as ComboBoxItem;
                 ManagerLiquidAsset MLA = e.AddedItems[0] as ManagerLiquidAsset;
 
@@ -73,10 +75,10 @@ namespace FinanceManager.ViewModels
                 {
                     SelectedOwner = RO.OwnerName;
                     RowLiquidAsset = new ManagerLiquidAsset();
+                    RowLiquidAsset.MovementDate = DT.Date;
                     RowLiquidAsset.IdOwner = RO.IdOwner;
                     RowLiquidAsset.OwnerName = RO.OwnerName;
-                    int[] movements = { 1, 2, 4 };
-                    LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwner_MovementType(RO.IdOwner, movements));
+                    LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwner_MovementType(RO.IdOwner, enabledMovement));
                     NotifyPropertyChanged("CbSelectionChanged");
                 }
                 if (RL != null)
@@ -138,7 +140,7 @@ namespace FinanceManager.ViewModels
                     try
                     {
                         _liquidAssetServices.AddManagerLiquidAsset(RowLiquidAsset);
-                        LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwner(RowLiquidAsset.IdOwner));
+                        LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwner_MovementType(RowLiquidAsset.IdOwner, enabledMovement));
                         MessageBox.Show("Record caricato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     catch (Exception err)
@@ -146,6 +148,47 @@ namespace FinanceManager.ViewModels
                         MessageBox.Show("Problemi nel caricamento del record: " + Environment.NewLine +
                             err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
                     }
+                }
+            }
+            if (B.Content.ToString() == "M")
+            {
+                if (RowLiquidAsset.idLiquidAsset != 0)
+                {
+                    try
+                    {
+                        _liquidAssetServices.UpdateManagerLiquidAsset(RowLiquidAsset);
+                        LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwner_MovementType(RowLiquidAsset.IdOwner, enabledMovement));
+                        MessageBox.Show("Record modificato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    catch (Exception err)
+                    {
+                        MessageBox.Show("Problemi nel modificare il record" + Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(), 
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+            if (B.Content.ToString() == "E")
+            {
+                if (RowLiquidAsset.idLiquidAsset != 0)
+                {
+                    MessageBoxResult MBR = MessageBox.Show(string.Format("Il {0} del {1} per l'importo di {2} {3} verrà eliminato.", RowLiquidAsset.DescMovement, RowLiquidAsset.MovementDate.ToShortDateString(),
+                        RowLiquidAsset.CodeCurrency, RowLiquidAsset.Amount) + Environment.NewLine + "Sei sicuro?" , Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (MBR == MessageBoxResult.Yes)
+                    {
+                        try
+                        {
+                            _liquidAssetServices.DeleteManagerLiquidAsset(RowLiquidAsset.idLiquidAsset);
+                            LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwner_MovementType(RowLiquidAsset.IdOwner, enabledMovement));
+                            MessageBox.Show("Record eliminato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                        catch (Exception err)
+                        {
+                            MessageBox.Show("Problemi nell'eliminare il record" + Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(),
+                                MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                    else
+                        return;
                 }
             }
         }

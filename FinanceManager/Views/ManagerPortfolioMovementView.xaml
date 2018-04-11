@@ -195,7 +195,8 @@
             </ComboBox>
 
             <TextBlock Grid.Row="7" Text="In che data:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-            <DatePicker Grid.Row="7" Grid.Column="1" Margin="5" SelectedDate="{Binding RowLiquidAsset.MovementDate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+            <DatePicker Grid.Row="7" Grid.Column="1" Margin="5" SelectedDate="{Binding RowLiquidAsset.MovementDate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                        DisplayDate="{Binding RowLiquidAsset.MovementDate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                 <iy:Interaction.Triggers>
                     <iy:EventTrigger EventName="SelectedDateChanged">
                         <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
