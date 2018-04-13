@@ -10,14 +10,15 @@ using System.Windows.Input;
 
 namespace FinanceManager.ViewModels
 {
-    public class ManagerPortfolioMovementViewModel : ViewModelBase
+    public class ManagerPortfolioChangeCurrencyViewModel : ViewModelBase
     {
         private IRegistryServices _services;
         private IManagerLiquidAssetServices _liquidAssetServices;
         private ObservableCollection<RegistryOwner> _OwnerList;
         private ObservableCollection<RegistryMovementType> _MovementList;
         private ObservableCollection<RegistryLocation> _LocationList;
-        private ObservableCollection<RegistryCurrency> _CurrencyList;
+        private ObservableCollection<RegistryCurrency> _CurrencyListFrom;
+        private ObservableCollection<RegistryCurrency> _CurrencyListTo;
         private ObservableCollection<RegistryShare> _ShareList;
 
         private ObservableCollection<ManagerLiquidAsset> _LiquidAssetList;
@@ -25,16 +26,17 @@ namespace FinanceManager.ViewModels
 
         private string _SelectedOwner;
         private ManagerLiquidAsset _RowLiquidAsset;
-        private int[] enabledMovement = { 1, 2, 4 };
+        private int[] enabledMovement = { 3 };
 
-        public ManagerPortfolioMovementViewModel(IRegistryServices services, IManagerLiquidAssetServices liquidAssetServices)
+        public ManagerPortfolioChangeCurrencyViewModel(IRegistryServices services, IManagerLiquidAssetServices liquidAssetServices)
         {
             _services = services ?? throw new ArgumentNullException("Services in Manager Portfolio Movement View Model");
             _liquidAssetServices = liquidAssetServices ?? throw new ArgumentNullException("Liquid Asset Services in Manager Portfolio Movement View Model");
             OwnerList = new ObservableCollection<RegistryOwner>(_services.GetRegistryOwners());
             MovementList = new ObservableCollection<RegistryMovementType>(_services.GetRegistryMovementTypesList());
             LocationList = new ObservableCollection<RegistryLocation>(_services.GetRegistryLocationList());
-            CurrencyList = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
+            CurrencyListFrom = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
+            CurrencyListTo = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
             SharesList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
             CloseMeCommand = new CommandHandler(CloseMe);
             RowLiquidAsset = new ManagerLiquidAsset();
@@ -47,10 +49,18 @@ namespace FinanceManager.ViewModels
         {
             if (e.AddedItems.Count > 0)
             {
+                ComboBox CB = sender as ComboBox;
                 RegistryOwner RO = e.AddedItems[0] as RegistryOwner;
                 RegistryLocation RL = e.AddedItems[0] as RegistryLocation;
                 RegistryMovementType RMT = e.AddedItems[0] as RegistryMovementType;
-                RegistryCurrency RC = e.AddedItems[0] as RegistryCurrency;
+
+                RegistryCurrency RC1 = new RegistryCurrency();
+                RegistryCurrency RC2 = new RegistryCurrency();
+                if (CB.Name == "cbCurrencyDa")
+                    RC1 = e.AddedItems[0] as RegistryCurrency;
+                else if (CB.Name == "cbCurrencyA")
+                    RC2 = e.AddedItems[0] as RegistryCurrency;
+
                 RegistryShare RS = e.AddedItems[0] as RegistryShare;
                 DateTime DT = DateTime.Now;
                 ComboBoxItem CBI = e.AddedItems[0] as ComboBoxItem;
@@ -84,10 +94,15 @@ namespace FinanceManager.ViewModels
                     RowLiquidAsset.IdMovement = RMT.IdMovement;
                     RowLiquidAsset.DescMovement = RMT.DescMovement;
                 }
-                if (RC != null)
+                if (RC1 != null)
                 {
-                    RowLiquidAsset.IdCurrency = RC.IdCurrency;
-                    RowLiquidAsset.CodeCurrency = RC.CodeCurrency;
+                    RowLiquidAsset.IdCurrency = RC1.IdCurrency;
+                    RowLiquidAsset.CodeCurrency = RC1.CodeCurrency;
+                }
+                if (RC2 != null)
+                {
+                    RowLiquidAsset.IdCurrency2 = RC2.IdCurrency;
+                    RowLiquidAsset.CodeCurrency2 = RC2.CodeCurrency;
                 }
                 if (RS != null)
                 {
@@ -155,7 +170,7 @@ namespace FinanceManager.ViewModels
                     }
                     catch (Exception err)
                     {
-                        MessageBox.Show("Problemi nel modificare il record" + Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(), 
+                        MessageBox.Show("Problemi nel modificare il record" + Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(),
                             MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
@@ -165,7 +180,7 @@ namespace FinanceManager.ViewModels
                 if (RowLiquidAsset.idLiquidAsset != 0)
                 {
                     MessageBoxResult MBR = MessageBox.Show(string.Format("Il {0} del {1} per l'importo di {2} {3} verrà eliminato.", RowLiquidAsset.DescMovement, RowLiquidAsset.MovementDate.ToShortDateString(),
-                        RowLiquidAsset.CodeCurrency, RowLiquidAsset.Amount) + Environment.NewLine + "Sei sicuro?" , Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        RowLiquidAsset.CodeCurrency, RowLiquidAsset.Amount) + Environment.NewLine + "Sei sicuro?", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (MBR == MessageBoxResult.Yes)
                     {
                         try
@@ -257,13 +272,23 @@ namespace FinanceManager.ViewModels
             }
         }
 
-        public ObservableCollection<RegistryCurrency> CurrencyList
+        public ObservableCollection<RegistryCurrency> CurrencyListFrom
         {
-            get { return _CurrencyList; }
+            get { return _CurrencyListFrom; }
             set
             {
-                _CurrencyList = value;
-                NotifyPropertyChanged("CurrencyList");
+                _CurrencyListFrom = value;
+                NotifyPropertyChanged("CurrencyListFrom");
+            }
+        }
+
+        public ObservableCollection<RegistryCurrency> CurrencyListTo
+        {
+            get { return _CurrencyListTo; }
+            set
+            {
+                _CurrencyListTo = value;
+                NotifyPropertyChanged("CurrencyListTo");
             }
         }
 
@@ -300,7 +325,7 @@ namespace FinanceManager.ViewModels
 
         public void CloseMe(object param)
         {
-            ManagerPortfolioMovementView MPMV = param as ManagerPortfolioMovementView;
+            ManagerPortfolioChangeCurrencyView MPMV = param as ManagerPortfolioChangeCurrencyView;
             DockPanel wp = MPMV.Parent as DockPanel;
             wp.Children.Remove(MPMV);
         }

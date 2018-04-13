@@ -82,5 +82,19 @@ namespace FinanceManager
             ManagerPortfolioMovementView managerPortfolioMovementView = new ManagerPortfolioMovementView(managerPortfolioMovementViewModel);
             mainGrid.Children.Add(managerPortfolioMovementView);
         }
+
+        private void OnClickManagerChangeCurrency(object sender, RoutedEventArgs e)
+        {
+            ManagerPortfolioChangeCurrencyViewModel managerPortfolioChangeCurrencyViewModel = new ManagerPortfolioChangeCurrencyViewModel(_registryServices, _managerLiquidServices);
+            ManagerPortfolioChangeCurrencyView managerPortfolioChangeCurrencyView = new ManagerPortfolioChangeCurrencyView(managerPortfolioChangeCurrencyViewModel);
+            mainGrid.Children.Add(managerPortfolioChangeCurrencyView);
+        }
+
+        private void OnClickManagerSharesMovement(object sender, RoutedEventArgs e)
+        {
+            ManagerPortfolioSharesMovementViewModel managerPortfolioSharesMovementViewModel = new ManagerPortfolioSharesMovementViewModel(_registryServices, _managerLiquidServices);
+            ManagerPortfolioSharesMovementView managerPortfolioSharesMovementView = new ManagerPortfolioSharesMovementView(managerPortfolioSharesMovementViewModel);
+            mainGrid.Children.Add(managerPortfolioSharesMovementView);
+        }
     }
 }

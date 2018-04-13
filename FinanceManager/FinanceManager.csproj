@@ -82,6 +82,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Events\ComboboxDisableConverter.cs" />
     <Compile Include="Events\CommandHandler.cs" />
     <Compile Include="Events\ViewModelBase.cs" />
     <Compile Include="Models\ManagerLiquidAsset.cs" />
@@ -109,7 +110,9 @@
     <Compile Include="Services\SQL\DAF_Connection.cs" />
     <Compile Include="Services\SQL\ManagerScripts.cs" />
     <Compile Include="Services\SQL\RegistryScripts.cs" />
+    <Compile Include="ViewModels\ManagerPortfolioChangeCurrencyViewModel.cs" />
     <Compile Include="ViewModels\ManagerPortfolioMovementViewModel.cs" />
+    <Compile Include="ViewModels\ManagerPortfolioSharesMovementViewModel.cs" />
     <Compile Include="ViewModels\RegistryCurrencyViewModel.cs" />
     <Compile Include="ViewModels\RegistryFirmViewModel.cs" />
     <Compile Include="ViewModels\RegistryLocationViewModel.cs" />
@@ -118,8 +121,14 @@
     <Compile Include="ViewModels\RegistryOwnerViewModel.cs" />
     <Compile Include="ViewModels\RegistryShareTypeViewModel.cs" />
     <Compile Include="ViewModels\RegistryShareViewModel.cs" />
+    <Compile Include="Views\ManagerPortfolioChangeCurrencyView.xaml.cs">
+      <DependentUpon>ManagerPortfolioChangeCurrencyView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ManagerPortfolioMovementView.xaml.cs">
       <DependentUpon>ManagerPortfolioMovementView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ManagerPortfolioSharesMovementView.xaml.cs">
+      <DependentUpon>ManagerPortfolioSharesMovementView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RegistryCurrencyView.xaml.cs">
       <DependentUpon>RegistryCurrencyView.xaml</DependentUpon>
@@ -157,7 +166,15 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\ManagerPortfolioChangeCurrencyView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ManagerPortfolioMovementView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ManagerPortfolioSharesMovementView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

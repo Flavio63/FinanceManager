@@ -20,6 +20,9 @@ namespace FinanceManager.Models
         public int IdCurrency { get; set; }
         public string CodeCurrency { get; set; }
 
+        public int IdCurrency2 { get; set; }
+        public string CodeCurrency2 { get; set; }
+
         public int IdMovement { get; set; }
         public string DescMovement { get; set; }
 
