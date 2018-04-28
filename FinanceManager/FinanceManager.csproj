@@ -84,6 +84,8 @@
     </ApplicationDefinition>
     <Compile Include="Events\ComboboxDisableConverter.cs" />
     <Compile Include="Events\CommandHandler.cs" />
+    <Compile Include="Events\ExcludeChar.cs" />
+    <Compile Include="Events\VerifyNumber.cs" />
     <Compile Include="Events\ViewModelBase.cs" />
     <Compile Include="Models\ManagerLiquidAsset.cs" />
     <Compile Include="Models\ManagerLiquidAssetList.cs" />

@@ -9,78 +9,37 @@ namespace FinanceManager.Events
 {
     public class CommandHandler : ICommand
     {
-        Action _TargetExecuteSimpleMethod;
-        Func<bool> _TargetCanExecuteSimpleMethod;
         Action<object> _TargetExecuteMethod;
-        Func<object, bool> _TargetCanExecuteMethod;
+        Predicate<object> _TargetCanExecuteMethod;
 
         #region costruttori
-        public CommandHandler(Action executeMethod)
-        {
-            _TargetExecuteSimpleMethod = executeMethod;
-        }
-
-        public CommandHandler(Action executeMethod, Func<bool> canExecuteMethod = null)
-        {
-            _TargetExecuteSimpleMethod = executeMethod;
-            _TargetCanExecuteSimpleMethod = canExecuteMethod;
-        }
-
         public CommandHandler(Action<object> executeMethod)
         {
             _TargetExecuteMethod = executeMethod;
         }
 
-        public CommandHandler(Action<object> executeMethod, Func<object, bool> canExecuteMethod = null)
+        public CommandHandler(Action<object> executeMethod, Predicate<object> canExecuteMethod)
         {
-            _TargetExecuteMethod = executeMethod;
+            _TargetExecuteMethod = executeMethod ?? throw new ArgumentNullException("executeMethod");
             _TargetCanExecuteMethod = canExecuteMethod;
         }
         #endregion
 
-        public void RaiseCanExecuteChanged()
-        {
-            CanExecuteChanged(this, EventArgs.Empty);
-        }
-
         #region implementazione di ICommand
-        public event EventHandler CanExecuteChanged = delegate { };
+        public event EventHandler CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
+        }
 
         public bool CanExecute(object parameter)
         {
-            if (parameter != null)
-            {
-                if (_TargetCanExecuteMethod != null)
-                {
-                    return _TargetCanExecuteMethod(parameter);
-                }
-
-                if (_TargetExecuteMethod != null)
-                {
-                    return true;
-                }
-            }
-            else
-            {
-                if (_TargetCanExecuteSimpleMethod != null)
-                {
-                    return _TargetCanExecuteSimpleMethod();
-                }
-
-                if (_TargetExecuteSimpleMethod != null)
-                {
-                    return true;
-                }
-            }
-            return false;
+            return _TargetCanExecuteMethod == null ? true : _TargetCanExecuteMethod(parameter);
         }
 
         public void Execute(object parameter)
         {
-            if (parameter != null)
-                _TargetExecuteMethod?.Invoke(parameter);
-            else
-                _TargetExecuteSimpleMethod?.Invoke();
+            _TargetExecuteMethod(parameter);
         }
         #endregion
     }

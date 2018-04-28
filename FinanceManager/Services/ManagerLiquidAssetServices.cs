@@ -70,6 +70,34 @@ namespace FinanceManager.Services
             }
         }
 
+        public DataTable GetCurrencyAvailable(int IdOwner, int IdLocation, int IdCurrency)
+        {
+            try
+            {
+                DataTable DT = new DataTable();
+                using(MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = System.Data.CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetCurrencyAvailable;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("owner", IdOwner);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("location", IdLocation);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("currency", IdCurrency);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.Fill(DT);
+                    return DT;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
         public ManagerLiquidAssetList GetManagerLiquidAssetListByOwner(int idOwner)
         {
             try

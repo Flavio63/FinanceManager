@@ -1,9 +1,5 @@
 ﻿using FinanceManager.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data;
 
 namespace FinanceManager.Services
 {
@@ -11,6 +7,7 @@ namespace FinanceManager.Services
     {
         ManagerLiquidAssetList GetManagerLiquidAssetListByOwner(int IdOwner);
         ManagerLiquidAssetList GetManagerLiquidAssetListByOwner_MovementType(int IdOwner, int[] IdMovement);
+        DataTable GetCurrencyAvailable(int IdOwner, int IdLocation, int IdCurrency);
         void AddManagerLiquidAsset(ManagerLiquidAsset managerLiquidAsset);
         void UpdateManagerLiquidAsset(ManagerLiquidAsset managerLiquidAsset);
         void DeleteManagerLiquidAsset(int id);

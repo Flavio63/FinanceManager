@@ -1,12 +1,14 @@
-﻿using System;
+﻿using FinanceManager.Events;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace FinanceManager.Models
 {
-    public class ManagerLiquidAsset
+    public class ManagerLiquidAsset : ViewModelBase
     {
         private DateTime _MovementDate;
 
@@ -31,10 +33,12 @@ namespace FinanceManager.Models
 
         public DateTime MovementDate
         {
-            get {
+            get
+            {
                 if (_MovementDate.Date.ToShortDateString() == "01/01/0001")
                     _MovementDate = DateTime.Now.Date;
-                return _MovementDate; }
+                return _MovementDate;
+            }
             set
             {
                 if (value.Date.ToShortDateString() == "01/01/0001")
@@ -42,8 +46,20 @@ namespace FinanceManager.Models
                 _MovementDate = value;
             }
         }
-        public double Amount { get; set; }
-        public double ExchangeValue { get; set; }
+        //[ExcludeChar("/[a-z][A-Z]!@#$£€", ErrorMessage = "Sono permessi solo numeri")]
+        [VerifyNumber(ErrorMessage = "Inserire una cifra diversa da zero e che sia disponibile.")]
+        public double Amount
+        {
+            get { return GetValue(() => Amount); }
+            set { SetValue(() => Amount, value); }
+        }
+        [Range(0.2, 1.8, ErrorMessage = "Controllare la cifra immessa.")]
+        public double ExchangeValue
+        {
+            get { return GetValue(() => ExchangeValue); }
+            set { SetValue(() => ExchangeValue, value); }
+        }
+        public double AmountChangedValue { get; set; }
         public bool Available { get; set; }
         public string Note { get; set; }
     }

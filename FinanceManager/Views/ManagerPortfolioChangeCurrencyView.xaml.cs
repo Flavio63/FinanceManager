@@ -1,4 +1,5 @@
 ﻿using FinanceManager.ViewModels;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace FinanceManager.Views
@@ -13,5 +14,6 @@ namespace FinanceManager.Views
             InitializeComponent();
             DataContext = viewModel;
         }
+
     }
 }

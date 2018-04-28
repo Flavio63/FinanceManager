@@ -27,6 +27,9 @@ namespace FinanceManager.Services.SQL
             "AND B.id_portafoglio = @owner AND {0} " +
             ") AA LEFT JOIN daf_titoli BB ON BB.id_tit = AA.id_titolo ORDER BY data_movimento DESC ";
 
+        public static readonly string GetCurrencyAvailable = "SELECT SUM(ammontare) AS total, disponibile FROM daf_portafoglio WHERE id_gestione = @owner AND id_location = @location " +
+            "AND id_valuta = @currency GROUP BY disponibile ORDER BY disponibile DESC";
+
         public static readonly string AddManagerLiquidAsset = "INSERT INTO daf_portafoglio (id_liquid_movement, id_gestione, id_location, id_valuta, id_movimento, " +
             "id_titolo, data_movimento, ammontare, valore_cambio, disponibile, note) VALUE (null, @id_portafoglio, @id_location, @id_valuta, @id_tipoMovimento, @id_titolo, " +
             "@data_movimento, @ammontare, @valore_cambio, @disponibile, @note);";

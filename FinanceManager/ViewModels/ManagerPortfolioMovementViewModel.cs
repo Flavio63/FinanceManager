@@ -72,7 +72,6 @@ namespace FinanceManager.ViewModels
                     RowLiquidAsset.IdOwner = RO.IdOwner;
                     RowLiquidAsset.OwnerName = RO.OwnerName;
                     LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwner_MovementType(RO.IdOwner, enabledMovement));
-                    NotifyPropertyChanged("CbSelectionChanged");
                 }
                 if (RL != null)
                 {
@@ -101,7 +100,6 @@ namespace FinanceManager.ViewModels
                 if (MLA != null)
                 {
                     RowLiquidAsset = MLA;
-                    NotifyPropertyChanged("SelectedMovement");
                 }
             }
         }
