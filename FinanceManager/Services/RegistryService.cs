@@ -759,7 +759,7 @@ namespace FinanceManager.Services
                     foreach (DataRow dr in dt.Rows)
                     {
                         RegistryShare RS = new RegistryShare();
-                        RS.IdShare = (int)dr.Field<uint>("id_tit");
+                        RS.IdShare = dr.Field<uint>("id_tit");
                         RS.DescShare = dr.Field<string>("desc_titolo");
                         RS.Isin = dr.Field<string>("isin");
                         RS.IdShareType = (int)dr.Field<uint>("id_tipo");
@@ -873,7 +873,7 @@ namespace FinanceManager.Services
             }
         }
 
-        public void DeleteShare(int id)
+        public void DeleteShare(uint id)
         {
             try
             {

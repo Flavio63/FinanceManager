@@ -159,7 +159,7 @@
 
                 <TextBlock Grid.Row="4" Text="Cosa faccio:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
                 <ComboBox Grid.Row="4" Grid.Column="1" Name="cbMovement" ItemsSource="{Binding MovementList}" VerticalContentAlignment="Center"  MinWidth="100"
-                          DisplayMemberPath="DescMovement" FontSize="14" SelectedValuePath="IdMovement" Margin="5" IsEditable="False"
+                          DisplayMemberPath="DescMovement" FontSize="14" SelectedValuePath="IdMovement" Margin="5" IsEnabled="False"
                           SelectedValue="{Binding RowLiquidAsset.IdMovement, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="SelectionChanged">

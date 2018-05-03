@@ -67,7 +67,7 @@ namespace FinanceManager.Services
         RegistryShare GetRegistryShareByIsin(string isin);
         void UpdateShare(RegistryShare registryShare);
         void AddShare(RegistryShare registryShare);
-        void DeleteShare(int id);
+        void DeleteShare(uint id);
         #endregion
 
         #region MovementType

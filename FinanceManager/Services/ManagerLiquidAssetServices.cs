@@ -11,6 +11,10 @@ namespace FinanceManager.Services
 {
     class ManagerLiquidAssetServices : SQL.DAFconnection, IManagerLiquidAssetServices
     {
+        /// <summary>
+        /// Aggiunge un movimento
+        /// </summary>
+        /// <param name="managerLiquidAsset">Il movimento da aggiungere</param>
         public void AddManagerLiquidAsset(ManagerLiquidAsset managerLiquidAsset)
         {
             try
@@ -24,8 +28,13 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("id_valuta", managerLiquidAsset.IdCurrency);
                     dbComm.Parameters.AddWithValue("id_tipoMovimento", managerLiquidAsset.IdMovement);
                     dbComm.Parameters.AddWithValue("id_titolo", managerLiquidAsset.IdShare);
+                    dbComm.Parameters.AddWithValue("id_borsa", managerLiquidAsset.IdMarket);
                     dbComm.Parameters.AddWithValue("data_movimento", managerLiquidAsset.MovementDate.ToString("yyyy-MM-dd"));
                     dbComm.Parameters.AddWithValue("ammontare", managerLiquidAsset.Amount);
+                    dbComm.Parameters.AddWithValue("shares_quantity", managerLiquidAsset.SharesQuantity);
+                    dbComm.Parameters.AddWithValue("unity_local_value", managerLiquidAsset.UnityLocalValue);
+                    dbComm.Parameters.AddWithValue("total_commission_euro", managerLiquidAsset.TotalCommissionEuro);
+                    dbComm.Parameters.AddWithValue("disaggio_cedole", managerLiquidAsset.DisaggioCoupons);
                     dbComm.Parameters.AddWithValue("valore_cambio", managerLiquidAsset.ExchangeValue);
                     dbComm.Parameters.AddWithValue("disponibile", managerLiquidAsset.Available);
                     dbComm.Parameters.AddWithValue("note", managerLiquidAsset.Note);
@@ -44,7 +53,11 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
-
+        
+        /// <summary>
+        /// Elimina un movimento
+        /// </summary>
+        /// <param name="id">Identificativo del movimento da eliminare</param>
         public void DeleteManagerLiquidAsset(int id)
         {
             try
@@ -70,6 +83,13 @@ namespace FinanceManager.Services
             }
         }
 
+        /// <summary>
+        /// Estrae tutti i record di una gestione, in un conto per la valuta selezionata
+        /// </summary>
+        /// <param name="IdOwner">La gestione</param>
+        /// <param name="IdLocation">Il conto</param>
+        /// <param name="IdCurrency">La valuta</param>
+        /// <returns>Tabella con 2 record: il totale disponibile e quello messo da parte</returns>
         public DataTable GetCurrencyAvailable(int IdOwner, int IdLocation, int IdCurrency)
         {
             try
@@ -98,6 +118,11 @@ namespace FinanceManager.Services
             }
         }
 
+        /// <summary>
+        /// Data una gestione ne estrae tutti i movimenti
+        /// </summary>
+        /// <param name="idOwner">La gestione</param>
+        /// <returns>Lista dei movimenti</returns>
         public ManagerLiquidAssetList GetManagerLiquidAssetListByOwner(int idOwner)
         {
             try
@@ -124,10 +149,16 @@ namespace FinanceManager.Services
                         MLA.CodeCurrency = dr.Field<string>("cod_valuta");
                         MLA.IdMovement = (int)dr.Field<uint>("id_tipoMovimento");
                         MLA.DescMovement = dr.Field<string>("desc_Movimento");
-                        MLA.IdShare = (int?)dr.Field<uint?>("id_titolo");
+                        MLA.IdShare = dr.Field<uint?>("id_titolo");
                         MLA.Isin = dr.Field<string>("isin");
+                        MLA.IdMarket = dr.Field<uint?>("id_borsa");
+                        MLA.DescMarket = dr.Field<string>("desc_borsa");
                         MLA.MovementDate = dr.Field<DateTime>("data_movimento");
                         MLA.Amount = dr.Field<double>("ammontare");
+                        MLA.SharesQuantity = dr.Field<double>("shares_quantity");
+                        MLA.UnityLocalValue = dr.Field<double>("unity_local_value");
+                        MLA.TotalCommissionEuro = dr.Field<double>("total_commission_euro");
+                        MLA.DisaggioCoupons = dr.Field<double>("disaggio_cedole");
                         MLA.ExchangeValue = dr.Field<double>("valore_cambio");
                         MLA.Available = Convert.ToBoolean(dr.Field<string>("disp"));
                         MLA.Note = dr.Field<string>("note");
@@ -146,7 +177,15 @@ namespace FinanceManager.Services
             }
         }
 
-        public ManagerLiquidAssetList GetManagerLiquidAssetListByOwner_MovementType(int IdOwner, int[] IdsMovement)
+        /// <summary>
+        /// Data una gestione, un conto e dei tipi di movimenti
+        /// ne estrae tutti i record
+        /// </summary>
+        /// <param name="IdOwner">La gestione</param>
+        /// <param name="IdLocation">Il conto</param>
+        /// <param name="IdsMovement">I tipi di movimenti</param>
+        /// <returns>Una lista dei movimenti</returns>
+        public ManagerLiquidAssetList GetManagerLiquidAssetListByOwnerLocationAndMovementType(int IdOwner, int IdLocation, int[] IdsMovement)
         {
             try
             {
@@ -164,8 +203,9 @@ namespace FinanceManager.Services
                 {
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
-                    dbAdapter.SelectCommand.CommandText = string.Format(SQL.ManagerScripts.GetManagerLiquidAssetByOwnerByMovementType, query);
+                    dbAdapter.SelectCommand.CommandText = string.Format(SQL.ManagerScripts.GetManagerLiquidAssetByOwnerLocationAndMovementType, query);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("owner", IdOwner);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_location", IdLocation);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     DataTable dt = new DataTable();
                     dbAdapter.Fill(dt);
@@ -182,10 +222,16 @@ namespace FinanceManager.Services
                         MLA.CodeCurrency = dr.Field<string>("cod_valuta");
                         MLA.IdMovement = (int)dr.Field<uint>("id_tipoMovimento");
                         MLA.DescMovement = dr.Field<string>("desc_Movimento");
-                        MLA.IdShare = (int?)dr.Field<uint?>("id_titolo");
+                        MLA.IdShare = dr.Field<uint?>("id_titolo");
                         MLA.Isin = dr.Field<string>("isin");
+                        MLA.IdMarket = dr.Field<uint?>("id_borsa");
+                        MLA.DescMarket = dr.Field<string>("desc_borsa");
                         MLA.MovementDate = dr.Field<DateTime>("data_movimento");
                         MLA.Amount = dr.Field<double>("ammontare");
+                        MLA.SharesQuantity = dr.Field<double>("shares_quantity");
+                        MLA.UnityLocalValue = dr.Field<double>("unity_local_value");
+                        MLA.TotalCommissionEuro = dr.Field<double>("total_commission_euro");
+                        MLA.DisaggioCoupons = dr.Field<double>("disaggio_cedole");
                         MLA.ExchangeValue = dr.Field<double>("valore_cambio");
                         MLA.Available = Convert.ToBoolean(dr.Field<string>("disp"));
                         MLA.Note = dr.Field<string>("note");
@@ -205,6 +251,73 @@ namespace FinanceManager.Services
 
         }
 
+        /// <summary>
+        /// Data una gestione e il conto estrae tutti i record relativi alla
+        /// compravendita di titoli
+        /// </summary>
+        /// <param name="IdOwner">La gestione</param>
+        /// <param name="IdLocation">Il conto</param>
+        /// <returns>Lista di movimenti</returns>
+        public ManagerLiquidAssetList GetManagerSharesMovementByOwnerAndLocation(int IdOwner, int IdLocation)
+        {
+            try
+            {
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetManagerSharesMovementByOwnerAndLocation;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("owner", IdOwner);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_location", IdLocation);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    DataTable dt = new DataTable();
+                    dbAdapter.Fill(dt);
+                    ManagerLiquidAssetList MLAL = new ManagerLiquidAssetList();
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        ManagerLiquidAsset MLA = new ManagerLiquidAsset();
+                        MLA.idLiquidAsset = (int)dr.Field<uint>("id_liquid_movement");
+                        MLA.IdOwner = (int)dr.Field<uint>("id_portafoglio");
+                        MLA.OwnerName = dr.Field<string>("desc_portafoglio");
+                        MLA.IdLocation = (int)dr.Field<uint>("id_location");
+                        MLA.DescLocation = dr.Field<string>("desc_location");
+                        MLA.IdCurrency = (int)dr.Field<uint>("id_valuta");
+                        MLA.CodeCurrency = dr.Field<string>("cod_valuta");
+                        MLA.IdMovement = (int)dr.Field<uint>("id_tipoMovimento");
+                        MLA.DescMovement = dr.Field<string>("desc_Movimento");
+                        MLA.IdShare = dr.Field<uint?>("id_titolo");
+                        MLA.Isin = dr.Field<string>("isin");
+                        MLA.IdMarket = dr.Field<uint?>("id_borsa");
+                        MLA.DescMarket = dr.Field<string>("desc_borsa");
+                        MLA.MovementDate = dr.Field<DateTime>("data_movimento");
+                        MLA.Amount = dr.Field<double>("ammontare");
+                        MLA.SharesQuantity = dr.Field<double>("shares_quantity");
+                        MLA.UnityLocalValue = dr.Field<double>("unity_local_value");
+                        MLA.TotalCommissionEuro = dr.Field<double>("total_commission_euro");
+                        MLA.DisaggioCoupons = dr.Field<double>("disaggio_cedole");
+                        MLA.ExchangeValue = dr.Field<double>("valore_cambio");
+                        MLA.Available = Convert.ToBoolean(dr.Field<string>("disp"));
+                        MLA.Note = dr.Field<string>("note");
+                        MLAL.Add(MLA);
+                    }
+                    return MLAL;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+
+        }
+
+        /// <summary>
+        /// Aggiorna i campi di un movimento
+        /// </summary>
+        /// <param name="managerLiquidAsset">Il record da modificare</param>
         public void UpdateManagerLiquidAsset(ManagerLiquidAsset managerLiquidAsset)
         {
             try
@@ -218,8 +331,13 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("id_valuta", managerLiquidAsset.IdCurrency);
                     dbComm.Parameters.AddWithValue("id_tipoMovimento", managerLiquidAsset.IdMovement);
                     dbComm.Parameters.AddWithValue("id_titolo", managerLiquidAsset.IdShare);
+                    dbComm.Parameters.AddWithValue("id_borsa", managerLiquidAsset.IdMarket);
                     dbComm.Parameters.AddWithValue("data_movimento", managerLiquidAsset.MovementDate.ToString("yyyy-MM-dd"));
                     dbComm.Parameters.AddWithValue("ammontare", managerLiquidAsset.Amount);
+                    dbComm.Parameters.AddWithValue("shares_quantity", managerLiquidAsset.SharesQuantity);
+                    dbComm.Parameters.AddWithValue("unity_local_value", managerLiquidAsset.UnityLocalValue);
+                    dbComm.Parameters.AddWithValue("total_commission_euro", managerLiquidAsset.TotalCommissionEuro);
+                    dbComm.Parameters.AddWithValue("disaggio_cedole", managerLiquidAsset.DisaggioCoupons);
                     dbComm.Parameters.AddWithValue("valore_cambio", managerLiquidAsset.ExchangeValue);
                     dbComm.Parameters.AddWithValue("disponibile", managerLiquidAsset.Available);
                     dbComm.Parameters.AddWithValue("note", managerLiquidAsset.Note);

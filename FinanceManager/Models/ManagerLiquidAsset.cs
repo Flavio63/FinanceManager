@@ -28,8 +28,16 @@ namespace FinanceManager.Models
         public int IdMovement { get; set; }
         public string DescMovement { get; set; }
 
-        public int? IdShare { get; set; }
+        public uint? IdShare { get; set; }
         public string Isin { get; set; }
+
+        public uint? IdMarket { get; set; }
+        public string DescMarket { get; set; }
+
+        public double SharesQuantity { get; set; }
+        public double UnityLocalValue { get; set; }
+        public double TotalCommissionEuro { get; set; }
+        public double DisaggioCoupons { get; set; }
 
         public DateTime MovementDate
         {

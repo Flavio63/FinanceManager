@@ -95,7 +95,6 @@ namespace FinanceManager.ViewModels
                     RowLiquidAsset.MovementDate = DT.Date;
                     RowLiquidAsset.IdOwner = RO.IdOwner;
                     RowLiquidAsset.OwnerName = RO.OwnerName;
-                    LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwner_MovementType(RO.IdOwner, enabledMovement));
                     EnableControl(CB.Parent as Grid, "cbLocation", true);
 
                 }
@@ -103,6 +102,7 @@ namespace FinanceManager.ViewModels
                 {
                     RowLiquidAsset.IdLocation = RL.IdLocation;
                     RowLiquidAsset.DescLocation = RL.DescLocation;
+                    LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.IdOwner, RL.IdLocation, enabledMovement));
                     EnableControl(CB.Parent as Grid, "cbMovement", true);
                 }
                 if (RMT != null)
