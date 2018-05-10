@@ -51,15 +51,17 @@ namespace FinanceManager.Services.SQL
         #endregion
         
         #region Share
-        public readonly static string GetRegistryShareList = "SELECT id_tit, desc_titolo, isin, id_tipo, id_azienda, id_borsa, id_valuta " +
+        public readonly static string GetRegistryShareList = "SELECT id_tit, desc_titolo, isin, id_tipo, id_azienda " +
             "FROM daf_titoli ORDER BY id_tit;";
         public readonly static string UpdateShare = "UPDATE daf_titoli SET desc_titolo = @desc, isin = @isin, id_tipo = @tipo, id_azienda = @azienda, " +
-            "id_borsa = @borsa, id_valuta = @valuta WHERE id_tit = @id;";
+            "WHERE id_tit = @id;";
         public readonly static string DeleteShare = "DELETE FROM daf_titoli WHERE id_tit = @id";
-        public readonly static string AddShare = "INSERT INTO daf_titoli (id_tit, desc_titolo, isin, id_tipo, id_azienda, id_borsa, id_valuta) " +
-            "VALUE (null, @desc, @isin, @tipo, @azienda, @borsa, @valuta);";
+        public readonly static string AddShare = "INSERT INTO daf_titoli (id_tit, desc_titolo, isin, id_tipo, id_azienda) " +
+            "VALUE (null, @desc, @isin, @tipo, @azienda);";
+
+        public readonly static string GetSharesByType = "SELECT id_tit, desc_titolo, isin, id_tipo, id_azienda FROM daf_titoli WHERE id_tipo = @id_tipo ORDER BY id_tit";
         #endregion
-        
+
         #region MovementType
         public readonly static string GetRegistryMovementTypeList = "SELECT id_tipoMovimento, desc_Movimento FROM daf_tipo_movimento ORDER BY id_tipoMovimento;";
         public readonly static string UpdateMovementType = "UPDATE daf_tipo_movimento SET desc_Movimento = @desc WHERE id_tipoMovimento = @id;";

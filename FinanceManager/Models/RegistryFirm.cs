@@ -8,7 +8,7 @@ namespace FinanceManager.Models
 {
     public class RegistryFirm
     {
-        public int IdFirm { get; set; }
+        public uint IdFirm { get; set; }
         public string DescFirm { get; set; }
     }
 }

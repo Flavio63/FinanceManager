@@ -8,7 +8,7 @@ namespace FinanceManager.Models
 {
     public class RegistryShareType
     {
-        public int IdShareType { get; set; }
+        public uint IdShareType { get; set; }
         public string TypeName { get; set; }
     }
 }

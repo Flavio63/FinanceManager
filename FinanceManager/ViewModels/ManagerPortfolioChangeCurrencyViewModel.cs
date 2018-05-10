@@ -50,6 +50,7 @@ namespace FinanceManager.ViewModels
             SharesList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
             RowLiquidAsset = new ManagerLiquidAsset();
             RowLiquidAsset.MovementDate = DateTime.Now;
+            RowLiquidAsset.Available = true;
             CanUpdateDelete = false;
             CanInsert = false;
         }
@@ -95,7 +96,7 @@ namespace FinanceManager.ViewModels
                     RowLiquidAsset.MovementDate = DT.Date;
                     RowLiquidAsset.IdOwner = RO.IdOwner;
                     RowLiquidAsset.OwnerName = RO.OwnerName;
-                    EnableControl(CB.Parent as Grid, "cbLocation", true);
+                    EnableControl.EnableControlInGrid(CB.Parent as Grid, "cbLocation", true);
 
                 }
                 if (RL != null)
@@ -103,20 +104,20 @@ namespace FinanceManager.ViewModels
                     RowLiquidAsset.IdLocation = RL.IdLocation;
                     RowLiquidAsset.DescLocation = RL.DescLocation;
                     LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.IdOwner, RL.IdLocation, enabledMovement));
-                    EnableControl(CB.Parent as Grid, "cbMovement", true);
+                    EnableControl.EnableControlInGrid(CB.Parent as Grid, "cbMovement", true);
                 }
                 if (RMT != null)
                 {
                     RowLiquidAsset.IdMovement = RMT.IdMovement;
                     RowLiquidAsset.DescMovement = RMT.DescMovement;
-                    EnableControl(CB.Parent as Grid, "cbCurrencyDa", true);
+                    EnableControl.EnableControlInGrid(CB.Parent as Grid, "cbCurrencyDa", true);
                 }
                 if (RC1 != null)
                 {
                     RowLiquidAsset.IdCurrency = RC1.IdCurrency;
                     RowLiquidAsset.CodeCurrency = RC1.CodeCurrency;
                     SetAvailableLiquidity(_liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, RowLiquidAsset.IdCurrency));
-                    EnableControl(CB.Parent as Grid, "amount", true);
+                    EnableControl.EnableControlInGrid(CB.Parent as Grid, "amount", true);
                 }
                 if (RC2 != null)
                 {
@@ -127,7 +128,7 @@ namespace FinanceManager.ViewModels
                     }
                     RowLiquidAsset.IdCurrency2 = RC2.IdCurrency;
                     RowLiquidAsset.CodeCurrency2 = RC2.CodeCurrency;
-                    EnableControl(CB.Parent as Grid, "ExchangeValue", true);
+                    EnableControl.EnableControlInGrid(CB.Parent as Grid, "ExchangeValue", true);
                 }
                 if (RS != null)
                 {
@@ -146,110 +147,7 @@ namespace FinanceManager.ViewModels
                 }
             }
         }
-        private void EnableControl(Grid grid, string name, bool blSwitch)
-        {
-            foreach (object obj in grid.Children)
-            {
-                Control control = obj as Control;
-                if (control != null)
-                {
-                    if (control.GetType().Name == "ComboBox" && control.Name == name)
-                    {
-                        control.IsEnabled = blSwitch;
-                        return;
-                    }
-                    if (control.GetType().Name == "Button" && control.Name == name)
-                    {
-                        control.IsEnabled = blSwitch;
-                        return;
-                    }
-                }
-                TextBox textBox = obj as TextBox;
-                if (textBox != null)
-                    if (textBox.Name == name)
-                    {
-                        textBox.IsEnabled = blSwitch;
-                        return;
-                    }
-            }
-        }
-        /*
-        public void OnClick(object sender, RoutedEventArgs e)
-        {
-            Button B = sender as Button;
-            if (B.Content.ToString() == "I")
-            {
-                try
-                {
-                    ManagerLiquidAsset MLA = new ManagerLiquidAsset();
-                    MLA.IdOwner = RowLiquidAsset.IdOwner;
-                    MLA.IdLocation = RowLiquidAsset.IdLocation;
-                    MLA.IdMovement = RowLiquidAsset.IdMovement;
-                    MLA.IdCurrency = RowLiquidAsset.IdCurrency;
-                    MLA.Amount = RowLiquidAsset.Amount * -1;
-                    MLA.ExchangeValue = RowLiquidAsset.ExchangeValue;
-                    MLA.MovementDate = RowLiquidAsset.MovementDate;
-                    MLA.Note = RowLiquidAsset.Note + Environment.NewLine + "(" + RowLiquidAsset.CodeCurrency2 + " " + RowLiquidAsset.AmountChangedValue + ")";
-                    _liquidAssetServices.AddManagerLiquidAsset(MLA);
 
-                    MLA.IdCurrency = RowLiquidAsset.IdCurrency2;
-                    MLA.Amount = RowLiquidAsset.AmountChangedValue;
-                    MLA.ExchangeValue = 1 / RowLiquidAsset.ExchangeValue;
-                    MLA.Note = "(da " + RowLiquidAsset.CodeCurrency + " con cambio di " + RowLiquidAsset.ExchangeValue + ")";
-                    _liquidAssetServices.AddManagerLiquidAsset(MLA);
-
-                    LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwner_MovementType(RowLiquidAsset.IdOwner, enabledMovement));
-                    MessageBox.Show("Record caricato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                catch (Exception err)
-                {
-                    MessageBox.Show("Problemi nel caricamento del record: " + Environment.NewLine +
-                        err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            if (B.Content.ToString() == "M")
-            {
-                if (RowLiquidAsset.idLiquidAsset != 0)
-                {
-                    try
-                    {
-                        _liquidAssetServices.UpdateManagerLiquidAsset(RowLiquidAsset);
-                        LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwner_MovementType(RowLiquidAsset.IdOwner, enabledMovement));
-                        MessageBox.Show("Record modificato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
-                    catch (Exception err)
-                    {
-                        MessageBox.Show("Problemi nel modificare il record" + Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(),
-                            MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                }
-            }
-            if (B.Content.ToString() == "E")
-            {
-                if (RowLiquidAsset.idLiquidAsset != 0)
-                {
-                    MessageBoxResult MBR = MessageBox.Show(string.Format("Il {0} del {1} per l'importo di {2} {3} verrà eliminato.", RowLiquidAsset.DescMovement, RowLiquidAsset.MovementDate.ToShortDateString(),
-                        RowLiquidAsset.CodeCurrency, RowLiquidAsset.Amount) + Environment.NewLine + "Sei sicuro?", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (MBR == MessageBoxResult.Yes)
-                    {
-                        try
-                        {
-                            _liquidAssetServices.DeleteManagerLiquidAsset(RowLiquidAsset.idLiquidAsset);
-                            LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwner_MovementType(RowLiquidAsset.IdOwner, enabledMovement));
-                            MessageBox.Show("Record eliminato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
-                        }
-                        catch (Exception err)
-                        {
-                            MessageBox.Show("Problemi nell'eliminare il record" + Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(),
-                                MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                    }
-                    else
-                        return;
-                }
-            }
-        }
-        */
         public void TextChanged(object sender, EventArgs e)
         {
             TextBox TB = sender as TextBox;
@@ -284,12 +182,15 @@ namespace FinanceManager.ViewModels
                         }
                         else
                         {
-                            EnableControl(TB.Parent as Grid, "cbCurrencyA", true);
+                            EnableControl.EnableControlInGrid(TB.Parent as Grid, "cbCurrencyA", true);
                         }
                         break;
                     case "ExchangeValue":
                         RowLiquidAsset.ExchangeValue = Convert.ToDouble(TB.Text);
-                        CanInsert = true;
+                        if (RowLiquidAsset.ExchangeValue == 0)
+                            CanInsert = false;
+                        else
+                            CanInsert = true;
                         break;
                 }
                 RowLiquidAsset.AmountChangedValue = RowLiquidAsset.Amount * RowLiquidAsset.ExchangeValue;

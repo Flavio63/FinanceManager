@@ -25,7 +25,7 @@ namespace FinanceManager.Events
                                 return true;
                         }
                         break;
-                    case "PorfolioChange":
+                    case "PortfolioChange":
                         if (value != null && value.GetType().Name == "RegistryMovementType")
                         {
                             RegistryMovementType RMT = value as RegistryMovementType;
@@ -36,6 +36,14 @@ namespace FinanceManager.Events
                         {
                             RegistryCurrency RC = value as RegistryCurrency;
                             if (RC.IdCurrency > 3 && RC.IdCurrency != 5)
+                                return true;
+                        }
+                        break;
+                    case "PortfolioShares":
+                        if (value != null && value.GetType().Name == "RegistryMovementType")
+                        {
+                            RegistryMovementType RMT = value as RegistryMovementType;
+                            if (RMT.IdMovement < 5 || RMT.IdMovement > 6 )
                                 return true;
                         }
                         break;

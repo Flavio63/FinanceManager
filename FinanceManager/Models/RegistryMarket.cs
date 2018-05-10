@@ -8,7 +8,7 @@ namespace FinanceManager.Models
 {
     public class RegistryMarket
     {
-        public int IdMarket { get; set; }
+        public uint IdMarket { get; set; }
         public string DescMarket { get; set; }
     }
 }

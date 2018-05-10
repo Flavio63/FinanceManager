@@ -73,34 +73,6 @@
                         </Style>
                     </DataGridComboBoxColumn.EditingElementStyle>
                 </DataGridComboBoxColumn>
-                <DataGridComboBoxColumn Header="Mercato" IsReadOnly="False" Width="150"
-                                        SelectedValuePath="IdMarket" DisplayMemberPath="DescMarket"
-                                        SelectedValueBinding="{Binding IdMarket, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
-                    <DataGridComboBoxColumn.ElementStyle>
-                        <Style TargetType="ComboBox">
-                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.MarketList}"/>
-                        </Style>
-                    </DataGridComboBoxColumn.ElementStyle>
-                    <DataGridComboBoxColumn.EditingElementStyle>
-                        <Style TargetType="ComboBox">
-                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.MarketList}"/>
-                        </Style>
-                    </DataGridComboBoxColumn.EditingElementStyle>
-                </DataGridComboBoxColumn>
-                <DataGridComboBoxColumn Header="Valuta" IsReadOnly="False" Width="75"
-                                        SelectedValuePath="IdCurrency" DisplayMemberPath="CodeCurrency"
-                                        SelectedValueBinding="{Binding IdCurrency, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
-                    <DataGridComboBoxColumn.ElementStyle>
-                        <Style TargetType="ComboBox">
-                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.CurrencyList}"/>
-                        </Style>
-                    </DataGridComboBoxColumn.ElementStyle>
-                    <DataGridComboBoxColumn.EditingElementStyle>
-                        <Style TargetType="ComboBox">
-                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.CurrencyList}"/>
-                        </Style>
-                    </DataGridComboBoxColumn.EditingElementStyle>
-                </DataGridComboBoxColumn>
             </DataGrid.Columns>
         </DataGrid>
 

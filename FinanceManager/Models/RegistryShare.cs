@@ -11,9 +11,7 @@ namespace FinanceManager.Models
         public uint IdShare { get; set; }
         public string DescShare { get; set; }
         public string Isin { get; set; }
-        public int IdShareType { get; set; }
-        public int IdFirm { get; set; }
-        public int IdMarket { get; set; }
-        public int IdCurrency { get; set; }
+        public uint IdShareType { get; set; }
+        public uint IdFirm { get; set; }
     }
 }

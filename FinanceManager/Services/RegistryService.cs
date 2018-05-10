@@ -157,7 +157,7 @@ namespace FinanceManager.Services
             }
         }
 
-        public void DeleteShareType(int id)
+        public void DeleteShareType(uint id)
         {
             try
             {
@@ -208,7 +208,7 @@ namespace FinanceManager.Services
                     foreach (DataRow dr in dt.Rows)
                     {
                         RegistryShareType RST = new RegistryShareType();
-                        RST.IdShareType = (int)dr.Field<uint>("id_tipo");
+                        RST.IdShareType = dr.Field<uint>("id_tipo");
                         RST.TypeName = dr.Field<string>("desc_tipo");
                         RSTL.Add(RST);
                     }
@@ -516,7 +516,7 @@ namespace FinanceManager.Services
                     foreach (DataRow dr in dt.Rows)
                     {
                         RegistryFirm RF = new RegistryFirm();
-                        RF.IdFirm = (int)dr.Field<uint>("id_azienda");
+                        RF.IdFirm = dr.Field<uint>("id_azienda");
                         RF.DescFirm = dr.Field<string>("desc_azienda");
                         RFL.Add(RF);
                     }
@@ -531,16 +531,6 @@ namespace FinanceManager.Services
             {
                 throw new Exception(err.Message);
             }
-        }
-
-        public RegistryFirm GetRegistryFirmByName(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public RegistryFirm GetRegistryFirmById(int id)
-        {
-            throw new NotImplementedException();
         }
 
         public void UpdateFirm(RegistryFirm registryFirm)
@@ -594,7 +584,7 @@ namespace FinanceManager.Services
             }
         }
 
-        public void DeleteFirm(int id)
+        public void DeleteFirm(uint id)
         {
             try
             {
@@ -637,7 +627,7 @@ namespace FinanceManager.Services
                     foreach (DataRow dr in dt.Rows)
                     {
                         RegistryMarket RM = new RegistryMarket();
-                        RM.IdMarket = (int)dr.Field<uint>("id_borsa");
+                        RM.IdMarket = dr.Field<uint>("id_borsa");
                         RM.DescMarket = dr.Field<string>("desc_borsa");
                         RML.Add(RM);
                     }
@@ -715,7 +705,7 @@ namespace FinanceManager.Services
             }
         }
 
-        public void DeleteMarket(int id)
+        public void DeleteMarket(uint id)
         {
             try
             {
@@ -762,10 +752,8 @@ namespace FinanceManager.Services
                         RS.IdShare = dr.Field<uint>("id_tit");
                         RS.DescShare = dr.Field<string>("desc_titolo");
                         RS.Isin = dr.Field<string>("isin");
-                        RS.IdShareType = (int)dr.Field<uint>("id_tipo");
-                        RS.IdFirm = (int)dr.Field<uint>("id_azienda");
-                        RS.IdMarket = (int)dr.Field<uint>("id_borsa");
-                        RS.IdCurrency = (int)dr.Field<uint>("id_valuta");
+                        RS.IdShareType = dr.Field<uint>("id_tipo");
+                        RS.IdFirm = dr.Field<uint>("id_azienda");
                         RSL.Add(RS);
                     }
                     return RSL;
@@ -781,34 +769,41 @@ namespace FinanceManager.Services
             }
         }
 
-        public RegistryShareList GetRegistryByShareType(int shareTypeID)
+        public RegistryShareList GetSharesByType(uint idShareType)
         {
-            throw new NotImplementedException();
-        }
-
-        public RegistryShareList GetRegistryByCurrency(int currencyID)
-        {
-            throw new NotImplementedException();
-        }
-
-        public RegistryShareList GetRegistryByFirm(int firmID)
-        {
-            throw new NotImplementedException();
-        }
-
-        public RegistryShare GetRegistryShareByName(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public RegistryShare GetRegistryShareById(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public RegistryShare GetRegistryShareByIsin(string isin)
-        {
-            throw new NotImplementedException();
+            try
+            {
+                using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
+                {
+                    dbAdaptar.SelectCommand = new MySqlCommand();
+                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdaptar.SelectCommand.CommandType = CommandType.Text;
+                    dbAdaptar.SelectCommand.CommandText = SQL.RegistryScripts.GetSharesByType;
+                    dbAdaptar.SelectCommand.Parameters.AddWithValue("id_tipo", idShareType);
+                    DataTable dt = new DataTable();
+                    dbAdaptar.Fill(dt);
+                    RegistryShareList RSL = new RegistryShareList();
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        RegistryShare RS = new RegistryShare();
+                        RS.IdShare = dr.Field<uint>("id_tit");
+                        RS.DescShare = dr.Field<string>("desc_titolo");
+                        RS.Isin = dr.Field<string>("isin");
+                        RS.IdShareType = dr.Field<uint>("id_tipo");
+                        RS.IdFirm = dr.Field<uint>("id_azienda");
+                        RSL.Add(RS);
+                    }
+                    return RSL;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
 
         public void UpdateShare(RegistryShare registryShare)
@@ -824,8 +819,6 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("isin", registryShare.Isin);
                     dbComm.Parameters.AddWithValue("tipo", registryShare.IdShareType);
                     dbComm.Parameters.AddWithValue("azienda", registryShare.IdFirm);
-                    dbComm.Parameters.AddWithValue("borsa", registryShare.IdMarket);
-                    dbComm.Parameters.AddWithValue("valuta", registryShare.IdCurrency);
                     dbComm.Parameters.AddWithValue("id", registryShare.IdShare);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -855,8 +848,6 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("isin", registryShare.Isin);
                     dbComm.Parameters.AddWithValue("tipo", registryShare.IdShareType);
                     dbComm.Parameters.AddWithValue("azienda", registryShare.IdFirm);
-                    dbComm.Parameters.AddWithValue("borsa", registryShare.IdMarket);
-                    dbComm.Parameters.AddWithValue("valuta", registryShare.IdCurrency);
                     dbComm.Parameters.AddWithValue("id", registryShare.IdShare);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();

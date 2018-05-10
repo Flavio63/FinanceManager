@@ -18,7 +18,7 @@ namespace FinanceManager.Services
         RegistryShareType GetRegistryShareTypeById(int id);
         void UpdateShareType(RegistryShareType registryShareType);
         void AddShareType(string description);
-        void DeleteShareType(int id);
+        void DeleteShareType(uint id);
         #endregion
 
         #region Location
@@ -32,11 +32,9 @@ namespace FinanceManager.Services
 
         #region Firm
         RegistryFirmList GetRegistryFirmList();
-        RegistryFirm GetRegistryFirmByName(string name);
-        RegistryFirm GetRegistryFirmById(int id);
         void UpdateFirm(RegistryFirm registryFirm);
         void AddFirm(string description);
-        void DeleteFirm(int id);
+        void DeleteFirm(uint id);
         #endregion
 
         #region Market
@@ -45,7 +43,7 @@ namespace FinanceManager.Services
         RegistryMarket GetRegistryMarketById(int id);
         void UpdateMarket(RegistryMarket registryMarket);
         void AddMarket(string description);
-        void DeleteMarket(int id);
+        void DeleteMarket(uint id);
         #endregion
 
         #region Currency
@@ -59,12 +57,7 @@ namespace FinanceManager.Services
 
         #region Share
         RegistryShareList GetRegistryShareList();
-        RegistryShareList GetRegistryByShareType(int shareTypeID);
-        RegistryShareList GetRegistryByCurrency(int currencyID);
-        RegistryShareList GetRegistryByFirm(int firmID);
-        RegistryShare GetRegistryShareByName(string name);
-        RegistryShare GetRegistryShareById(int id);
-        RegistryShare GetRegistryShareByIsin(string isin);
+        RegistryShareList GetSharesByType(uint idShareType);
         void UpdateShare(RegistryShare registryShare);
         void AddShare(RegistryShare registryShare);
         void DeleteShare(uint id);
