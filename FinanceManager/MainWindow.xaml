@@ -37,9 +37,9 @@
                 </MenuItem>
             </MenuItem>
         </Menu>
-        <!--<ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-            <WrapPanel MinWidth="250" MinHeight="250" Name="mainGrid"></WrapPanel>
-        </ScrollViewer>-->
-        <DockPanel Grid.Row="1" MinHeight="250" MinWidth="250" Name="mainGrid"></DockPanel>
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+            <DockPanel Grid.Row="1" MinHeight="250" MinWidth="250" Name="mainGrid"></DockPanel>
+        </ScrollViewer>
+
     </Grid>
 </Window>

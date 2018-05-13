@@ -58,7 +58,8 @@ namespace FinanceManager.Services.SQL
         /// Verifica la disponibilità di liquidità per la gestione,
         /// per il conto (location) e per la valuta selezionate
         /// </summary>
-        public static readonly string GetCurrencyAvailable = "SELECT SUM(ammontare) AS total, disponibile FROM daf_portafoglio WHERE id_gestione = @owner AND id_location = @location " +
+        public static readonly string GetCurrencyAvailable = "SELECT SUM(ammontare)  - (SUM(total_commission) +SUM(tobin_tax) + SUM(disaggio_cedole) ) AS total, " +
+            "disponibile FROM daf_portafoglio WHERE id_gestione = @owner AND id_location = @location " +
             "AND id_valuta = @currency GROUP BY disponibile ORDER BY disponibile DESC";
 
         /// <summary>
