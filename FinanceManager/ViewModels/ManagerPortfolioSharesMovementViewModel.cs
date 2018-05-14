@@ -237,10 +237,12 @@ namespace FinanceManager.ViewModels
 
         private void UpdateTotals()
         {
-            if (RowLiquidAsset.IdMovement == 5)
-                RowLiquidAsset.Amount = -1 * (RowLiquidAsset.UnityLocalValue * RowLiquidAsset.SharesQuantity);
-            if (RowLiquidAsset.IdMovement == 6)
-                RowLiquidAsset.Amount = -1 * RowLiquidAsset.UnityLocalValue * RowLiquidAsset.SharesQuantity;
+            //if (RowLiquidAsset.IdMovement == 5)
+                RowLiquidAsset.Amount = RowLiquidAsset.IdShareType != 2 ?  -1 * (RowLiquidAsset.UnityLocalValue * RowLiquidAsset.SharesQuantity) : 
+                    -1 * (RowLiquidAsset.UnityLocalValue * RowLiquidAsset.SharesQuantity) / 100;
+            //if (RowLiquidAsset.IdMovement == 6)
+            //    RowLiquidAsset.Amount = -1 * RowLiquidAsset.UnityLocalValue * RowLiquidAsset.SharesQuantity;
+
             TotalLocalValue = RowLiquidAsset.Amount < 0 ? RowLiquidAsset.Amount + RowLiquidAsset.TotalCommission * -1 : RowLiquidAsset.Amount - RowLiquidAsset.TotalCommission;
 
             AmountChangedValue = _RowLiquidAsset.IdCurrency == 1 ? TotalLocalValue + (RowLiquidAsset.TobinTax  + RowLiquidAsset.DisaggioCoupons) *-1

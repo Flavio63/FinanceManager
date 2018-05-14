@@ -184,16 +184,16 @@ namespace FinanceManager.ViewModels
             }
         }
 
-        public void TextChanged(object sender, EventArgs e)
+        public void LostFocus(object sender, EventArgs e)
         {
             TextBox TB = sender as TextBox;
             switch (TB.Name)
             {
                 case "amount":
-                    RowLiquidAsset.Amount = Convert.ToDouble(TB.Text.Replace(",", "").Replace(".", ","));
+                    RowLiquidAsset.Amount = Convert.ToDouble(TB.Text);
                     break;
                 case "ExchangeValue":
-                    RowLiquidAsset.ExchangeValue = Convert.ToDouble(TB.Text.Replace(",", "").Replace(".", ","));
+                    RowLiquidAsset.ExchangeValue = Convert.ToDouble(TB.Text);
                     break;
                 case "Isin":
                     RowLiquidAsset.Isin = TB.Text;

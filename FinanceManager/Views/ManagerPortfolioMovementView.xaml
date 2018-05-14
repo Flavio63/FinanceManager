@@ -207,21 +207,21 @@
                 </DatePicker>
 
                 <TextBlock Grid.Row="8" Text="Che cifra:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-                <TextBox Name="amount" Grid.Row="8" Grid.Column="1" Text="{Binding RowLiquidAsset.Amount, StringFormat=N2}" Margin="5" 
+                <TextBox Name="amount" Grid.Row="8" Grid.Column="1" Text="{Binding RowLiquidAsset.Amount, ConverterCulture=it-IT, StringFormat=N2}" Margin="5" 
                      VerticalContentAlignment="Center" HorizontalContentAlignment="Right" FontSize="14" MinWidth="100">
                     <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="TextChanged">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="TextChanged"/>
+                        <iy:EventTrigger EventName="LostFocus">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
                         </iy:EventTrigger>
                     </iy:Interaction.Triggers>
                 </TextBox>
 
                 <TextBlock Grid.Row="9" Text="Cambio:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-                <TextBox Name="ExchangeValue" Grid.Row="9" Grid.Column="1" Text="{Binding RowLiquidAsset.ExchangeValue, StringFormat=N4}" Margin="5" 
+                <TextBox Name="ExchangeValue" Grid.Row="9" Grid.Column="1" Text="{Binding RowLiquidAsset.ExchangeValue, ConverterCulture=it-IT, StringFormat=N4}" Margin="5" 
                      VerticalContentAlignment="Center" HorizontalContentAlignment="Right" FontSize="14" MinWidth="100">
                     <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="TextChanged">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="TextChanged"/>
+                        <iy:EventTrigger EventName="LostFocus">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
                         </iy:EventTrigger>
                     </iy:Interaction.Triggers>
                 </TextBox>
@@ -243,8 +243,8 @@
                      Text="{Binding RowLiquidAsset.Note}" Margin="5" VerticalContentAlignment="Top" HorizontalContentAlignment="Left" 
                      FontSize="14" MaxWidth="200" MinWidth="100">
                     <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="TextChanged">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="TextChanged"/>
+                        <iy:EventTrigger EventName="LostFocus">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
                         </iy:EventTrigger>
                     </iy:Interaction.Triggers>
                 </TextBox>
