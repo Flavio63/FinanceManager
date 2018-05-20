@@ -24,13 +24,7 @@ namespace FinanceManager.ViewModels
         public ICommand EraseCommand { get; set; }
         public ICommand ClearCommand { get; set; }
 
-        private string _SelectedOwner;
-        private ManagerLiquidAsset _RowLiquidAsset;
         private int[] enabledMovement = { 5, 6 };
-        private double _AmountChangedValue;
-        private string _AvailableLiquidity;
-        private double _AmountAvailable;
-        private double _NShares;
 
         public ManagerPortfolioSharesMovementViewModel(IRegistryServices services, IManagerLiquidAssetServices liquidAssetServices)
         {
@@ -143,7 +137,6 @@ namespace FinanceManager.ViewModels
                 if (MLA != null)
                 {
                     RowLiquidAsset = MLA;
-                    NShares = MLA.SharesQuantity;
                     Grid FormGrid = ((Grid)((DataGrid)sender).Parent).Parent as Grid;
                     EnableControl.EnableControlInGrid(FormGrid, "NShares", true);
                     EnableControl.EnableControlInGrid(FormGrid, "CommissionValue", true);
@@ -185,13 +178,11 @@ namespace FinanceManager.ViewModels
                         {
                             EnableControl.EnableControlInGrid(TB.Parent as Grid, "CommissionValue", true);
                             RowLiquidAsset.SharesQuantity = Convert.ToDouble(TB.Text);
-                            NShares = RowLiquidAsset.SharesQuantity;
                         }
                         else if (RowLiquidAsset.IdMovement == 6 && Convert.ToDouble(TB.Text) < 0)
                         {
                             EnableControl.EnableControlInGrid(TB.Parent as Grid, "CommissionValue", true);
                             RowLiquidAsset.SharesQuantity = Convert.ToDouble(TB.Text);
-                            NShares = RowLiquidAsset.SharesQuantity;
                         }
                         else
                         {
@@ -207,24 +198,25 @@ namespace FinanceManager.ViewModels
                         if (RowLiquidAsset.IdMovement == 5 && !(RowLiquidAsset.IdShareType == 2 || RowLiquidAsset.IdShareType == 16 ||
                             RowLiquidAsset.IdShareType == 9 || RowLiquidAsset.IdShareType == 14 || RowLiquidAsset.IdShareType == 18))
                             EnableControl.EnableControlInGrid(TB.Parent as Grid, "TobinTaxValue", true);
-                        else if (RowLiquidAsset.IdShareType == 2 || RowLiquidAsset.IdShareType == 16 ||
-                            RowLiquidAsset.IdShareType == 9 || RowLiquidAsset.IdShareType == 14 || RowLiquidAsset.IdShareType == 18)
+                        else if ( RowLiquidAsset.IdMovement == 5 && (RowLiquidAsset.IdShareType == 2 || RowLiquidAsset.IdShareType == 16 ||
+                            RowLiquidAsset.IdShareType == 9 || RowLiquidAsset.IdShareType == 14 || RowLiquidAsset.IdShareType == 18) )
                             EnableControl.EnableControlInGrid(TB.Parent as Grid, "DisaggioValue", true);
-                        CanInsert = true;
+                        else if ( RowLiquidAsset.IdMovement == 6)
+                            EnableControl.EnableControlInGrid(TB.Parent as Grid, "RitenutaFiscale", true);
+                        if (RowLiquidAsset.idLiquidAsset == 0)
+                            CanInsert = true;
                         break;
                     case "TobinTaxValue":
                         RowLiquidAsset.TobinTax = Convert.ToDouble(TB.Text);
-                        if (RowLiquidAsset.IdShareType == 2 || RowLiquidAsset.IdShareType == 16 ||
-                            RowLiquidAsset.IdShareType == 9 || RowLiquidAsset.IdShareType == 14 || RowLiquidAsset.IdShareType == 18)
-                            EnableControl.EnableControlInGrid(TB.Parent as Grid, "DisaggioValue", true);
-                        else if (RowLiquidAsset.idLiquidAsset == 0)
-                        {
+                        if (RowLiquidAsset.idLiquidAsset == 0)
                             CanInsert = true;
-                        }
+                        break;
+                    case "RitenutaFiscale":
+                        RowLiquidAsset.RitenutaFiscale = Convert.ToDouble(TB.Text);
                         break;
                     case "DisaggioValue":
-                        CanInsert = true;
-                        RowLiquidAsset.AmountChangedValue = RowLiquidAsset.Amount * RowLiquidAsset.ExchangeValue + RowLiquidAsset.DisaggioCoupons;
+                        if (RowLiquidAsset.idLiquidAsset == 0)
+                            CanInsert = true;
                         break;
                     case "Note":
                         RowLiquidAsset.Note = TB.Text;
@@ -237,28 +229,24 @@ namespace FinanceManager.ViewModels
 
         private void UpdateTotals()
         {
-            //if (RowLiquidAsset.IdMovement == 5)
                 RowLiquidAsset.Amount = RowLiquidAsset.IdShareType != 2 ?  -1 * (RowLiquidAsset.UnityLocalValue * RowLiquidAsset.SharesQuantity) : 
                     -1 * (RowLiquidAsset.UnityLocalValue * RowLiquidAsset.SharesQuantity) / 100;
-            //if (RowLiquidAsset.IdMovement == 6)
-            //    RowLiquidAsset.Amount = -1 * RowLiquidAsset.UnityLocalValue * RowLiquidAsset.SharesQuantity;
 
             TotalLocalValue = RowLiquidAsset.Amount < 0 ? RowLiquidAsset.Amount + RowLiquidAsset.TotalCommission * -1 : RowLiquidAsset.Amount - RowLiquidAsset.TotalCommission;
 
-            AmountChangedValue = _RowLiquidAsset.IdCurrency == 1 ? TotalLocalValue + (RowLiquidAsset.TobinTax  + RowLiquidAsset.DisaggioCoupons) *-1
-                : TotalLocalValue * RowLiquidAsset.ExchangeValue + (RowLiquidAsset.TobinTax + RowLiquidAsset.DisaggioCoupons) *-1;
+            AmountChangedValue = RowLiquidAsset.IdCurrency == 1 ? TotalLocalValue + (RowLiquidAsset.TobinTax  + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1
+                : TotalLocalValue * RowLiquidAsset.ExchangeValue + (RowLiquidAsset.TobinTax + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1;
         }
 
         public string SelectedOwner
         {
-            get { return _SelectedOwner; }
+            get { return GetValue<string>(() => SelectedOwner); }
             set
             {
                 if (value == "")
-                    _SelectedOwner = "";
+                    SetValue<string>(() => SelectedOwner, "");
                 else
-                    _SelectedOwner = "Elenco Movimenti di: " + value;
-                NotifyPropertyChanged("SelectedOwner");
+                    SetValue<string>(() => SelectedOwner, "Elenco Movimenti di: " + value);
             }
         }
 
@@ -283,41 +271,20 @@ namespace FinanceManager.ViewModels
         }
         public ManagerLiquidAsset RowLiquidAsset
         {
-            get { return _RowLiquidAsset; }
-            set
-            {
-                _RowLiquidAsset = value;
-                NotifyPropertyChanged("RowLiquidAsset");
-            }
+            get { return GetValue<ManagerLiquidAsset>(() => RowLiquidAsset); }
+            set { SetValue<ManagerLiquidAsset>(() => RowLiquidAsset, value); }
         }
 
         public double AmountChangedValue
         {
-            get { return _AmountChangedValue; }
-            set
-            {
-                _AmountChangedValue = value;
-                NotifyPropertyChanged("AmountChangedValue");
-            }
+            get { return GetValue<double>(() => AmountChangedValue); }
+            set { SetValue<double>(() => AmountChangedValue, value); }
         }
 
-        public double AmountAvailable
-        {
-            get { return _AmountAvailable; }
-            set
-            {
-                _AmountAvailable = value;
-                NotifyPropertyChanged("AmountAvailable");
-            }
-        }
         public string AvailableLiquidity
         {
-            get { return _AvailableLiquidity; }
-            set
-            {
-                _AvailableLiquidity = value;
-                NotifyPropertyChanged("AvailableLiquidity");
-            }
+            get { return GetValue<string>(() => AvailableLiquidity); }
+            set { SetValue<string>(() => AvailableLiquidity, value); }
         }
 
         private void SetAvailableLiquidity(DataTable DT)
@@ -342,14 +309,7 @@ namespace FinanceManager.ViewModels
             }
             string v1 = d1.ToString("#,##0.0#", CultureInfo.CreateSpecificCulture("it-IT"));
             string v2 = d2.ToString("#,##0.0#", CultureInfo.CreateSpecificCulture("it-IT"));
-            AmountAvailable = d1;
             AvailableLiquidity = string.Format("Sono disponibili {0} {1} e {0} {2} messi da parte.", RowLiquidAsset.CodeCurrency, v1, v2);
-        }
-
-        public double NShares
-        {
-            get { return _NShares; }
-            set { _NShares = value; NotifyPropertyChanged("NShares"); }
         }
 
         #endregion
@@ -440,7 +400,6 @@ namespace FinanceManager.ViewModels
                 MLA = _liquidAssetServices.GetLastShareMovementByOwnerAndLocation(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation);
                 RowLiquidAsset = MLA;
                 SetAvailableLiquidity(_liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, RowLiquidAsset.IdCurrency));
-                //SetUpViewModel();
                 MessageBox.Show("Record caricato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception err)
@@ -455,7 +414,6 @@ namespace FinanceManager.ViewModels
             try
             {
                 _liquidAssetServices.UpdateManagerLiquidAsset(RowLiquidAsset);
-                //SetUpViewModel();
                 // reimposto la griglia con quanto inserito
                 LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerSharesMovementByOwnerAndLocation(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation));
                 MessageBox.Show("Record modificato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
@@ -522,7 +480,6 @@ namespace FinanceManager.ViewModels
                 }
                 TotalLocalValue = 0;
                 AmountChangedValue = 0;
-                NShares = 0;
                 SharesOwned = "0";
             }
             catch (Exception err)

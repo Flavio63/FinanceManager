@@ -46,6 +46,7 @@ namespace FinanceManager.Models
         public double TotalCommission { get; set; }
         public double TobinTax { get; set; }
         public double DisaggioCoupons { get; set; }
+        public double RitenutaFiscale { get; set; }
 
         public DateTime MovementDate
         {
@@ -63,13 +64,13 @@ namespace FinanceManager.Models
             }
         }
         //[ExcludeChar("/[a-z][A-Z]!@#$£€", ErrorMessage = "Sono permessi solo numeri")]
-        [VerifyNumber(ErrorMessage = "Inserire una cifra diversa da zero e che sia disponibile.")]
+        //[VerifyNumber(ErrorMessage = "Inserire una cifra diversa da zero e che sia disponibile.")]
         public double Amount
         {
             get { return GetValue(() => Amount); }
             set { SetValue(() => Amount, value); }
         }
-        [Range(0.2, 1.8, ErrorMessage = "Controllare la cifra immessa.")]
+        //[Range(0.2, 1.8, ErrorMessage = "Controllare la cifra immessa.")]
         public double ExchangeValue
         {
             get { return GetValue(() => ExchangeValue); }

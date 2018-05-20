@@ -36,6 +36,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("total_commission", managerLiquidAsset.TotalCommission);
                     dbComm.Parameters.AddWithValue("tobin_tax", managerLiquidAsset.TobinTax);
                     dbComm.Parameters.AddWithValue("disaggio_cedole", managerLiquidAsset.DisaggioCoupons);
+                    dbComm.Parameters.AddWithValue("ritenuta_fiscale", managerLiquidAsset.RitenutaFiscale);
                     dbComm.Parameters.AddWithValue("valore_cambio", managerLiquidAsset.ExchangeValue);
                     dbComm.Parameters.AddWithValue("disponibile", managerLiquidAsset.Available);
                     dbComm.Parameters.AddWithValue("note", managerLiquidAsset.Note);
@@ -162,6 +163,7 @@ namespace FinanceManager.Services
                         MLA.TotalCommission = dr.Field<double>("total_commission");
                         MLA.TobinTax = dr.Field<double>("tobin_tax");
                         MLA.DisaggioCoupons = dr.Field<double>("disaggio_cedole");
+                        MLA.RitenutaFiscale = dr.Field<double>("ritenuta_fiscale");
                         MLA.ExchangeValue = dr.Field<double>("valore_cambio");
                         MLA.Available = Convert.ToBoolean(dr.Field<string>("disp"));
                         MLA.Note = dr.Field<string>("note");
@@ -236,6 +238,7 @@ namespace FinanceManager.Services
                         MLA.TotalCommission = dr.Field<double>("total_commission");
                         MLA.TobinTax = dr.Field<double>("tobin_tax");
                         MLA.DisaggioCoupons = dr.Field<double>("disaggio_cedole");
+                        MLA.RitenutaFiscale = dr.Field<double>("ritenuta_fiscale");
                         MLA.ExchangeValue = dr.Field<double>("valore_cambio");
                         MLA.Available = Convert.ToBoolean(dr.Field<string>("disp"));
                         MLA.Note = dr.Field<string>("note");
@@ -294,6 +297,7 @@ namespace FinanceManager.Services
                     MLA.TotalCommission = dr.Field<double>("total_commission");
                     MLA.TobinTax = dr.Field<double>("tobin_tax");
                     MLA.DisaggioCoupons = dr.Field<double>("disaggio_cedole");
+                    MLA.RitenutaFiscale = dr.Field<double>("ritenuta_fiscale");
                     MLA.ExchangeValue = dr.Field<double>("valore_cambio");
                     MLA.Available = Convert.ToBoolean(dr.Field<string>("disp"));
                     MLA.Note = dr.Field<string>("note");
@@ -359,6 +363,7 @@ namespace FinanceManager.Services
                         MLA.TotalCommission = dr.Field<double>("total_commission");
                         MLA.TobinTax = dr.Field<double>("tobin_tax");
                         MLA.DisaggioCoupons = dr.Field<double>("disaggio_cedole");
+                        MLA.RitenutaFiscale = dr.Field<double>("ritenuta_fiscale");
                         MLA.ExchangeValue = dr.Field<double>("valore_cambio");
                         MLA.Available = Convert.ToBoolean(dr.Field<string>("disp"));
                         MLA.Note = dr.Field<string>("note");
@@ -439,6 +444,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("total_commission", managerLiquidAsset.TotalCommission);
                     dbComm.Parameters.AddWithValue("tobin_tax", managerLiquidAsset.TobinTax);
                     dbComm.Parameters.AddWithValue("disaggio_cedole", managerLiquidAsset.DisaggioCoupons);
+                    dbComm.Parameters.AddWithValue("ritenuta_fiscale", managerLiquidAsset.RitenutaFiscale);
                     dbComm.Parameters.AddWithValue("valore_cambio", managerLiquidAsset.ExchangeValue);
                     dbComm.Parameters.AddWithValue("disponibile", managerLiquidAsset.Available);
                     dbComm.Parameters.AddWithValue("note", managerLiquidAsset.Note);

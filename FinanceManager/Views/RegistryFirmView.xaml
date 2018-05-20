@@ -31,8 +31,8 @@
                   SelectionMode="Single" FontSize="14" ItemsSource="{Binding FirmList, UpdateSourceTrigger=PropertyChanged}" 
                   Width="315" HorizontalAlignment="Center" AlternatingRowBackground="#FFAEFF90">
             <iy:Interaction.Triggers>
-                <iy:EventTrigger EventName="CellEditEnding">
-                    <is:CallMethodAction TargetObject="{Binding}" MethodName="CellChanged"/>
+                <iy:EventTrigger EventName="RowEditEnding">
+                    <is:CallMethodAction TargetObject="{Binding}" MethodName="RowChanged"/>
                 </iy:EventTrigger>
                 <iy:EventTrigger EventName="PreviewKeyDown">
                     <is:CallMethodAction TargetObject="{Binding}" MethodName="DeleteRow"/>

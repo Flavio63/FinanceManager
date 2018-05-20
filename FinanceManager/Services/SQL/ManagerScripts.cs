@@ -13,9 +13,9 @@ namespace FinanceManager.Services.SQL
         /// </summary>
         public static readonly string GetManagerLiquidAssetListByOwnerAndLocation = "SELECT id_liquid_movement, id_portafoglio, desc_portafoglio, id_location, desc_location, AA.id_valuta, " +
             "cod_valuta, id_tipoMovimento, desc_Movimento, id_titolo, BB.Isin, AA.id_borsa, CC.desc_borsa, data_movimento, ammontare, shares_quantity, unity_local_value, total_commission, " +
-            "tobin_tax, disaggio_cedole, valore_cambio, disp, note FROM ( " +
+            "tobin_tax, disaggio_cedole, ritenuta_fiscale, valore_cambio, disp, note FROM ( " +
             "SELECT id_liquid_movement, id_portafoglio, desc_portafoglio, C.id_location, desc_location, D.id_valuta, cod_valuta, E.id_tipoMovimento, desc_Movimento, id_titolo, id_borsa, " +
-            "data_movimento, shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ammontare, valore_cambio, if(disponibile = 1, 'true', 'false') AS disp, note " +
+            "data_movimento, shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ritenuta_fiscale, ammontare, valore_cambio, if(disponibile = 1, 'true', 'false') AS disp, note " +
             "FROM daf_portafoglio A, daf_portfolio_owner B, daf_location C, daf_valuta D, daf_tipo_movimento E " +
             "WHERE A.id_gestione = B.id_portafoglio AND A.id_location = C.id_location AND A.id_valuta = D.id_valuta AND A.id_movimento = E.id_tipoMovimento AND B.id_portafoglio = @owner " +
             "AND A.id_location = @location) AA LEFT JOIN daf_titoli BB ON BB.id_tit = AA.id_titolo left join daf_borsa CC ON CC.id_borsa = AA.id_borsa ORDER BY data_movimento DESC";
@@ -25,9 +25,9 @@ namespace FinanceManager.Services.SQL
         /// </summary>
         public static readonly string GetManagerLiquidAssetByOwnerLocationAndMovementType = "SELECT id_liquid_movement, id_portafoglio, desc_portafoglio, id_location, desc_location, AA.id_valuta, " +
             "cod_valuta, id_tipoMovimento, desc_Movimento, id_titolo, BB.Isin, AA.id_borsa, CC.desc_borsa, data_movimento, ammontare, shares_quantity, unity_local_value, total_commission, " +
-            "tobin_tax, disaggio_cedole, valore_cambio, disp, note FROM ( " +
+            "tobin_tax, disaggio_cedole, ritenuta_fiscale, valore_cambio, disp, note FROM ( " +
             "SELECT id_liquid_movement, id_portafoglio, desc_portafoglio, C.id_location, desc_location, D.id_valuta, cod_valuta, E.id_tipoMovimento, desc_Movimento, id_titolo, id_borsa, " +
-            "data_movimento, shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ammontare, valore_cambio, if(disponibile = 1, 'true', 'false') AS disp, note " +
+            "data_movimento, shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ritenuta_fiscale, ammontare, valore_cambio, if(disponibile = 1, 'true', 'false') AS disp, note " +
             "FROM daf_portafoglio A, daf_portfolio_owner B, daf_location C, daf_valuta D, daf_tipo_movimento E " +
             "WHERE A.id_gestione = B.id_portafoglio AND A.id_location = C.id_location AND A.id_valuta = D.id_valuta AND A.id_movimento = E.id_tipoMovimento AND B.id_portafoglio = @owner " +
             "AND C.id_location = @id_location AND {0} ) AA LEFT JOIN daf_titoli BB ON BB.id_tit = AA.id_titolo left join daf_borsa CC ON CC.id_borsa = AA.id_borsa ORDER BY data_movimento DESC";
@@ -37,7 +37,7 @@ namespace FinanceManager.Services.SQL
         /// </summary>
         public static readonly string GetManagerSharesMovementByOwnerAndLocation = "SELECT id_liquid_movement, id_portafoglio, desc_portafoglio, C.id_location, desc_location, D.id_valuta, " +
             "cod_valuta, E.id_tipoMovimento, desc_Movimento, id_titolo, F.desc_titolo, F.isin, F.id_tipo, H.desc_tipo, F.id_azienda, I.desc_azienda, A.id_borsa, G.desc_borsa, data_movimento, " +
-            "shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ammontare, valore_cambio, if(disponibile = 1, 'true', 'false') AS disp, note " +
+            "shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ritenuta_fiscale, ammontare, valore_cambio, if(disponibile = 1, 'true', 'false') AS disp, note " +
             "FROM daf_portafoglio A, daf_portfolio_owner B, daf_location C, daf_valuta D, daf_tipo_movimento E, daf_titoli F, daf_borsa G, daf_tipo_titoli H, daf_aziende I " +
             "WHERE A.id_gestione = B.id_portafoglio AND A.id_location = C.id_location AND A.id_valuta = D.id_valuta AND A.id_movimento = E.id_tipoMovimento AND A.id_titolo = F.id_tit " +
             "AND A.id_borsa = G.id_borsa AND F.id_tipo = H.id_tipo AND F.id_azienda = I.id_azienda AND B.id_portafoglio = @owner AND C.id_location = @id_location AND id_titolo IS NOT NULL " +
@@ -48,7 +48,7 @@ namespace FinanceManager.Services.SQL
         /// </summary>
         public static readonly string GetLastSharesMovementByOwnerAndLocation = "SELECT id_liquid_movement, id_portafoglio, desc_portafoglio, C.id_location, desc_location, D.id_valuta, " +
             "cod_valuta, E.id_tipoMovimento, desc_Movimento, id_titolo, F.desc_titolo, F.isin, F.id_tipo, H.desc_tipo, F.id_azienda, I.desc_azienda, A.id_borsa, G.desc_borsa, data_movimento, " +
-            "shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ammontare, valore_cambio, if(disponibile = 1, 'true', 'false') AS disp, note " +
+            "shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ritenuta_fiscale, ammontare, valore_cambio, if(disponibile = 1, 'true', 'false') AS disp, note " +
             "FROM daf_portafoglio A, daf_portfolio_owner B, daf_location C, daf_valuta D, daf_tipo_movimento E, daf_titoli F, daf_borsa G, daf_tipo_titoli H, daf_aziende I " +
             "WHERE A.id_gestione = B.id_portafoglio AND A.id_location = C.id_location AND A.id_valuta = D.id_valuta AND A.id_movimento = E.id_tipoMovimento AND A.id_titolo = F.id_tit " +
             "AND A.id_borsa = G.id_borsa AND F.id_tipo = H.id_tipo AND F.id_azienda = I.id_azienda AND B.id_portafoglio = @owner AND C.id_location = @id_location AND id_titolo IS NOT NULL " +
@@ -58,7 +58,7 @@ namespace FinanceManager.Services.SQL
         /// Verifica la disponibilità di liquidità per la gestione,
         /// per il conto (location) e per la valuta selezionate
         /// </summary>
-        public static readonly string GetCurrencyAvailable = "SELECT SUM(ammontare)  - (SUM(total_commission) +SUM(tobin_tax) + SUM(disaggio_cedole) ) AS total, " +
+        public static readonly string GetCurrencyAvailable = "SELECT SUM(ammontare)  - ( SUM(total_commission) +SUM(tobin_tax) + SUM(disaggio_cedole) + SUM(ritenuta_fiscale) ) AS total, " +
             "disponibile FROM daf_portafoglio WHERE id_gestione = @owner AND id_location = @location " +
             "AND id_valuta = @currency GROUP BY disponibile ORDER BY disponibile DESC";
 
@@ -71,16 +71,16 @@ namespace FinanceManager.Services.SQL
         /// Aggiunge un movimento
         /// </summary>
         public static readonly string AddManagerLiquidAsset = "INSERT INTO daf_portafoglio (id_liquid_movement, id_gestione, id_location, id_valuta, id_movimento, " +
-            "id_titolo, id_borsa, data_movimento, ammontare, shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, valore_cambio, disponibile, note) " +
+            "id_titolo, id_borsa, data_movimento, ammontare, shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ritenuta_fiscale, valore_cambio, disponibile, note) " +
             "VALUE (null, @id_portafoglio, @id_location, @id_valuta, @id_tipoMovimento, @id_titolo, @id_borsa, @data_movimento, @ammontare, @shares_quantity, " +
-            "@unity_local_value, @total_commission, @tobin_tax, @disaggio_cedole, @valore_cambio, @disponibile, @note);";
+            "@unity_local_value, @total_commission, @tobin_tax, @disaggio_cedole, @ritenuta_fiscale, @valore_cambio, @disponibile, @note);";
 
         /// <summary>
         /// Aggiorna un movimento
         /// </summary>
         public static readonly string UpdateManagerLiquidAsset = "UPDATE daf_portafoglio SET id_gestione = @id_portafoglio, id_location = @id_location, id_valuta = @id_valuta, " +
             "id_movimento = @id_tipoMovimento, id_titolo = @id_titolo, id_borsa = @id_borsa, data_movimento = @data_movimento, ammontare = @ammontare, shares_quantity = @shares_quantity, " +
-            "unity_local_value = @unity_local_value, total_commission = @total_commission, tobin_tax = @tobin_tax, disaggio_cedole = @disaggio_cedole, valore_cambio = @valore_cambio, " +
+            "unity_local_value = @unity_local_value, total_commission = @total_commission, tobin_tax = @tobin_tax, disaggio_cedole = @disaggio_cedole, ritenuta_fiscale = @ritenuta_fiscale, valore_cambio = @valore_cambio, " +
             "disponibile = @disponibile, note = @note WHERE id_liquid_movement = @id_liquid_movement";
         
         /// <summary>

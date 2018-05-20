@@ -35,9 +35,13 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Vertical">
                 <TextBlock Text="{Binding SelectedOwner, UpdateSourceTrigger=PropertyChanged}" FontWeight="Bold" 
                    FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" 
                    Margin="30, 20, 5, 5"/>
+                </StackPanel>
+                <TextBlock Margin="30, 20, 5, 5" FontSize="16" VerticalAlignment="Center"
+                           Text="{Binding AvailableLiquidity, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ConverterCulture=it-IT, StringFormat=N2}" />
             </StackPanel>
             <DataGrid Grid.Row="1" CanUserAddRows="False" CanUserDeleteRows="False"  AutoGenerateColumns="False" RowHeaderWidth="16"
                       SelectionMode="Single" FontSize="14" MinWidth="315" HorizontalAlignment="Center" AlternatingRowBackground="LightGray"
@@ -77,6 +81,7 @@
                     <RowDefinition Height="35"/>
                     <RowDefinition Height="35"/>
                     <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="120"/>
@@ -84,29 +89,22 @@
                     <ColumnDefinition Width="60"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Content="I" Grid.Row="2" Grid.Column="2" Grid.RowSpan="3" Margin="15" FontSize="14" Height="75" FontWeight="Bold">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="Click">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="OnClick"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
-                </Button>
+                <Button Content="I" Grid.Row="2" Grid.Column="2" Grid.RowSpan="3" Margin="15" FontSize="14" Height="75" FontWeight="Bold"
+                         Command="{Binding InsertCommand}"/>
 
-                <Button Content="M" Grid.Row="5" Grid.Column="2" Grid.RowSpan="3" Margin="15" FontSize="14" Height="75" FontWeight="Bold">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="Click">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="OnClick"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
-                </Button>
+                <Button Content="M" Grid.Row="5" Grid.Column="2" Grid.RowSpan="3" Margin="15" FontSize="14" Height="75" FontWeight="Bold"
+                         Command="{Binding ModifyCommand}"/>
 
-                <Button Content="E" Grid.Row="8" Grid.Column="2" Grid.RowSpan="3" Margin="15" FontSize="14" Height="75" FontWeight="Bold">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="Click">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="OnClick"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
-                </Button>
+                <Button Content="E" Grid.Row="8" Grid.Column="2" Grid.RowSpan="3" Margin="15" FontSize="14" Height="75" FontWeight="Bold"
+                         Command="{Binding EraseCommand}"/>
+
+                <StackPanel Grid.Row="13" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Name="btnClearAll" Content="Clear All" Margin="15,5, 20, 5" Width="90" FontSize="14" FontWeight="Bold"
+                             Command="{Binding ClearCommand}" CommandParameter="{Binding ElementName=btnClearAll}"/>
+
+                    <Button Name="btnClear" Content="Clear" Margin="20, 5, 15,5" Width="90" FontSize="14" FontWeight="Bold"
+                             Command="{Binding ClearCommand}" CommandParameter="{Binding ElementName=btnClear}"/>
+                </StackPanel>
 
                 <TextBlock Grid.Row="0" Grid.ColumnSpan="3" Text="Inserimento - Modifica - Eliminazione" FontWeight="Bold" 
                    FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" 
@@ -129,8 +127,9 @@
                 </ComboBox>
 
                 <TextBlock Grid.Row="3" Text="Situato in:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-                <ComboBox Grid.Row="3" Grid.Column="1" Name="cbLocation" ItemsSource="{Binding LocationList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalContentAlignment="Center"  MinWidth="100"
-                          DisplayMemberPath="DescLocation" FontSize="14" SelectedValuePath="IdLocation" Margin="5" SelectedValue="{Binding RowLiquidAsset.IdLocation, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                <ComboBox Grid.Row="3" Grid.Column="1" Name="cbLocation" ItemsSource="{Binding LocationList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                          VerticalContentAlignment="Center"  MinWidth="100" DisplayMemberPath="DescLocation" FontSize="14" SelectedValuePath="IdLocation" 
+                          Margin="5" SelectedValue="{Binding RowLiquidAsset.IdLocation, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" IsEnabled="False">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="SelectionChanged">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
@@ -140,7 +139,8 @@
 
                 <TextBlock Grid.Row="4" Text="Cosa faccio:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
                 <ComboBox Grid.Row="4" Grid.Column="1" Name="cbMovement" ItemsSource="{Binding MovementList}" VerticalContentAlignment="Center"  MinWidth="100"
-                          DisplayMemberPath="DescMovement" FontSize="14" SelectedValuePath="IdMovement" Margin="5" SelectedValue="{Binding RowLiquidAsset.IdMovement, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                          DisplayMemberPath="DescMovement" FontSize="14" SelectedValuePath="IdMovement" Margin="5" IsEnabled="False"
+                          SelectedValue="{Binding RowLiquidAsset.IdMovement, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="SelectionChanged">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
@@ -160,7 +160,8 @@
 
                 <TextBlock Grid.Row="5" Text="Con che valuta:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
                 <ComboBox Grid.Row="5" Grid.Column="1" Name="cbCurrency" ItemsSource="{Binding CurrencyList}" VerticalContentAlignment="Center"  MinWidth="100"
-                          DisplayMemberPath="DescCurrency" FontSize="14" SelectedValuePath="IdCurrency" Margin="5" SelectedValue="{Binding RowLiquidAsset.IdCurrency, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                          DisplayMemberPath="DescCurrency" FontSize="14" SelectedValuePath="IdCurrency" Margin="5" IsEnabled="False"
+                          SelectedValue="{Binding RowLiquidAsset.IdCurrency, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="SelectionChanged">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
@@ -179,7 +180,7 @@
                 </ComboBox>
 
                 <TextBlock Grid.Row="6" Text="ISIN:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-                <ComboBox Name="Isin" Grid.Row="6" Grid.Column="1" ItemsSource="{Binding SharesList}" Margin="5" VerticalContentAlignment="Center" 
+                <ComboBox Name="cbShare" Grid.Row="6" Grid.Column="1" ItemsSource="{Binding SharesList}" Margin="5" VerticalContentAlignment="Center" IsEnabled="False"
                      SelectedValuePath="IdShare" HorizontalContentAlignment="Left" FontSize="14" MinWidth="100" SelectedValue="{Binding RowLiquidAsset.IdShare, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
@@ -196,8 +197,40 @@
                     </iy:Interaction.Triggers>
                 </ComboBox>
 
-                <TextBlock Grid.Row="7" Text="In che data:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-                <DatePicker Grid.Row="7" Grid.Column="1" Margin="5" SelectedDate="{Binding RowLiquidAsset.MovementDate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                <TextBlock Grid.Row="7" Text="Che cifra:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
+                <TextBox Name="amount" Grid.Row="7" Grid.Column="1" Text="{Binding RowLiquidAsset.Amount, ConverterCulture=it-IT, StringFormat=N2}" Margin="5" 
+                     VerticalContentAlignment="Center" HorizontalContentAlignment="Right" FontSize="14" MinWidth="100" IsEnabled="False">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="LostFocus">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
+
+                <TextBlock Grid.Row="8" Text="Cambio:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
+                <TextBox Name="ExchangeValue" Grid.Row="8" Grid.Column="1" Text="{Binding RowLiquidAsset.ExchangeValue, ConverterCulture=it-IT, StringFormat=N4}" Margin="5" 
+                     VerticalContentAlignment="Center" HorizontalContentAlignment="Right" FontSize="14" MinWidth="100" IsEnabled="False">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="LostFocus">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
+
+                <TextBlock Grid.Row="9" Text="Disponibile:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
+                <ComboBox Name="Available" Grid.Row="9" Grid.Column="1" Text="{Binding RowLiquidAsset.Available}" Margin="5" VerticalContentAlignment="Center" 
+                     HorizontalContentAlignment="Right" FontSize="14" MinWidth="100" IsEnabled="False">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="SelectionChanged">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                    <ComboBoxItem>False</ComboBoxItem>
+                    <ComboBoxItem IsSelected="True">True</ComboBoxItem>
+                </ComboBox>
+
+                <TextBlock Grid.Row="10" Text="In che data:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
+                <DatePicker Grid.Row="10" Grid.Column="1" Margin="5" SelectedDate="{Binding RowLiquidAsset.MovementDate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                         DisplayDate="{Binding RowLiquidAsset.MovementDate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="SelectedDateChanged">
@@ -205,38 +238,6 @@
                         </iy:EventTrigger>
                     </iy:Interaction.Triggers>
                 </DatePicker>
-
-                <TextBlock Grid.Row="8" Text="Che cifra:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-                <TextBox Name="amount" Grid.Row="8" Grid.Column="1" Text="{Binding RowLiquidAsset.Amount, ConverterCulture=it-IT, StringFormat=N2}" Margin="5" 
-                     VerticalContentAlignment="Center" HorizontalContentAlignment="Right" FontSize="14" MinWidth="100">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="LostFocus">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
-                </TextBox>
-
-                <TextBlock Grid.Row="9" Text="Cambio:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-                <TextBox Name="ExchangeValue" Grid.Row="9" Grid.Column="1" Text="{Binding RowLiquidAsset.ExchangeValue, ConverterCulture=it-IT, StringFormat=N4}" Margin="5" 
-                     VerticalContentAlignment="Center" HorizontalContentAlignment="Right" FontSize="14" MinWidth="100">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="LostFocus">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
-                </TextBox>
-
-                <TextBlock Grid.Row="10" Text="Disponibile:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-                <ComboBox Name="Available" Grid.Row="10" Grid.Column="1" Text="{Binding RowLiquidAsset.Available}" Margin="5" VerticalContentAlignment="Center" 
-                     HorizontalContentAlignment="Right" FontSize="14" MinWidth="100">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="SelectionChanged">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
-                    <ComboBoxItem>False</ComboBoxItem>
-                    <ComboBoxItem>True</ComboBoxItem>
-                </ComboBox>
 
                 <TextBlock Grid.Row="11" Text="Note:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
                 <TextBox Name="Note" Grid.Row="11" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap"

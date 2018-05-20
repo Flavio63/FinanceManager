@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace FinanceManager.ViewModels
 {
-    public class RegistryFirmViewModel
+    public class RegistryFirmViewModel : ViewModelBase
     {
         private IRegistryServices _services;
         private RegistryFirm _firm;
@@ -23,13 +23,7 @@ namespace FinanceManager.ViewModels
         {
             _services = services ?? throw new ArgumentNullException("RegistryFirmViewModel With No Services");
             FirmList = new ObservableCollection<RegistryFirm>(services.GetRegistryFirmList());
-            FirmList.CollectionChanged += CollectionHasChanged;
             CloseMeCommand = new CommandHandler(CloseMe);
-        }
-
-        public void CollectionHasChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            //ListCollectionView ownerList = sender as ListCollectionView;
         }
 
         /// <summary>
@@ -39,7 +33,7 @@ namespace FinanceManager.ViewModels
         /// </summary>
         /// <param name="sender">la cella di descrizione</param>
         /// <param name="e">la conferma o meno della modifica</param>
-        public void CellChanged(object sender, DataGridCellEditEndingEventArgs e)
+        public void RowChanged(object sender, DataGridRowEditEndingEventArgs e)
         {
             try
             {
@@ -54,14 +48,14 @@ namespace FinanceManager.ViewModels
                     else
                     {
                         _services.AddFirm(Firm.DescFirm);
-                        FirmList = new ObservableCollection<RegistryFirm>(_services.GetRegistryFirmList());
-
                     }
+                    FirmList = new ObservableCollection<RegistryFirm>(_services.GetRegistryFirmList());
                 }
             }
             catch (Exception err)
             {
                 MessageBox.Show("Errore nell'aggiornamento dei dati: " + err.Message);
+                FirmList = new ObservableCollection<RegistryFirm>(_services.GetRegistryFirmList());
             }
         }
         /// <summary>
@@ -102,7 +96,7 @@ namespace FinanceManager.ViewModels
         public ObservableCollection<RegistryFirm> FirmList
         {
             get { return _FirmList; }
-            private set
+            set
             {
                 _FirmList = value;
                 NotifyPropertyChanged("FirmList");
@@ -132,13 +126,6 @@ namespace FinanceManager.ViewModels
             RegistryFirmView RFV = param as RegistryFirmView;
             DockPanel wp = RFV.Parent as DockPanel;
             wp.Children.Remove(RFV);
-        }
-
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void NotifyPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

@@ -130,6 +130,7 @@
                     <RowDefinition Height="35"/>
                     <RowDefinition Height="35"/>
                     <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="120"/>
@@ -137,20 +138,16 @@
                     <ColumnDefinition Width="60"/>
                 </Grid.ColumnDefinitions>
                 <Button Name="btnInsert" Content="I" Grid.Row="2" Grid.Column="3" Grid.RowSpan="3" Margin="15" FontSize="14" Height="75" 
-                        FontWeight="Bold" Command="{Binding InsertCommand}">
-                </Button>
+                        FontWeight="Bold" Command="{Binding InsertCommand}"/>
 
                 <Button Name="btnModify" Content="M" Grid.Row="5" Grid.Column="3" Grid.RowSpan="3" Margin="15" FontSize="14" Height="75" 
-                        FontWeight="Bold" Command="{Binding ModifyCommand}">
-                </Button>
+                        FontWeight="Bold" Command="{Binding ModifyCommand}"/>
 
                 <Button Name="btnErase" Content="E" Grid.Row="8" Grid.Column="3" Grid.RowSpan="3" Margin="15" FontSize="14" Height="75" 
-                        FontWeight="Bold" Command="{Binding EraseCommand}">
-                </Button>
+                        FontWeight="Bold" Command="{Binding EraseCommand}"/>
 
                 <Button Name="btnClear" Content="C" Grid.Row="11" Grid.Column="3" Grid.RowSpan="3" Margin="15" FontSize="14" Height="75" 
-                        FontWeight="Bold" Command="{Binding ClearCommand}" CommandParameter="{Binding ElementName=btnClear}">
-                </Button>
+                        FontWeight="Bold" Command="{Binding ClearCommand}" CommandParameter="{Binding ElementName=btnClear}"/>
 
                 <Button Name="btnClearAll" Grid.Row="14" Grid.Column="3" Grid.RowSpan="3" Margin="15" FontSize="14" Height="75" 
                         FontWeight="Bold" Command="{Binding ClearCommand}" CommandParameter="{Binding ElementName=btnClearAll}">
@@ -286,9 +283,9 @@
                     </iy:Interaction.Triggers>
                 </TextBox>
 
-                <TextBlock Grid.Row="10" Text="N. Titoli:" Style="{StaticResource LabelBlockStyle}"/>
-                <TextBox Name="NShares" Grid.Row="10" Grid.Column="1" Text="{Binding NShares, ConverterCulture=it-IT, 
-                    UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Style="{StaticResource FormTextBoxStyle}" IsEnabled="False">
+                <TextBlock Grid.Row="10" Text="N. Titoli:" Style="{StaticResource LabelBlockStyle}" ToolTip="Inserire valore negativo in caso di vendita"/>
+                <TextBox Name="NShares" Grid.Row="10" Grid.Column="1" Text="{Binding RowLiquidAsset.SharesQuantity, ConverterCulture=it-IT}" 
+                         Style="{StaticResource FormTextBoxStyle}" IsEnabled="False">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="LostFocus">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
@@ -346,13 +343,23 @@
                     </iy:Interaction.Triggers>
                 </TextBox>
 
-                <TextBlock Grid.Row="17" Text="Totale in Euro:" Style="{StaticResource LabelBlockStyle}" ToolTip="Totale 2 * tasso di cambio + Tobin + Disaggio"/>
-                <TextBox Name="TotalValue" Grid.Row="17" Grid.Column="1" Text="{Binding AmountChangedValue, ConverterCulture=it-IT, StringFormat=N2,
+                <TextBlock Grid.Row="17" Text="Ritenuta Fiscale €:" Style="{StaticResource LabelBlockStyle}"/>
+                <TextBox Name="RitenutaFiscale" Text="{Binding RowLiquidAsset.RitenutaFiscale, ConverterCulture=it-IT}"
+                             IsEnabled="False" Grid.Row="17" Grid.Column="1" Style="{StaticResource FormTextBoxStyle}" >
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="LostFocus">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
+
+                <TextBlock Grid.Row="18" Text="Totale in Euro:" Style="{StaticResource LabelBlockStyle}" ToolTip="Totale 2 * tasso di cambio + Tobin + Disaggio"/>
+                <TextBox Name="TotalValue" Grid.Row="18" Grid.Column="1" Text="{Binding AmountChangedValue, ConverterCulture=it-IT, StringFormat=N2,
                     UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Style="{StaticResource FormTextBoxStyle}" FontWeight="Black" IsEnabled="False">
                 </TextBox>
 
-                <TextBlock Grid.Row="18" Text="In che data:" Style="{StaticResource LabelBlockStyle}"/>
-                <DatePicker Grid.Row="18" Name="MovementDate" Grid.Column="1" Margin="5" SelectedDate="{Binding RowLiquidAsset.MovementDate, 
+                <TextBlock Grid.Row="19" Text="In che data:" Style="{StaticResource LabelBlockStyle}"/>
+                <DatePicker Grid.Row="19" Name="MovementDate" Grid.Column="1" Margin="5" SelectedDate="{Binding RowLiquidAsset.MovementDate, 
                     UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                         DisplayDate="{Binding RowLiquidAsset.MovementDate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <iy:Interaction.Triggers>
@@ -362,8 +369,8 @@
                     </iy:Interaction.Triggers>
                 </DatePicker>
 
-                <TextBlock Grid.Row="19" Text="Note:" Style="{StaticResource LabelBlockStyle}"/>
-                <TextBox Name="Note" Grid.Row="19" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap"
+                <TextBlock Grid.Row="20" Text="Note:" Style="{StaticResource LabelBlockStyle}"/>
+                <TextBox Name="Note" Grid.Row="20" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap"
                      Text="{Binding RowLiquidAsset.Note}" Margin="5" VerticalContentAlignment="Top" HorizontalContentAlignment="Left" 
                      FontSize="14" MaxWidth="200" MinWidth="100">
                     <iy:Interaction.Triggers>

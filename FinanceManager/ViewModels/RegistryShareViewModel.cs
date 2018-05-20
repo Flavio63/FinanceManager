@@ -13,7 +13,7 @@ using System.Windows.Input;
 
 namespace FinanceManager.ViewModels
 {
-    public class RegistryShareViewModel : INotifyPropertyChanged
+    public class RegistryShareViewModel : ViewModelBase
     {
         private IRegistryServices _services;
         private RegistryShare _share;
@@ -26,16 +26,11 @@ namespace FinanceManager.ViewModels
         {
             _services = services ?? throw new ArgumentNullException("RegistryLocationViewModel With No Services");
             ShareList = new ObservableCollection<RegistryShare>(services.GetRegistryShareList());
-            ShareList.CollectionChanged += CollectionHasChanged;
             ShareTypeList = new ObservableCollection<RegistryShareType>(services.GetRegistryShareTypeList());
             FirmList = new ObservableCollection<RegistryFirm>(services.GetRegistryFirmList());
             CloseMeCommand = new CommandHandler(CloseMe);
         }
 
-        public void CollectionHasChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-         //   ListCollectionView ownerList = sender as ListCollectionView;
-        }
         /// <summary>
         /// E' l'evento di edit nella cella di descrizione della gestione
         /// se il modello ha un valore di id vuol dire che è in modifica
@@ -81,7 +76,8 @@ namespace FinanceManager.ViewModels
             }
             catch (Exception err)
             {
-                MessageBox.Show("Errore nell'aggiornamento dei dati: " + err.Message, "DAF-C Gestione Titoli", MessageBoxButton.OK, MessageBoxImage.Error);
+                if (err.Message != "'Sorting' non consentito durante una transazione AddNew o EditItem.")
+                    MessageBox.Show("Errore nell'aggiornamento dei dati: " + err.Message, "DAF-C Gestione Titoli", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -174,13 +170,6 @@ namespace FinanceManager.ViewModels
             RegistryShareView RSV = param as RegistryShareView;
             DockPanel wp = RSV.Parent as DockPanel;
             wp.Children.Remove(RSV);
-        }
-
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void NotifyPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
