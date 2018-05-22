@@ -54,7 +54,8 @@ namespace FinanceManager.ViewModels
             }
             catch (Exception err)
             {
-                MessageBox.Show("Errore nell'aggiornamento dei dati: " + err.Message);
+                if (err.Message != "'Sorting' non consentito durante una transazione AddNew o EditItem.")
+                    MessageBox.Show("Errore nell'aggiornamento dei dati: " + err.Message);
                 FirmList = new ObservableCollection<RegistryFirm>(_services.GetRegistryFirmList());
             }
         }

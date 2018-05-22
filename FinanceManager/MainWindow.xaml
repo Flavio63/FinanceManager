@@ -28,13 +28,9 @@
                 <MenuItem Header="Compravendita Titoli" Margin="2,0" FontSize="10" FontWeight="Normal" Click="OnClickManagerSharesMovement"></MenuItem>
             </MenuItem>
             <MenuItem Header="Reports" Margin="2,5" FontSize="12" FontWeight="Bold">
-                <MenuItem Header="Movimento Soldi" Margin="2,0" FontSize="10" FontWeight="Normal"></MenuItem>
-                <MenuItem Header="Movimento Titoli" Margin="2,0" FontSize="10" FontWeight="Normal"></MenuItem>
-                <MenuItem Header="Andamento Portafolio" Margin="2,0" FontSize="10" FontWeight="Normal">
-                    <MenuItem Header="Trend Mese Anno" Margin="2,0" FontSize="10" FontWeight="Normal"></MenuItem>
-                    <MenuItem Header="Trend Anno" Margin="2,0" FontSize="10" FontWeight="Normal"></MenuItem>
-                    <MenuItem Header="Split per Tipologia" Margin="2,0" FontSize="10" FontWeight="Normal"></MenuItem>
-                </MenuItem>
+                <MenuItem Header="Trend Anno" Margin="2,0" FontSize="10" FontWeight="Normal" Click="OnClickTrendAnno"></MenuItem>
+                <MenuItem Header="Trend Mese Anno" Margin="2,0" FontSize="10" FontWeight="Normal"></MenuItem>
+                <MenuItem Header="Split per Tipologia" Margin="2,0" FontSize="10" FontWeight="Normal"></MenuItem>
             </MenuItem>
         </Menu>
         <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">

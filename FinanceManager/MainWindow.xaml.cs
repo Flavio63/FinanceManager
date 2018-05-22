@@ -96,5 +96,10 @@ namespace FinanceManager
             ManagerPortfolioSharesMovementView managerPortfolioSharesMovementView = new ManagerPortfolioSharesMovementView(managerPortfolioSharesMovementViewModel);
             mainGrid.Children.Add(managerPortfolioSharesMovementView);
         }
+
+        private void OnClickTrendAnno(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

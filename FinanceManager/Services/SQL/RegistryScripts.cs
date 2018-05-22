@@ -44,7 +44,7 @@ namespace FinanceManager.Services.SQL
         #endregion
         
         #region Firm
-        public readonly static string GetRegistryFirmList = "SELECT id_azienda, desc_azienda FROM daf_aziende ORDER BY id_azienda;";
+        public readonly static string GetRegistryFirmList = "SELECT id_azienda, desc_azienda FROM daf_aziende ORDER BY desc_azienda;";
         public readonly static string UpdateFirm = "UPDATE daf_aziende SET desc_azienda = @desc WHERE id_azienda = @id;";
         public readonly static string DeleteFirm = "DELETE FROM daf_aziende WHERE id_azienda = @id";
         public readonly static string AddFirm = "INSERT INTO daf_aziende (id_azienda, desc_azienda) VALUE (null, @desc);";
@@ -53,7 +53,7 @@ namespace FinanceManager.Services.SQL
         #region Share
         public readonly static string GetRegistryShareList = "SELECT id_tit, desc_titolo, isin, id_tipo, id_azienda " +
             "FROM daf_titoli ORDER BY id_tit;";
-        public readonly static string UpdateShare = "UPDATE daf_titoli SET desc_titolo = @desc, isin = @isin, id_tipo = @tipo, id_azienda = @azienda, " +
+        public readonly static string UpdateShare = "UPDATE daf_titoli SET desc_titolo = @desc, isin = @isin, id_tipo = @tipo, id_azienda = @azienda " +
             "WHERE id_tit = @id;";
         public readonly static string DeleteShare = "DELETE FROM daf_titoli WHERE id_tit = @id";
         public readonly static string AddShare = "INSERT INTO daf_titoli (id_tit, desc_titolo, isin, id_tipo, id_azienda) " +
