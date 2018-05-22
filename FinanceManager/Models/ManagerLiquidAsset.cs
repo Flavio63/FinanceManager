@@ -47,6 +47,7 @@ namespace FinanceManager.Models
         public double TobinTax { get; set; }
         public double DisaggioCoupons { get; set; }
         public double RitenutaFiscale { get; set; }
+        public double ProfitLoss { get; set; }
 
         public DateTime MovementDate
         {

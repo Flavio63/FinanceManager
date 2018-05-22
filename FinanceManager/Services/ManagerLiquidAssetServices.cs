@@ -38,6 +38,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("disaggio_cedole", managerLiquidAsset.DisaggioCoupons);
                     dbComm.Parameters.AddWithValue("ritenuta_fiscale", managerLiquidAsset.RitenutaFiscale);
                     dbComm.Parameters.AddWithValue("valore_cambio", managerLiquidAsset.ExchangeValue);
+                    dbComm.Parameters.AddWithValue("profit_loss", managerLiquidAsset.ProfitLoss);
                     dbComm.Parameters.AddWithValue("disponibile", managerLiquidAsset.Available);
                     dbComm.Parameters.AddWithValue("note", managerLiquidAsset.Note);
                     dbComm.Connection = new MySqlConnection(DafConnection);
@@ -165,6 +166,7 @@ namespace FinanceManager.Services
                         MLA.DisaggioCoupons = dr.Field<double>("disaggio_cedole");
                         MLA.RitenutaFiscale = dr.Field<double>("ritenuta_fiscale");
                         MLA.ExchangeValue = dr.Field<double>("valore_cambio");
+                        MLA.ProfitLoss = dr.Field<double>("profit_loss");
                         MLA.Available = Convert.ToBoolean(dr.Field<string>("disp"));
                         MLA.Note = dr.Field<string>("note");
                         MLAL.Add(MLA);
@@ -240,6 +242,7 @@ namespace FinanceManager.Services
                         MLA.DisaggioCoupons = dr.Field<double>("disaggio_cedole");
                         MLA.RitenutaFiscale = dr.Field<double>("ritenuta_fiscale");
                         MLA.ExchangeValue = dr.Field<double>("valore_cambio");
+                        MLA.ProfitLoss = dr.Field<double>("profit_loss");
                         MLA.Available = Convert.ToBoolean(dr.Field<string>("disp"));
                         MLA.Note = dr.Field<string>("note");
                         MLAL.Add(MLA);
@@ -299,6 +302,7 @@ namespace FinanceManager.Services
                     MLA.DisaggioCoupons = dr.Field<double>("disaggio_cedole");
                     MLA.RitenutaFiscale = dr.Field<double>("ritenuta_fiscale");
                     MLA.ExchangeValue = dr.Field<double>("valore_cambio");
+                    MLA.ProfitLoss = dr.Field<double>("profit_loss");
                     MLA.Available = Convert.ToBoolean(dr.Field<string>("disp"));
                     MLA.Note = dr.Field<string>("note");
                     return MLA;
@@ -365,6 +369,7 @@ namespace FinanceManager.Services
                         MLA.DisaggioCoupons = dr.Field<double>("disaggio_cedole");
                         MLA.RitenutaFiscale = dr.Field<double>("ritenuta_fiscale");
                         MLA.ExchangeValue = dr.Field<double>("valore_cambio");
+                        MLA.ProfitLoss = dr.Field<double>("profit_loss");
                         MLA.Available = Convert.ToBoolean(dr.Field<string>("disp"));
                         MLA.Note = dr.Field<string>("note");
                         MLAL.Add(MLA);
@@ -446,6 +451,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("disaggio_cedole", managerLiquidAsset.DisaggioCoupons);
                     dbComm.Parameters.AddWithValue("ritenuta_fiscale", managerLiquidAsset.RitenutaFiscale);
                     dbComm.Parameters.AddWithValue("valore_cambio", managerLiquidAsset.ExchangeValue);
+                    dbComm.Parameters.AddWithValue("profit_loss", managerLiquidAsset.ProfitLoss);
                     dbComm.Parameters.AddWithValue("disponibile", managerLiquidAsset.Available);
                     dbComm.Parameters.AddWithValue("note", managerLiquidAsset.Note);
                     dbComm.Parameters.AddWithValue("id_liquid_movement", managerLiquidAsset.idLiquidAsset);

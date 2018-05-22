@@ -152,22 +152,14 @@ namespace FinanceManager.ViewModels
             }
         }
 
+        #endregion
+
         #region Command
         public void SaveCommand(object param)
         {
             try
             {
-                ManagerLiquidAsset MLA = new ManagerLiquidAsset();
-                MLA.IdOwner = RowLiquidAsset.IdOwner;
-                MLA.IdLocation = RowLiquidAsset.IdLocation;
-                MLA.IdMovement = RowLiquidAsset.IdMovement;
-                MLA.IdCurrency = RowLiquidAsset.IdCurrency;
-                MLA.IdShare = RowLiquidAsset.IdShare;
-                MLA.Amount = RowLiquidAsset.Amount;
-                MLA.ExchangeValue = RowLiquidAsset.ExchangeValue;
-                MLA.Available = RowLiquidAsset.Available;
-                MLA.MovementDate = RowLiquidAsset.MovementDate;
-                MLA.Note = RowLiquidAsset.Note;
+                RowLiquidAsset.ProfitLoss = RowLiquidAsset.IdMovement == 4 ? RowLiquidAsset.Amount : 0;
 
                 _liquidAssetServices.AddManagerLiquidAsset(RowLiquidAsset);
                 LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, enabledMovement));
@@ -185,6 +177,7 @@ namespace FinanceManager.ViewModels
         {
             try
             {
+                RowLiquidAsset.ProfitLoss = RowLiquidAsset.IdMovement == 4 ? RowLiquidAsset.Amount : 0;
                 _liquidAssetServices.UpdateManagerLiquidAsset(RowLiquidAsset);
                 LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, enabledMovement));
                 SetAvailableLiquidity(_liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, RowLiquidAsset.IdCurrency));
@@ -220,85 +213,6 @@ namespace FinanceManager.ViewModels
                 return;
         }
 
-        public void OnClick(object sender, RoutedEventArgs e)
-        {
-            Button B = sender as Button;
-            //if (B.Content.ToString() == "I")
-            //{
-            //    if (RowLiquidAsset.idLiquidAsset != 0)
-            //    {
-            //        MessageBoxResult R = MessageBox.Show("I dati della maschera provengono da un record esistente, vuoi inserirlo come nuovo?",
-            //            Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.YesNo, MessageBoxImage.Question);
-            //        if (R == MessageBoxResult.Yes)
-            //        {
-            //            RowLiquidAsset.idLiquidAsset = 0;
-            //        }
-            //        else
-            //            return;
-            //    }
-            //    if (RowLiquidAsset.IdOwner == 0 || RowLiquidAsset.IdLocation == 0 ||
-            //        RowLiquidAsset.IdMovement == 0 || RowLiquidAsset.IdCurrency == 0)
-            //    {
-            //        MessageBox.Show("I primi 4 campi devono essere tutti compilati.", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Warning);
-            //        return;
-            //    }
-            //    else
-            //    {
-            //        try
-            //        {
-            //            _liquidAssetServices.AddManagerLiquidAsset(RowLiquidAsset);
-            //            LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerAndLocation(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation));
-            //            MessageBox.Show("Record caricato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
-            //        }
-            //        catch (Exception err)
-            //        {
-            //            MessageBox.Show("Problemi nel caricamento del record: " + Environment.NewLine +
-            //                err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
-            //        }
-            //    }
-            //}
-            //if (B.Content.ToString() == "M")
-            //{
-            //    if (RowLiquidAsset.idLiquidAsset != 0)
-            //    {
-            //        try
-            //        {
-            //            _liquidAssetServices.UpdateManagerLiquidAsset(RowLiquidAsset);
-            //            LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerAndLocation(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation));
-            //            MessageBox.Show("Record modificato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
-            //        }
-            //        catch (Exception err)
-            //        {
-            //            MessageBox.Show("Problemi nel modificare il record" + Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(),
-            //                MessageBoxButton.OK, MessageBoxImage.Error);
-            //        }
-            //    }
-            //}
-            //if (B.Content.ToString() == "E")
-            //{
-            //    if (RowLiquidAsset.idLiquidAsset != 0)
-            //    {
-            //        MessageBoxResult MBR = MessageBox.Show(string.Format("Il {0} del {1} per l'importo di {2} {3} verrà eliminato.", RowLiquidAsset.DescMovement, RowLiquidAsset.MovementDate.ToShortDateString(),
-            //            RowLiquidAsset.CodeCurrency, RowLiquidAsset.Amount) + Environment.NewLine + "Sei sicuro?", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.YesNo, MessageBoxImage.Question);
-            //        if (MBR == MessageBoxResult.Yes)
-            //        {
-            //            try
-            //            {
-            //                _liquidAssetServices.DeleteManagerLiquidAsset(RowLiquidAsset.idLiquidAsset);
-            //                LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerAndLocation(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation));
-            //                MessageBox.Show("Record eliminato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
-            //            }
-            //            catch (Exception err)
-            //            {
-            //                MessageBox.Show("Problemi nell'eliminare il record" + Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(),
-            //                    MessageBoxButton.OK, MessageBoxImage.Error);
-            //            }
-            //        }
-            //        else
-            //            return;
-            //    }
-            //}
-        }
 
         #endregion
 
@@ -495,6 +409,6 @@ namespace FinanceManager.ViewModels
             DockPanel wp = MPMV.Parent as DockPanel;
             wp.Children.Remove(MPMV);
         }
-        #endregion
+
     }
 }
