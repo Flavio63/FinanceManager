@@ -106,6 +106,7 @@ namespace FinanceManager.ViewModels
                     RowLiquidAsset.IdCurrency = RC.IdCurrency;
                     RowLiquidAsset.CodeCurrency = RC.CodeCurrency;
                     SetAvailableLiquidity(_liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, RowLiquidAsset.IdCurrency));
+                    SetProfitLoss(_liquidAssetServices.GetProfitLossByCurrency(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, RowLiquidAsset.IdCurrency));
                     EnableControl.EnableControlInGrid(CB.Parent as Grid, "cbShareType", true);
                 }
                 if (RST != null)
@@ -198,10 +199,10 @@ namespace FinanceManager.ViewModels
                         if (RowLiquidAsset.IdMovement == 5 && !(RowLiquidAsset.IdShareType == 2 || RowLiquidAsset.IdShareType == 16 ||
                             RowLiquidAsset.IdShareType == 9 || RowLiquidAsset.IdShareType == 14 || RowLiquidAsset.IdShareType == 18))
                             EnableControl.EnableControlInGrid(TB.Parent as Grid, "TobinTaxValue", true);
-                        else if ( RowLiquidAsset.IdMovement == 5 && (RowLiquidAsset.IdShareType == 2 || RowLiquidAsset.IdShareType == 16 ||
-                            RowLiquidAsset.IdShareType == 9 || RowLiquidAsset.IdShareType == 14 || RowLiquidAsset.IdShareType == 18) )
+                        else if (RowLiquidAsset.IdMovement == 5 && (RowLiquidAsset.IdShareType == 2 || RowLiquidAsset.IdShareType == 16 ||
+                            RowLiquidAsset.IdShareType == 9 || RowLiquidAsset.IdShareType == 14 || RowLiquidAsset.IdShareType == 18))
                             EnableControl.EnableControlInGrid(TB.Parent as Grid, "DisaggioValue", true);
-                        else if ( RowLiquidAsset.IdMovement == 6)
+                        else if (RowLiquidAsset.IdMovement == 6)
                             EnableControl.EnableControlInGrid(TB.Parent as Grid, "RitenutaFiscale", true);
                         if (RowLiquidAsset.idLiquidAsset == 0)
                             CanInsert = true;
@@ -229,14 +230,66 @@ namespace FinanceManager.ViewModels
 
         private void UpdateTotals()
         {
-                RowLiquidAsset.Amount = RowLiquidAsset.IdShareType != 2 ?  -1 * (RowLiquidAsset.UnityLocalValue * RowLiquidAsset.SharesQuantity) : 
-                    -1 * (RowLiquidAsset.UnityLocalValue * RowLiquidAsset.SharesQuantity) / 100;
+            RowLiquidAsset.Amount = RowLiquidAsset.IdShareType != 2 ? -1 * (RowLiquidAsset.UnityLocalValue * RowLiquidAsset.SharesQuantity) :
+                -1 * (RowLiquidAsset.UnityLocalValue * RowLiquidAsset.SharesQuantity) / 100;
 
             TotalLocalValue = RowLiquidAsset.Amount < 0 ? RowLiquidAsset.Amount + RowLiquidAsset.TotalCommission * -1 : RowLiquidAsset.Amount - RowLiquidAsset.TotalCommission;
 
-            AmountChangedValue = RowLiquidAsset.IdCurrency == 1 ? TotalLocalValue + (RowLiquidAsset.TobinTax  + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1
+            AmountChangedValue = RowLiquidAsset.IdCurrency == 1 ? TotalLocalValue + (RowLiquidAsset.TobinTax + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1
                 : TotalLocalValue * RowLiquidAsset.ExchangeValue + (RowLiquidAsset.TobinTax + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1;
+
+            if (RowLiquidAsset.IdMovement == 6 && RowLiquidAsset.SharesQuantity != 0)
+            {
+                ManagerLiquidAssetList MLAL = _liquidAssetServices.GetShareMovements(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, (uint)RowLiquidAsset.IdShare);
+                double PrezzoAcq = 0;
+                double NAcq = 0;
+                foreach (ManagerLiquidAsset MLA in MLAL)
+                {
+                    if (MLA.IdMovement == 5)
+                    {
+                        PrezzoAcq += MLA.Amount + (MLA.TotalCommission + MLA.TobinTax + MLA.DisaggioCoupons + MLA.RitenutaFiscale) * -1;
+                        NAcq += MLA.SharesQuantity;
+                    }
+                    else if (MLA.IdMovement == 6 && MLA.idLiquidAsset != RowLiquidAsset.idLiquidAsset)
+                    {
+                        if (NAcq + MLA.SharesQuantity == 0)
+                        {
+                            PrezzoAcq = 0;
+                            NAcq = 0;
+                        }
+                        else if (NAcq + MLA.SharesQuantity != 0)
+                        {
+                            PrezzoAcq = PrezzoAcq / NAcq * (NAcq + MLA.SharesQuantity);
+                            NAcq = NAcq + MLA.SharesQuantity;
+                        }
+                    }
+                }
+                if (NAcq + RowLiquidAsset.SharesQuantity == 0)
+                {
+                    RowLiquidAsset.ProfitLoss = PrezzoAcq +
+                        (RowLiquidAsset.Amount + (RowLiquidAsset.TotalCommission + RowLiquidAsset.TobinTax + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1);
+                }
+                else
+                {
+                    RowLiquidAsset.ProfitLoss = PrezzoAcq / NAcq * RowLiquidAsset.SharesQuantity * -1 +
+                        (RowLiquidAsset.Amount + (RowLiquidAsset.TotalCommission + RowLiquidAsset.TobinTax + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1);
+                }
+                PrezzoAcq = 0;
+                NAcq = 0;
+            }
         }
+
+        public string ProfitLoss
+        {
+            get { return GetValue<string>(() => ProfitLoss); }
+            set { SetValue<string>(() => ProfitLoss, value); }
+        }
+
+        private void SetProfitLoss(double PL)
+        {
+            ProfitLoss = string.Format("Il tuo profit loss in {0} è di: {1}", RowLiquidAsset.CodeCurrency, PL.ToString("#,##0.0#", CultureInfo.CreateSpecificCulture("it-IT")));
+        }
+
 
         public string SelectedOwner
         {
@@ -385,7 +438,8 @@ namespace FinanceManager.ViewModels
                 MLA.ExchangeValue = RowLiquidAsset.ExchangeValue;
                 MLA.TobinTax = RowLiquidAsset.TobinTax;
                 MLA.DisaggioCoupons = RowLiquidAsset.DisaggioCoupons;
-
+                MLA.RitenutaFiscale = RowLiquidAsset.RitenutaFiscale;
+                MLA.ProfitLoss = RowLiquidAsset.ProfitLoss;
                 MLA.Amount = RowLiquidAsset.Amount;
                 MLA.MovementDate = RowLiquidAsset.MovementDate;
                 MLA.Note = RowLiquidAsset.Note;

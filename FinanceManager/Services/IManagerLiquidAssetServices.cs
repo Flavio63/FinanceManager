@@ -10,7 +10,9 @@ namespace FinanceManager.Services
         ManagerLiquidAssetList GetManagerSharesMovementByOwnerAndLocation(int IdOwner, int IdLocation);
         ManagerLiquidAsset GetLastShareMovementByOwnerAndLocation(int IdOwner, int IdLocation);
         DataTable GetCurrencyAvailable(int IdOwner, int IdLocation, int IdCurrency);
+        ManagerLiquidAssetList GetShareMovements(int IdOwner, int IdLocation, uint IdShare);
         double GetSharesQuantity(int IdOwner, int IdLocation, uint idShare);
+        double GetProfitLossByCurrency(int IdOwner, int IdLocation, int IdCurrency);
         void AddManagerLiquidAsset(ManagerLiquidAsset managerLiquidAsset);
         void UpdateManagerLiquidAsset(ManagerLiquidAsset managerLiquidAsset);
         void DeleteManagerLiquidAsset(int id);

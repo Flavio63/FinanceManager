@@ -140,38 +140,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     DataTable dt = new DataTable();
                     dbAdapter.Fill(dt);
-                    ManagerLiquidAssetList MLAL = new ManagerLiquidAssetList();
-                    foreach (DataRow dr in dt.Rows)
-                    {
-                        ManagerLiquidAsset MLA = new ManagerLiquidAsset();
-                        MLA.idLiquidAsset = (int)dr.Field<uint>("id_liquid_movement");
-                        MLA.IdOwner = (int)dr.Field<uint>("id_portafoglio");
-                        MLA.OwnerName = dr.Field<string>("desc_portafoglio");
-                        MLA.IdLocation = (int)dr.Field<uint>("id_location");
-                        MLA.DescLocation = dr.Field<string>("desc_location");
-                        MLA.IdCurrency = (int)dr.Field<uint>("id_valuta");
-                        MLA.CodeCurrency = dr.Field<string>("cod_valuta");
-                        MLA.IdMovement = (int)dr.Field<uint>("id_tipoMovimento");
-                        MLA.DescMovement = dr.Field<string>("desc_Movimento");
-                        MLA.IdShare = dr.Field<uint?>("id_titolo");
-                        MLA.Isin = dr.Field<string>("isin");
-                        MLA.IdMarket = dr.Field<uint?>("id_borsa");
-                        MLA.DescMarket = dr.Field<string>("desc_borsa");
-                        MLA.MovementDate = dr.Field<DateTime>("data_movimento");
-                        MLA.Amount = dr.Field<double>("ammontare");
-                        MLA.SharesQuantity = dr.Field<double>("shares_quantity");
-                        MLA.UnityLocalValue = dr.Field<double>("unity_local_value");
-                        MLA.TotalCommission = dr.Field<double>("total_commission");
-                        MLA.TobinTax = dr.Field<double>("tobin_tax");
-                        MLA.DisaggioCoupons = dr.Field<double>("disaggio_cedole");
-                        MLA.RitenutaFiscale = dr.Field<double>("ritenuta_fiscale");
-                        MLA.ExchangeValue = dr.Field<double>("valore_cambio");
-                        MLA.ProfitLoss = dr.Field<double>("profit_loss");
-                        MLA.Available = Convert.ToBoolean(dr.Field<string>("disp"));
-                        MLA.Note = dr.Field<string>("note");
-                        MLAL.Add(MLA);
-                    }
-                    return MLAL;
+                    return MLAL(dt);
                 }
             }
             catch (MySqlException err)
@@ -216,38 +185,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     DataTable dt = new DataTable();
                     dbAdapter.Fill(dt);
-                    ManagerLiquidAssetList MLAL = new ManagerLiquidAssetList();
-                    foreach (DataRow dr in dt.Rows)
-                    {
-                        ManagerLiquidAsset MLA = new ManagerLiquidAsset();
-                        MLA.idLiquidAsset = (int)dr.Field<uint>("id_liquid_movement");
-                        MLA.IdOwner = (int)dr.Field<uint>("id_portafoglio");
-                        MLA.OwnerName = dr.Field<string>("desc_portafoglio");
-                        MLA.IdLocation = (int)dr.Field<uint>("id_location");
-                        MLA.DescLocation = dr.Field<string>("desc_location");
-                        MLA.IdCurrency = (int)dr.Field<uint>("id_valuta");
-                        MLA.CodeCurrency = dr.Field<string>("cod_valuta");
-                        MLA.IdMovement = (int)dr.Field<uint>("id_tipoMovimento");
-                        MLA.DescMovement = dr.Field<string>("desc_Movimento");
-                        MLA.IdShare = dr.Field<uint?>("id_titolo");
-                        MLA.Isin = dr.Field<string>("isin");
-                        MLA.IdMarket = dr.Field<uint?>("id_borsa");
-                        MLA.DescMarket = dr.Field<string>("desc_borsa");
-                        MLA.MovementDate = dr.Field<DateTime>("data_movimento");
-                        MLA.Amount = dr.Field<double>("ammontare");
-                        MLA.SharesQuantity = dr.Field<double>("shares_quantity");
-                        MLA.UnityLocalValue = dr.Field<double>("unity_local_value");
-                        MLA.TotalCommission = dr.Field<double>("total_commission");
-                        MLA.TobinTax = dr.Field<double>("tobin_tax");
-                        MLA.DisaggioCoupons = dr.Field<double>("disaggio_cedole");
-                        MLA.RitenutaFiscale = dr.Field<double>("ritenuta_fiscale");
-                        MLA.ExchangeValue = dr.Field<double>("valore_cambio");
-                        MLA.ProfitLoss = dr.Field<double>("profit_loss");
-                        MLA.Available = Convert.ToBoolean(dr.Field<string>("disp"));
-                        MLA.Note = dr.Field<string>("note");
-                        MLAL.Add(MLA);
-                    }
-                    return MLAL;
+                    return MLAL(dt);
                 }
             }
             catch (MySqlException err)
@@ -274,38 +212,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     DataTable dt = new DataTable();
                     dbAdapter.Fill(dt);
-                    DataRow dr = dt.Rows[0];
-                    ManagerLiquidAsset MLA = new ManagerLiquidAsset();
-                    MLA.idLiquidAsset = (int)dr.Field<uint>("id_liquid_movement");
-                    MLA.IdOwner = (int)dr.Field<uint>("id_portafoglio");
-                    MLA.OwnerName = dr.Field<string>("desc_portafoglio");
-                    MLA.IdLocation = (int)dr.Field<uint>("id_location");
-                    MLA.DescLocation = dr.Field<string>("desc_location");
-                    MLA.IdCurrency = (int)dr.Field<uint>("id_valuta");
-                    MLA.CodeCurrency = dr.Field<string>("cod_valuta");
-                    MLA.IdMovement = (int)dr.Field<uint>("id_tipoMovimento");
-                    MLA.DescMovement = dr.Field<string>("desc_Movimento");
-                    MLA.DescFirm = dr.Field<string>("desc_azienda");
-                    MLA.IdShare = dr.Field<uint?>("id_titolo");
-                    MLA.DescShare = dr.Field<string>("desc_titolo");
-                    MLA.Isin = dr.Field<string>("isin");
-                    MLA.IdShareType = dr.Field<uint>("id_tipo");
-                    MLA.DescShareType = dr.Field<string>("desc_tipo");
-                    MLA.IdMarket = dr.Field<uint?>("id_borsa");
-                    MLA.DescMarket = dr.Field<string>("desc_borsa");
-                    MLA.MovementDate = dr.Field<DateTime>("data_movimento");
-                    MLA.Amount = dr.Field<double>("ammontare");
-                    MLA.SharesQuantity = dr.Field<double>("shares_quantity");
-                    MLA.UnityLocalValue = dr.Field<double>("unity_local_value");
-                    MLA.TotalCommission = dr.Field<double>("total_commission");
-                    MLA.TobinTax = dr.Field<double>("tobin_tax");
-                    MLA.DisaggioCoupons = dr.Field<double>("disaggio_cedole");
-                    MLA.RitenutaFiscale = dr.Field<double>("ritenuta_fiscale");
-                    MLA.ExchangeValue = dr.Field<double>("valore_cambio");
-                    MLA.ProfitLoss = dr.Field<double>("profit_loss");
-                    MLA.Available = Convert.ToBoolean(dr.Field<string>("disp"));
-                    MLA.Note = dr.Field<string>("note");
-                    return MLA;
+                    return MLA(dt.Rows[0]);
                 }
             }
             catch (MySqlException err)
@@ -339,42 +246,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     DataTable dt = new DataTable();
                     dbAdapter.Fill(dt);
-                    ManagerLiquidAssetList MLAL = new ManagerLiquidAssetList();
-                    foreach (DataRow dr in dt.Rows)
-                    {
-                        ManagerLiquidAsset MLA = new ManagerLiquidAsset();
-                        MLA.idLiquidAsset = (int)dr.Field<uint>("id_liquid_movement");
-                        MLA.IdOwner = (int)dr.Field<uint>("id_portafoglio");
-                        MLA.OwnerName = dr.Field<string>("desc_portafoglio");
-                        MLA.IdLocation = (int)dr.Field<uint>("id_location");
-                        MLA.DescLocation = dr.Field<string>("desc_location");
-                        MLA.IdCurrency = (int)dr.Field<uint>("id_valuta");
-                        MLA.CodeCurrency = dr.Field<string>("cod_valuta");
-                        MLA.IdMovement = (int)dr.Field<uint>("id_tipoMovimento");
-                        MLA.DescMovement = dr.Field<string>("desc_Movimento");
-                        MLA.DescFirm = dr.Field<string>("desc_azienda");
-                        MLA.IdShare = dr.Field<uint?>("id_titolo");
-                        MLA.DescShare = dr.Field<string>("desc_titolo");
-                        MLA.Isin = dr.Field<string>("isin");
-                        MLA.IdShareType = dr.Field<uint>("id_tipo");
-                        MLA.DescShareType = dr.Field<string>("desc_tipo");
-                        MLA.IdMarket = dr.Field<uint?>("id_borsa");
-                        MLA.DescMarket = dr.Field<string>("desc_borsa");
-                        MLA.MovementDate = dr.Field<DateTime>("data_movimento");
-                        MLA.Amount = dr.Field<double>("ammontare");
-                        MLA.SharesQuantity = dr.Field<double>("shares_quantity");
-                        MLA.UnityLocalValue = dr.Field<double>("unity_local_value");
-                        MLA.TotalCommission = dr.Field<double>("total_commission");
-                        MLA.TobinTax = dr.Field<double>("tobin_tax");
-                        MLA.DisaggioCoupons = dr.Field<double>("disaggio_cedole");
-                        MLA.RitenutaFiscale = dr.Field<double>("ritenuta_fiscale");
-                        MLA.ExchangeValue = dr.Field<double>("valore_cambio");
-                        MLA.ProfitLoss = dr.Field<double>("profit_loss");
-                        MLA.Available = Convert.ToBoolean(dr.Field<string>("disp"));
-                        MLA.Note = dr.Field<string>("note");
-                        MLAL.Add(MLA);
-                    }
-                    return MLAL;
+                    return MLAL(dt);
                 }
             }
             catch (MySqlException err)
@@ -386,6 +258,34 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
 
+        }
+
+        public double GetProfitLossByCurrency(int IdOwner, int IdLocation, int IdCurrency)
+        {
+            try
+            {
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetProfitLossByCurrency;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", IdOwner);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_location", IdLocation);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_valuta", IdCurrency);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    DataTable dataTable = new DataTable();
+                    dbAdapter.Fill(dataTable);
+                    return ((DataRow)dataTable.Rows[0]).Field<double?>("TotalProfitLoss") == null ? 0 : (double)((DataRow)dataTable.Rows[0]).Field<double?>("TotalProfitLoss");
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
 
         /// <summary>
@@ -469,6 +369,79 @@ namespace FinanceManager.Services
             {
                 throw new Exception(err.Message);
             }
+        }
+
+        public ManagerLiquidAssetList GetShareMovements(int IdOwner, int IdLocation, uint IdShare)
+        {
+            try
+            {
+                DataTable DT = new DataTable();
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = System.Data.CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetShareMovements;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("owner", IdOwner);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_location", IdLocation);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", IdShare);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.Fill(DT);
+                    return MLAL(DT);
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw  new Exception(err.Message);
+            }
+        }
+
+        private ManagerLiquidAssetList MLAL (DataTable dt)
+        {
+            ManagerLiquidAssetList MLAL = new ManagerLiquidAssetList();
+            foreach (DataRow dr in dt.Rows)
+            {
+                MLAL.Add(MLA(dr));
+            }
+            return MLAL;
+        }
+
+        private ManagerLiquidAsset MLA (DataRow dr)
+        {
+            ManagerLiquidAsset MLA = new ManagerLiquidAsset();
+            MLA.idLiquidAsset = (int)dr.Field<uint>("id_liquid_movement");
+            MLA.IdOwner = (int)dr.Field<uint>("id_portafoglio");
+            MLA.OwnerName = dr.Field<string>("desc_portafoglio");
+            MLA.IdLocation = (int)dr.Field<uint>("id_location");
+            MLA.DescLocation = dr.Field<string>("desc_location");
+            MLA.IdCurrency = (int)dr.Field<uint>("id_valuta");
+            MLA.CodeCurrency = dr.Field<string>("cod_valuta");
+            MLA.IdMovement = (int)dr.Field<uint>("id_tipoMovimento");
+            MLA.DescMovement = dr.Field<string>("desc_Movimento");
+            MLA.DescFirm = dr.Field<string>("desc_azienda");
+            MLA.IdShare = dr.Field<uint?>("id_titolo");
+            MLA.DescShare = dr.Field<string>("desc_titolo");
+            MLA.Isin = dr.Field<string>("isin");
+            MLA.IdShareType = dr.Field<uint>("id_tipo");
+            MLA.DescShareType = dr.Field<string>("desc_tipo");
+            MLA.IdMarket = dr.Field<uint?>("id_borsa");
+            MLA.DescMarket = dr.Field<string>("desc_borsa");
+            MLA.MovementDate = dr.Field<DateTime>("data_movimento");
+            MLA.Amount = dr.Field<double>("ammontare");
+            MLA.SharesQuantity = dr.Field<double>("shares_quantity");
+            MLA.UnityLocalValue = dr.Field<double>("unity_local_value");
+            MLA.TotalCommission = dr.Field<double>("total_commission");
+            MLA.TobinTax = dr.Field<double>("tobin_tax");
+            MLA.DisaggioCoupons = dr.Field<double>("disaggio_cedole");
+            MLA.RitenutaFiscale = dr.Field<double>("ritenuta_fiscale");
+            MLA.ExchangeValue = dr.Field<double>("valore_cambio");
+            MLA.ProfitLoss = dr.Field<double>("profit_loss");
+            MLA.Available = Convert.ToBoolean(dr.Field<string>("disp"));
+            MLA.Note = dr.Field<string>("note");
+            return MLA;
         }
     }
 }

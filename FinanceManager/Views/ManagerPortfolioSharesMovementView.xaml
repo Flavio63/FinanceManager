@@ -68,11 +68,12 @@
                     <TextBlock Text="{Binding SelectedOwner, UpdateSourceTrigger=PropertyChanged}" FontWeight="Bold" 
                    FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" 
                    Margin="30, 20, 5, 0"/>
-                    <TextBlock Margin="30, 0, 5, 5" FontSize="16" VerticalAlignment="Center"
+                    <TextBlock Margin="30, 0, 5, 0" FontSize="16" VerticalAlignment="Center"
                            Text="{Binding AvailableLiquidity, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ConverterCulture=it-IT, StringFormat=N2}" />
+                    <TextBlock Text="{Binding ProfitLoss, UpdateSourceTrigger=PropertyChanged}" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="30, 0, 5, 5"/>
                 </StackPanel>
                 <StackPanel Orientation="Vertical">
-                    <TextBlock Text="{Binding SharesOwned, UpdateSourceTrigger=PropertyChanged}" FontWeight="Bold" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15, 20, 5, 0"/>
+                    <TextBlock Text="{Binding SharesOwned, UpdateSourceTrigger=PropertyChanged}" FontWeight="Bold" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15, 10, 5, 0"/>
                 </StackPanel>
             </StackPanel>
             <DataGrid Grid.Row="1" CanUserAddRows="False" CanUserDeleteRows="False"  AutoGenerateColumns="False" RowHeaderWidth="16"
@@ -94,8 +95,10 @@
                     <DataGridTextColumn Header="Commissioni" IsReadOnly="True" Binding="{Binding TotalCommission, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="TobinTax" IsReadOnly="True" Binding="{Binding TobinTax, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="Disaggio" IsReadOnly="True" Binding="{Binding DisaggioCoupons, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="R.F." IsReadOnly="True" Binding="{Binding RitenutaFiscale, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
                     <DataGridTextColumn Header="Importo" IsReadOnly="True" Binding="{Binding Amount, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="ProfitLoss" IsReadOnly="True" Binding="{Binding ProfitLoss, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="Cambio" IsReadOnly="True" Binding="{Binding ExchangeValue, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="Note" IsReadOnly="True" Binding="{Binding Note, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                 </DataGrid.Columns>
