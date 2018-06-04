@@ -31,14 +31,6 @@
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="HorizontalContentAlignment" Value="Right"/>
         </Style>
-        <Style x:Key="TextBoxExchange" TargetType="{x:Type TextBox}">
-            <Style.Triggers>
-                <Trigger Property="Validation.HasError" Value="True">
-                    <Setter Property="Background" Value="Pink"/>
-                    <Setter Property="ToolTip" Value="{Binding (Validation.Errors)[0].ErrorContent, ElementName=ExchangeValue}"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
     </UserControl.Resources>
     <Grid Background="LightSeaGreen" Margin="5">
         <Grid.RowDefinitions>
@@ -312,7 +304,7 @@
 
                 <TextBlock Grid.Row="13" Text="Tasso di cambio:" Style="{StaticResource LabelBlockStyle}"/>
                 <TextBox Name="ExchangeValue" Grid.Row="13" Grid.Column="1" Text="{Binding RowLiquidAsset.ExchangeValue, ConverterCulture=it-IT}" 
-                         Margin="5" Style="{StaticResource TextBoxExchange}" 
+                         Margin="5" Style="{StaticResource FormTextBoxStyle}" 
                      VerticalContentAlignment="Center" HorizontalContentAlignment="Right" FontSize="14" MinWidth="100" IsEnabled="False">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="LostFocus">
@@ -327,7 +319,7 @@
                 </TextBox>
 
                 <TextBlock Grid.Row="15" Text="TobinTax in Euro:" Style="{StaticResource LabelBlockStyle}" ToolTip="Valore sempre in euro, presente solo in alcuni casi"/>
-                <TextBox Name="TobinTaxValue" Grid.Row="15" Grid.Column="1" Text="{Binding RowLiquidAsset.TobinTax, ConverterCulture=it-IT, 
+                <TextBox Name="TobinTaxValue" Grid.Row="15" Grid.Column="1" Text="{Binding RowLiquidAsset.TobinTax, ConverterCulture=it-IT,
                     UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Style="{StaticResource FormTextBoxStyle}"  IsEnabled="False">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="LostFocus">
