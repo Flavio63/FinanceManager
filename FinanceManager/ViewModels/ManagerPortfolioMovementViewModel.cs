@@ -171,7 +171,9 @@ namespace FinanceManager.ViewModels
                 _liquidAssetServices.AddManagerLiquidAsset(RowLiquidAsset);
                 LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, enabledMovement));
                 SetAvailableLiquidity(_liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, RowLiquidAsset.IdCurrency));
+                RowLiquidAsset = new ManagerLiquidAsset();
                 MessageBox.Show("Record caricato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
+                SetUpViewModel();
             }
             catch (Exception err)
             {

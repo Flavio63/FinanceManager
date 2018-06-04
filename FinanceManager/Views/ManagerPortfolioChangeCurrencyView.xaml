@@ -231,7 +231,7 @@
                 </ComboBox>
 
                 <TextBlock Grid.Row="8" Text="al cambio di:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-                <TextBox Name="ExchangeValue" Grid.Row="8" Grid.Column="1" Text="{Binding RowLiquidAsset.ExchangeValue, ConverterCulture=it-IT, StringFormat=N4, 
+                <TextBox Name="ExchangeValue" Grid.Row="8" Grid.Column="1" Text="{Binding RowLiquidAsset.ExchangeValue, ConverterCulture=it-IT, 
                     ValidatesOnDataErrors=True, NotifyOnValidationError=True}" Margin="5" Style="{StaticResource TextBoxExchange}"
                      VerticalContentAlignment="Center" HorizontalContentAlignment="Right" FontSize="14" MinWidth="100" IsEnabled="False">
                     <iy:Interaction.Triggers>
@@ -241,7 +241,7 @@
                     </iy:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="9" Text="Cifra risultante:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-                <TextBox Name="ExchangedValue" Grid.Row="9" Grid.Column="1" Text="{Binding AmountChangedValue, StringFormat=N4, ConverterCulture=it-IT, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="5" 
+                <TextBox Name="ExchangedValue" Grid.Row="9" Grid.Column="1" Text="{Binding AmountChangedValue, ConverterCulture=it-IT, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="5" 
                      VerticalContentAlignment="Center" HorizontalContentAlignment="Right" FontWeight="Black" FontSize="14" MinWidth="100" IsEnabled="False">
                 </TextBox>
 

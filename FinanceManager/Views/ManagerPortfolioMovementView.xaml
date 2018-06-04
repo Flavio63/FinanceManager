@@ -48,12 +48,12 @@
                       ItemsSource="{Binding LiquidAssetList, UpdateSourceTrigger=PropertyChanged}" Margin="10">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID" IsReadOnly="True" Binding="{Binding idLiquidAsset, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                    <DataGridTextColumn Header="Dove" IsReadOnly="True" Binding="{Binding DescLocation, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="Cosa" IsReadOnly="True" Binding="{Binding DescMovement, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                    <DataGridTextColumn Header="Valuta" IsReadOnly="True" Binding="{Binding CodeCurrency, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="Isin" IsReadOnly="True" Binding="{Binding Isin, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="Azione" IsReadOnly="True" Binding="{Binding DescShare, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="Data" IsReadOnly="True" Binding="{Binding MovementDate, StringFormat=d, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="Valuta" IsReadOnly="True" Binding="{Binding CodeCurrency, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="Importo" IsReadOnly="True" Binding="{Binding Amount, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                    <DataGridTextColumn Header="Cambio" IsReadOnly="True" Binding="{Binding ExchangeValue, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="Disp." IsReadOnly="True" Binding="{Binding Available, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="Note" IsReadOnly="True" Binding="{Binding Note, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                 </DataGrid.Columns>
@@ -179,8 +179,9 @@
                 </ComboBox>
 
                 <TextBlock Grid.Row="6" Text="ISIN:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-                <ComboBox Name="cbShare" Grid.Row="6" Grid.Column="1" ItemsSource="{Binding SharesList}" Margin="5" VerticalContentAlignment="Center" IsEnabled="False"
+                <ComboBox Name="cbShare" Grid.Row="6" Grid.Column="1" ItemsSource="{Binding SharesList}" Margin="5" VerticalContentAlignment="Center" IsEnabled="True"
                      SelectedValuePath="IdShare" HorizontalContentAlignment="Left" FontSize="14" MinWidth="100" SelectedValue="{Binding RowLiquidAsset.IdShare, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                    <TextSearch.TextPath>DescShare</TextSearch.TextPath>
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Vertical">
@@ -197,7 +198,7 @@
                 </ComboBox>
 
                 <TextBlock Grid.Row="7" Text="Che cifra:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-                <TextBox Name="amount" Grid.Row="7" Grid.Column="1" Text="{Binding RowLiquidAsset.Amount, ConverterCulture=it-IT, StringFormat=N2}" Margin="5" 
+                <TextBox Name="amount" Grid.Row="7" Grid.Column="1" Text="{Binding RowLiquidAsset.Amount, ConverterCulture=it-IT}" Margin="5" 
                      VerticalContentAlignment="Center" HorizontalContentAlignment="Right" FontSize="14" MinWidth="100" IsEnabled="False">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="LostFocus">
@@ -207,7 +208,7 @@
                 </TextBox>
 
                 <TextBlock Grid.Row="8" Text="Cambio:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-                <TextBox Name="ExchangeValue" Grid.Row="8" Grid.Column="1" Text="{Binding RowLiquidAsset.ExchangeValue, ConverterCulture=it-IT, StringFormat=N4}" Margin="5" 
+                <TextBox Name="ExchangeValue" Grid.Row="8" Grid.Column="1" Text="{Binding RowLiquidAsset.ExchangeValue, ConverterCulture=it-IT}" Margin="5" 
                      VerticalContentAlignment="Center" HorizontalContentAlignment="Right" FontSize="14" MinWidth="100" IsEnabled="False">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="LostFocus">

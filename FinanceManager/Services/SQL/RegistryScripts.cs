@@ -52,7 +52,7 @@ namespace FinanceManager.Services.SQL
         
         #region Share
         public readonly static string GetRegistryShareList = "SELECT id_tit, desc_titolo, isin, id_tipo, id_azienda " +
-            "FROM daf_titoli ORDER BY id_tit;";
+            "FROM daf_titoli ORDER BY isin, desc_titolo;";
         public readonly static string UpdateShare = "UPDATE daf_titoli SET desc_titolo = @desc, isin = @isin, id_tipo = @tipo, id_azienda = @azienda " +
             "WHERE id_tit = @id;";
         public readonly static string DeleteShare = "DELETE FROM daf_titoli WHERE id_tit = @id";
