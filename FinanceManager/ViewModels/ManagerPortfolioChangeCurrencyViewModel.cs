@@ -42,17 +42,24 @@ namespace FinanceManager.ViewModels
 
         private void SetUpViewModel()
         {
-            OwnerList = new ObservableCollection<RegistryOwner>(_services.GetRegistryOwners());
-            MovementList = new ObservableCollection<RegistryMovementType>(_services.GetRegistryMovementTypesList());
-            LocationList = new ObservableCollection<RegistryLocation>(_services.GetRegistryLocationList());
-            CurrencyListFrom = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
-            CurrencyListTo = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
-            SharesList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
-            RowLiquidAsset = new ManagerLiquidAsset();
-            RowLiquidAsset.MovementDate = DateTime.Now;
-            RowLiquidAsset.Available = true;
-            CanUpdateDelete = false;
-            CanInsert = false;
+            try
+            {
+                OwnerList = new ObservableCollection<RegistryOwner>(_services.GetRegistryOwners());
+                MovementList = new ObservableCollection<RegistryMovementType>(_services.GetRegistryMovementTypesList());
+                LocationList = new ObservableCollection<RegistryLocation>(_services.GetRegistryLocationList());
+                CurrencyListFrom = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
+                CurrencyListTo = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
+                SharesList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
+                RowLiquidAsset = new ManagerLiquidAsset();
+                RowLiquidAsset.MovementDate = DateTime.Now;
+                RowLiquidAsset.Available = true;
+                CanUpdateDelete = false;
+                CanInsert = false;
+            }
+            catch(Exception err)
+            {
+                MessageBox.Show(err.Message, "ManagerPortfolioChangeCurrency", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         #region Events

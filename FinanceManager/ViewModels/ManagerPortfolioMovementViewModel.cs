@@ -48,13 +48,20 @@ namespace FinanceManager.ViewModels
 
         private void SetUpViewModel()
         {
-            OwnerList = new ObservableCollection<RegistryOwner>(_services.GetRegistryOwners());
-            MovementList = new ObservableCollection<RegistryMovementType>(_services.GetRegistryMovementTypesList());
-            LocationList = new ObservableCollection<RegistryLocation>(_services.GetRegistryLocationList());
-            CurrencyList = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
-            SharesList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
-            RowLiquidAsset = new ManagerLiquidAsset();
-            RowLiquidAsset.MovementDate = DateTime.Now;
+            try
+            {
+                OwnerList = new ObservableCollection<RegistryOwner>(_services.GetRegistryOwners());
+                MovementList = new ObservableCollection<RegistryMovementType>(_services.GetRegistryMovementTypesList());
+                LocationList = new ObservableCollection<RegistryLocation>(_services.GetRegistryLocationList());
+                CurrencyList = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
+                SharesList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
+                RowLiquidAsset = new ManagerLiquidAsset();
+                RowLiquidAsset.MovementDate = DateTime.Now;
+            }
+            catch(Exception err)
+            {
+                MessageBox.Show(err.Message, "ManagerPortfolioMovementView", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         #region Events

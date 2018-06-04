@@ -40,16 +40,23 @@ namespace FinanceManager.ViewModels
 
         private void SetUpViewModel()
         {
-            OwnerList = new ObservableCollection<RegistryOwner>(_services.GetRegistryOwners());
-            MovementList = new ObservableCollection<RegistryMovementType>(_services.GetRegistryMovementTypesList());
-            LocationList = new ObservableCollection<RegistryLocation>(_services.GetRegistryLocationList());
-            CurrencyList = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
-            ShareTypeList = new ObservableCollection<RegistryShareType>(_services.GetRegistryShareTypeList());
-            MarketShareList = new ObservableCollection<RegistryMarket>(_services.GetRegistryMarketList());
-            RowLiquidAsset = new ManagerLiquidAsset();
-            RowLiquidAsset.MovementDate = DateTime.Now;
-            CanUpdateDelete = false;
-            CanInsert = false;
+            try
+            {
+                OwnerList = new ObservableCollection<RegistryOwner>(_services.GetRegistryOwners());
+                MovementList = new ObservableCollection<RegistryMovementType>(_services.GetRegistryMovementTypesList());
+                LocationList = new ObservableCollection<RegistryLocation>(_services.GetRegistryLocationList());
+                CurrencyList = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
+                ShareTypeList = new ObservableCollection<RegistryShareType>(_services.GetRegistryShareTypeList());
+                MarketShareList = new ObservableCollection<RegistryMarket>(_services.GetRegistryMarketList());
+                RowLiquidAsset = new ManagerLiquidAsset();
+                RowLiquidAsset.MovementDate = DateTime.Now;
+                CanUpdateDelete = false;
+                CanInsert = false;
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message, "ManagerPortfolioSharesView", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         #region events
