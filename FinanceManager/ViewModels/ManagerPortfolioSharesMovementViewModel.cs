@@ -252,6 +252,7 @@ namespace FinanceManager.ViewModels
                 double NAcq = 0;
                 foreach (ManagerLiquidAsset MLA in MLAL)
                 {
+                    if (MLA.idLiquidAsset >= RowLiquidAsset.idLiquidAsset) break;
                     if (MLA.IdMovement == 5)
                     {
                         PrezzoAcq += MLA.Amount + (MLA.TotalCommission + MLA.TobinTax + MLA.DisaggioCoupons + MLA.RitenutaFiscale) * -1;
