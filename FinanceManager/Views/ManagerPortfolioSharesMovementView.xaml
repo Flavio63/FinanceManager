@@ -84,14 +84,14 @@
                     <DataGridTextColumn Header="Data" IsReadOnly="True" Binding="{Binding MovementDate, StringFormat=d, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="Quantità" IsReadOnly="True" Binding="{Binding SharesQuantity, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="P.zo Unitario" IsReadOnly="True" Binding="{Binding UnityLocalValue, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="Importo" IsReadOnly="True" Binding="{Binding Amount, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="ProfitLoss" IsReadOnly="True" Binding="{Binding ProfitLoss, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="Cambio" IsReadOnly="True" Binding="{Binding ExchangeValue, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="Commissioni" IsReadOnly="True" Binding="{Binding TotalCommission, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="TobinTax" IsReadOnly="True" Binding="{Binding TobinTax, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="Disaggio" IsReadOnly="True" Binding="{Binding DisaggioCoupons, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="R.F." IsReadOnly="True" Binding="{Binding RitenutaFiscale, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
-                    <DataGridTextColumn Header="Importo" IsReadOnly="True" Binding="{Binding Amount, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                    <DataGridTextColumn Header="ProfitLoss" IsReadOnly="True" Binding="{Binding ProfitLoss, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                    <DataGridTextColumn Header="Cambio" IsReadOnly="True" Binding="{Binding ExchangeValue, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="Note" IsReadOnly="True" Binding="{Binding Note, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                 </DataGrid.Columns>
                 <iy:Interaction.Triggers>
@@ -241,6 +241,7 @@
                           ItemsSource="{Binding SharesList}"  Style="{StaticResource FormComboStyle}"
                           SelectedValuePath="IdShare" IsEnabled="False" 
                           SelectedValue="{Binding RowLiquidAsset.IdShare, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                    <TextSearch.TextPath>DescShare</TextSearch.TextPath>
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Vertical">

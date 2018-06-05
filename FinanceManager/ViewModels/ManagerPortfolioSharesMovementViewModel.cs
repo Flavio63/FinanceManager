@@ -243,7 +243,7 @@ namespace FinanceManager.ViewModels
             TotalLocalValue = RowLiquidAsset.Amount < 0 ? RowLiquidAsset.Amount + RowLiquidAsset.TotalCommission * -1 : RowLiquidAsset.Amount - RowLiquidAsset.TotalCommission;
 
             AmountChangedValue = RowLiquidAsset.IdCurrency == 1 ? TotalLocalValue + (RowLiquidAsset.TobinTax + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1
-                : TotalLocalValue * RowLiquidAsset.ExchangeValue + (RowLiquidAsset.TobinTax + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1;
+                : TotalLocalValue / RowLiquidAsset.ExchangeValue + (RowLiquidAsset.TobinTax + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1;
 
             if (RowLiquidAsset.IdMovement == 6 && RowLiquidAsset.SharesQuantity != 0)
             {
@@ -255,7 +255,14 @@ namespace FinanceManager.ViewModels
                     if (RowLiquidAsset.idLiquidAsset > 0 && MLA.idLiquidAsset >= RowLiquidAsset.idLiquidAsset) break;
                     if (MLA.IdMovement == 5)
                     {
-                        PrezzoAcq += MLA.Amount + (MLA.TotalCommission + MLA.TobinTax + MLA.DisaggioCoupons + MLA.RitenutaFiscale) * -1;
+                        if (MLA.CodeCurrency == "EUR" && RowLiquidAsset.CodeCurrency != "EUR")
+                        {
+                            PrezzoAcq += (MLA.Amount + (MLA.TotalCommission + MLA.TobinTax + MLA.DisaggioCoupons + MLA.RitenutaFiscale) * -1) * MLA.ExchangeValue;
+                        }
+                        else if (MLA.CodeCurrency == RowLiquidAsset.CodeCurrency)
+                        {
+                            PrezzoAcq += MLA.Amount + (MLA.TotalCommission + MLA.TobinTax + MLA.DisaggioCoupons + MLA.RitenutaFiscale) * -1;
+                        }
                         NAcq += MLA.SharesQuantity;
                     }
                     else if (MLA.IdMovement == 6 && MLA.idLiquidAsset != RowLiquidAsset.idLiquidAsset)
