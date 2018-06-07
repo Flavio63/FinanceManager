@@ -186,6 +186,12 @@
     <Compile Include="Views\RegistryShareView.xaml.cs">
       <DependentUpon>RegistryShareView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ReportGuadagni.xaml.cs">
+      <DependentUpon>ReportGuadagni.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ReportGuadagniAnno.xaml.cs">
+      <DependentUpon>ReportGuadagniAnno.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -239,6 +245,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RegistryShareView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ReportGuadagni.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ReportGuadagniAnno.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
