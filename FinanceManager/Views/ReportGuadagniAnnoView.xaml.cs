@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FinanceManager.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,13 +17,14 @@ using System.Windows.Shapes;
 namespace FinanceManager.Views
 {
     /// <summary>
-    /// Logica di interazione per ReportGuadagniAnno.xaml
+    /// Logica di interazione per ReportGuadagniAnnoView.xaml
     /// </summary>
-    public partial class ReportGuadagniAnno : UserControl
+    public partial class ReportGuadagniAnnoView : UserControl
     {
-        public ReportGuadagniAnno()
+        public ReportGuadagniAnnoView(ReportGuadagniAnnoViewModel viewModel)
         {
             InitializeComponent();
+            DataContext = viewModel;
         }
     }
 }

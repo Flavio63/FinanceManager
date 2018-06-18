@@ -27,11 +27,7 @@
                 <MenuItem Header="Cambio Valuta" Margin="2,0" FontSize="10" FontWeight="Normal" Click="OnClickManagerChangeCurrency"></MenuItem>
                 <MenuItem Header="Compravendita Titoli" Margin="2,0" FontSize="10" FontWeight="Normal" Click="OnClickManagerSharesMovement"></MenuItem>
             </MenuItem>
-            <MenuItem Header="Reports" Margin="2,5" FontSize="12" FontWeight="Bold">
-                <MenuItem Header="Trend Anno" Margin="2,0" FontSize="10" FontWeight="Normal" Click="OnClickTrendAnno"></MenuItem>
-                <MenuItem Header="Trend Mese Anno" Margin="2,0" FontSize="10" FontWeight="Normal"></MenuItem>
-                <MenuItem Header="Split per Tipologia" Margin="2,0" FontSize="10" FontWeight="Normal"></MenuItem>
-            </MenuItem>
+            <MenuItem Header="Reports" Margin="2,5" FontSize="12" FontWeight="Bold" Click="OnClickManagerReports"/>
         </Menu>
         <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
             <DockPanel Grid.Row="1" MinHeight="250" MinWidth="250" Name="mainGrid"></DockPanel>

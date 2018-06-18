@@ -145,6 +145,7 @@
     <Compile Include="ViewModels\ManagerPortfolioChangeCurrencyViewModel.cs" />
     <Compile Include="ViewModels\ManagerPortfolioMovementViewModel.cs" />
     <Compile Include="ViewModels\ManagerPortfolioSharesMovementViewModel.cs" />
+    <Compile Include="ViewModels\ManagerReportsViewModel.cs" />
     <Compile Include="ViewModels\RegistryCurrencyViewModel.cs" />
     <Compile Include="ViewModels\RegistryFirmViewModel.cs" />
     <Compile Include="ViewModels\RegistryLocationViewModel.cs" />
@@ -153,6 +154,7 @@
     <Compile Include="ViewModels\RegistryOwnerViewModel.cs" />
     <Compile Include="ViewModels\RegistryShareTypeViewModel.cs" />
     <Compile Include="ViewModels\RegistryShareViewModel.cs" />
+    <Compile Include="ViewModels\ReportGuadagniAnnoViewModel.cs" />
     <Compile Include="Views\ManagerPortfolioChangeCurrencyView.xaml.cs">
       <DependentUpon>ManagerPortfolioChangeCurrencyView.xaml</DependentUpon>
     </Compile>
@@ -161,6 +163,9 @@
     </Compile>
     <Compile Include="Views\ManagerPortfolioSharesMovementView.xaml.cs">
       <DependentUpon>ManagerPortfolioSharesMovementView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ManagerReportsView.xaml.cs">
+      <DependentUpon>ManagerReportsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RegistryCurrencyView.xaml.cs">
       <DependentUpon>RegistryCurrencyView.xaml</DependentUpon>
@@ -186,11 +191,11 @@
     <Compile Include="Views\RegistryShareView.xaml.cs">
       <DependentUpon>RegistryShareView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ReportGuadagni.xaml.cs">
-      <DependentUpon>ReportGuadagni.xaml</DependentUpon>
+    <Compile Include="Views\ReportGuadagniView.xaml.cs">
+      <DependentUpon>ReportGuadagniView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ReportGuadagniAnno.xaml.cs">
-      <DependentUpon>ReportGuadagniAnno.xaml</DependentUpon>
+    <Compile Include="Views\ReportGuadagniAnnoView.xaml.cs">
+      <DependentUpon>ReportGuadagniAnnoView.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -213,6 +218,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ManagerPortfolioSharesMovementView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ManagerReportsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -248,11 +257,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ReportGuadagni.xaml">
+    <Page Include="Views\ReportGuadagniView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ReportGuadagniAnno.xaml">
+    <Page Include="Views\ReportGuadagniAnnoView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -284,39 +293,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="docs\MySqlTransaction.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="docs\MySqlParameterCollection.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="docs\MySqlParameter.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="docs\MySqlHelper.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="docs\MySqlException.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="docs\MySqlDataReader.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="docs\MySqlDataAdapter.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="docs\MySqlConnectionStringBuilder.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="docs\MySqlConnection.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="docs\MySqlCommandBuilder.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="docs\MySqlCommand.xml" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
