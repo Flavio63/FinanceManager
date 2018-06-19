@@ -13,8 +13,6 @@
         <ComboBox.ItemTemplate>
             <DataTemplate>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding IdRow}"/>
-                    <TextBlock Text=" - "/>
                     <CheckBox Content="{Binding Title}" IsChecked="{Binding Path=IsSelected, Mode=TwoWay}"
                         Tag="{RelativeSource FindAncestor,  AncestorType={x:Type ComboBox}}" Click="CheckBox_Click"/>
                 </StackPanel>

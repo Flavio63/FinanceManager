@@ -12,12 +12,14 @@ namespace FinanceManager
     {
         private IRegistryServices _registryServices;
         private IManagerLiquidAssetServices _managerLiquidServices;
+        private IManagerReportServices _managerReportServices;
 
         public MainWindow()
         {
             InitializeComponent();
             _registryServices = new RegistryService();
             _managerLiquidServices = new ManagerLiquidAssetServices();
+            _managerReportServices = new ManagerReportServices();
         }
 
         private void OnClickGestioni(object sender, RoutedEventArgs e)
@@ -117,7 +119,7 @@ namespace FinanceManager
 
         private void OnClickManagerReports(object sender, RoutedEventArgs e)
         {
-            ManagerReportsViewModel managerReportsViewModel = new ManagerReportsViewModel(_registryServices);
+            ManagerReportsViewModel managerReportsViewModel = new ManagerReportsViewModel(_registryServices, _managerReportServices);
             ManagerReportsView managerReportsView = new ManagerReportsView(managerReportsViewModel);
             if (!mainGrid.Children.Contains(managerReportsView))
                 mainGrid.Children.Add(managerReportsView);

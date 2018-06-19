@@ -136,9 +136,12 @@
     <Compile Include="Models\RegistryShareType.cs" />
     <Compile Include="Models\RegistryShareTypeList.cs" />
     <Compile Include="Services\IManagerLiquidAssetServices.cs" />
+    <Compile Include="Services\IManagerReportServices.cs" />
     <Compile Include="Services\IRegistryService.cs" />
     <Compile Include="Services\ManagerLiquidAssetServices.cs" />
+    <Compile Include="Services\ManagerReportServices.cs" />
     <Compile Include="Services\RegistryService.cs" />
+    <Compile Include="Services\SQL\ReportScripts.cs" />
     <Compile Include="Services\SQL\DAF_Connection.cs" />
     <Compile Include="Services\SQL\ManagerScripts.cs" />
     <Compile Include="Services\SQL\RegistryScripts.cs" />

@@ -4,12 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MultiSelectDemo"
-        xmlns:xx="clr-namespace:DAFc_library"
+        xmlns:xx="clr-namespace:DAFc_library;assembly=DAFc_library"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <!--<xx:MultiSelectComboBox Width="200" Height="50" ItemsSource="{Binding obsItems}"
-                                  SelectedItems="{Binding obsSelectedItems}" Name="MC"
-                                  Content="{Binding Name}" IdRow="{Binding idx}"/>-->
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <xx:MultiSelectComboBox Width="200" Height="50" ItemsSource="{Binding Items}"
+                                  SelectedItems="{Binding SelectedItems}" Name="MC"/>
+
+        <xx:ComboList Width="200" Height="50" Grid.Row="1"/>
     </Grid>
 </Window>

@@ -17,12 +17,15 @@ namespace FinanceManager.ViewModels
     public class ManagerReportsViewModel : ViewModelBase
     {
         private IRegistryServices _services;
+        private IManagerReportServices _reportServices;
         public ICommand CloseMeCommand { get; set; }
         private IList<int> selectedOwners = new List<int>();
+        public IList<int> _availableYears = new List<int>();
 
-        public ManagerReportsViewModel(IRegistryServices registryServices)
+        public ManagerReportsViewModel(IRegistryServices registryServices, IManagerReportServices managerReportServices)
         {
-            _services = registryServices ?? throw new ArgumentNullException("ManagerReportsViewModel with no services");
+            _services = registryServices ?? throw new ArgumentNullException("ManagerReportsViewModel with no registry services");
+            _reportServices = managerReportServices ?? throw new ArgumentNullException("ManagerReportsViewModel with no report services");
             CloseMeCommand = new CommandHandler(CloseMe);
             SetUpViewModel();
         }
@@ -34,6 +37,7 @@ namespace FinanceManager.ViewModels
                 OwnerList = new ObservableCollection<RegistryOwner>(_services.GetRegistryOwners());
                 SelectedOwner = new ObservableCollection<RegistryOwner>();
                 CurrencyList = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
+                AvailableYears = _reportServices.GetAvailableYears();
             }
             catch (Exception err)
             {
@@ -102,6 +106,11 @@ namespace FinanceManager.ViewModels
         {
             get { return GetValue(() => SelectedOwner); }
             set { SetValue(() => SelectedOwner, value); }
+        }
+        public IList<int> AvailableYears
+        {
+            get { return GetValue(() => AvailableYears); }
+            set { SetValue(() => AvailableYears, value); }
         }
         #endregion collection
 

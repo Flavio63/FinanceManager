@@ -46,7 +46,8 @@
                 <ColumnDefinition Width="40"/>
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Row="1" Text="Portafoglio di:" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" Margin="5,5,0,5" FontSize="14"/>
-            <ListBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding OwnerList}" SelectionMode="Multiple" DisplayMemberPath="OwnerName" SelectedValuePath="IdOwner">
+            <ListBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding OwnerList}" SelectionMode="Multiple" Margin="5, 5, 25, 5" 
+                     DisplayMemberPath="OwnerName" SelectedValuePath="IdOwner">
                 <iy:Interaction.Triggers>
                     <iy:EventTrigger EventName="SelectionChanged">
                         <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
@@ -54,25 +55,14 @@
                 </iy:Interaction.Triggers>
             </ListBox>
             <TextBlock Grid.Row="2" Text="Anni:" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" Margin="5,5,0,5" FontSize="14"/>
-            <ComboBox Grid.Row="2" Grid.Column="1" Name="cbYears" ItemsSource="{Binding YearList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalContentAlignment="Center" MinWidth="100"
-                          DisplayMemberPath="OwnerName" FontSize="14" FontWeight="Bold" SelectedValuePath="IdOwner" Margin="5">
+            <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Name="cbYears" ItemsSource="{Binding AvailableYears}" VerticalContentAlignment="Center" MinWidth="100"
+                           FontSize="14" FontWeight="Bold" Margin="5, 5, 25, 5">
                 <iy:Interaction.Triggers>
                     <iy:EventTrigger EventName="SelectionChanged">
                         <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
                     </iy:EventTrigger>
                 </iy:Interaction.Triggers>
             </ComboBox>
-            <CheckBox Grid.Row="2" Grid.Column="2" Name="AllYears" HorizontalAlignment="Center" VerticalAlignment="Center"
-                      ToolTip="Selezionare per avere il trend">
-                <iy:Interaction.Triggers>
-                    <iy:EventTrigger EventName="Checked">
-                        <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
-                    </iy:EventTrigger>
-                    <iy:EventTrigger EventName="Unchecked">
-                        <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
-                    </iy:EventTrigger>
-                </iy:Interaction.Triggers>
-            </CheckBox>
             <TextBlock Grid.Row="3" Text="Valuta:" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" Margin="5,5,0,5" FontSize="14"/>
             <ComboBox Grid.Row="3" Grid.Column="1" Name="cbCurrency" ItemsSource="{Binding CurrencyList}" VerticalContentAlignment="Center" MinWidth="100"
                       DisplayMemberPath="DescCurrency" SelectedValuePath="IdCurrency" FontSize="14" FontWeight="Bold" Margin="5">

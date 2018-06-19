@@ -27,17 +27,8 @@ namespace DAFc_library
         public static readonly DependencyProperty SelectedItemsProperty = DependencyProperty.Register("SelectedItems",
            typeof(Dictionary<string, object>), typeof(MultiSelectComboBox), new UIPropertyMetadata(null, new PropertyChangedCallback(MultiSelectComboBox.OnSelectedItemsChanged)));
 
-        public static readonly DependencyProperty IdRowProperty = DependencyProperty.Register("IdRow", typeof(int), typeof(MultiSelectComboBox),
-            new UIPropertyMetadata(null));
-
-        public static readonly DependencyProperty NameFieldIdRowProperty = DependencyProperty.Register("NameFieldIdRow", typeof(string), typeof(MultiSelectComboBox),
-            new UIPropertyMetadata(string.Empty));
-
         public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(MultiSelectComboBox),
            new UIPropertyMetadata(string.Empty));
-
-        public static readonly DependencyProperty NameFieldTextProperty = DependencyProperty.Register("NameFieldText", typeof(string), typeof(MultiSelectComboBox),
-            new UIPropertyMetadata(string.Empty));
 
         public static readonly DependencyProperty DefaultTextProperty = DependencyProperty.Register("DefaultText", typeof(string),
             typeof(MultiSelectComboBox), new UIPropertyMetadata(string.Empty));
@@ -54,30 +45,10 @@ namespace DAFc_library
             set { SetValue(SelectedItemsProperty, value); }
         }
 
-        //SelectedValuePath
-        public int IdRow
-        {
-            get { return (int)GetValue(IdRowProperty); }
-            set { SetValue(IdRowProperty, value); }
-        }
-
-        public string NameFieldIdRow
-        {
-            get { return (string)GetValue(NameFieldIdRowProperty); }
-            set { SetValue(NameFieldIdRowProperty, value); }
-        }
-
-        //DisplayMemberPath
         public string Text
         {
             get { return (string)GetValue(TextProperty); }
             set { SetValue(TextProperty, value); }
-        }
-
-        public string NameFieldText
-        {
-            get { return (string)GetValue(NameFieldTextProperty); }
-            set { SetValue(NameFieldTextProperty, value); }
         }
 
         public string DefaultText
