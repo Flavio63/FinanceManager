@@ -237,14 +237,21 @@ namespace FinanceManager.ViewModels
 
         private void UpdateTotals()
         {
+            // conteggio diverso fra obbligazioni e tutto il resto
             RowLiquidAsset.Amount = RowLiquidAsset.IdShareType != 2 ? -1 * (RowLiquidAsset.UnityLocalValue * RowLiquidAsset.SharesQuantity) :
                 -1 * (RowLiquidAsset.UnityLocalValue * RowLiquidAsset.SharesQuantity) / 100;
-
+            
+            // totale 1
             TotalLocalValue = RowLiquidAsset.Amount < 0 ? RowLiquidAsset.Amount + RowLiquidAsset.TotalCommission * -1 : RowLiquidAsset.Amount - RowLiquidAsset.TotalCommission;
 
-            AmountChangedValue = RowLiquidAsset.IdCurrency == 1 ? TotalLocalValue + (RowLiquidAsset.TobinTax + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1
-                : TotalLocalValue / RowLiquidAsset.ExchangeValue + (RowLiquidAsset.TobinTax + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1;
+            // totale contabile in valuta
+            TotaleContabile = TotalLocalValue + (RowLiquidAsset.TobinTax + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1;
 
+            // totale contabile in euro
+            AmountChangedValue = RowLiquidAsset.IdCurrency == 1 ? TotalLocalValue + (RowLiquidAsset.TobinTax + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1
+                : (TotalLocalValue  + (RowLiquidAsset.TobinTax + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1) / RowLiquidAsset.ExchangeValue ;
+
+            // calcolo del profit loss
             if (RowLiquidAsset.IdMovement == 6 && RowLiquidAsset.SharesQuantity != 0)
             {
                 ManagerLiquidAssetList MLAL = _liquidAssetServices.GetShareMovements(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, (uint)RowLiquidAsset.IdShare);
@@ -293,7 +300,9 @@ namespace FinanceManager.ViewModels
                 NAcq = 0;
             }
         }
-
+        /// <summary>
+        /// Il profit loss calcolato alla vendita di un titolo
+        /// </summary>
         public string ProfitLoss
         {
             get { return GetValue<string>(() => ProfitLoss); }
@@ -331,24 +340,37 @@ namespace FinanceManager.ViewModels
                 SetValue(() => SharesOwned, txt);
             }
         }
-
+        /// <summary>
+        /// E' il totale comprensivo delle commissioni
+        /// </summary>
         public double TotalLocalValue
         {
             get { return GetValue<double>("TotalLocalValue"); }
             set { SetValue("TotalLocalValue", value); }
         }
+
         public ManagerLiquidAsset RowLiquidAsset
         {
             get { return GetValue<ManagerLiquidAsset>(() => RowLiquidAsset); }
             set { SetValue<ManagerLiquidAsset>(() => RowLiquidAsset, value); }
         }
 
+        public double TotaleContabile
+        {
+            get { return GetValue<double>(() => TotaleContabile); }
+            set { SetValue<double>(() => TotaleContabile, value); }
+        }
+        /// <summary>
+        /// Totale Contabile convertita in euro
+        /// </summary>
         public double AmountChangedValue
         {
             get { return GetValue<double>(() => AmountChangedValue); }
             set { SetValue<double>(() => AmountChangedValue, value); }
         }
-
+        /// <summary>
+        /// Liquidità disponibile agli investimenti
+        /// </summary>
         public string AvailableLiquidity
         {
             get { return GetValue<string>(() => AvailableLiquidity); }
