@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace FinanceManager.ViewModels
@@ -25,6 +26,8 @@ namespace FinanceManager.ViewModels
         public ICommand ClearCommand { get; set; }
 
         private int[] enabledMovement = { 5, 6 };
+        private string _SrchShares;
+        Predicate<object> _Filter;
 
         public ManagerPortfolioSharesMovementViewModel(IRegistryServices services, IManagerLiquidAssetServices liquidAssetServices)
         {
@@ -52,6 +55,7 @@ namespace FinanceManager.ViewModels
                 RowLiquidAsset.MovementDate = DateTime.Now;
                 CanUpdateDelete = false;
                 CanInsert = false;
+                _Filter = new Predicate<object>(Filter);
             }
             catch (Exception err)
             {
@@ -240,7 +244,7 @@ namespace FinanceManager.ViewModels
             // conteggio diverso fra obbligazioni e tutto il resto
             RowLiquidAsset.Amount = RowLiquidAsset.IdShareType != 2 ? -1 * (RowLiquidAsset.UnityLocalValue * RowLiquidAsset.SharesQuantity) :
                 -1 * (RowLiquidAsset.UnityLocalValue * RowLiquidAsset.SharesQuantity) / 100;
-            
+
             // totale 1
             TotalLocalValue = RowLiquidAsset.Amount < 0 ? RowLiquidAsset.Amount + RowLiquidAsset.TotalCommission * -1 : RowLiquidAsset.Amount - RowLiquidAsset.TotalCommission;
 
@@ -249,7 +253,7 @@ namespace FinanceManager.ViewModels
 
             // totale contabile in euro
             AmountChangedValue = RowLiquidAsset.IdCurrency == 1 ? TotalLocalValue + (RowLiquidAsset.TobinTax + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1
-                : (TotalLocalValue  + (RowLiquidAsset.TobinTax + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1) / RowLiquidAsset.ExchangeValue ;
+                : (TotalLocalValue + (RowLiquidAsset.TobinTax + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1) / RowLiquidAsset.ExchangeValue;
 
             // calcolo del profit loss
             if (RowLiquidAsset.IdMovement == 6 && RowLiquidAsset.SharesQuantity != 0)
@@ -314,6 +318,31 @@ namespace FinanceManager.ViewModels
             ProfitLoss = string.Format("Il tuo profit loss in {0} è di: {1}", RowLiquidAsset.CodeCurrency, PL.ToString("#,##0.0#", CultureInfo.CreateSpecificCulture("it-IT")));
         }
 
+        public string SrchShares
+        {
+            get { return GetValue(() => SrchShares); }
+            set
+            {
+                SetValue(() => SrchShares, value);
+                SharesListView.Filter = _Filter;
+                SharesListView.Refresh();
+
+            }
+        }
+
+        public bool Filter(object obj)
+        {
+            if (obj != null)
+            {
+                if (obj.GetType() == typeof(RegistryShare))
+                {
+                    var data = obj as RegistryShare;
+                    if (!string.IsNullOrEmpty(SrchShares))
+                        return data.Isin.ToUpper().Contains(SrchShares.ToUpper());
+                }
+            }
+            return false;
+        }
 
         public string SelectedOwner
         {
@@ -415,7 +444,17 @@ namespace FinanceManager.ViewModels
         public ObservableCollection<RegistryShare> SharesList
         {
             get { return GetValue(() => SharesList); }
-            set { SetValue(() => SharesList, value); }
+            set
+            {
+                SetValue(() => SharesList, value);
+                SharesListView = new ListCollectionView(value);
+            }
+        }
+
+        public ListCollectionView SharesListView
+        {
+            get { return GetValue(() => SharesListView); }
+            set { SetValue(() => SharesListView, value); }
         }
 
         public ObservableCollection<RegistryShareType> ShareTypeList
