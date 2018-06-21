@@ -4,7 +4,6 @@ using FinanceManager.Services;
 using FinanceManager.Views;
 using System;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -119,10 +118,10 @@ namespace FinanceManager.ViewModels
                         return data.DescFirm.ToUpper().Contains(SearchName.ToUpper());
                 }
             }
-            return false;
+            return true;
         }
 
-        public ListCollectionView FirmListView
+        public ICollectionView FirmListView
         {
             get { return GetValue(() => FirmListView); }
             set { SetValue(() => FirmListView, value); }
@@ -134,7 +133,8 @@ namespace FinanceManager.ViewModels
             set
             {
                 SetValue(() => FirmList, value);
-                FirmListView = new ListCollectionView(value);
+                FirmListView = CollectionViewSource.GetDefaultView(value);
+                //FirmListView = new ListCollectionView(value);
             }
         }
         /// <summary>

@@ -4,11 +4,11 @@ using FinanceManager.Services;
 using FinanceManager.Views;
 using System;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace FinanceManager.ViewModels
@@ -16,15 +16,14 @@ namespace FinanceManager.ViewModels
     public class RegistryShareViewModel : ViewModelBase
     {
         private IRegistryServices _services;
-        private RegistryShare _share;
-        private ObservableCollection<RegistryShare> _ShareList;
-        private ObservableCollection<RegistryShareType> _ShareTypeList;
-        private ObservableCollection<RegistryFirm> _FirmList;
         public ICommand CloseMeCommand { get; set; }
+        Predicate<object> _Filter;
+
 
         public RegistryShareViewModel(IRegistryServices services)
         {
             _services = services ?? throw new ArgumentNullException("RegistryLocationViewModel With No Services");
+            _Filter = new Predicate<object>(Filter);
             ShareList = new ObservableCollection<RegistryShare>(services.GetRegistryShareList());
             ShareTypeList = new ObservableCollection<RegistryShareType>(services.GetRegistryShareTypeList());
             FirmList = new ObservableCollection<RegistryFirm>(services.GetRegistryFirmList());
@@ -119,47 +118,66 @@ namespace FinanceManager.ViewModels
 
         public ObservableCollection<RegistryFirm> FirmList
         {
-            get { return _FirmList; }
-            private set
+            get { return GetValue(() => FirmList); }
+            set { SetValue(() => FirmList, value); }
+        }
+
+        public string SrchShares
+        {
+            get { return GetValue(() => SrchShares); }
+            set
             {
-                _FirmList = value;
-                NotifyPropertyChanged("FirmList");
+                SetValue(() => SrchShares, value);
+                SharesListView.Filter = _Filter;
+                SharesListView.Refresh();
+
             }
+        }
+
+        public bool Filter(object obj)
+        {
+            if (obj != null)
+            {
+                if (obj.GetType() == typeof(RegistryShare))
+                {
+                    var data = obj as RegistryShare;
+                    if (!string.IsNullOrEmpty(SrchShares))
+                        return data.Isin.ToUpper().Contains(SrchShares.ToUpper());
+                }
+            }
+            return true;
         }
 
         public ObservableCollection<RegistryShareType> ShareTypeList
         {
-            get { return _ShareTypeList; }
-            set
-            {
-                _ShareTypeList = value;
-                NotifyPropertyChanged("ShareTypeList");
-            }
+            get { return GetValue(() => ShareTypeList); }
+            set { SetValue(() => ShareTypeList, value); }
         }
 
         public ObservableCollection<RegistryShare> ShareList
         {
-            get { return _ShareList; }
+            get { return GetValue(() => ShareList); }
             private set
             {
-                _ShareList = value;
-                NotifyPropertyChanged("ShareList");
+                SetValue(() => ShareList, value);
+                SharesListView = CollectionViewSource.GetDefaultView(value);
+                //SharesListView = new ListCollectionView(value);
             }
         }
+
+        public ICollectionView SharesListView
+        {
+            get { return GetValue(() => SharesListView); }
+            set { SetValue(() => SharesListView, value); }
+        }
+
         /// <summary>
         /// il modello della gestione
         /// </summary>
         public RegistryShare Share
         {
-            get { return _share; }
-            set
-            {
-                if (value != null)
-                {
-                    _share = value;
-                    NotifyPropertyChanged("Share");
-                }
-            }
+            get { return GetValue(() => Share); }
+            set { SetValue(() => Share, value); }
         }
         /// <summary>
         /// Evento di chiusura della view Gestione gestioni

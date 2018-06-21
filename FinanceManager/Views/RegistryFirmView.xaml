@@ -12,7 +12,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="35"/>
-            <RowDefinition Height="0.25*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
@@ -29,20 +28,10 @@
                 HorizontalContentAlignment="Center" Grid.Column="2" HorizontalAlignment="Right"
                     VerticalContentAlignment="Center" Width="25" Height="25" Background="LightGray" 
                 Margin="0,0, 15, 0"></Button>
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="Filtro per nome: " Style="{StaticResource LabelBlockStyle}"/>
-        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SearchName, UpdateSourceTrigger=PropertyChanged}" MinWidth="180" Style="{StaticResource FormCenterTextBoxStyle}"/>
-        <ListView Grid.Row="2" Grid.ColumnSpan="3" ItemsSource="{Binding FirmListView, UpdateSourceTrigger=PropertyChanged}" Margin="5" FontSize="14"
-                  >
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding IdFirm}" Width="25" HorizontalAlignment="Right" Margin="0,0,5,0"/>
-                        <TextBlock Text="{Binding DescFirm}" HorizontalAlignment="Left" Margin="5,0,0,0"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-        <DataGrid Grid.Row="3" Grid.ColumnSpan="3" Name="Owner" CanUserAddRows="True" 
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Filtro per nome: " Style="{StaticResource LabelBlockStyle}" Margin="16,0,0,0"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SearchName, UpdateSourceTrigger=PropertyChanged}" 
+                 MinWidth="170" Style="{StaticResource FormCenterTextBoxStyle}" Margin="0,0,16,0" VerticalAlignment="Center"/>
+        <DataGrid Grid.Row="2" Grid.ColumnSpan="3" Name="Owner" CanUserAddRows="True" 
                   CanUserDeleteRows="True" AutoGenerateColumns="False" RowHeaderWidth="16"
                   SelectionMode="Single" FontSize="14" ItemsSource="{Binding FirmList, UpdateSourceTrigger=PropertyChanged}" 
                   Width="315" HorizontalAlignment="Center" AlternatingRowBackground="#FFAEFF90">

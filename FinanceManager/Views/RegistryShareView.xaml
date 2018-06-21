@@ -11,6 +11,7 @@
     <Grid MaxWidth="1050" Background="Beige" Margin="5,25">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
+            <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
@@ -26,7 +27,12 @@
                 HorizontalContentAlignment="Center" Grid.Column="1" HorizontalAlignment="Right"
                     VerticalContentAlignment="Center" Width="25" Height="25" Background="LightGray" 
                 Margin="0,0, 15, 0"></Button>
-        <DataGrid Grid.Row="1" Grid.ColumnSpan="2" Name="Owner" CanUserAddRows="True" 
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="1" Grid.ColumnSpan="2" Margin="15,0">
+            <TextBlock Text="Filtra per ISIN: " Style="{StaticResource LabelBlockStyle}"/>
+            <TextBox Text="{Binding SrchShares, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FormCenterTextBoxStyle}"/>
+        </StackPanel>
+        
+        <DataGrid Grid.Row="2" Grid.ColumnSpan="2" Name="Owner" CanUserAddRows="True" Margin="15, 0"
                   CanUserDeleteRows="True" AutoGenerateColumns="False" RowHeaderWidth="16"
                   SelectionMode="Single" FontSize="14" ItemsSource="{Binding Path=ShareList, UpdateSourceTrigger=PropertyChanged}" 
                   HorizontalAlignment="Center" AlternatingRowBackground="#FFAEFF90">
@@ -42,9 +48,9 @@
                 <DataGridTextColumn Header="ID" IsReadOnly="True" Binding="{Binding IdShare, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                                     Width="40"/>
                 <DataGridTextColumn Header="Descrizione Titolo" IsReadOnly="False" 
-                                    Binding="{Binding DescShare, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="250"/>
-                <DataGridTextColumn Header="ISIN" IsReadOnly="False"
-                                    Binding="{Binding Isin, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="100"/>
+                                    Binding="{Binding DescShare, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                <DataGridTextColumn Header="ISIN" IsReadOnly="False" 
+                                    Binding="{Binding Isin, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="120"/>
                 <DataGridComboBoxColumn Header="Tipologia" IsReadOnly="False" Width="100"
                                         SelectedValuePath="IdShareType" DisplayMemberPath="TypeName"
                                         SelectedValueBinding="{Binding IdShareType, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
@@ -59,7 +65,7 @@
                         </Style>
                     </DataGridComboBoxColumn.EditingElementStyle>
                 </DataGridComboBoxColumn>
-                <DataGridComboBoxColumn Header="Azienda" IsReadOnly="False" Width="200"
+                <DataGridComboBoxColumn Header="Azienda" IsReadOnly="False" Width="250"
                                         SelectedValuePath="IdFirm" DisplayMemberPath="DescFirm"
                                         SelectedValueBinding="{Binding IdFirm, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <DataGridComboBoxColumn.ElementStyle>
