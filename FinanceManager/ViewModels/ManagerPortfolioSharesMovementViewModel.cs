@@ -26,7 +26,6 @@ namespace FinanceManager.ViewModels
         public ICommand ClearCommand { get; set; }
 
         private int[] enabledMovement = { 5, 6 };
-        private string _SrchShares;
         Predicate<object> _Filter;
 
         public ManagerPortfolioSharesMovementViewModel(IRegistryServices services, IManagerLiquidAssetServices liquidAssetServices)

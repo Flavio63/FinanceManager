@@ -5,5 +5,32 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <sys:String x:Key="DAF_Caption">DAF-C Program</sys:String>
+        <Style x:Key="LabelBlockStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="5,5,0,5"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+        <Style x:Key="FormComboStyle" TargetType="{x:Type ComboBox}">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="MinWidth" Value="100"/>
+        </Style>
+        <Style x:Key="FormRightTextBoxStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="MinWidth" Value="100"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+        </Style>
+        <Style x:Key="FormCenterTextBoxStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="MinWidth" Value="100"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
     </Application.Resources>
 </Application>

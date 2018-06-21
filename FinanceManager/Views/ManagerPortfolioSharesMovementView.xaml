@@ -11,26 +11,6 @@
     <UserControl.Resources>
         <conv:ComboboxDisableConverter x:Key="itemDisableconverter"/>
         <TextBlock Text="PortfolioShares" x:Key="ObjName"/>
-        <Style x:Key="LabelBlockStyle" TargetType="{x:Type TextBlock}">
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Margin" Value="5,5,0,5"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
-        </Style>
-        <Style x:Key="FormComboStyle" TargetType="{x:Type ComboBox}">
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Margin" Value="5"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="MinWidth" Value="100"/>
-        </Style>
-        <Style x:Key="FormTextBoxStyle" TargetType="{x:Type TextBox}">
-            <Setter Property="MinWidth" Value="100"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="5"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="HorizontalContentAlignment" Value="Right"/>
-        </Style>
     </UserControl.Resources>
     <Grid Background="LightSeaGreen" Margin="5">
         <Grid.RowDefinitions>
@@ -240,7 +220,7 @@
 
                 <TextBlock Grid.Row="7" Text="Filtra con isin:" Style="{StaticResource LabelBlockStyle}"/>
                 <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding SrchShares, UpdateSourceTrigger=PropertyChanged}"
-                          Style="{StaticResource FormTextBoxStyle}"/>
+                          Style="{StaticResource FormCenterTextBoxStyle}"/>
 
                 <TextBlock Grid.Row="8" Text="Titolo:" Style="{StaticResource LabelBlockStyle}"/>
                 <ComboBox Grid.Row="8" Grid.Column="1" Name="cbShares" 
@@ -277,7 +257,7 @@
 
                 <TextBlock Grid.Row="10" Text="Cifra unitaria:" Style="{StaticResource LabelBlockStyle}" ToolTip="Valore in valuta locale"/>
                 <TextBox Name="unityLocalAmount" Grid.Row="10" Grid.Column="1" Text="{Binding RowLiquidAsset.UnityLocalValue, ConverterCulture=it-IT}" 
-                         Style="{StaticResource FormTextBoxStyle}" IsEnabled="False">
+                         Style="{StaticResource FormRightTextBoxStyle}" IsEnabled="False">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="LostFocus">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
@@ -287,7 +267,7 @@
 
                 <TextBlock Grid.Row="11" Text="N. Titoli:" Style="{StaticResource LabelBlockStyle}" ToolTip="Inserire valore negativo in caso di vendita"/>
                 <TextBox Name="NShares" Grid.Row="11" Grid.Column="1" Text="{Binding RowLiquidAsset.SharesQuantity, ConverterCulture=it-IT}" 
-                         Style="{StaticResource FormTextBoxStyle}" IsEnabled="False">
+                         Style="{StaticResource FormRightTextBoxStyle}" IsEnabled="False">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="LostFocus">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
@@ -297,11 +277,11 @@
 
                 <TextBlock Grid.Row="12" Text="Totale 1:" Style="{StaticResource LabelBlockStyle}" ToolTip="Cifra unitaria per n. titoli"/>
                 <TextBox Name="Totale1" Grid.Row="12" Grid.Column="1" Text="{Binding RowLiquidAsset.Amount, ConverterCulture=it-IT, StringFormat=N2,
-                    UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Style="{StaticResource FormTextBoxStyle}" IsEnabled="False"/>
+                    UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Style="{StaticResource FormRightTextBoxStyle}" IsEnabled="False"/>
 
                 <TextBlock Grid.Row="13" Text="T. Commissioni:" Style="{StaticResource LabelBlockStyle}" ToolTip="Valore in valuta locale"/>
                 <TextBox Grid.Row="13" Grid.Column="1" Name="CommissionValue" Text="{Binding RowLiquidAsset.TotalCommission, ConverterCulture=it-IT}"
-                     Style="{StaticResource FormTextBoxStyle}" IsEnabled="False" >
+                     Style="{StaticResource FormRightTextBoxStyle}" IsEnabled="False" >
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="LostFocus">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
@@ -311,7 +291,7 @@
 
                 <TextBlock Grid.Row="14" Text="Tasso di cambio:" Style="{StaticResource LabelBlockStyle}"/>
                 <TextBox Name="ExchangeValue" Grid.Row="14" Grid.Column="1" Text="{Binding RowLiquidAsset.ExchangeValue, ConverterCulture=it-IT}" 
-                         Margin="5" Style="{StaticResource FormTextBoxStyle}" 
+                         Margin="5" Style="{StaticResource FormRightTextBoxStyle}" 
                      VerticalContentAlignment="Center" HorizontalContentAlignment="Right" FontSize="14" MinWidth="100" IsEnabled="False">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="LostFocus">
@@ -322,12 +302,12 @@
 
                 <TextBlock Grid.Row="15" Text="Totale 2:" Style="{StaticResource LabelBlockStyle}" ToolTip="Totale 1 + commissioni"/>
                 <TextBox Name="ExchangedValue" Grid.Row="15" Grid.Column="1" Text="{Binding TotalLocalValue, ConverterCulture=it-IT, StringFormat=N2,
-                    UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Style="{StaticResource FormTextBoxStyle}" FontWeight="Black" IsEnabled="False">
+                    UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Style="{StaticResource FormRightTextBoxStyle}" FontWeight="Black" IsEnabled="False">
                 </TextBox>
 
                 <TextBlock Grid.Row="16" Text="TobinTax in Euro:" Style="{StaticResource LabelBlockStyle}" ToolTip="Valore sempre in euro, presente solo in alcuni casi"/>
                 <TextBox Name="TobinTaxValue" Grid.Row="16" Grid.Column="1" Text="{Binding RowLiquidAsset.TobinTax, ConverterCulture=it-IT,
-                    UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Style="{StaticResource FormTextBoxStyle}"  IsEnabled="False">
+                    UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Style="{StaticResource FormRightTextBoxStyle}"  IsEnabled="False">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="LostFocus">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
@@ -337,7 +317,7 @@
 
                 <TextBlock Grid.Row="17" Text="Anticipo Cedole:" Style="{StaticResource LabelBlockStyle}" ToolTip="Inserire la cifra complessiva fra disaggio e anticipo cedole"/>
                 <TextBox Name="DisaggioValue" Text="{Binding RowLiquidAsset.DisaggioCoupons, ConverterCulture=it-IT}"
-                             IsEnabled="False" Grid.Row="17" Grid.Column="1" Style="{StaticResource FormTextBoxStyle}" >
+                             IsEnabled="False" Grid.Row="17" Grid.Column="1" Style="{StaticResource FormRightTextBoxStyle}" >
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="LostFocus">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
@@ -347,7 +327,7 @@
 
                 <TextBlock Grid.Row="18" Text="Ritenuta Fiscale €:" Style="{StaticResource LabelBlockStyle}"/>
                 <TextBox Name="RitenutaFiscale" Text="{Binding RowLiquidAsset.RitenutaFiscale, ConverterCulture=it-IT}"
-                             IsEnabled="False" Grid.Row="18" Grid.Column="1" Style="{StaticResource FormTextBoxStyle}" >
+                             IsEnabled="False" Grid.Row="18" Grid.Column="1" Style="{StaticResource FormRightTextBoxStyle}" >
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="LostFocus">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
@@ -357,12 +337,12 @@
 
                 <TextBlock Grid.Row="19" Text="Totale Contabile:" Style="{StaticResource LabelBlockStyle}" ToolTip="Totale 2 * tasso di cambio + Tobin + Disaggio"/>
                 <TextBox Name="TotaleContabile" Grid.Row="19" Grid.Column="1" Text="{Binding TotaleContabile, ConverterCulture=it-IT, StringFormat=N2,
-                    UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Style="{StaticResource FormTextBoxStyle}" FontWeight="Black" IsEnabled="False">
+                    UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Style="{StaticResource FormRightTextBoxStyle}" FontWeight="Black" IsEnabled="False">
                 </TextBox>
 
                 <TextBlock Grid.Row="20" Text="Convertito Euro:" Style="{StaticResource LabelBlockStyle}" ToolTip="Totale 2 * tasso di cambio + Tobin + Disaggio"/>
                 <TextBox Name="TotalValue" Grid.Row="20" Grid.Column="1" Text="{Binding AmountChangedValue, ConverterCulture=it-IT, StringFormat=N2,
-                    UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Style="{StaticResource FormTextBoxStyle}" FontWeight="Black" IsEnabled="False">
+                    UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Style="{StaticResource FormRightTextBoxStyle}" FontWeight="Black" IsEnabled="False">
                 </TextBox>
 
                 <TextBlock Grid.Row="21" Text="In che data:" Style="{StaticResource LabelBlockStyle}"/>

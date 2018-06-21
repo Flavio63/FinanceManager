@@ -8,6 +8,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace FinanceManager.ViewModels
@@ -16,14 +17,15 @@ namespace FinanceManager.ViewModels
     {
         private IRegistryServices _services;
         private RegistryFirm _firm;
-        private ObservableCollection<RegistryFirm> _FirmList;
         public ICommand CloseMeCommand { get; set; }
+        Predicate<object> _Filter;
 
         public RegistryFirmViewModel(IRegistryServices services)
         {
             _services = services ?? throw new ArgumentNullException("RegistryFirmViewModel With No Services");
             FirmList = new ObservableCollection<RegistryFirm>(services.GetRegistryFirmList());
             CloseMeCommand = new CommandHandler(CloseMe);
+            _Filter = new Predicate<object>(Filter);
         }
 
         /// <summary>
@@ -94,13 +96,45 @@ namespace FinanceManager.ViewModels
             }
         }
 
-        public ObservableCollection<RegistryFirm> FirmList
+        public string SearchName
         {
-            get { return _FirmList; }
+            get { return GetValue(() => SearchName); }
             set
             {
-                _FirmList = value;
-                NotifyPropertyChanged("FirmList");
+                SetValue(() => SearchName, value);
+                FirmListView.Filter = _Filter;
+                FirmListView.Refresh();
+
+            }
+        }
+
+        public bool Filter(object obj)
+        {
+            if (obj != null)
+            {
+                if (obj.GetType() == typeof(RegistryFirm))
+                {
+                    var data = obj as RegistryFirm;
+                    if (!string.IsNullOrEmpty(SearchName))
+                        return data.DescFirm.ToUpper().Contains(SearchName.ToUpper());
+                }
+            }
+            return false;
+        }
+
+        public ListCollectionView FirmListView
+        {
+            get { return GetValue(() => FirmListView); }
+            set { SetValue(() => FirmListView, value); }
+        }
+
+        public ObservableCollection<RegistryFirm> FirmList
+        {
+            get { return GetValue(() => FirmList); }
+            set
+            {
+                SetValue(() => FirmList, value);
+                FirmListView = new ListCollectionView(value);
             }
         }
         /// <summary>
