@@ -92,26 +92,44 @@
                         Background="#FFC9C9C9">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Height="30" Margin="15,0,15,0">
                     <TextBlock Text="Combio Dollaro / Euro" VerticalAlignment="Center" Margin="5,0,10,0" FontWeight="Bold"/>
-                    <TextBox Name="exchangeDollar" Margin="5" MinWidth="55" VerticalContentAlignment="Center" HorizontalContentAlignment="Right"/>
+                    <TextBox Name="exchangeDollar" Text="{Binding ExchangeDollar, NotifyOnSourceUpdated=True, ConverterCulture=it-IT}" Margin="5" MinWidth="55" VerticalContentAlignment="Center" HorizontalContentAlignment="Right">
+                        <iy:Interaction.Triggers>
+                            <iy:EventTrigger EventName="LostFocus">
+                                <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                            </iy:EventTrigger>
+                        </iy:Interaction.Triggers>
+                    </TextBox>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Height="30" Margin="15,0,15,0">
                     <TextBlock Text="Combio Sterlina / Euro" VerticalAlignment="Center" Margin="5,0,10,0" FontWeight="Bold"/>
-                    <TextBox Name="exchangePound" Margin="5" MinWidth="55" VerticalContentAlignment="Center" HorizontalContentAlignment="Right"/>
+                    <TextBox Name="exchangePound" Text="{Binding ExchangePound, NotifyOnSourceUpdated=True, ConverterCulture=it-IT}" Margin="5" MinWidth="55" VerticalContentAlignment="Center" HorizontalContentAlignment="Right">
+                        <iy:Interaction.Triggers>
+                            <iy:EventTrigger EventName="LostFocus">
+                                <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                            </iy:EventTrigger>
+                        </iy:Interaction.Triggers>
+                    </TextBox>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Height="30" Margin="15,0,15,0">
                     <TextBlock Text="Combio Franchi / Euro" VerticalAlignment="Center" Margin="5,0,10,0" FontWeight="Bold"/>
-                    <TextBox Name="exchangeFranchi" Margin="5" MinWidth="55" VerticalContentAlignment="Center" HorizontalContentAlignment="Right"/>
+                    <TextBox Name="exchangeFranchi" Text="{Binding ExchangeFranchi, NotifyOnSourceUpdated=True, ConverterCulture=it-IT}" Margin="5" MinWidth="55" VerticalContentAlignment="Center" HorizontalContentAlignment="Right">
+                        <iy:Interaction.Triggers>
+                            <iy:EventTrigger EventName="LostFocus">
+                                <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                            </iy:EventTrigger>
+                        </iy:Interaction.Triggers>
+                    </TextBox>
                 </StackPanel>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.ColumnSpan="3" Margin="5" HorizontalAlignment="Center">
                 <Button Name="btnViewReport" Content="Visualizza" Margin="15,10, 5, 0" Width="90" FontSize="14" FontWeight="Bold"
-                             Command="{Binding ClearCommand}" CommandParameter="{Binding ElementName=btnClearAll}"/>
+                             Command="{Binding ViewCommand}" CommandParameter="{Binding ElementName=btnViewReport}"/>
 
                 <Button Name="btnExportReport" Content="Esporta" Margin="5, 10, 5,0" Width="90" FontSize="14" FontWeight="Bold"
-                             Command="{Binding ClearCommand}" CommandParameter="{Binding ElementName=btnClear}"/>
+                             />
                 
                 <Button Name="btnPrintReport" Content="Stampa" Margin="5, 10, 15,0" Width="90" FontSize="14" FontWeight="Bold"
-                             Command="{Binding ClearCommand}" CommandParameter="{Binding ElementName=btnClear}"/>
+                             />
             </StackPanel>
         </Grid>
     </Grid>
