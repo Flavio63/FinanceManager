@@ -19,8 +19,9 @@ namespace FinanceManager.ViewModels
         private IRegistryServices _services;
         private IManagerReportServices _reportServices;
         public ICommand CloseMeCommand { get; set; }
-        private IList<int> selectedOwners = new List<int>();
-        public IList<int> _availableYears = new List<int>();
+        private IList<int> _selectedOwners = new List<int>();
+        private IList<int> _selectedYears = new List<int>();
+        private IList<int> _selectedCurrency = new List<int>();
 
         public ManagerReportsViewModel(IRegistryServices registryServices, IManagerReportServices managerReportServices)
         {
@@ -49,41 +50,46 @@ namespace FinanceManager.ViewModels
         {
             if (e.AddedItems.Count > 0)
             {
-                ComboBox CB = sender as ComboBox;
                 ListBox LB = sender as ListBox;
+                ComboBox CB = sender as ComboBox;
                 if (LB != null)
                 {
-                    selectedOwners.Clear();
-                    foreach (RegistryOwner item in LB.SelectedItems)
+                    if (LB.Name == "ListOwners")
                     {
-                        selectedOwners.Add(item.IdOwner);
+                        _selectedOwners.Clear();
+                        foreach (RegistryOwner item in LB.SelectedItems)
+                        {
+                            _selectedOwners.Add(item.IdOwner);
+                        }
                     }
+                    if (LB.Name == "ListYears")
+                    {
+                        _selectedYears.Clear();
+                        foreach (int y in LB.SelectedItems)
+                        {
+                            _selectedYears.Add(y);
+                        }
+                    }
+                }
+                if (CB != null)
+                {
+
                 }
             }
         }
 
         public void IsChecked(object sender, RoutedEventArgs e)
         {
-            CheckBox checkBox = sender as CheckBox;
-            switch (checkBox.Name)
+            RadioButton radioButton = sender as RadioButton;
+            switch (radioButton.Content)
             {
-                case "AllOwners":
-
+                case "Singole Valute":
+                    EnableControl.VisibleControlInGrid(((StackPanel)radioButton.Parent).Parent as Grid, "listCurrency", Visibility.Visible);
+                    EnableControl.VisibleControlInGrid(((StackPanel)radioButton.Parent).Parent as Grid, "stackpanelCurrency", Visibility.Collapsed);
                     break;
-                case "AllYears":
-
-                    break;
-                case "AllInEuro":
-                    if (checkBox.IsChecked == true)
-                    {
-                        EnableControl.EnableControlInGrid(checkBox.Parent as Grid, "cbCurrency", false);
-                        EnableControl.EnableControlInGrid(checkBox.Parent as Grid, "spCurrency", true);
-                    }
-                    else
-                    {
-                        EnableControl.EnableControlInGrid(checkBox.Parent as Grid, "cbCurrency", true);
-                        EnableControl.EnableControlInGrid(checkBox.Parent as Grid, "spCurrency", false);
-                    }
+                case "Tutto in Euro":
+                    EnableControl.VisibleControlInGrid(((StackPanel)radioButton.Parent).Parent as Grid, "listCurrency", Visibility.Collapsed);
+                    EnableControl.VisibleControlInGrid(((StackPanel)radioButton.Parent).Parent as Grid, "stackpanelCurrency", Visibility.Visible);
                     break;
                 default:
                     break;

@@ -10,9 +10,36 @@ namespace FinanceManager
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region dichiarazioni
         private IRegistryServices _registryServices;
         private IManagerLiquidAssetServices _managerLiquidServices;
         private IManagerReportServices _managerReportServices;
+
+        RegistryOwnerViewModel ownerViewModel;
+        RegistryOwnerView ownerView;
+        RegistryShareTypeViewModel registryShareTypeViewModel;
+        RegistryShareTypeView shareTypeView;
+        RegistryCurrencyViewModel registryCurrencyViewModel;
+        RegistryCurrencyView currencyView;
+        RegistryLocationViewModel registryLocationViewModel;
+        RegistryLocationView locationView;
+        RegistryMarketViewModel registryMarketViewModel;
+        RegistryMarketView marketView;
+        RegistryFirmViewModel registryFirmViewModel;
+        RegistryFirmView firmView;
+        RegistryShareViewModel registryShareViewModel;
+        RegistryShareView shareView;
+        RegistryMovementTypeViewModel registryMovementTypeViewModel;
+        RegistryMovementTypeView registryMovementTypeView;
+        ManagerPortfolioMovementViewModel managerPortfolioMovementViewModel;
+        ManagerPortfolioMovementView managerPortfolioMovementView;
+        ManagerPortfolioChangeCurrencyViewModel managerPortfolioChangeCurrencyViewModel;
+        ManagerPortfolioChangeCurrencyView managerPortfolioChangeCurrencyView;
+        ManagerPortfolioSharesMovementViewModel managerPortfolioSharesMovementViewModel;
+        ManagerPortfolioSharesMovementView managerPortfolioSharesMovementView;
+        ManagerReportsViewModel managerReportsViewModel;
+        ManagerReportsView managerReportsView;
+        #endregion
 
         public MainWindow()
         {
@@ -24,105 +51,194 @@ namespace FinanceManager
 
         private void OnClickGestioni(object sender, RoutedEventArgs e)
         {
-            RegistryOwnerViewModel ownerViewModel = new RegistryOwnerViewModel(_registryServices);
-            RegistryOwnerView ownerView = new RegistryOwnerView(ownerViewModel);
-            if (!mainGrid.Children.Contains(ownerView))
+            if (ownerView == null || !mainGrid.Children.Contains(ownerView))
+            {
+                ownerViewModel = new RegistryOwnerViewModel(_registryServices);
+                ownerView = new RegistryOwnerView(ownerViewModel);
                 mainGrid.Children.Add(ownerView);
+            }
+            else
+            {
+                mainGrid.Children.Remove(ownerView);
+                ownerView = null;
+                ownerViewModel = null;
+            }
         }
 
         private void OnClickTipoTitoli(object sender, RoutedEventArgs e)
         {
-            RegistryShareTypeViewModel registryShareTypeViewModel = new RegistryShareTypeViewModel(_registryServices);
-            RegistryShareTypeView shareTypeView = new RegistryShareTypeView(registryShareTypeViewModel);
-            if (!mainGrid.Children.Contains(shareTypeView))
+            if (shareTypeView == null || !mainGrid.Children.Contains(shareTypeView))
+            {
+                registryShareTypeViewModel = new RegistryShareTypeViewModel(_registryServices);
+                shareTypeView = new RegistryShareTypeView(registryShareTypeViewModel);
                 mainGrid.Children.Add(shareTypeView);
+            }
+            else
+            {
+                mainGrid.Children.Remove(shareTypeView);
+                shareTypeView = null;
+                registryShareTypeViewModel = null;
+            }
         }
 
         private void OnClickCurrency(object sender, RoutedEventArgs e)
         {
-            RegistryCurrencyViewModel registryCurrencyViewModel = new RegistryCurrencyViewModel(_registryServices);
-            RegistryCurrencyView currencyView = new RegistryCurrencyView(registryCurrencyViewModel);
-            if (!mainGrid.Children.Contains(currencyView))
+            if (currencyView == null || !mainGrid.Children.Contains(currencyView))
+            {
+                registryCurrencyViewModel = new RegistryCurrencyViewModel(_registryServices);
+                currencyView = new RegistryCurrencyView(registryCurrencyViewModel);
                 mainGrid.Children.Add(currencyView);
+            }
+            else
+            {
+                mainGrid.Children.Remove(currencyView);
+                currencyView = null;
+                registryCurrencyViewModel = null;
+            }
         }
 
         private void OnClickLocation(object sender, RoutedEventArgs e)
         {
-            RegistryLocationViewModel registryLocationViewModel = new RegistryLocationViewModel(_registryServices);
-            RegistryLocationView locationView = new RegistryLocationView(registryLocationViewModel);
-            if (!mainGrid.Children.Contains(locationView))
+            if (locationView == null || !mainGrid.Children.Contains(locationView))
+            {
+                registryLocationViewModel = new RegistryLocationViewModel(_registryServices);
+                locationView = new RegistryLocationView(registryLocationViewModel);
                 mainGrid.Children.Add(locationView);
+            }
+            else
+            {
+                mainGrid.Children.Remove(locationView);
+                locationView = null;
+                registryLocationViewModel = null;
+            }
         }
 
         private void OnClickMarket(object sender, RoutedEventArgs e)
         {
-            RegistryMarketViewModel registryMarketViewModel = new RegistryMarketViewModel(_registryServices);
-            RegistryMarketView marketView = new RegistryMarketView(registryMarketViewModel);
-            if (!mainGrid.Children.Contains(marketView))
+            if (marketView == null || !mainGrid.Children.Contains(marketView))
+            {
+                registryMarketViewModel = new RegistryMarketViewModel(_registryServices);
+                marketView = new RegistryMarketView(registryMarketViewModel);
                 mainGrid.Children.Add(marketView);
+            }
+            else
+            {
+                mainGrid.Children.Remove(marketView);
+                marketView = null;
+                registryMarketViewModel = null;
+            }
         }
 
         private void OnClickFirm(object sender, RoutedEventArgs e)
         {
-            RegistryFirmViewModel registryFirmViewModel = new RegistryFirmViewModel(_registryServices);
-            RegistryFirmView firmView = new RegistryFirmView(registryFirmViewModel);
-            if (!mainGrid.Children.Contains(firmView))
+            if (firmView == null || !mainGrid.Children.Contains(firmView))
+            {
+                registryFirmViewModel = new RegistryFirmViewModel(_registryServices);
+                firmView = new RegistryFirmView(registryFirmViewModel);
                 mainGrid.Children.Add(firmView);
+            }
+            else
+            {
+                mainGrid.Children.Remove(firmView);
+                firmView = null;
+                registryFirmViewModel = null;
+            }
         }
 
         private void OnClickShare(object sender, RoutedEventArgs e)
         {
-            RegistryShareViewModel registryShareViewModel = new RegistryShareViewModel(_registryServices);
-            RegistryShareView shareView = new RegistryShareView(registryShareViewModel);
-            if (!mainGrid.Children.Contains(shareView))
+            if (shareView == null || !mainGrid.Children.Contains(shareView))
+            {
+                registryShareViewModel = new RegistryShareViewModel(_registryServices);
+                shareView = new RegistryShareView(registryShareViewModel);
                 mainGrid.Children.Add(shareView);
+            }
+            else
+            {
+                mainGrid.Children.Remove(shareView);
+                shareView = null;
+                registryShareViewModel = null;
+            }
         }
 
         private void OnClickMovementType(object sender, RoutedEventArgs e)
         {
-            RegistryMovementTypeViewModel registryMovementTypeViewModel = new RegistryMovementTypeViewModel(_registryServices);
-            RegistryMovementTypeView registryMovementTypeView = new RegistryMovementTypeView(registryMovementTypeViewModel);
-            if (!mainGrid.Children.Contains(registryMovementTypeView))
+            if (registryMovementTypeView == null || !mainGrid.Children.Contains(registryMovementTypeView))
+            {
+                registryMovementTypeViewModel = new RegistryMovementTypeViewModel(_registryServices);
+                registryMovementTypeView = new RegistryMovementTypeView(registryMovementTypeViewModel);
                 mainGrid.Children.Add(registryMovementTypeView);
+            }
+            else
+            {
+                mainGrid.Children.Remove(registryMovementTypeView);
+                registryMovementTypeView = null;
+                registryMovementTypeViewModel = null;
+            }
         }
 
         private void OnClickManagerPorfolioMovement(object sender, RoutedEventArgs e)
         {
-            ManagerPortfolioMovementViewModel managerPortfolioMovementViewModel = new ManagerPortfolioMovementViewModel(_registryServices, _managerLiquidServices);
-            ManagerPortfolioMovementView managerPortfolioMovementView = new ManagerPortfolioMovementView(managerPortfolioMovementViewModel);
-            if (!mainGrid.Children.Contains(managerPortfolioMovementView))
+            if (managerPortfolioMovementView == null || !mainGrid.Children.Contains(managerPortfolioMovementView))
+            {
+                managerPortfolioMovementViewModel = new ManagerPortfolioMovementViewModel(_registryServices, _managerLiquidServices);
+                managerPortfolioMovementView = new ManagerPortfolioMovementView(managerPortfolioMovementViewModel);
                 mainGrid.Children.Add(managerPortfolioMovementView);
+            }
+            else
+            {
+                mainGrid.Children.Remove(managerPortfolioMovementView);
+                managerPortfolioMovementView = null;
+                managerPortfolioMovementViewModel = null;
+            }
         }
 
         private void OnClickManagerChangeCurrency(object sender, RoutedEventArgs e)
         {
-            ManagerPortfolioChangeCurrencyViewModel managerPortfolioChangeCurrencyViewModel = new ManagerPortfolioChangeCurrencyViewModel(_registryServices, _managerLiquidServices);
-            ManagerPortfolioChangeCurrencyView managerPortfolioChangeCurrencyView = new ManagerPortfolioChangeCurrencyView(managerPortfolioChangeCurrencyViewModel);
-            if (!mainGrid.Children.Contains(managerPortfolioChangeCurrencyView))
+            if (managerPortfolioChangeCurrencyView == null || !mainGrid.Children.Contains(managerPortfolioChangeCurrencyView))
+            {
+                managerPortfolioChangeCurrencyViewModel = new ManagerPortfolioChangeCurrencyViewModel(_registryServices, _managerLiquidServices);
+                managerPortfolioChangeCurrencyView = new ManagerPortfolioChangeCurrencyView(managerPortfolioChangeCurrencyViewModel);
                 mainGrid.Children.Add(managerPortfolioChangeCurrencyView);
+            }
+            else
+            {
+                mainGrid.Children.Remove(managerPortfolioChangeCurrencyView);
+                managerPortfolioChangeCurrencyView = null;
+                managerPortfolioChangeCurrencyViewModel = null;
+            }
         }
 
         private void OnClickManagerSharesMovement(object sender, RoutedEventArgs e)
         {
-            ManagerPortfolioSharesMovementViewModel managerPortfolioSharesMovementViewModel = new ManagerPortfolioSharesMovementViewModel(_registryServices, _managerLiquidServices);
-            ManagerPortfolioSharesMovementView managerPortfolioSharesMovementView = new ManagerPortfolioSharesMovementView(managerPortfolioSharesMovementViewModel);
-            if (!mainGrid.Children.Contains(managerPortfolioSharesMovementView))
+            if (managerPortfolioSharesMovementView == null || !mainGrid.Children.Contains(managerPortfolioSharesMovementView))
+            {
+                managerPortfolioSharesMovementViewModel = new ManagerPortfolioSharesMovementViewModel(_registryServices, _managerLiquidServices);
+                managerPortfolioSharesMovementView = new ManagerPortfolioSharesMovementView(managerPortfolioSharesMovementViewModel);
                 mainGrid.Children.Add(managerPortfolioSharesMovementView);
-        }
-
-        private void OnClickTrendAnno(object sender, RoutedEventArgs e)
-        {
-            ReportGuadagniAnnoViewModel reportGuadagniAnnoViewModel = new ReportGuadagniAnnoViewModel();
-            ReportGuadagniAnnoView reportGuadagniAnnoView = new ReportGuadagniAnnoView(reportGuadagniAnnoViewModel);
-            mainGrid.Children.Add(reportGuadagniAnnoView);
+            }
+            else
+            {
+                mainGrid.Children.Remove(managerPortfolioSharesMovementView);
+                managerPortfolioSharesMovementView = null;
+                managerPortfolioSharesMovementViewModel = null;
+            }
         }
 
         private void OnClickManagerReports(object sender, RoutedEventArgs e)
         {
-            ManagerReportsViewModel managerReportsViewModel = new ManagerReportsViewModel(_registryServices, _managerReportServices);
-            ManagerReportsView managerReportsView = new ManagerReportsView(managerReportsViewModel);
-            if (!mainGrid.Children.Contains(managerReportsView))
+            if (managerReportsView == null || !mainGrid.Children.Contains(managerReportsView))
+            {
+                managerReportsViewModel = new ManagerReportsViewModel(_registryServices, _managerReportServices);
+                managerReportsView = new ManagerReportsView(managerReportsViewModel);
                 mainGrid.Children.Add(managerReportsView);
+            }
+            else
+            {
+                mainGrid.Children.Remove(managerReportsView);
+                managerReportsView = null;
+                managerReportsViewModel = null;
+            }
         }
     }
 }

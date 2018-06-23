@@ -48,7 +48,7 @@ namespace FinanceManager.ViewModels
                 MovementList = new ObservableCollection<RegistryMovementType>(_services.GetRegistryMovementTypesList());
                 LocationList = new ObservableCollection<RegistryLocation>(_services.GetRegistryLocationList());
                 CurrencyList = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
-                ShareTypeList = new ObservableCollection<RegistryShareType>(_services.GetRegistryShareTypeList());
+                SharesList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
                 MarketShareList = new ObservableCollection<RegistryMarket>(_services.GetRegistryMarketList());
                 RowLiquidAsset = new ManagerLiquidAsset();
                 RowLiquidAsset.MovementDate = DateTime.Now;
@@ -72,7 +72,6 @@ namespace FinanceManager.ViewModels
                 RegistryLocation RL = e.AddedItems[0] as RegistryLocation;
                 RegistryMovementType RMT = e.AddedItems[0] as RegistryMovementType;
                 RegistryCurrency RC = e.AddedItems[0] as RegistryCurrency;
-                RegistryShareType RST = e.AddedItems[0] as RegistryShareType;
                 RegistryShare RS = e.AddedItems[0] as RegistryShare;
                 RegistryMarket RM = e.AddedItems[0] as RegistryMarket;
                 DateTime DT = DateTime.Now;
@@ -117,13 +116,6 @@ namespace FinanceManager.ViewModels
                     RowLiquidAsset.CodeCurrency = RC.CodeCurrency;
                     SetAvailableLiquidity(_liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, RowLiquidAsset.IdCurrency));
                     SetProfitLoss(_liquidAssetServices.GetProfitLossByCurrency(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, RowLiquidAsset.IdCurrency));
-                    EnableControl.EnableControlInGrid(CB.Parent as Grid, "cbShareType", true);
-                }
-                if (RST != null)
-                {
-                    RowLiquidAsset.IdShareType = RST.IdShareType;
-                    RowLiquidAsset.DescShareType = RST.TypeName;
-                    SharesList = new ObservableCollection<RegistryShare>(_services.GetSharesByType(RowLiquidAsset.IdShareType));
                     EnableControl.EnableControlInGrid(CB.Parent as Grid, "cbShares", true);
                 }
                 if (RS != null)
@@ -340,7 +332,7 @@ namespace FinanceManager.ViewModels
                         return data.Isin.ToUpper().Contains(SrchShares.ToUpper());
                 }
             }
-            return false;
+            return true;
         }
 
         public string SelectedOwner
@@ -454,12 +446,6 @@ namespace FinanceManager.ViewModels
         {
             get { return GetValue(() => SharesListView); }
             set { SetValue(() => SharesListView, value); }
-        }
-
-        public ObservableCollection<RegistryShareType> ShareTypeList
-        {
-            get { return GetValue(() => ShareTypeList); }
-            set { SetValue(() => ShareTypeList, value); }
         }
 
         public ObservableCollection<ManagerLiquidAsset> LiquidAssetList
@@ -580,8 +566,6 @@ namespace FinanceManager.ViewModels
                     SetUpViewModel();
                     LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>();
                     SelectedOwner = "";
-                    CanInsert = false;
-                    CanUpdateDelete = false;
                 }
                 else
                 {
@@ -605,9 +589,12 @@ namespace FinanceManager.ViewModels
                             }
                         }
                     }
-                    CanInsert = false;
-                    CanUpdateDelete = false;
                 }
+                CanInsert = false;
+                CanUpdateDelete = false;
+                SrchShares = string.Empty;
+                ProfitLoss = string.Empty;
+                TotaleContabile = 0;
                 TotalLocalValue = 0;
                 AmountChangedValue = 0;
                 SharesOwned = "0";
