@@ -27,6 +27,7 @@ namespace FinanceManager.ViewModels
         private IList<int> _selectedOwners = new List<int>();
         private IList<int> _selectedYears = new List<int>();
         private IList<int> _selectedCurrency = new List<int>();
+        private IList<string> _descCurrency = new List<string>();
         private double[] exchangeValue;
         private bool AllSetted = false;
 
@@ -43,9 +44,8 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                OwnerList = new ObservableCollection<RegistryOwner>(_services.GetRegistryOwners());
-                SelectedOwner = new ObservableCollection<RegistryOwner>();
-                CurrencyList = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
+                OwnerList = _services.GetRegistryOwners();
+                CurrencyList = _services.GetRegistryCurrencyList();
                 AvailableYears = _reportServices.GetAvailableYears();
             }
             catch (Exception err)
@@ -73,8 +73,12 @@ namespace FinanceManager.ViewModels
                         break;
                     case "listCurrency":
                         _selectedCurrency.Clear();
+                        _descCurrency.Clear();
                         foreach (RegistryCurrency item in LB.SelectedItems)
+                        {
                             _selectedCurrency.Add(item.IdCurrency);
+                            _descCurrency.Add(item.CodeCurrency);
+                        }
                         break;
                 }
             }
@@ -91,11 +95,13 @@ namespace FinanceManager.ViewModels
                     exchangeValue = null;
                     AllSetted = false;
                     ExchangeDollar = 0;
-                    ExchangeFranchi = 0;
                     ExchangePound = 0;
+                    ExchangeFranchi = 0;
                     break;
                 case "Tutto in Euro":
+                    _descCurrency = new List<string>();
                     exchangeValue = new double[3] { 0, 0, 0};
+                    _descCurrency.Add("EUR"); _descCurrency.Add("USD"); _descCurrency.Add("GBP"); _descCurrency.Add("CHF");
                     EnableControl.VisibleControlInGrid(((StackPanel)radioButton.Parent).Parent as Grid, "listCurrency", Visibility.Collapsed);
                     EnableControl.VisibleControlInGrid(((StackPanel)radioButton.Parent).Parent as Grid, "stackpanelCurrency", Visibility.Visible);
                     _selectedCurrency = new List<int>();
@@ -117,13 +123,13 @@ namespace FinanceManager.ViewModels
                         ExchangeDollar = Convert.ToDouble(TB.Text);
                         exchangeValue[0] = ExchangeDollar;
                         break;
-                    case "exchangeFranchi":
-                        ExchangeFranchi = Convert.ToDouble(TB.Text);
-                        exchangeValue[1] = ExchangeFranchi;
-                        break;
                     case "exchangePound":
                         ExchangePound = Convert.ToDouble(TB.Text);
-                        exchangeValue[2] = ExchangePound;
+                        exchangeValue[1] = ExchangePound;
+                        break;
+                    case "exchangeFranchi":
+                        ExchangeFranchi = Convert.ToDouble(TB.Text);
+                        exchangeValue[2] = ExchangeFranchi;
                         break;
                 }
             }
@@ -159,17 +165,17 @@ namespace FinanceManager.ViewModels
 
 
         #region collection
-        public ObservableCollection<RegistryOwner> OwnerList
+        public RegistryOwnersList OwnerList
         {
             get { return GetValue(() => OwnerList); }
             set { SetValue(() => OwnerList, value); }
         }
-        public ObservableCollection<RegistryCurrency> CurrencyList
+        public RegistryCurrencyList CurrencyList
         {
             get { return GetValue(() => CurrencyList); }
             set { SetValue(() => CurrencyList, value); }
         }
-        public ObservableCollection<RegistryOwner> SelectedOwner
+        public RegistryOwnersList SelectedOwner
         {
             get { return GetValue(() => SelectedOwner); }
             set { SetValue(() => SelectedOwner, value); }
@@ -179,6 +185,13 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => AvailableYears); }
             set { SetValue(() => AvailableYears, value); }
         }
+
+        public ReportProfitLossList ReportProfitLosses
+        {
+            get { return GetValue(() => ReportProfitLosses); }
+            set { SetValue(() => ReportProfitLosses, value); }
+        }
+
         #endregion collection
 
         #region command
@@ -198,7 +211,19 @@ namespace FinanceManager.ViewModels
 
         public void ViewReport(object param)
         {
+            ListBox listBox = param as ListBox;
+            ReportProfitLosses = _reportServices.GetReport1(_selectedOwners, _selectedYears, _selectedCurrency, AllSetted == true ? exchangeValue : null);
+            listBox.ItemsSource = ReportProfitLosses;
 
+            //foreach (int anno in _selectedYears)
+            //{
+            //    ReportProfitLossList annoX = new ReportProfitLossList();
+
+            //    foreach( ReportProfitLoss xxx in ReportProfitLosses.Where(item => item.Anno == anno) ){
+            //        annoX.Add(xxx);
+            //    }
+            //    listBox.Items.Add(annoX);
+            //}
         }
 
         #endregion command

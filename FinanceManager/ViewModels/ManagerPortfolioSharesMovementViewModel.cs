@@ -123,6 +123,7 @@ namespace FinanceManager.ViewModels
                     RowLiquidAsset.IdShare = RS.IdShare;
                     RowLiquidAsset.DescShare = RS.DescShare;
                     RowLiquidAsset.Isin = RS.Isin;
+                    RowLiquidAsset.IdShareType = RS.IdShareType;
                     SharesOwned = _liquidAssetServices.GetSharesQuantity(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, (uint)RowLiquidAsset.IdShare).ToString();
 
                     EnableControl.EnableControlInGrid(CB.Parent as Grid, "cbMarket", true);

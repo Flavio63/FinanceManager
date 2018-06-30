@@ -135,6 +135,8 @@
     <Compile Include="Models\RegistryShareList.cs" />
     <Compile Include="Models\RegistryShareType.cs" />
     <Compile Include="Models\RegistryShareTypeList.cs" />
+    <Compile Include="Models\ReportProfitLoss.cs" />
+    <Compile Include="Models\ReportProfitLossList.cs" />
     <Compile Include="Services\IManagerLiquidAssetServices.cs" />
     <Compile Include="Services\IManagerReportServices.cs" />
     <Compile Include="Services\IRegistryService.cs" />

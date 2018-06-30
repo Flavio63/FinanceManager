@@ -6,6 +6,7 @@
              xmlns:is="http://schemas.microsoft.com/expression/2010/interactions"
              xmlns:iy="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" Name="_ManagerReportsView"
+             xmlns:local="clr-namespace:FinanceManager.Views"
              d:DesignHeight="650" d:DesignWidth="800">
     <Grid Background="LightSeaGreen" Margin="5">
         <Grid.RowDefinitions>
@@ -27,7 +28,28 @@
                 BorderBrush="#CC403E40" BorderThickness="0,0,4,4">
             <Border BorderBrush="#FFCB04F7" Background="#FFFDF17C"
                 BorderThickness="2" CornerRadius="15">
-
+                <ListBox Name="BackgroundReport" Background="{x:Null}" Margin="7" ItemsSource="{Binding ReportProfitLosses}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <local:ReportGuadagniView DescValuta="{Binding CodiceValuta}" 
+                                                      Obb_Ced="{Binding Obb_Ced, ConverterCulture=IT-it, StringFormat=N2}" 
+                                                      Obb_Ven="{Binding Obb_Ven, ConverterCulture=IT-it, StringFormat=N2}"
+                                                      Obb_Tot="{Binding Obb_Tot, ConverterCulture=IT-it, StringFormat=N2}" 
+                                                      Azi_Ced="{Binding Azi_Ced, ConverterCulture=IT-it, StringFormat=N2}" 
+                                                      Azi_Ven="{Binding Azi_Ven, ConverterCulture=IT-it, StringFormat=N2}"
+                                                      Azi_Tot="{Binding Azi_Tot, ConverterCulture=IT-it, StringFormat=N2}"
+                                                      Fon_Ced="{Binding Fon_Ced, ConverterCulture=IT-it, StringFormat=N2}"
+                                                      Fon_Ven="{Binding Fon_Ven, ConverterCulture=IT-it, StringFormat=N2}"
+                                                      Fon_Tot="{Binding Fon_Tot, ConverterCulture=IT-it, StringFormat=N2}"
+                                                      Vol_Ced="{Binding Von_Ced, ConverterCulture=IT-it, StringFormat=N2}"
+                                                      Vol_Ven="{Binding Vol_Ven, ConverterCulture=IT-it, StringFormat=N2}"
+                                                      Vol_Tot="{Binding Vol_Tot, ConverterCulture=IT-it, StringFormat=N2}"
+                                                      Tot_Ced="{Binding Tot_Ced, ConverterCulture=IT-it, StringFormat=N2}"
+                                                      Tot_Ven="{Binding Tot_Ven, ConverterCulture=IT-it, StringFormat=N2}"
+                                                      Tot_Tot="{Binding Tot_Tot, ConverterCulture=IT-it, StringFormat=N2}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </Border>
         </Border>
         <Grid Grid.Column="0" Grid.Row="1" MaxWidth="450" VerticalAlignment="Top" Background="AliceBlue" Margin="15,0,15,0">
@@ -123,11 +145,11 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.ColumnSpan="3" Margin="5" HorizontalAlignment="Center">
                 <Button Name="btnViewReport" Content="Visualizza" Margin="15,10, 5, 0" Width="90" FontSize="14" FontWeight="Bold"
-                             Command="{Binding ViewCommand}" CommandParameter="{Binding ElementName=btnViewReport}"/>
+                             Command="{Binding ViewCommand}" CommandParameter="{Binding ElementName=BackgroundReport}"/>
 
                 <Button Name="btnExportReport" Content="Esporta" Margin="5, 10, 5,0" Width="90" FontSize="14" FontWeight="Bold"
                              />
-                
+
                 <Button Name="btnPrintReport" Content="Stampa" Margin="5, 10, 15,0" Width="90" FontSize="14" FontWeight="Bold"
                              />
             </StackPanel>
