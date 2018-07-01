@@ -25,7 +25,6 @@ namespace FinanceManager.ViewModels
         public ICommand PrintCommand { get; set; }
 
         private IList<int> _selectedOwners = new List<int>();
-        private IList<int> _selectedYears = new List<int>();
         private IList<int> _selectedCurrency = new List<int>();
         private IList<string> _descCurrency = new List<string>();
         private double[] exchangeValue;
@@ -47,6 +46,7 @@ namespace FinanceManager.ViewModels
                 OwnerList = _services.GetRegistryOwners();
                 CurrencyList = _services.GetRegistryCurrencyList();
                 AvailableYears = _reportServices.GetAvailableYears();
+                SelectedYears = new List<int>();
             }
             catch (Exception err)
             {
@@ -67,9 +67,9 @@ namespace FinanceManager.ViewModels
                             _selectedOwners.Add(item.IdOwner);
                         break;
                     case "ListYears":
-                        _selectedYears.Clear();
+                        SelectedYears.Clear();
                         foreach (int y in LB.SelectedItems)
-                            _selectedYears.Add(y);
+                            SelectedYears.Add(y);
                         break;
                     case "listCurrency":
                         _selectedCurrency.Clear();
@@ -192,6 +192,12 @@ namespace FinanceManager.ViewModels
             set { SetValue(() => ReportProfitLosses, value); }
         }
 
+        public IList<int> SelectedYears
+        {
+            get { return GetValue(() => SelectedYears); }
+            set { SetValue(() => SelectedYears, value); }
+        }
+
         #endregion collection
 
         #region command
@@ -204,28 +210,39 @@ namespace FinanceManager.ViewModels
 
         public bool CanDoReport(object param)
         {
-            if (_selectedOwners.Count() > 0 && _selectedYears.Count() > 0 && (_selectedCurrency.Count() > 0 || AllSetted))
+            if (_selectedOwners.Count() > 0 && SelectedYears.Count() > 0 && (_selectedCurrency.Count() > 0 || AllSetted))
                 return true;
             return false;
         }
 
         public void ViewReport(object param)
         {
-            ListBox listBox = param as ListBox;
-            ReportProfitLosses = _reportServices.GetReport1(_selectedOwners, _selectedYears, _selectedCurrency, AllSetted == true ? exchangeValue : null);
-            listBox.ItemsSource = ReportProfitLosses;
-
-            //foreach (int anno in _selectedYears)
-            //{
-            //    ReportProfitLossList annoX = new ReportProfitLossList();
-
-            //    foreach( ReportProfitLoss xxx in ReportProfitLosses.Where(item => item.Anno == anno) ){
-            //        annoX.Add(xxx);
-            //    }
-            //    listBox.Items.Add(annoX);
-            //}
+            Grid grid = param as Grid;
+            ReportProfitLosses = _reportServices.GetReport1(_selectedOwners, SelectedYears, _selectedCurrency, AllSetted == true ? exchangeValue : null);
+            ReportTrendAnno reportTrendAnno;
+            ReportGuadagniView reportGuadagniView;
+            foreach (int year in SelectedYears)
+            {
+                grid.RowDefinitions.Add(new RowDefinition());
+                reportTrendAnno = new ReportTrendAnno();
+                reportTrendAnno.Desc_Anno = year.ToString();
+                foreach (ReportProfitLoss item in ReportProfitLosses)
+                {
+                    if (year == item.Anno)
+                    {
+                        reportGuadagniView = new ReportGuadagniView(item);
+                        reportTrendAnno.yearGrid.RowDefinitions.Add(new RowDefinition());
+                        Grid.SetRow(reportGuadagniView, reportTrendAnno.yearGrid.RowDefinitions.Count - 1);
+                        Grid.SetColumn(reportGuadagniView, 1);
+                        reportTrendAnno.yearGrid.Children.Add(reportGuadagniView);
+                    }
+                }
+                Grid.SetRow(reportTrendAnno, grid.RowDefinitions.Count - 1);
+                grid.Children.Add(reportTrendAnno);
+            }
         }
 
         #endregion command
+
     }
 }

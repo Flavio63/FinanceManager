@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:FinanceManager.Views"
       mc:Ignorable="d">
 
-    <Border BorderThickness="2" BorderBrush="DarkSlateGray" CornerRadius="15" MinHeight="100" MinWidth="100">
+    <Border BorderThickness="2" BorderBrush="DarkSlateGray" CornerRadius="15" MinHeight="270" MinWidth="795">
         <Grid Width="795" Height="270">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="70"/>

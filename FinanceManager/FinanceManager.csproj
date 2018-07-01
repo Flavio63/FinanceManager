@@ -202,6 +202,9 @@
     <Compile Include="Views\ReportGuadagniAnnoView.xaml.cs">
       <DependentUpon>ReportGuadagniAnnoView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ReportTrendAnno.xaml.cs">
+      <DependentUpon>ReportTrendAnno.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -267,6 +270,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ReportGuadagniAnnoView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ReportTrendAnno.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

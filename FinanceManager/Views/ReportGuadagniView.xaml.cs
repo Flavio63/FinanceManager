@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FinanceManager.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,11 +21,15 @@ namespace FinanceManager.Views
     /// </summary>
     public partial class ReportGuadagniView : UserControl
     {
-        public ReportGuadagniView()
+        private ReportProfitLoss DataReport = new ReportProfitLoss();
+        public ReportGuadagniView(ReportProfitLoss reportProfitLoss)
         {
             InitializeComponent();
+            DataReport = reportProfitLoss ?? throw new ArgumentNullException("ReportProfitLoss can't be null");
+            SetDefaultData();
         }
 
+        #region DependencyProperty
         public static readonly DependencyProperty DescValutaProperty = DependencyProperty.Register("DescValuta", typeof(string), typeof(ReportGuadagniView),
             new UIPropertyMetadata(string.Empty));
 
@@ -81,7 +86,9 @@ namespace FinanceManager.Views
 
         public static readonly DependencyProperty Tot_TotProperty = DependencyProperty.Register("Tot_Tot", typeof(string), typeof(ReportGuadagniView),
             new UIPropertyMetadata(string.Empty));
+        #endregion
 
+        #region GetSetValue
         public string DescValuta
         {
             get { return (string)GetValue(DescValutaProperty); }
@@ -194,6 +201,30 @@ namespace FinanceManager.Views
         {
             get { return (string)GetValue(Tot_TotProperty); }
             set { SetValue(Tot_TotProperty, value); }
+        }
+        #endregion
+
+        private void SetDefaultData()
+        {
+            DescValuta = DataReport.CodiceValuta;
+            Obb_Ced = DataReport.Obb_Ced.ToString("0.##");
+            Obb_Ven = DataReport.Obb_Ven.ToString("0.##");
+            Obb_Tot = DataReport.Obb_Tot.ToString("0.##");
+            Azi_Ced = DataReport.Azi_Ced.ToString("0.##");
+            Azi_Ven = DataReport.Azi_Ven.ToString("0.##");
+            Azi_Tot = DataReport.Azi_Tot.ToString("0.##");
+            Fon_Ced = DataReport.Fon_Ced.ToString("0.##");
+            Fon_Ven = DataReport.Fon_Ven.ToString("0.##");
+            Fon_Tot = DataReport.Fon_Tot.ToString("0.##");
+            Etf_Ced = DataReport.Etf_Ced.ToString("0.##");
+            Etf_Ven = DataReport.Etf_Ven.ToString("0.##");
+            Etf_Tot = DataReport.Etf_Tot.ToString("0.##");
+            Vol_Ced = DataReport.Vol_Ced.ToString("0.##");
+            Vol_Ven = DataReport.Vol_Ven.ToString("0.##");
+            Vol_Tot = DataReport.Vol_Tot.ToString("0.##");
+            Tot_Ced = DataReport.Tot_Ced.ToString("0.##");
+            Tot_Ven = DataReport.Tot_Ven.ToString("0.##");
+            Tot_Tot = DataReport.Tot_Tot.ToString("0.##");
         }
     }
 }

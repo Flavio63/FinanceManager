@@ -28,28 +28,9 @@
                 BorderBrush="#CC403E40" BorderThickness="0,0,4,4">
             <Border BorderBrush="#FFCB04F7" Background="#FFFDF17C"
                 BorderThickness="2" CornerRadius="15">
-                <ListBox Name="BackgroundReport" Background="{x:Null}" Margin="7" ItemsSource="{Binding ReportProfitLosses}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <local:ReportGuadagniView DescValuta="{Binding CodiceValuta}" 
-                                                      Obb_Ced="{Binding Obb_Ced, ConverterCulture=IT-it, StringFormat=N2}" 
-                                                      Obb_Ven="{Binding Obb_Ven, ConverterCulture=IT-it, StringFormat=N2}"
-                                                      Obb_Tot="{Binding Obb_Tot, ConverterCulture=IT-it, StringFormat=N2}" 
-                                                      Azi_Ced="{Binding Azi_Ced, ConverterCulture=IT-it, StringFormat=N2}" 
-                                                      Azi_Ven="{Binding Azi_Ven, ConverterCulture=IT-it, StringFormat=N2}"
-                                                      Azi_Tot="{Binding Azi_Tot, ConverterCulture=IT-it, StringFormat=N2}"
-                                                      Fon_Ced="{Binding Fon_Ced, ConverterCulture=IT-it, StringFormat=N2}"
-                                                      Fon_Ven="{Binding Fon_Ven, ConverterCulture=IT-it, StringFormat=N2}"
-                                                      Fon_Tot="{Binding Fon_Tot, ConverterCulture=IT-it, StringFormat=N2}"
-                                                      Vol_Ced="{Binding Von_Ced, ConverterCulture=IT-it, StringFormat=N2}"
-                                                      Vol_Ven="{Binding Vol_Ven, ConverterCulture=IT-it, StringFormat=N2}"
-                                                      Vol_Tot="{Binding Vol_Tot, ConverterCulture=IT-it, StringFormat=N2}"
-                                                      Tot_Ced="{Binding Tot_Ced, ConverterCulture=IT-it, StringFormat=N2}"
-                                                      Tot_Ven="{Binding Tot_Ven, ConverterCulture=IT-it, StringFormat=N2}"
-                                                      Tot_Tot="{Binding Tot_Tot, ConverterCulture=IT-it, StringFormat=N2}"/>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                <ScrollViewer Margin="15" VerticalScrollBarVisibility="Auto">
+                    <Grid  Name="BackgroundReport" Margin="5"></Grid>
+                </ScrollViewer>
             </Border>
         </Border>
         <Grid Grid.Column="0" Grid.Row="1" MaxWidth="450" VerticalAlignment="Top" Background="AliceBlue" Margin="15,0,15,0">
