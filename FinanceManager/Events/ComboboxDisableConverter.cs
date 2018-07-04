@@ -35,7 +35,7 @@ namespace FinanceManager.Events
                         if (value != null && value.GetType().Name == "RegistryCurrency")
                         {
                             RegistryCurrency RC = value as RegistryCurrency;
-                            if (RC.IdCurrency > 3 && RC.IdCurrency != 5)
+                            if (RC.IdCurrency > 4)
                                 return true;
                         }
                         break;

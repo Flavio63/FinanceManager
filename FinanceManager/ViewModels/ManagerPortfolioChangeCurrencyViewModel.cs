@@ -23,11 +23,7 @@ namespace FinanceManager.ViewModels
         public ICommand EraseCommand { get; set; }
 
         private string _SelectedOwner;
-        private ManagerLiquidAsset _RowLiquidAsset;
         private int[] enabledMovement = { 3 };
-        private double _AmountChangedValue;
-        private string _AvailableLiquidity;
-        private double _AmountAvailable;
 
         public ManagerPortfolioChangeCurrencyViewModel(IRegistryServices services, IManagerLiquidAssetServices liquidAssetServices)
         {
@@ -51,8 +47,10 @@ namespace FinanceManager.ViewModels
                 CurrencyListTo = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
                 SharesList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
                 RowLiquidAsset = new ManagerLiquidAsset();
+                IsLiquiditySaved = true;
+                AmountChangedValue = 0;
                 RowLiquidAsset.MovementDate = DateTime.Now;
-                RowLiquidAsset.Available = true;
+                RowLiquidAsset.Available = IsLiquiditySaved;
                 CanUpdateDelete = false;
                 CanInsert = false;
             }
@@ -98,9 +96,7 @@ namespace FinanceManager.ViewModels
                 if (RO != null)
                 {
                     SelectedOwner = RO.OwnerName;
-                    RowLiquidAsset = new ManagerLiquidAsset();
                     AmountChangedValue = 0;
-                    RowLiquidAsset.MovementDate = DT.Date;
                     RowLiquidAsset.IdOwner = RO.IdOwner;
                     RowLiquidAsset.OwnerName = RO.OwnerName;
                     EnableControl.EnableControlInGrid(CB.Parent as Grid, "cbLocation", true);
@@ -221,41 +217,30 @@ namespace FinanceManager.ViewModels
 
         public ManagerLiquidAsset RowLiquidAsset
         {
-            get { return _RowLiquidAsset; }
-            set
-            {
-                _RowLiquidAsset = value;
-                NotifyPropertyChanged("RowLiquidAsset");
-            }
+            get { return GetValue(() => RowLiquidAsset); }
+            set { SetValue(() => RowLiquidAsset, value); }
         }
 
         public double AmountChangedValue
         {
-            get { return _AmountChangedValue; }
-            set
-            {
-                _AmountChangedValue = value;
-                NotifyPropertyChanged("AmountChangedValue");
-            }
+            get { return GetValue(() => AmountChangedValue); }
+            set { SetValue(() => AmountChangedValue, value); }
         }
 
         public double AmountAvailable
         {
-            get { return _AmountAvailable; }
-            set
-            {
-                _AmountAvailable = value;
-                NotifyPropertyChanged("AmountAvailable");
-            }
+            get { return GetValue(() => AmountAvailable); }
+            set { SetValue(() => AmountAvailable, value); }
+        }
+        public bool IsLiquiditySaved
+        {
+            get { return GetValue(() => IsLiquiditySaved); }
+            set { SetValue(() => IsLiquiditySaved, value); }
         }
         public string AvailableLiquidity
         {
-            get { return _AvailableLiquidity; }
-            set
-            {
-                _AvailableLiquidity = value;
-                NotifyPropertyChanged("AvailableLiquidity");
-            }
+            get { return GetValue(() => AvailableLiquidity); }
+            set { SetValue(() => AvailableLiquidity, value); }
         }
 
         private void SetAvailableLiquidity(DataTable DT)
