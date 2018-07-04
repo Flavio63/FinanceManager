@@ -293,8 +293,8 @@
                 </TextBox>
 
                 <TextBlock Grid.Row="15" Text="TobinTax in Euro:" Style="{StaticResource LabelBlockStyle}" ToolTip="Valore sempre in euro, presente solo in alcuni casi"/>
-                <TextBox Name="TobinTaxValue" Grid.Row="15" Grid.Column="1" Text="{Binding RowLiquidAsset.TobinTax, ConverterCulture=it-IT,
-                    UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Style="{StaticResource FormRightTextBoxStyle}"  IsEnabled="False">
+                <TextBox Name="TobinTaxValue" Grid.Row="15" Grid.Column="1" Text="{Binding RowLiquidAsset.TobinTax, ConverterCulture=it-IT}" 
+                         Style="{StaticResource FormRightTextBoxStyle}"  IsEnabled="False">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="LostFocus">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>

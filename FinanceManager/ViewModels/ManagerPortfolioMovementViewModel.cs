@@ -8,6 +8,7 @@ using System.Data;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace FinanceManager.ViewModels
@@ -32,6 +33,7 @@ namespace FinanceManager.ViewModels
         private string _SelectedOwner;
         private ManagerLiquidAsset _RowLiquidAsset;
         private int[] enabledMovement = { 1, 2, 4 };
+        Predicate<object> _Filter;
 
         public ManagerPortfolioMovementViewModel(IRegistryServices services, IManagerLiquidAssetServices liquidAssetServices)
         {
@@ -57,8 +59,9 @@ namespace FinanceManager.ViewModels
                 SharesList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
                 RowLiquidAsset = new ManagerLiquidAsset();
                 RowLiquidAsset.MovementDate = DateTime.Now;
+                _Filter = new Predicate<object>(Filter);
             }
-            catch(Exception err)
+            catch (Exception err)
             {
                 MessageBox.Show(err.Message, "ManagerPortfolioMovementView", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -235,6 +238,32 @@ namespace FinanceManager.ViewModels
             }
         }
 
+        public string SrchShares
+        {
+            get { return GetValue(() => SrchShares); }
+            set
+            {
+                SetValue(() => SrchShares, value);
+                SharesListView.Filter = _Filter;
+                SharesListView.Refresh();
+
+            }
+        }
+
+        public bool Filter(object obj)
+        {
+            if (obj != null)
+            {
+                if (obj.GetType() == typeof(RegistryShare))
+                {
+                    var data = obj as RegistryShare;
+                    if (!string.IsNullOrEmpty(SrchShares))
+                        return data.Isin.ToUpper().Contains(SrchShares.ToUpper());
+                }
+            }
+            return true;
+        }
+
         #region Models
 
         public ManagerLiquidAsset RowLiquidAsset
@@ -288,9 +317,17 @@ namespace FinanceManager.ViewModels
             set
             {
                 _ShareList = value;
+                SharesListView = new ListCollectionView(value);
                 NotifyPropertyChanged("SharesList");
             }
         }
+
+        public ListCollectionView SharesListView
+        {
+            get { return GetValue(() => SharesListView); }
+            set { SetValue(() => SharesListView, value); }
+        }
+
 
         public ObservableCollection<ManagerLiquidAsset> LiquidAssetList
         {

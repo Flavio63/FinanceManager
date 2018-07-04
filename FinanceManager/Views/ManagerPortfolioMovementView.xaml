@@ -81,6 +81,7 @@
                     <RowDefinition Height="35"/>
                     <RowDefinition Height="35"/>
                     <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="120"/>
@@ -97,7 +98,7 @@
                 <Button Content="E" Grid.Row="8" Grid.Column="2" Grid.RowSpan="3" Margin="15" FontSize="14" Height="75" FontWeight="Bold"
                          Command="{Binding EraseCommand}"/>
 
-                <StackPanel Grid.Row="13" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center">
+                <StackPanel Grid.Row="14" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Name="btnClearAll" Content="Clear All" Margin="15,5, 20, 5" Width="90" FontSize="14" FontWeight="Bold"
                              Command="{Binding ClearCommand}" CommandParameter="{Binding ElementName=btnClearAll}"/>
 
@@ -178,8 +179,12 @@
                     </ComboBox.ItemContainerStyle>
                 </ComboBox>
 
-                <TextBlock Grid.Row="6" Text="ISIN:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-                <ComboBox Name="cbShare" Grid.Row="6" Grid.Column="1" ItemsSource="{Binding SharesList}" Margin="5" VerticalContentAlignment="Center" IsEnabled="True"
+                <TextBlock Grid.Row="6" Text="Filtra con isin:" Style="{StaticResource LabelBlockStyle}"/>
+                <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding SrchShares, UpdateSourceTrigger=PropertyChanged}"
+                          Style="{StaticResource FormCenterTextBoxStyle}"/>
+
+                <TextBlock Grid.Row="7" Text="ISIN:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
+                <ComboBox Name="cbShare" Grid.Row="7" Grid.Column="1" ItemsSource="{Binding SharesListView}" Margin="5" VerticalContentAlignment="Center" IsEnabled="True"
                      SelectedValuePath="IdShare" HorizontalContentAlignment="Left" FontSize="14" MinWidth="100" SelectedValue="{Binding RowLiquidAsset.IdShare, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <TextSearch.TextPath>DescShare</TextSearch.TextPath>
                     <ComboBox.ItemTemplate>
@@ -197,8 +202,8 @@
                     </iy:Interaction.Triggers>
                 </ComboBox>
 
-                <TextBlock Grid.Row="7" Text="Che cifra:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-                <TextBox Name="amount" Grid.Row="7" Grid.Column="1" Text="{Binding RowLiquidAsset.Amount, ConverterCulture=it-IT}" Margin="5" 
+                <TextBlock Grid.Row="8" Text="Che cifra:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
+                <TextBox Name="amount" Grid.Row="8" Grid.Column="1" Text="{Binding RowLiquidAsset.Amount, ConverterCulture=it-IT}" Margin="5" 
                      VerticalContentAlignment="Center" HorizontalContentAlignment="Right" FontSize="14" MinWidth="100" IsEnabled="False">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="LostFocus">
@@ -207,8 +212,8 @@
                     </iy:Interaction.Triggers>
                 </TextBox>
 
-                <TextBlock Grid.Row="8" Text="Cambio:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-                <TextBox Name="ExchangeValue" Grid.Row="8" Grid.Column="1" Text="{Binding RowLiquidAsset.ExchangeValue, ConverterCulture=it-IT}" Margin="5" 
+                <TextBlock Grid.Row="9" Text="Cambio:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
+                <TextBox Name="ExchangeValue" Grid.Row="9" Grid.Column="1" Text="{Binding RowLiquidAsset.ExchangeValue, ConverterCulture=it-IT}" Margin="5" 
                      VerticalContentAlignment="Center" HorizontalContentAlignment="Right" FontSize="14" MinWidth="100" IsEnabled="False">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="LostFocus">
@@ -217,8 +222,8 @@
                     </iy:Interaction.Triggers>
                 </TextBox>
 
-                <TextBlock Grid.Row="9" Text="Disponibile:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-                <ComboBox Name="Available" Grid.Row="9" Grid.Column="1" Text="{Binding RowLiquidAsset.Available}" Margin="5" VerticalContentAlignment="Center" 
+                <TextBlock Grid.Row="10" Text="Disponibile:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
+                <ComboBox Name="Available" Grid.Row="10" Grid.Column="1" Text="{Binding RowLiquidAsset.Available}" Margin="5" VerticalContentAlignment="Center" 
                      HorizontalContentAlignment="Right" FontSize="14" MinWidth="100" IsEnabled="False">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="SelectionChanged">
@@ -229,8 +234,8 @@
                     <ComboBoxItem IsSelected="True">True</ComboBoxItem>
                 </ComboBox>
 
-                <TextBlock Grid.Row="10" Text="In che data:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-                <DatePicker Grid.Row="10" Grid.Column="1" Margin="5" SelectedDate="{Binding RowLiquidAsset.MovementDate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                <TextBlock Grid.Row="11" Text="In che data:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
+                <DatePicker Grid.Row="11" Grid.Column="1" Margin="5" SelectedDate="{Binding RowLiquidAsset.MovementDate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                         DisplayDate="{Binding RowLiquidAsset.MovementDate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="SelectedDateChanged">
@@ -239,8 +244,8 @@
                     </iy:Interaction.Triggers>
                 </DatePicker>
 
-                <TextBlock Grid.Row="11" Text="Note:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-                <TextBox Name="Note" Grid.Row="11" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap"
+                <TextBlock Grid.Row="12" Text="Note:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
+                <TextBox Name="Note" Grid.Row="12" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap"
                      Text="{Binding RowLiquidAsset.Note}" Margin="5" VerticalContentAlignment="Top" HorizontalContentAlignment="Left" 
                      FontSize="14" MaxWidth="200" MinWidth="100">
                     <iy:Interaction.Triggers>
