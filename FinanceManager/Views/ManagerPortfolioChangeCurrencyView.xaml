@@ -108,6 +108,7 @@
                     <RowDefinition Height="35"/>
                     <RowDefinition Height="35"/>
                     <RowDefinition Height="35"/>
+                    <RowDefinition Height="45"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="120"/>
@@ -125,6 +126,13 @@
                 <Button Name="btnErase" Content="E" Grid.Row="8" Grid.Column="3" Grid.RowSpan="3" Margin="15" FontSize="14" Height="75" 
                         FontWeight="Bold" Command="{Binding EraseCommand}">
                 </Button>
+                <StackPanel Grid.Row="14" Grid.ColumnSpan="3" Margin="0, 5, 0, 0" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Name="btnClearAll" Content="Clear All" Margin="15,5, 20, 5" Width="90" FontSize="14" FontWeight="Bold"
+                             Command="{Binding ClearCommand}" CommandParameter="{Binding ElementName=btnClearAll}"/>
+
+                    <Button Name="btnClear" Content="Clear" Margin="20, 5, 15,5" Width="90" FontSize="14" FontWeight="Bold"
+                             Command="{Binding ClearCommand}" CommandParameter="{Binding ElementName=btnClear}"/>
+                </StackPanel>
 
                 <TextBlock Grid.Row="0" Grid.ColumnSpan="4" Text="Inserimento - Modifica - Eliminazione" FontWeight="Bold" 
                    FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" 

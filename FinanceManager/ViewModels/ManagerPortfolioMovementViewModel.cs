@@ -172,6 +172,7 @@ namespace FinanceManager.ViewModels
                 RowLiquidAsset.ProfitLoss = RowLiquidAsset.IdMovement == 4 ? RowLiquidAsset.Amount : 0;
 
                 _liquidAssetServices.AddManagerLiquidAsset(RowLiquidAsset);
+                SrchShares = "";
                 LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, enabledMovement));
                 SetAvailableLiquidity(_liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, RowLiquidAsset.IdCurrency));
                 RowLiquidAsset = new ManagerLiquidAsset();
@@ -190,6 +191,7 @@ namespace FinanceManager.ViewModels
             try
             {
                 RowLiquidAsset.ProfitLoss = RowLiquidAsset.IdMovement == 4 ? RowLiquidAsset.Amount : 0;
+                SrchShares = "";
                 _liquidAssetServices.UpdateManagerLiquidAsset(RowLiquidAsset);
                 LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, enabledMovement));
                 SetAvailableLiquidity(_liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, RowLiquidAsset.IdCurrency));
@@ -211,6 +213,7 @@ namespace FinanceManager.ViewModels
                 try
                 {
                     _liquidAssetServices.DeleteManagerLiquidAsset(RowLiquidAsset.idLiquidAsset);
+                    SrchShares = "";
                     LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, enabledMovement));
                     SetAvailableLiquidity(_liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, RowLiquidAsset.IdCurrency));
                     MessageBox.Show("Record eliminato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
@@ -385,6 +388,7 @@ namespace FinanceManager.ViewModels
             try
             {
                 Button button = param as Button;
+                SrchShares = "";
                 if (button.Name == "btnClearAll")
                 {
                     SetUpViewModel();

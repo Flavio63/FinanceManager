@@ -21,6 +21,7 @@ namespace FinanceManager.ViewModels
         public ICommand InsertCommand { get; set; }
         public ICommand ModifyCommand { get; set; }
         public ICommand EraseCommand { get; set; }
+        public ICommand ClearCommand { get; set; }
 
         private string _SelectedOwner;
         private int[] enabledMovement = { 3 };
@@ -34,6 +35,7 @@ namespace FinanceManager.ViewModels
             InsertCommand = new CommandHandler(SaveCommand, CanSave);
             ModifyCommand = new CommandHandler(UpdateCommand, CanModify);
             EraseCommand = new CommandHandler(DeleteCommand, CanModify);
+            ClearCommand = new CommandHandler(CleanCommand);
         }
 
         private void SetUpViewModel()
@@ -406,6 +408,53 @@ namespace FinanceManager.ViewModels
             if (CanUpdateDelete)
                 return true;
             return false;
+        }
+
+        public void CleanCommand(Object param)
+        {
+            try
+            {
+                Button button = param as Button;
+                if (button.Name == "btnClearAll")
+                {
+                    SetUpViewModel();
+                    LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>();
+                    SelectedOwner = "";
+                    CanInsert = false;
+                    CanUpdateDelete = false;
+                }
+                else
+                {
+                    ManagerLiquidAsset MLA = new ManagerLiquidAsset();
+                    MLA = RowLiquidAsset;
+                    SetUpViewModel();
+                    StackPanel sp = button.Parent as StackPanel;
+
+                    foreach (object o in ((Grid)sp.Parent).Children)
+                    {
+                        if (o.GetType() == typeof(ComboBox))
+                        {
+                            ComboBox comboBox = o as ComboBox;
+                            if (comboBox.Name == "cbOwner")
+                            {
+                                comboBox.SelectedValue = MLA.IdOwner;
+                                RowLiquidAsset.IdOwner = MLA.IdOwner;
+                            }
+                            else if (comboBox.Name == "cbLocation")
+                            {
+                                comboBox.SelectedValue = MLA.IdLocation;
+                                RowLiquidAsset.IdLocation = MLA.IdLocation;
+                            }
+                        }
+                    }
+                    CanInsert = false;
+                    CanUpdateDelete = false;
+                }
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
 
         public void CloseMe(object param)
