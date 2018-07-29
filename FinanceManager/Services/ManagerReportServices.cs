@@ -102,36 +102,36 @@ namespace FinanceManager.Services
                                     case 2:
                                         reportProfitLoss.Obb_Ced += reportProfitLoss.IdMovimento == 4 ? dr.Field<double>("PL") : 0;
                                         reportProfitLoss.Obb_Ven += reportProfitLoss.IdMovimento == 6 ? dr.Field<double>("PL") : 0;
-                                        reportProfitLoss.Obb_Tot += dr.Field<double>("PL");
+                                        reportProfitLoss.Obb_Tot += (reportProfitLoss.IdMovimento == 4 || reportProfitLoss.IdMovimento == 6) ? dr.Field<double>("PL") : 0;
                                         break;
                                     case 1:
                                     case 4:
                                         reportProfitLoss.Azi_Ced += reportProfitLoss.IdMovimento == 4 ? dr.Field<double>("PL") : 0;
                                         reportProfitLoss.Azi_Ven += reportProfitLoss.IdMovimento == 6 ? dr.Field<double>("PL") : 0;
-                                        reportProfitLoss.Azi_Tot += dr.Field<double>("PL");
+                                        reportProfitLoss.Azi_Tot += (reportProfitLoss.IdMovimento == 4 || reportProfitLoss.IdMovimento == 6) ? dr.Field<double>("PL") : 0;
                                         break;
                                     case 7:
                                         reportProfitLoss.Fon_Ced += reportProfitLoss.IdMovimento == 4 ? dr.Field<double>("PL") : 0;
                                         reportProfitLoss.Fon_Ven += reportProfitLoss.IdMovimento == 6 ? dr.Field<double>("PL") : 0;
-                                        reportProfitLoss.Fon_Tot += dr.Field<double>("PL");
+                                        reportProfitLoss.Fon_Tot += (reportProfitLoss.IdMovimento == 4 || reportProfitLoss.IdMovimento == 6) ? dr.Field<double>("PL") : 0;
                                         break;
                                     case 5:
                                     case 6:
                                     case 8:
                                         reportProfitLoss.Etf_Ced += reportProfitLoss.IdMovimento == 4 ? dr.Field<double>("PL") : 0;
                                         reportProfitLoss.Etf_Ven += reportProfitLoss.IdMovimento == 6 ? dr.Field<double>("PL") : 0;
-                                        reportProfitLoss.Etf_Tot += dr.Field<double>("PL");
+                                        reportProfitLoss.Etf_Tot += (reportProfitLoss.IdMovimento == 4 || reportProfitLoss.IdMovimento == 6) ? dr.Field<double>("PL") : 0;
                                         break;
                                     case 9:
                                     case 10:
                                         reportProfitLoss.Vol_Ced += reportProfitLoss.IdMovimento == 4 ? dr.Field<double>("PL") : 0;
                                         reportProfitLoss.Vol_Ven += reportProfitLoss.IdMovimento == 6 ? dr.Field<double>("PL") : 0;
-                                        reportProfitLoss.Vol_Ced += dr.Field<double>("PL");
+                                        reportProfitLoss.Vol_Ced += (reportProfitLoss.IdMovimento == 4 || reportProfitLoss.IdMovimento == 6) ? dr.Field<double>("PL") : 0;
                                         break;
                                 }
                                 reportProfitLoss.Tot_Ced += reportProfitLoss.IdMovimento == 4 ? dr.Field<double>("PL") : 0;
                                 reportProfitLoss.Tot_Ven += reportProfitLoss.IdMovimento == 6 ? dr.Field<double>("PL") : 0;
-                                reportProfitLoss.Tot_Tot += dr.Field<double>("PL");
+                                reportProfitLoss.Tot_Tot += (reportProfitLoss.IdMovimento == 4 || reportProfitLoss.IdMovimento == 6) ? dr.Field<double>("PL") : 0;
                                 i++;
                                 if (i > data.Rows.Count - 1)
                                 {
