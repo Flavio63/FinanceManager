@@ -22,11 +22,11 @@ namespace FinanceManager.ViewModels
         public ICommand CloseMeCommand { get; set; }
         public ICommand ViewCommand { get; set; }
         public ICommand DownloadCommand { get; set; }
-        public ICommand PrintCommand { get; set; }
+        public ICommand ClearCommand { get; set; }
 
-        private IList<int> _selectedOwners = new List<int>();
-        private IList<int> _selectedCurrency = new List<int>();
-        private IList<string> _descCurrency = new List<string>();
+        private IList<int> _selectedOwners;
+        private IList<int> _selectedCurrency;
+        private IList<string> _descCurrency;
         private double[] exchangeValue;
         private bool AllSetted = false;
 
@@ -36,6 +36,7 @@ namespace FinanceManager.ViewModels
             _reportServices = managerReportServices ?? throw new ArgumentNullException("ManagerReportsViewModel with no report services");
             CloseMeCommand = new CommandHandler(CloseMe);
             ViewCommand = new CommandHandler(ViewReport, CanDoReport);
+            ClearCommand = new CommandHandler(ClearReport, CanClearReport);
             SetUpViewModel();
         }
 
@@ -44,7 +45,10 @@ namespace FinanceManager.ViewModels
             try
             {
                 OwnerList = _services.GetRegistryOwners();
+                _selectedOwners = new List<int>();
                 CurrencyList = _services.GetRegistryCurrencyList();
+                _selectedCurrency = new List<int>();
+                _descCurrency = new List<string>();
                 AvailableYears = _reportServices.GetAvailableYears();
                 SelectedYears = new List<int>();
             }
@@ -145,6 +149,8 @@ namespace FinanceManager.ViewModels
         }
         #endregion events
 
+        #region collection
+
         public double ExchangeDollar
         {
             get { return GetValue(() => ExchangeDollar); }
@@ -163,8 +169,6 @@ namespace FinanceManager.ViewModels
             set { SetValue(() => ExchangeFranchi, value); }
         }
 
-
-        #region collection
         public RegistryOwnersList OwnerList
         {
             get { return GetValue(() => OwnerList); }
@@ -210,9 +214,29 @@ namespace FinanceManager.ViewModels
 
         public bool CanDoReport(object param)
         {
-            if (_selectedOwners.Count() > 0 && SelectedYears.Count() > 0 && (_selectedCurrency.Count() > 0 || AllSetted))
+            Grid grid = param as Grid;
+            if (_selectedOwners.Count() > 0 && SelectedYears.Count() > 0 && (_selectedCurrency.Count() > 0 || AllSetted) && grid.RowDefinitions.Count == 0)
                 return true;
             return false;
+        }
+
+        public bool CanClearReport(object param)
+        {
+            Grid grid = param as Grid;
+            if (grid.RowDefinitions.Count > 0)
+                return true;
+            return false;
+        }
+
+        public void ClearReport(object param)
+        {
+            Grid grid = param as Grid;
+            grid.Children.Clear();
+            for (int r = grid.RowDefinitions.Count - 1; r >= 0; r--)
+            {
+                grid.RowDefinitions.RemoveAt(r);
+            }
+            SetUpViewModel();
         }
 
         public void ViewReport(object param)
