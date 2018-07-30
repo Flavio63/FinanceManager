@@ -209,6 +209,9 @@
                         <iy:EventTrigger EventName="LostFocus">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
                         </iy:EventTrigger>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
                     </iy:Interaction.Triggers>
                 </TextBox>
 
@@ -218,6 +221,9 @@
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="LostFocus">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                        </iy:EventTrigger>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
                         </iy:EventTrigger>
                     </iy:Interaction.Triggers>
                 </TextBox>
@@ -251,6 +257,9 @@
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="LostFocus">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                        </iy:EventTrigger>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
                         </iy:EventTrigger>
                     </iy:Interaction.Triggers>
                 </TextBox>

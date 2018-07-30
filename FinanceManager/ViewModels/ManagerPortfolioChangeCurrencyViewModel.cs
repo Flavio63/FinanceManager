@@ -203,6 +203,16 @@ namespace FinanceManager.ViewModels
             }
         }
 
+        public void PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            if (e.Key == Key.Decimal)
+            {
+                textBox.AppendText(",");
+                textBox.SelectionStart = textBox.Text.Length;
+                e.Handled = true;
+            }
+        }
         #endregion
 
         public string SelectedOwner

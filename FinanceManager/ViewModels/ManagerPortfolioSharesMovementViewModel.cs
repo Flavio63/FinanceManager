@@ -236,6 +236,17 @@ namespace FinanceManager.ViewModels
                 MessageBox.Show(err.Message, "Movimenti Titoli", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        public void PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            if (e.Key == Key.Decimal)
+            {
+                textBox.AppendText(",");
+                textBox.SelectionStart = textBox.Text.Length;
+                e.Handled = true;
+            }
+        }
         #endregion events
 
         private void UpdateTotals()

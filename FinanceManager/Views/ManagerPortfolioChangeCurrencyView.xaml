@@ -215,7 +215,10 @@
                         <iy:EventTrigger EventName="LostFocus">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
                         </iy:EventTrigger>
-                   </iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="7" Text="Con che valuta:" Margin="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
                 <ComboBox Grid.Row="7" Grid.Column="1" Name="cbCurrencyA" ItemsSource="{Binding CurrencyListTo}" VerticalContentAlignment="Center"  MinWidth="100"
@@ -245,6 +248,9 @@
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="LostFocus">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                        </iy:EventTrigger>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
                         </iy:EventTrigger>
                     </iy:Interaction.Triggers>
                 </TextBox>
@@ -282,6 +288,9 @@
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="TextChanged">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="TextChanged"/>
+                        </iy:EventTrigger>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
                         </iy:EventTrigger>
                     </iy:Interaction.Triggers>
                 </TextBox>
