@@ -284,7 +284,7 @@ namespace FinanceManager.ViewModels
                     foreach (ManagerLiquidAsset MLA in MLAL)
                     {
                         //interrompo il ciclo se i movimenti estratti sono in data > di quella nella maschera
-                        if (RowLiquidAsset.idLiquidAsset > 0 && MLA.MovementDate > RowLiquidAsset.MovementDate) break;
+                        if (MLA.MovementDate > RowLiquidAsset.MovementDate) break;
                         //se il movimento estratto è un acquisto e per tutti gli acquisti consecutivi ne sommo costo e quote:
                         if (MLA.IdMovement == 5)
                         {
