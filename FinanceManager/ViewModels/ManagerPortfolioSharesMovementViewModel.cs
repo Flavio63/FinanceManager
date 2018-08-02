@@ -278,64 +278,65 @@ namespace FinanceManager.ViewModels
                         TotalLocalValue - (RowLiquidAsset.DisaggioCoupons + (RowLiquidAsset.RitenutaFiscale * RowLiquidAsset.ExchangeValue));
 
                     // calcolo del profit loss
-                    ManagerLiquidAssetList MLAL = _liquidAssetServices.GetShareMovements(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, (uint)RowLiquidAsset.IdShare);
-                    double PrezzoAcq = 0;
-                    double NAcq = 0;
-                    foreach (ManagerLiquidAsset MLA in MLAL)
-                    {
-                        //interrompo il ciclo se i movimenti estratti sono in data > di quella nella maschera
-                        if (MLA.MovementDate > RowLiquidAsset.MovementDate) break;
-                        //se il movimento estratto è un acquisto e per tutti gli acquisti consecutivi ne sommo costo e quote:
-                        if (MLA.IdMovement == 5)
-                        {
-                            //nel caso sia stato comprato in euro e adesso in maschera c'è un valore diverso da euro
-                            if (MLA.CodeCurrency == "EUR" && RowLiquidAsset.CodeCurrency != "EUR")
-                            {
-                                PrezzoAcq += (MLA.Amount + (MLA.TotalCommission + MLA.DisaggioCoupons) * -1) * MLA.ExchangeValue;
-                            }
-                            //nel caso sia stato comprato e venduto in una valuta diversa da euro
-                            else if (MLA.CodeCurrency == RowLiquidAsset.CodeCurrency && MLA.CodeCurrency != "EUR")
-                            {
-                                PrezzoAcq += MLA.Amount + (MLA.TotalCommission + MLA.DisaggioCoupons) * -1;
-                            }
-                            //nel caso sia stato comprato e venduto in euro
-                            else
-                            {
-                                PrezzoAcq += MLA.Amount + (MLA.TotalCommission + MLA.TobinTax + MLA.DisaggioCoupons) * -1;
-                            }
-                            NAcq += MLA.SharesQuantity;
-                        }
-                        //se il movimento estratto è una vendita e che non sia lo stessa vendita
-                        else if (MLA.IdMovement == 6 && MLA.idLiquidAsset != RowLiquidAsset.idLiquidAsset)
-                        {
-                            //nel caso i precedenti movimenti (acquisti) e questa vendita azzerino il totale azioni
-                            //vuol dire che l'operazione è stata conclusa nel passato e azzero i contatori
-                            if (NAcq + MLA.SharesQuantity == 0)
-                            {
-                                PrezzoAcq = 0;
-                                NAcq = 0;
-                            }
-                            //nel caso i precedenti movimenti (acquist) e questa vendita NON azzerino il totale azioni
-                            //vuol dire che sono rimasti dei pezzi invenduti e quindi ne calcolo il costo medio rimanente
-                            else if (NAcq + MLA.SharesQuantity != 0)
-                            {
-                                PrezzoAcq = PrezzoAcq / NAcq * (NAcq + MLA.SharesQuantity);
-                                NAcq = NAcq + MLA.SharesQuantity;
-                            }
-                        }
-                    }
-                    //ciclo del passato finito calcolo il profit loss nel caso di vendita totale
-                    if (NAcq + RowLiquidAsset.SharesQuantity == 0)
-                    {
-                        RowLiquidAsset.ProfitLoss = PrezzoAcq + TotaleContabile;
-                    }
-                    else //e nel caso di vendita parziale
-                    {
-                        RowLiquidAsset.ProfitLoss = PrezzoAcq / NAcq * RowLiquidAsset.SharesQuantity * -1 +
-                            (RowLiquidAsset.Amount + (RowLiquidAsset.TotalCommission + RowLiquidAsset.TobinTax + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1);
-                    }
-                    PrezzoAcq = 0;
-                    NAcq = 0;
+                    //ManagerLiquidAssetList MLAL = _liquidAssetServices.GetShareMovements(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, (uint)RowLiquidAsset.IdShare);
+                    //double PrezzoAcq = 0;
+                    //double NAcq = 0;
+                    //foreach (ManagerLiquidAsset MLA in MLAL)
+                    //{
+                    //    //interrompo il ciclo se i movimenti estratti sono in data > di quella nella maschera
+                    //    if (MLA.MovementDate > RowLiquidAsset.MovementDate) break;
+                    //    //se il movimento estratto è un acquisto e per tutti gli acquisti consecutivi ne sommo costo e quote:
+                    //    if (MLA.IdMovement == 5)
+                    //    {
+                    //        //nel caso sia stato comprato in euro e adesso in maschera c'è un valore diverso da euro
+                    //        if (MLA.CodeCurrency == "EUR" && RowLiquidAsset.CodeCurrency != "EUR")
+                    //        {
+                    //            PrezzoAcq += (MLA.Amount + (MLA.TotalCommission + MLA.DisaggioCoupons) * -1) * MLA.ExchangeValue;
+                    //        }
+                    //        //nel caso sia stato comprato e venduto in una valuta diversa da euro
+                    //        else if (MLA.CodeCurrency == RowLiquidAsset.CodeCurrency && MLA.CodeCurrency != "EUR")
+                    //        {
+                    //            PrezzoAcq += MLA.Amount + (MLA.TotalCommission + MLA.DisaggioCoupons) * -1;
+                    //        }
+                    //        //nel caso sia stato comprato e venduto in euro
+                    //        else
+                    //        {
+                    //            PrezzoAcq += MLA.Amount + (MLA.TotalCommission + MLA.TobinTax + MLA.DisaggioCoupons) * -1;
+                    //        }
+                    //        NAcq += MLA.SharesQuantity;
+                    //    }
+                    //    //se il movimento estratto è una vendita e che non sia lo stessa vendita
+                    //    else if (MLA.IdMovement == 6 && MLA.idLiquidAsset != RowLiquidAsset.idLiquidAsset)
+                    //    {
+                    //        //nel caso i precedenti movimenti (acquisti) e questa vendita azzerino il totale azioni
+                    //        //vuol dire che l'operazione è stata conclusa nel passato e azzero i contatori
+                    //        if (NAcq + MLA.SharesQuantity == 0)
+                    //        {
+                    //            PrezzoAcq = 0;
+                    //            NAcq = 0;
+                    //        }
+                    //        //nel caso i precedenti movimenti (acquist) e questa vendita NON azzerino il totale azioni
+                    //        //vuol dire che sono rimasti dei pezzi invenduti e quindi ne calcolo il costo medio rimanente
+                    //        else if (NAcq + MLA.SharesQuantity != 0)
+                    //        {
+                    //            PrezzoAcq = PrezzoAcq / NAcq * (NAcq + MLA.SharesQuantity);
+                    //            NAcq = NAcq + MLA.SharesQuantity;
+                    //        }
+                    //    }
+                    //}
+                    ////ciclo del passato finito calcolo il profit loss nel caso di vendita totale
+                    //if (NAcq + RowLiquidAsset.SharesQuantity == 0)
+                    //{
+                    //    RowLiquidAsset.ProfitLoss = PrezzoAcq + TotaleContabile;
+                    //}
+                    //else //e nel caso di vendita parziale
+                    //{
+                    //    RowLiquidAsset.ProfitLoss = PrezzoAcq / NAcq * RowLiquidAsset.SharesQuantity * -1 +
+                    //        (RowLiquidAsset.Amount + (RowLiquidAsset.TotalCommission + RowLiquidAsset.TobinTax + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1);
+                    //}
+                    //PrezzoAcq = 0;
+                    //NAcq = 0;
+                    ////fine calcolo profit loss
                 }
             }
             AmountChangedValue = TotaleContabile;
@@ -343,6 +344,69 @@ namespace FinanceManager.ViewModels
             if (RowLiquidAsset.IdCurrency != 1)
                 AmountChangedValue = RowLiquidAsset.ExchangeValue == 0 ? 0 : (TotaleContabile / RowLiquidAsset.ExchangeValue);
         }
+        private void ProfitLossCalculation()
+        {
+            ManagerLiquidAssetList MLAL = _liquidAssetServices.GetShareMovements(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, (uint)RowLiquidAsset.IdShare);
+            double PrezzoAcq = 0;
+            double NAcq = 0;
+            foreach (ManagerLiquidAsset MLA in MLAL)
+            {
+                //interrompo il ciclo se i movimenti estratti sono in data > di quella nella maschera
+                if (MLA.MovementDate > RowLiquidAsset.MovementDate) break;
+                //se il movimento estratto è un acquisto e per tutti gli acquisti consecutivi ne sommo costo e quote:
+                if (MLA.IdMovement == 5)
+                {
+                    //nel caso sia stato comprato in euro e adesso in maschera c'è un valore diverso da euro
+                    if (MLA.CodeCurrency == "EUR" && RowLiquidAsset.CodeCurrency != "EUR")
+                    {
+                        PrezzoAcq += (MLA.Amount + (MLA.TotalCommission + MLA.DisaggioCoupons) * -1) * MLA.ExchangeValue;
+                    }
+                    //nel caso sia stato comprato e venduto in una valuta diversa da euro
+                    else if (MLA.CodeCurrency == RowLiquidAsset.CodeCurrency && MLA.CodeCurrency != "EUR")
+                    {
+                        PrezzoAcq += MLA.Amount + (MLA.TotalCommission + MLA.DisaggioCoupons) * -1;
+                    }
+                    //nel caso sia stato comprato e venduto in euro
+                    else
+                    {
+                        PrezzoAcq += MLA.Amount + (MLA.TotalCommission + MLA.TobinTax + MLA.DisaggioCoupons) * -1;
+                    }
+                    NAcq += MLA.SharesQuantity;
+                }
+                //se il movimento estratto è una vendita e che non sia lo stessa vendita
+                else if (MLA.IdMovement == 6 && MLA.idLiquidAsset != RowLiquidAsset.idLiquidAsset)
+                {
+                    //nel caso i precedenti movimenti (acquisti) e questa vendita azzerino il totale azioni
+                    //vuol dire che l'operazione è stata conclusa nel passato e azzero i contatori
+                    if (NAcq + MLA.SharesQuantity == 0)
+                    {
+                        PrezzoAcq = 0;
+                        NAcq = 0;
+                    }
+                    //nel caso i precedenti movimenti (acquist) e questa vendita NON azzerino il totale azioni
+                    //vuol dire che sono rimasti dei pezzi invenduti e quindi ne calcolo il costo medio rimanente
+                    else if (NAcq + MLA.SharesQuantity != 0)
+                    {
+                        PrezzoAcq = PrezzoAcq / NAcq * (NAcq + MLA.SharesQuantity);
+                        NAcq = NAcq + MLA.SharesQuantity;
+                    }
+                }
+            }
+            //ciclo del passato finito calcolo il profit loss nel caso di vendita totale
+            if (NAcq + RowLiquidAsset.SharesQuantity == 0)
+            {
+                RowLiquidAsset.ProfitLoss = PrezzoAcq + TotaleContabile;
+            }
+            else //e nel caso di vendita parziale
+            {
+                RowLiquidAsset.ProfitLoss = PrezzoAcq / NAcq * RowLiquidAsset.SharesQuantity * -1 +
+                    (RowLiquidAsset.Amount + (RowLiquidAsset.TotalCommission + RowLiquidAsset.TobinTax + RowLiquidAsset.DisaggioCoupons + RowLiquidAsset.RitenutaFiscale) * -1);
+            }
+            PrezzoAcq = 0;
+            NAcq = 0;
+            //fine calcolo profit loss
+        }
+
         /// <summary>
         /// Il profit loss calcolato alla vendita di un titolo
         /// </summary>
@@ -532,6 +596,7 @@ namespace FinanceManager.ViewModels
         {
             try
             {
+                ProfitLossCalculation();
                 ManagerLiquidAsset MLA = new ManagerLiquidAsset();
                 MLA.IdOwner = RowLiquidAsset.IdOwner;
                 MLA.IdLocation = RowLiquidAsset.IdLocation;
@@ -578,6 +643,7 @@ namespace FinanceManager.ViewModels
         {
             try
             {
+                ProfitLossCalculation();
                 _liquidAssetServices.UpdateManagerLiquidAsset(RowLiquidAsset);
                 // reimposto la griglia con quanto inserito
                 LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerSharesMovementByOwnerAndLocation(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation));
