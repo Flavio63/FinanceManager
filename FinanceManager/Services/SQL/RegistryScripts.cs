@@ -10,23 +10,23 @@ namespace FinanceManager.Services.SQL
     {
         #region Gestione
         public readonly static string GetAccountList = "SELECT id_gestione, nome_gestione FROM gestioni ORDER BY id_gestione;";
-        public readonly static string UpdateName = "UPDATE gestioni SET nome_gestione = @nome_gestione WHERE id_gestione = @id_gestione";
-        public readonly static string AddOwner = "INSERT INTO gestioni (id_gestione, nome_gestione) VALUE (null, @nome_gestione)";
-        public readonly static string DeleteOwner = "DELETE FROM gestioni WHERE id_gestione = @id_gestione";
+        public readonly static string UpdateName = "UPDATE gestioni SET nome_gestione = @nome WHERE id_gestione = @id";
+        public readonly static string AddOwner = "INSERT INTO gestioni (id_gestione, nome_gestione) VALUE (null, @nome)";
+        public readonly static string DeleteOwner = "DELETE FROM gestioni WHERE id_gestione = @id";
         #endregion
         
         #region TipoTitoli
         public readonly static string GetRegistryShareTypeList = "SELECT id_tipo_titolo, desc_tipo_titolo FROM tipo_titoli ORDER BY id_tipo_titolo;";
-        public readonly static string UpdateShareType = "UPDATE tipo_titoli SET desc_tipo_titolo = @desc_tipo_titolo WHERE id_tipo_titolo = @id_tipo_titolo;";
-        public readonly static string DeleteShareType = "DELETE FROM tipo_titoli WHERE id_tipo_titolo = @id_tipo_titolo";
-        public readonly static string AddShareType = "INSERT INTO tipo_titoli (id_tipo_titolo, desc_tipo_titolo) VALUE (null, @desc_tipo_titolo);";
+        public readonly static string UpdateShareType = "UPDATE tipo_titoli SET desc_tipo_titolo = @desc WHERE id_tipo_titolo = @id;";
+        public readonly static string DeleteShareType = "DELETE FROM tipo_titoli WHERE id_tipo_titolo = @id";
+        public readonly static string AddShareType = "INSERT INTO tipo_titoli (id_tipo_titolo, desc_tipo_titolo) VALUE (null, @desc);";
         #endregion
         
         #region Valuta
-        public readonly static string GetRegistryCurrencyList = "SELECT id_valuta, desc_valuta, cod_valuta FROM daf_valuta ORDER BY id_valuta;";
-        public readonly static string UpdateCurrency = "UPDATE daf_valuta SET desc_valuta = @desc, cod_valuta = @code WHERE id_valuta = @id;";
-        public readonly static string DeleteCurrency = "DELETE FROM daf_valuta WHERE id_valuta = @id";
-        public readonly static string AddCurrency = "INSERT INTO daf_valuta (id_valuta, desc_valuta, cod_valuta) VALUE (null, @desc, @code);";
+        public readonly static string GetRegistryCurrencyList = "SELECT id_valuta, desc_valuta, cod_valuta FROM valuta ORDER BY id_valuta;";
+        public readonly static string UpdateCurrency = "UPDATE valuta SET desc_valuta = @desc, cod_valuta = @code WHERE id_valuta = @id;";
+        public readonly static string DeleteCurrency = "DELETE FROM valuta WHERE id_valuta = @id";
+        public readonly static string AddCurrency = "INSERT INTO valuta (id_valuta, desc_valuta, cod_valuta) VALUE (null, @desc, @code);";
         #endregion
         
         #region conti
@@ -45,21 +45,21 @@ namespace FinanceManager.Services.SQL
         
         #region titoli
         public readonly static string GetRegistryShareList = "SELECT id_titolo, desc_titolo, isin, id_tipo_titolo, id_azienda " +
-            "FROM daf_titoli ORDER BY isin, desc_titolo;";
-        public readonly static string UpdateShare = "UPDATE daf_titoli SET desc_titolo = @desc, isin = @isin, id_tipo_titolo = @tipo, id_azienda = @azienda " +
+            "FROM titoli ORDER BY isin, desc_titolo;";
+        public readonly static string UpdateShare = "UPDATE titoli SET desc_titolo = @desc, isin = @isin, id_tipo_titolo = @tipo, id_azienda = @azienda " +
             "WHERE id_titolo = @id;";
-        public readonly static string DeleteShare = "DELETE FROM daf_titoli WHERE id_titolo = @id";
-        public readonly static string AddShare = "INSERT INTO daf_titoli (id_titolo, desc_titolo, isin, id_tipo_titolo, id_azienda) " +
+        public readonly static string DeleteShare = "DELETE FROM titoli WHERE id_titolo = @id";
+        public readonly static string AddShare = "INSERT INTO titoli (id_titolo, desc_titolo, isin, id_tipo_titolo, id_azienda) " +
             "VALUE (null, @desc, @isin, @tipo, @azienda);";
 
-        public readonly static string GetSharesByType = "SELECT id_titolo, desc_titolo, isin, id_tipo_titolo, id_azienda FROM daf_titoli WHERE id_tipo_titolo = @id_tipo_titolo ORDER BY id_titolo";
+        public readonly static string GetSharesByType = "SELECT id_titolo, desc_titolo, isin, id_tipo_titolo, id_azienda FROM daf_titoli WHERE id_tipo_titolo = @id_tipo ORDER BY id_titolo";
         #endregion
 
         #region tipo movimento
-        public readonly static string GetRegistryMovementTypeList = "SELECT id_tipo_movimento, desc_Movimento FROM daf_tipo_movimento ORDER BY id_tipo_movimento;";
-        public readonly static string UpdateMovementType = "UPDATE daf_tipo_movimento SET desc_Movimento = @desc WHERE id_tipo_movimento = @id;";
-        public readonly static string DeleteMovementType = "DELETE FROM daf_tipo_movimento WHERE id_tipo_movimento = @id;";
-        public readonly static string AddMovementType = "INSERT INTO daf_tipo_movimento (id_tipo_movimento, desc_Movimento) VALUE (null, @desc);";
+        public readonly static string GetRegistryMovementTypeList = "SELECT id_tipo_movimento, desc_Movimento FROM tipo_movimento ORDER BY id_tipo_movimento;";
+        public readonly static string UpdateMovementType = "UPDATE tipo_movimento SET desc_Movimento = @desc WHERE id_tipo_movimento = @id;";
+        public readonly static string DeleteMovementType = "DELETE FROM tipo_movimento WHERE id_tipo_movimento = @id;";
+        public readonly static string AddMovementType = "INSERT INTO tipo_movimento (id_tipo_movimento, desc_Movimento) VALUE (null, @desc);";
         #endregion
     }
 }

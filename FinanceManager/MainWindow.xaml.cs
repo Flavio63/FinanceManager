@@ -23,8 +23,6 @@ namespace FinanceManager
         RegistryCurrencyView currencyView;
         RegistryLocationViewModel registryLocationViewModel;
         RegistryLocationView locationView;
-        RegistryMarketViewModel registryMarketViewModel;
-        RegistryMarketView marketView;
         RegistryFirmViewModel registryFirmViewModel;
         RegistryFirmView firmView;
         RegistryShareViewModel registryShareViewModel;
@@ -110,22 +108,6 @@ namespace FinanceManager
                 mainGrid.Children.Remove(locationView);
                 locationView = null;
                 registryLocationViewModel = null;
-            }
-        }
-
-        private void OnClickMarket(object sender, RoutedEventArgs e)
-        {
-            if (marketView == null || !mainGrid.Children.Contains(marketView))
-            {
-                registryMarketViewModel = new RegistryMarketViewModel(_registryServices);
-                marketView = new RegistryMarketView(registryMarketViewModel);
-                mainGrid.Children.Add(marketView);
-            }
-            else
-            {
-                mainGrid.Children.Remove(marketView);
-                marketView = null;
-                registryMarketViewModel = null;
             }
         }
 

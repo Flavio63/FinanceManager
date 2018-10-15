@@ -26,9 +26,9 @@ namespace FinanceManager.Services.SQL
         /// Data una gestione e una location, estrae tutti i record relativi ai tipi di movimenti richiesti
         /// </summary>
         public static readonly string GetManagerLiquidAssetByOwnerLocationAndMovementType = "SELECT id_portafoglio, AA.id_gestione, nome_gestione, id_conto, desc_conto, AA.id_valuta, " +
-            "cod_valuta, id_tipo_movimento, desc_Movimento, BB.id_tipo_titolo, EE.desc_tipo, BB.id_azienda, desc_azienda, id_titolo, BB.desc_titolo, BB.Isin, data_movimento, " +
+            "cod_valuta, id_tipo_movimento, desc_Movimento, BB.id_tipo_titolo, EE.desc_tipo_titolo, BB.id_azienda, desc_azienda, AA.id_titolo, BB.desc_titolo, BB.Isin, data_movimento, " +
             "ammontare, shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ritenuta_fiscale, valore_cambio, profit_loss, disp, note FROM ( " +
-            "SELECT id_portafoglio, B.id_portafoglio, nome_gestione, C.id_conto, desc_conto, D.id_valuta, cod_valuta, E.id_tipo_movimento, desc_Movimento, id_titolo, " +
+            "SELECT id_portafoglio, B.id_gestione, nome_gestione, C.id_conto, desc_conto, D.id_valuta, cod_valuta, E.id_tipo_movimento, desc_Movimento, id_titolo, " +
             "data_movimento, shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ritenuta_fiscale, ammontare, valore_cambio, profit_loss, if(disponibile = 1, 'true', 'false') AS disp, note " +
             "FROM portafoglio A, gestioni B, conti C, valuta D, tipo_movimento E " +
             "WHERE A.id_gestione = B.id_gestione AND A.id_conto = C.id_conto AND A.id_valuta = D.id_valuta AND A.id_tipo_movimento = E.id_tipo_movimento AND B.id_gestione = @id_gestione " +
@@ -40,11 +40,11 @@ namespace FinanceManager.Services.SQL
         /// Data una gestione e una location, estrae tutti i record relativi ai movimenti di titoli
         /// </summary>
         public static readonly string GetManagerSharesMovementByOwnerAndLocation = "SELECT id_portafoglio, B.id_gestione, nome_gestione, C.id_conto, desc_conto, D.id_valuta, " +
-            "cod_valuta, E.id_tipo_movimento, desc_Movimento, id_titolo, F.desc_titolo, F.isin, F.id_tipo_titolo, H.desc_tipo, F.id_azienda, I.desc_azienda, A.G.desc_borsa, data_movimento, " +
+            "cod_valuta, E.id_tipo_movimento, desc_Movimento, A.id_titolo, F.desc_titolo, F.isin, F.id_tipo_titolo, H.desc_tipo_titolo, F.id_azienda, I.desc_azienda, data_movimento, " +
             "shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ritenuta_fiscale, ammontare, valore_cambio, profit_loss, if(disponibile = 1, 'true', 'false') AS disp, note " +
             "FROM portafoglio A, gestioni B, conti C, valuta D, tipo_movimento E, titoli F, tipo_titoli H, aziende I " +
-            "WHERE A.id_gestione = B.id_gestione AND A.id_conto = C.id_conto AND A.id_valuta = D.id_valuta AND A.id_movimento = E.id_tipo_movimento AND A.id_titolo = F.id_titolo " +
-            "AND F.id_tipo_titolo = H.id_tipo_titolo AND F.id_azienda = I.id_azienda AND B.id_gestione = @id_gestione AND C.id_conto = @id_conto AND id_titolo IS NOT NULL " +
+            "WHERE A.id_gestione = B.id_gestione AND A.id_conto = C.id_conto AND A.id_valuta = D.id_valuta AND A.id_tipo_movimento = E.id_tipo_movimento AND A.id_titolo = F.id_titolo " +
+            "AND F.id_tipo_titolo = H.id_tipo_titolo AND F.id_azienda = I.id_azienda AND B.id_gestione = @id_gestione AND C.id_conto = @id_conto AND A.id_titolo IS NOT NULL " +
             "ORDER BY data_movimento DESC";
 
         /// <summary>
@@ -54,8 +54,8 @@ namespace FinanceManager.Services.SQL
             "cod_valuta, E.id_tipo_movimento, desc_Movimento, id_titolo, F.desc_titolo, F.isin, F.id_tipo_titolo, H.desc_tipo, F.id_azienda, I.desc_azienda, data_movimento, " +
             "shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ritenuta_fiscale, ammontare, valore_cambio, profit_loss, if(disponibile = 1, 'true', 'false') AS disp, note " +
             "FROM portafoglio A, gestioni B, conti C, valuta D, tipo_movimento E, titoli F, tipo_titoli H, aziende I " +
-            "WHERE A.id_gestione = B.id_gestione AND A.id_conto = C.id_conto AND A.id_valuta = D.id_valuta AND A.id_movimento = E.id_tipo_movimento AND A.id_titolo = F.id_titolo " +
-            "AND F.id_tipo_titolo = H.id_tipo_titolo AND F.id_azienda = I.id_azienda AND B.id_gestione = @id_gestione AND C.id_conto = @id_conto AND id_titolo IS NOT NULL " +
+            "WHERE A.id_gestione = B.id_gestione AND A.id_conto = C.id_conto AND A.id_valuta = D.id_valuta AND id_tipo_movimento = E.id_tipo_movimento AND A.id_titolo = F.id_titolo " +
+            "AND F.id_tipo_titolo = H.id_tipo_titolo AND F.id_azienda = I.id_azienda AND B.id_gestione = @id_gestione AND C.id_conto = @id_conto AND A.id_titolo IS NOT NULL " +
             "ORDER BY id_portafoglio DESC LIMIT 1";
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace FinanceManager.Services.SQL
         public static readonly string DeleteManagerLiquidAsset = "DELETE FROM portafoglio WHERE id_portafoglio = @id_portafoglio;";
 
         public static readonly string GetShareMovements = "SELECT id_portafoglio, B.id_gestione, nome_gestione, C.id_conto, desc_conto, D.id_valuta, " +
-            "cod_valuta, E.id_tipoMovimento, desc_Movimento, id_titolo, F.desc_titolo, F.isin, F.id_tipo_titolo, H.desc_tipo, F.id_azienda, I.desc_azienda, data_movimento, " +
+            "cod_valuta, E.id_tipo_movimento, desc_Movimento, id_titolo, F.desc_titolo, F.isin, F.id_tipo_titolo, H.desc_tipo, F.id_azienda, I.desc_azienda, data_movimento, " +
             "shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ritenuta_fiscale, ammontare, valore_cambio, profit_loss, if(disponibile = 1, 'true', 'false') AS disp, note " +
             "FROM portafoglio A, gestioni B, conti C, valuta D, tipo_movimento E, titoli F, tipo_titoli H, aziende I " +
             "WHERE A.id_gestione = B.id_gestione AND A.id_conto = C.id_conto AND A.id_valuta = D.id_valuta AND A.id_tipo_movimento = E.id_tipo_movimento AND A.id_titolo = F.id_titolo " +

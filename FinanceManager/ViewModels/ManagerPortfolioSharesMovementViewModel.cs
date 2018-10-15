@@ -49,7 +49,6 @@ namespace FinanceManager.ViewModels
                 LocationList = new ObservableCollection<RegistryLocation>(_services.GetRegistryLocationList());
                 CurrencyList = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
                 SharesList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
-                MarketShareList = new ObservableCollection<RegistryMarket>(_services.GetRegistryMarketList());
                 RowLiquidAsset = new ManagerLiquidAsset();
                 RowLiquidAsset.MovementDate = DateTime.Now;
                 CanUpdateDelete = false;
@@ -73,7 +72,6 @@ namespace FinanceManager.ViewModels
                 RegistryMovementType RMT = e.AddedItems[0] as RegistryMovementType;
                 RegistryCurrency RC = e.AddedItems[0] as RegistryCurrency;
                 RegistryShare RS = e.AddedItems[0] as RegistryShare;
-                RegistryMarket RM = e.AddedItems[0] as RegistryMarket;
                 DateTime DT = DateTime.Now;
                 ComboBoxItem CBI = e.AddedItems[0] as ComboBoxItem;
                 ManagerLiquidAsset MLA = e.AddedItems[0] as ManagerLiquidAsset;
@@ -126,12 +124,6 @@ namespace FinanceManager.ViewModels
                     RowLiquidAsset.IdShareType = RS.IdShareType;
                     SharesOwned = _liquidAssetServices.GetSharesQuantity(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, (uint)RowLiquidAsset.IdShare).ToString();
 
-                    EnableControl.EnableControlInGrid(CB.Parent as Grid, "cbMarket", true);
-                }
-                if (RM != null)
-                {
-                    RowLiquidAsset.IdMarket = RM.IdMarket;
-                    RowLiquidAsset.DescMarket = RM.DescMarket;
                     EnableControl.EnableControlInGrid(CB.Parent as Grid, "unityLocalAmount", true);
                 }
                 if (dTime)
@@ -537,12 +529,6 @@ namespace FinanceManager.ViewModels
         #endregion
 
         #region Collections
-
-        public ObservableCollection<RegistryMarket> MarketShareList
-        {
-            get { return GetValue(() => MarketShareList); }
-            set { SetValue(() => MarketShareList, value); }
-        }
 
         public ObservableCollection<RegistryShare> SharesList
         {

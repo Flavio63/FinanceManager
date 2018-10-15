@@ -10,7 +10,7 @@ namespace FinanceManager.Services.SQL
     {
         public static readonly string GetAvailableYears = "SELECT YEAR(data_movimento) AS anni FROM portafoglio GROUP BY anni ORDER BY anni DESC";
 
-        public static readonly string GetProfitLoss1 = "SELECT YEAR(data_movimento) as Anno, A.id_valuta, C.cod_valuta, D.id_tipo_titolo, D.desc_tipo, A.id_tipo_movimento, B.desc_Movimento, " +
+        public static readonly string GetProfitLoss1 = "SELECT YEAR(data_movimento) as Anno, A.id_valuta, C.cod_valuta, D.id_tipo_titolo, D.desc_tipo_titolo, A.id_tipo_movimento, B.desc_Movimento, " +
             "SUM(CASE WHEN A.id_valuta = 1 THEN profit_loss WHEN A.id_valuta = 2 THEN profit_loss * @EuroDollaro WHEN A.id_valuta = 3 " +
             "THEN profit_loss * @EuroSterlina WHEN A.id_valuta = 4 THEN profit_loss * @EuroFranchiSvizzeri END) AS PL " +
             "FROM portafoglio A, tipo_movimento B, valuta C, tipo_titoli D, titoli E " +

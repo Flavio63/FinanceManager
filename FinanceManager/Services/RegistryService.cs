@@ -19,7 +19,7 @@ namespace FinanceManager.Services
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.AddOwner;
-                    dbComm.Parameters.AddWithValue("name", name);
+                    dbComm.Parameters.AddWithValue("nome", name);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -60,16 +60,6 @@ namespace FinanceManager.Services
             }
         }
 
-        public RegistryOwner GetOwnerById(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public RegistryOwner GetOwnerByName(string name)
-        {
-            throw new NotImplementedException();
-        }
-
         public RegistryOwnersList GetRegistryOwners()
         {
             try
@@ -86,8 +76,8 @@ namespace FinanceManager.Services
                     foreach (DataRow dr in dataTable.Rows)
                     {
                         RegistryOwner RO = new RegistryOwner();
-                        RO.IdOwner = (int)dr.Field<uint>("id_portafoglio");
-                        RO.OwnerName = dr.Field<string>("desc_portafoglio");
+                        RO.IdOwner = (int)dr.Field<uint>("id_gestione");
+                        RO.OwnerName = dr.Field<string>("nome_gestione");
                         ROL.Add(RO);
                     }
                     return ROL;
@@ -112,7 +102,7 @@ namespace FinanceManager.Services
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.UpdateName;
-                    dbComm.Parameters.AddWithValue("name", owner.OwnerName);
+                    dbComm.Parameters.AddWithValue("nome", owner.OwnerName);
                     dbComm.Parameters.AddWithValue("id", owner.IdOwner);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -182,16 +172,6 @@ namespace FinanceManager.Services
             }
         }
 
-        public RegistryShareType GetRegistryShareTypeById(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public RegistryShareType GetRegistryShareTypeByName(string name)
-        {
-            throw new NotImplementedException();
-        }
-
         public RegistryShareTypeList GetRegistryShareTypeList()
         {
             try
@@ -208,8 +188,8 @@ namespace FinanceManager.Services
                     foreach (DataRow dr in dt.Rows)
                     {
                         RegistryShareType RST = new RegistryShareType();
-                        RST.IdShareType = dr.Field<uint>("id_tipo");
-                        RST.TypeName = dr.Field<string>("desc_tipo");
+                        RST.IdShareType = dr.Field<uint>("id_tipo_titolo");
+                        RST.TypeName = dr.Field<string>("desc_tipo_titolo");
                         RSTL.Add(RST);
                     }
                     return RSTL;
@@ -287,16 +267,6 @@ namespace FinanceManager.Services
             {
                 throw new Exception(err.Message);
             }
-        }
-
-        public RegistryCurrency GetRegistryCurrencyByName(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public RegistryCurrency GetRegistryCurrencyById(int id)
-        {
-            throw new NotImplementedException();
         }
 
         public void UpdateCurrency(RegistryCurrency registryCurrency)
@@ -395,8 +365,8 @@ namespace FinanceManager.Services
                     foreach (DataRow dr in dt.Rows)
                     {
                         RegistryLocation RL = new RegistryLocation();
-                        RL.IdLocation = (int)dr.Field<uint>("id_location");
-                        RL.DescLocation = dr.Field<string>("desc_location");
+                        RL.IdLocation = (int)dr.Field<uint>("id_conto");
+                        RL.DescLocation = dr.Field<string>("desc_conto");
                         RLL.Add(RL);
                     }
                     return RLL;
@@ -410,16 +380,6 @@ namespace FinanceManager.Services
             {
                 throw new Exception(err.Message);
             }
-        }
-
-        public RegistryLocation GetRegistryLocationByName(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public RegistryLocation GetRegistryLocationById(int id)
-        {
-            throw new NotImplementedException();
         }
 
         public void UpdateLocation(RegistryLocation registryLocation)
@@ -610,127 +570,6 @@ namespace FinanceManager.Services
         }
         #endregion
 
-        #region Market
-        public RegistryMarketList GetRegistryMarketList()
-        {
-            try
-            {
-                using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
-                {
-                    dbAdaptar.SelectCommand = new MySqlCommand();
-                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DafConnection);
-                    dbAdaptar.SelectCommand.CommandType = CommandType.Text;
-                    dbAdaptar.SelectCommand.CommandText = SQL.RegistryScripts.GetRegistryMarketList;
-                    DataTable dt = new DataTable();
-                    dbAdaptar.Fill(dt);
-                    RegistryMarketList RML = new RegistryMarketList();
-                    foreach (DataRow dr in dt.Rows)
-                    {
-                        RegistryMarket RM = new RegistryMarket();
-                        RM.IdMarket = dr.Field<uint>("id_borsa");
-                        RM.DescMarket = dr.Field<string>("desc_borsa");
-                        RML.Add(RM);
-                    }
-                    return RML;
-                }
-            }
-            catch (MySqlException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-        }
-
-        public RegistryMarket GetRegistryMarketByName(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public RegistryMarket GetRegistryMarketById(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateMarket(RegistryMarket registryMarket)
-        {
-            try
-            {
-                using (MySqlCommand dbComm = new MySqlCommand())
-                {
-                    dbComm.CommandType = CommandType.Text;
-                    dbComm.CommandText = SQL.RegistryScripts.UpdateMarket;
-                    dbComm.Parameters.AddWithValue("desc", registryMarket.DescMarket);
-                    dbComm.Parameters.AddWithValue("id", registryMarket.IdMarket);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
-                }
-            }
-            catch (MySqlException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-        }
-
-        public void AddMarket(string description)
-        {
-            try
-            {
-                using (MySqlCommand dbComm = new MySqlCommand())
-                {
-                    dbComm.CommandType = CommandType.Text;
-                    dbComm.CommandText = SQL.RegistryScripts.AddMarket;
-                    dbComm.Parameters.AddWithValue("desc", description);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
-                }
-            }
-            catch (MySqlException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-        }
-
-        public void DeleteMarket(uint id)
-        {
-            try
-            {
-                using (MySqlCommand dbComm = new MySqlCommand())
-                {
-                    dbComm.CommandType = CommandType.Text;
-                    dbComm.CommandText = SQL.RegistryScripts.DeleteMarket;
-                    dbComm.Parameters.AddWithValue("id", id);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
-                }
-            }
-            catch (MySqlException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-        }
-        #endregion
-
         #region Share
 
         public RegistryShareList GetRegistryShareList()
@@ -749,10 +588,10 @@ namespace FinanceManager.Services
                     foreach (DataRow dr in dt.Rows)
                     {
                         RegistryShare RS = new RegistryShare();
-                        RS.IdShare = dr.Field<uint>("id_tit");
+                        RS.IdShare = dr.Field<uint>("id_titolo");
                         RS.DescShare = dr.Field<string>("desc_titolo");
                         RS.Isin = dr.Field<string>("isin");
-                        RS.IdShareType = dr.Field<uint>("id_tipo");
+                        RS.IdShareType = dr.Field<uint>("id_tipo_titolo");
                         RS.IdFirm = dr.Field<uint>("id_azienda");
                         RSL.Add(RS);
                     }
@@ -786,10 +625,10 @@ namespace FinanceManager.Services
                     foreach (DataRow dr in dt.Rows)
                     {
                         RegistryShare RS = new RegistryShare();
-                        RS.IdShare = dr.Field<uint>("id_tit");
+                        RS.IdShare = dr.Field<uint>("id_titolo");
                         RS.DescShare = dr.Field<string>("desc_titolo");
                         RS.Isin = dr.Field<string>("isin");
-                        RS.IdShareType = dr.Field<uint>("id_tipo");
+                        RS.IdShareType = dr.Field<uint>("id_tipo_titolo");
                         RS.IdFirm = dr.Field<uint>("id_azienda");
                         RSL.Add(RS);
                     }
@@ -909,7 +748,7 @@ namespace FinanceManager.Services
                     foreach(DataRow dr in dt.Rows)
                     {
                         RegistryMovementType RMT = new RegistryMovementType();
-                        RMT.IdMovement = (int)dr.Field<uint>("id_tipoMovimento");
+                        RMT.IdMovement = (int)dr.Field<uint>("id_tipo_movimento");
                         RMT.DescMovement = dr.Field<string>("desc_Movimento");
                         RMTL.Add(RMT);
                     }

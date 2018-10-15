@@ -125,8 +125,6 @@
     <Compile Include="Models\RegistryFirmList.cs" />
     <Compile Include="Models\RegistryLocation.cs" />
     <Compile Include="Models\RegistryLocationList.cs" />
-    <Compile Include="Models\RegistryMarket.cs" />
-    <Compile Include="Models\RegistryMarketList.cs" />
     <Compile Include="Models\RegistryMovementType.cs" />
     <Compile Include="Models\RegistryMovementTypeList.cs" />
     <Compile Include="Models\RegistryOwner.cs" />
@@ -154,7 +152,6 @@
     <Compile Include="ViewModels\RegistryCurrencyViewModel.cs" />
     <Compile Include="ViewModels\RegistryFirmViewModel.cs" />
     <Compile Include="ViewModels\RegistryLocationViewModel.cs" />
-    <Compile Include="ViewModels\RegistryMarketViewModel.cs" />
     <Compile Include="ViewModels\RegistryMovementTypeViewModel.cs" />
     <Compile Include="ViewModels\RegistryOwnerViewModel.cs" />
     <Compile Include="ViewModels\RegistryShareTypeViewModel.cs" />
@@ -180,9 +177,6 @@
     </Compile>
     <Compile Include="Views\RegistryLocationView.xaml.cs">
       <DependentUpon>RegistryLocationView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\RegistryMarketView.xaml.cs">
-      <DependentUpon>RegistryMarketView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RegistryMovementTypeView.xaml.cs">
       <DependentUpon>RegistryMovementTypeView.xaml</DependentUpon>
@@ -242,10 +236,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RegistryLocationView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\RegistryMarketView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

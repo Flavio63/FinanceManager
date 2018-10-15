@@ -19,7 +19,6 @@
                 <MenuItem Header="Titoli" Margin="2,0" FontSize="14" FontWeight="Normal" Click="OnClickShare"/>
                 <MenuItem Header="Tipologia Titoli" Margin="2,0" FontSize="14" FontWeight="Normal" Click="OnClickTipoTitoli"/>
                 <MenuItem Header="Valute" Margin="2,0" FontSize="14" FontWeight="Normal" Click="OnClickCurrency"/>
-                <MenuItem Header="Mercati" Margin="2,0" FontSize="14" FontWeight="Normal" Click="OnClickMarket"/>
                 <MenuItem Header="Tipologia Movimenti" Margin="2,0" FontSize="14" FontWeight="Normal" Click="OnClickMovementType"/>
             </MenuItem>
             <MenuItem Header="Gestione" Margin="2,5" FontSize="16" FontWeight="Bold">

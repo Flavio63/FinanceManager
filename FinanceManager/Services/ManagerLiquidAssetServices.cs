@@ -103,9 +103,9 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = System.Data.CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetCurrencyAvailable;
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("owner", IdOwner);
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("location", IdLocation);
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("currency", IdCurrency);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", IdOwner);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdLocation);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_valuta", IdCurrency);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     dbAdapter.Fill(DT);
                     return DT;
@@ -168,7 +168,7 @@ namespace FinanceManager.Services
                 if (IdsMovement.Length == 0)
                     throw new Exception("Errore nella richiesta dei movimenti");
                 string query = "(";
-                string IdRequest = "id_tipoMovimento = ";
+                string IdRequest = "E.id_tipo_movimento = ";
 
                 foreach (int I in IdsMovement)
                 {
@@ -180,8 +180,8 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = string.Format(SQL.ManagerScripts.GetManagerLiquidAssetByOwnerLocationAndMovementType, query);
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("owner", IdOwner);
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_location", IdLocation);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", IdOwner);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdLocation);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     DataTable dt = new DataTable();
                     dbAdapter.Fill(dt);
@@ -207,8 +207,8 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetLastSharesMovementByOwnerAndLocation;
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("owner", IdOwner);
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_location", IdLocation);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", IdOwner);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdLocation);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     DataTable dt = new DataTable();
                     dbAdapter.Fill(dt);
@@ -241,8 +241,8 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetManagerSharesMovementByOwnerAndLocation;
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("owner", IdOwner);
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_location", IdLocation);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", IdOwner);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdLocation);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     DataTable dt = new DataTable();
                     dbAdapter.Fill(dt);
@@ -270,7 +270,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetProfitLossByCurrency;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", IdOwner);
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_location", IdLocation);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdLocation);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_valuta", IdCurrency);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     DataTable dataTable = new DataTable();
@@ -306,7 +306,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetSharesQuantity;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", IdOwner);
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_location", IdLocation);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdLocation);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", idShare);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     DataTable dataTable = new DataTable();
@@ -336,12 +336,11 @@ namespace FinanceManager.Services
                 {
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.ManagerScripts.UpdateManagerLiquidAsset;
-                    dbComm.Parameters.AddWithValue("id_portafoglio", managerLiquidAsset.IdOwner);
-                    dbComm.Parameters.AddWithValue("id_location", managerLiquidAsset.IdLocation);
+                    dbComm.Parameters.AddWithValue("id_gestione", managerLiquidAsset.IdOwner);
+                    dbComm.Parameters.AddWithValue("id_conto", managerLiquidAsset.IdLocation);
                     dbComm.Parameters.AddWithValue("id_valuta", managerLiquidAsset.IdCurrency);
-                    dbComm.Parameters.AddWithValue("id_tipoMovimento", managerLiquidAsset.IdMovement);
+                    dbComm.Parameters.AddWithValue("id_tipo_movimento", managerLiquidAsset.IdMovement);
                     dbComm.Parameters.AddWithValue("id_titolo", managerLiquidAsset.IdShare);
-                    dbComm.Parameters.AddWithValue("id_borsa", managerLiquidAsset.IdMarket);
                     dbComm.Parameters.AddWithValue("data_movimento", managerLiquidAsset.MovementDate.ToString("yyyy-MM-dd"));
                     dbComm.Parameters.AddWithValue("ammontare", managerLiquidAsset.Amount);
                     dbComm.Parameters.AddWithValue("shares_quantity", managerLiquidAsset.SharesQuantity);
@@ -354,7 +353,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("profit_loss", managerLiquidAsset.ProfitLoss);
                     dbComm.Parameters.AddWithValue("disponibile", managerLiquidAsset.Available);
                     dbComm.Parameters.AddWithValue("note", managerLiquidAsset.Note);
-                    dbComm.Parameters.AddWithValue("id_liquid_movement", managerLiquidAsset.idLiquidAsset);
+                    dbComm.Parameters.AddWithValue("id_portafoglio", managerLiquidAsset.idLiquidAsset);
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -382,7 +381,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.CommandType = System.Data.CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetShareMovements;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("owner", IdOwner);
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_location", IdLocation);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdLocation);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", IdShare);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     dbAdapter.Fill(DT);
@@ -412,23 +411,21 @@ namespace FinanceManager.Services
         private ManagerLiquidAsset MLA (DataRow dr)
         {
             ManagerLiquidAsset MLA = new ManagerLiquidAsset();
-            MLA.idLiquidAsset = (int)dr.Field<uint>("id_liquid_movement");
-            MLA.IdOwner = (int)dr.Field<uint>("id_portafoglio");
-            MLA.OwnerName = dr.Field<string>("desc_portafoglio");
-            MLA.IdLocation = (int)dr.Field<uint>("id_location");
-            MLA.DescLocation = dr.Field<string>("desc_location");
+            MLA.idLiquidAsset = (int)dr.Field<uint>("id_portafoglio");
+            MLA.IdOwner = (int)dr.Field<uint>("id_gestione");
+            MLA.OwnerName = dr.Field<string>("nome_gestione");
+            MLA.IdLocation = (int)dr.Field<uint>("id_conto");
+            MLA.DescLocation = dr.Field<string>("desc_conto");
             MLA.IdCurrency = (int)dr.Field<uint>("id_valuta");
             MLA.CodeCurrency = dr.Field<string>("cod_valuta");
-            MLA.IdMovement = (int)dr.Field<uint>("id_tipoMovimento");
+            MLA.IdMovement = (int)dr.Field<uint>("id_tipo_movimento");
             MLA.DescMovement = dr.Field<string>("desc_Movimento");
             MLA.DescFirm = dr.Field<string>("desc_azienda");
             MLA.IdShare = dr.Field<uint?>("id_titolo");
             MLA.DescShare = dr.Field<string>("desc_titolo");
             MLA.Isin = dr.Field<string>("isin");
-            MLA.IdShareType = dr.Field<uint>("id_tipo");
-            MLA.DescShareType = dr.Field<string>("desc_tipo");
-            MLA.IdMarket = dr.Field<uint?>("id_borsa");
-            MLA.DescMarket = dr.Field<string>("desc_borsa");
+            MLA.IdShareType = dr.Field<uint>("id_tipo_titolo");
+            MLA.DescShareType = dr.Field<string>("desc_tipo_titolo");
             MLA.MovementDate = dr.Field<DateTime>("data_movimento");
             MLA.Amount = dr.Field<double>("ammontare");
             MLA.SharesQuantity = dr.Field<double>("shares_quantity");
