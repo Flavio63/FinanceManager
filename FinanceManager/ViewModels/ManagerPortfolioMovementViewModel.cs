@@ -58,7 +58,7 @@ namespace FinanceManager.ViewModels
                 CurrencyList = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
                 SharesList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
                 RowLiquidAsset = new ManagerLiquidAsset();
-                RowLiquidAsset.MovementDate = DateTime.Now;
+                RowLiquidAsset.Data_Movimento = DateTime.Now;
                 _Filter = new Predicate<object>(Filter);
             }
             catch (Exception err)
@@ -94,39 +94,39 @@ namespace FinanceManager.ViewModels
                 if (RO != null)
                 {
                     SelectedOwner = RO.OwnerName;
-                    RowLiquidAsset.MovementDate = DT.Date;
-                    RowLiquidAsset.IdOwner = RO.IdOwner;
-                    RowLiquidAsset.OwnerName = RO.OwnerName;
+                    RowLiquidAsset.Data_Movimento = DT.Date;
+                    RowLiquidAsset.Id_gestione = RO.IdOwner;
+                    RowLiquidAsset.Nome_Gestione = RO.OwnerName;
                     EnableControl.EnableControlInGrid(CB.Parent as Grid, "cbLocation", true);
                 }
                 if (RL != null)
                 {
-                    RowLiquidAsset.IdLocation = RL.IdLocation;
-                    RowLiquidAsset.DescLocation = RL.DescLocation;
-                    LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.IdOwner, RL.IdLocation, enabledMovement));
+                    RowLiquidAsset.Id_conto = RL.IdLocation;
+                    RowLiquidAsset.Desc_conto = RL.DescLocation;
+                    LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.Id_gestione, RL.IdLocation, enabledMovement));
                     EnableControl.EnableControlInGrid(CB.Parent as Grid, "cbMovement", true);
                 }
                 if (RMT != null)
                 {
-                    RowLiquidAsset.IdMovement = RMT.IdMovement;
-                    RowLiquidAsset.DescMovement = RMT.DescMovement;
+                    RowLiquidAsset.Id_tipo_movimento = RMT.IdMovement;
+                    RowLiquidAsset.Desc_tipo_movimento = RMT.DescMovement;
                     EnableControl.EnableControlInGrid(CB.Parent as Grid, "cbCurrency", true);
                 }
                 if (RC != null)
                 {
-                    RowLiquidAsset.IdCurrency = RC.IdCurrency;
-                    RowLiquidAsset.CodeCurrency = RC.CodeCurrency;
-                    SetAvailableLiquidity(_liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, RowLiquidAsset.IdCurrency));
+                    RowLiquidAsset.Id_valuta = RC.IdCurrency;
+                    RowLiquidAsset.Cod_valuta = RC.CodeCurrency;
+                    SetAvailableLiquidity(_liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto, RowLiquidAsset.Id_valuta));
                     EnableControl.EnableControlInGrid(CB.Parent as Grid, "cbShare", true);
                 }
                 if (RS != null)
                 {
-                    RowLiquidAsset.IdShare = RS.IdShare;
+                    RowLiquidAsset.Id_titolo = RS.IdShare;
                     RowLiquidAsset.Isin = RS.Isin;
                     EnableControl.EnableControlInGrid(CB.Parent as Grid, "amount", true);
                 }
                 if (dTime)
-                    RowLiquidAsset.MovementDate = DT.Date;
+                    RowLiquidAsset.Data_Movimento = DT.Date;
                 if (CBI != null)
                     RowLiquidAsset.Available = Convert.ToBoolean(CBI.Content);
                 if (MLA != null)
@@ -144,13 +144,13 @@ namespace FinanceManager.ViewModels
             switch (TB.Name)
             {
                 case "amount":
-                    RowLiquidAsset.Amount = Convert.ToDouble(TB.Text);
-                    EnableControl.EnableControlInGrid(TB.Parent as Grid, "ExchangeValue", true);
+                    RowLiquidAsset.Importo_totale = Convert.ToDouble(TB.Text);
+                    EnableControl.EnableControlInGrid(TB.Parent as Grid, "Valore_di_cambio", true);
                     break;
-                case "ExchangeValue":
-                    RowLiquidAsset.ExchangeValue = Convert.ToDouble(TB.Text);
+                case "Valore_di_cambio":
+                    RowLiquidAsset.Valore_di_cambio = Convert.ToDouble(TB.Text);
                     EnableControl.EnableControlInGrid(TB.Parent as Grid, "Available", true);
-                    if (RowLiquidAsset.idLiquidAsset == 0)
+                    if (RowLiquidAsset.Id_portafoglio == 0)
                         CanInsert = true;
                     break;
                 case "Available":
@@ -179,12 +179,12 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                RowLiquidAsset.ProfitLoss = RowLiquidAsset.IdMovement == 4 ? RowLiquidAsset.Amount : 0;
+                RowLiquidAsset.ProfitLoss = RowLiquidAsset.Id_tipo_movimento == 4 ? RowLiquidAsset.Importo_totale : 0;
 
                 _liquidAssetServices.AddManagerLiquidAsset(RowLiquidAsset);
                 SrchShares = "";
-                LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, enabledMovement));
-                SetAvailableLiquidity(_liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, RowLiquidAsset.IdCurrency));
+                LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto, enabledMovement));
+                SetAvailableLiquidity(_liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto, RowLiquidAsset.Id_valuta));
                 RowLiquidAsset = new ManagerLiquidAsset();
                 MessageBox.Show("Record caricato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
                 SetUpViewModel();
@@ -200,11 +200,11 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                RowLiquidAsset.ProfitLoss = RowLiquidAsset.IdMovement == 4 ? RowLiquidAsset.Amount : 0;
+                RowLiquidAsset.ProfitLoss = RowLiquidAsset.Id_tipo_movimento == 4 ? RowLiquidAsset.Importo_totale : 0;
                 SrchShares = "";
                 _liquidAssetServices.UpdateManagerLiquidAsset(RowLiquidAsset);
-                LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, enabledMovement));
-                SetAvailableLiquidity(_liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, RowLiquidAsset.IdCurrency));
+                LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto, enabledMovement));
+                SetAvailableLiquidity(_liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto, RowLiquidAsset.Id_valuta));
                 MessageBox.Show("Record modificato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception err)
@@ -216,16 +216,16 @@ namespace FinanceManager.ViewModels
 
         public void DeleteCommand(object param)
         {
-            MessageBoxResult MBR = MessageBox.Show(string.Format("Il {0} del {1} per l'importo di {2} {3} verrà eliminato.", RowLiquidAsset.DescMovement, RowLiquidAsset.MovementDate.ToShortDateString(),
-                RowLiquidAsset.CodeCurrency, RowLiquidAsset.Amount) + Environment.NewLine + "Sei sicuro?", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.YesNo, MessageBoxImage.Question);
+            MessageBoxResult MBR = MessageBox.Show(string.Format("Il {0} del {1} per l'importo di {2} {3} verrà eliminato.", RowLiquidAsset.Desc_tipo_movimento, RowLiquidAsset.Data_Movimento.ToShortDateString(),
+                RowLiquidAsset.Cod_valuta, RowLiquidAsset.Importo_totale) + Environment.NewLine + "Sei sicuro?", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (MBR == MessageBoxResult.Yes)
             {
                 try
                 {
-                    _liquidAssetServices.DeleteManagerLiquidAsset(RowLiquidAsset.idLiquidAsset);
+                    _liquidAssetServices.DeleteManagerLiquidAsset(RowLiquidAsset.Id_portafoglio);
                     SrchShares = "";
-                    LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, enabledMovement));
-                    SetAvailableLiquidity(_liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.IdOwner, RowLiquidAsset.IdLocation, RowLiquidAsset.IdCurrency));
+                    LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto, enabledMovement));
+                    SetAvailableLiquidity(_liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto, RowLiquidAsset.Id_valuta));
                     MessageBox.Show("Record eliminato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception err)
@@ -317,7 +317,7 @@ namespace FinanceManager.ViewModels
             }
             string v1 = d1.ToString("#,##0.0#", CultureInfo.CreateSpecificCulture("it-IT"));
             string v2 = d2.ToString("#,##0.0#", CultureInfo.CreateSpecificCulture("it-IT"));
-            AvailableLiquidity = string.Format("Sono disponibili {0} {1} e {0} {2} messi da parte.", RowLiquidAsset.CodeCurrency, v1, v2);
+            AvailableLiquidity = string.Format("Sono disponibili {0} {1} e {0} {2} messi da parte.", RowLiquidAsset.Cod_valuta, v1, v2);
         }
 
         #endregion
@@ -421,13 +421,13 @@ namespace FinanceManager.ViewModels
                             ComboBox comboBox = o as ComboBox;
                             if (comboBox.Name == "cbOwner")
                             {
-                                comboBox.SelectedValue = MLA.IdOwner;
-                                RowLiquidAsset.IdOwner = MLA.IdOwner;
+                                comboBox.SelectedValue = MLA.Id_gestione;
+                                RowLiquidAsset.Id_gestione = MLA.Id_gestione;
                             }
                             else if (comboBox.Name == "cbLocation")
                             {
-                                comboBox.SelectedValue = MLA.IdLocation;
-                                RowLiquidAsset.IdLocation = MLA.IdLocation;
+                                comboBox.SelectedValue = MLA.Id_conto;
+                                RowLiquidAsset.Id_conto = MLA.Id_conto;
                             }
                         }
                     }

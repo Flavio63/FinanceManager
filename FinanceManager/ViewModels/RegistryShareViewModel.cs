@@ -55,12 +55,12 @@ namespace FinanceManager.ViewModels
                         PropertyInfo[] properties = typeof(RegistryShare).GetProperties();
                         foreach (PropertyInfo pi in properties)
                         {
-                            if ((pi.Name == "DescShare" || pi.Name == "Isin") && pi.GetValue(Share) == null)
+                            if ((pi.Name == "Desc_titolo" || pi.Name == "Isin") && pi.GetValue(Share) == null)
                             {
                                 e.Cancel = true;
                                 throw new Exception("Inserire tutti i valori prima di confermare cambiando riga.");
                             }
-                            else if (pi.Name != "IdShare" && pi.GetValue(Share).ToString() == "0")
+                            else if (pi.Name != "Id_titolo" && pi.GetValue(Share).ToString() == "0")
                             {
                                 e.Cancel = true;
                                 throw new Exception("Inserire tutti i valori prima di confermare cambiando riga.");

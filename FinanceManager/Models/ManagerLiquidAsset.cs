@@ -12,44 +12,41 @@ namespace FinanceManager.Models
     {
         private DateTime _MovementDate;
 
-        public int idLiquidAsset { get; set; }
-        public int IdOwner { get; set; }
-        public string OwnerName { get; set; }
+        public int Id_portafoglio { get; set; }
+        public int Id_gestione { get; set; }
+        public string Nome_Gestione { get; set; }
 
-        public int IdLocation { get; set; }
-        public string DescLocation { get; set; }
+        public int Id_conto { get; set; }
+        public string Desc_conto { get; set; }
 
-        public int IdCurrency { get; set; }
-        public string CodeCurrency { get; set; }
+        public int Id_valuta { get; set; }
+        public string Cod_valuta { get; set; }
 
-        public int IdCurrency2 { get; set; }
-        public string CodeCurrency2 { get; set; }
+        public int Id_valuta_2 { get; set; }
+        public string Code_valuta_2 { get; set; }
 
-        public int IdMovement { get; set; }
-        public string DescMovement { get; set; }
+        public int Id_tipo_movimento { get; set; }
+        public string Desc_tipo_movimento { get; set; }
 
-        public uint IdFirm { get; set; }
-        public string DescFirm { get; set; }
+        public uint Id_azienda { get; set; }
+        public string Desc_azienda { get; set; }
 
-        public uint? IdShare { get; set; }
-        public string DescShare { get; set; }
+        public uint? Id_titolo { get; set; }
+        public string Desc_titolo { get; set; }
         public string Isin { get; set; }
 
-        public uint IdShareType { get; set; }
-        public string DescShareType { get; set; }
+        public uint Id_tipo_titolo { get; set; }
+        public string Desc_tipo_titolo { get; set; }
 
-        public uint? IdMarket { get; set; }
-        public string DescMarket { get; set; }
-
-        public double SharesQuantity { get; set; }
-        public double UnityLocalValue { get; set; }
-        public double TotalCommission { get; set; }
+        public double N_titoli { get; set; }
+        public double Costo_unitario_in_valuta { get; set; }
+        public double Commissioni_totale { get; set; }
         public double TobinTax { get; set; }
-        public double DisaggioCoupons { get; set; }
+        public double Disaggio_anticipo_cedole { get; set; }
         public double RitenutaFiscale { get; set; }
         public double ProfitLoss { get; set; }
 
-        public DateTime MovementDate
+        public DateTime Data_Movimento
         {
             get
             {
@@ -66,18 +63,18 @@ namespace FinanceManager.Models
         }
         //[ExcludeChar("/[a-z][A-Z]!@#$£€", ErrorMessage = "Sono permessi solo numeri")]
         //[VerifyNumber(ErrorMessage = "Inserire una cifra diversa da zero e che sia disponibile.")]
-        public double Amount
+        public double Importo_totale
         {
-            get { return GetValue(() => Amount); }
-            set { SetValue(() => Amount, value); }
+            get { return GetValue(() => Importo_totale); }
+            set { SetValue(() => Importo_totale, value); }
         }
         //[Range(0.2, 1.8, ErrorMessage = "Controllare la cifra immessa.")]
-        public double ExchangeValue
+        public double Valore_di_cambio
         {
-            get { return GetValue(() => ExchangeValue); }
-            set { SetValue(() => ExchangeValue, value); }
+            get { return GetValue(() => Valore_di_cambio); }
+            set { SetValue(() => Valore_di_cambio, value); }
         }
-        public double AmountChangedValue { get; set; }
+        public double Importo_cambiato { get; set; }
         public bool Available { get; set; }
         public string Note { get; set; }
     }

@@ -52,23 +52,23 @@
                       SelectionMode="Single" FontSize="14" MinWidth="315" HorizontalAlignment="Center" AlternatingRowBackground="LightGray"
                       ItemsSource="{Binding LiquidAssetList, UpdateSourceTrigger=PropertyChanged}" Margin="10">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID" IsReadOnly="True" Binding="{Binding idLiquidAsset, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                    <DataGridTextColumn Header="Cosa" IsReadOnly="True" Binding="{Binding DescMovement, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                    <DataGridTextColumn Header="Valuta" IsReadOnly="True" Binding="{Binding CodeCurrency, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                    <DataGridTextColumn Header="Azienda" IsReadOnly="True" Binding="{Binding DescFirm, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                    <DataGridTextColumn Header="Titolo" IsReadOnly="True" Binding="{Binding DescShare, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="ID" IsReadOnly="True" Binding="{Binding Id_portafoglio, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="Cosa" IsReadOnly="True" Binding="{Binding Desc_tipo_movimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="Valuta" IsReadOnly="True" Binding="{Binding Cod_valuta, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="Azienda" IsReadOnly="True" Binding="{Binding Desc_azienda, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="Titolo" IsReadOnly="True" Binding="{Binding Desc_titolo, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="Isin" IsReadOnly="True" Binding="{Binding Isin, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                    <DataGridTextColumn Header="Tipologia" IsReadOnly="True" Binding="{Binding DescShareType, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="Tipologia" IsReadOnly="True" Binding="{Binding Desc_tipo_titolo, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
-                    <DataGridTextColumn Header="Data" IsReadOnly="True" Binding="{Binding MovementDate, StringFormat=d, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                    <DataGridTextColumn Header="Quantità" IsReadOnly="True" Binding="{Binding SharesQuantity, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                    <DataGridTextColumn Header="P.zo Unitario" IsReadOnly="True" Binding="{Binding UnityLocalValue, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                    <DataGridTextColumn Header="Importo" IsReadOnly="True" Binding="{Binding Amount, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="Data" IsReadOnly="True" Binding="{Binding Data_Movimento, StringFormat=d, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="Quantità" IsReadOnly="True" Binding="{Binding N_titoli, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="P.zo Unitario" IsReadOnly="True" Binding="{Binding Costo_unitario_in_valuta, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="Importo" IsReadOnly="True" Binding="{Binding Importo_totale, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="ProfitLoss" IsReadOnly="True" Binding="{Binding ProfitLoss, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                    <DataGridTextColumn Header="Cambio" IsReadOnly="True" Binding="{Binding ExchangeValue, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                    <DataGridTextColumn Header="Commissioni" IsReadOnly="True" Binding="{Binding TotalCommission, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="Cambio" IsReadOnly="True" Binding="{Binding Valore_di_cambio, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="Commissioni" IsReadOnly="True" Binding="{Binding Commissioni_totale, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="TobinTax" IsReadOnly="True" Binding="{Binding TobinTax, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                    <DataGridTextColumn Header="Disaggio" IsReadOnly="True" Binding="{Binding DisaggioCoupons, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="Disaggio" IsReadOnly="True" Binding="{Binding Disaggio_anticipo_cedole, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="R.F." IsReadOnly="True" Binding="{Binding RitenutaFiscale, StringFormat=N4, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
                     <DataGridTextColumn Header="Note" IsReadOnly="True" Binding="{Binding Note, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
