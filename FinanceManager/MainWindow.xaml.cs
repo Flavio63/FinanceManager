@@ -15,6 +15,9 @@ namespace FinanceManager
         private IManagerLiquidAssetServices _managerLiquidServices;
         private IManagerReportServices _managerReportServices;
 
+        MainFormManagerView mainFormManager;
+        MainFormManagerViewModel mainFormManagerViewModel;
+
         RegistryOwnerViewModel ownerViewModel;
         RegistryOwnerView ownerView;
         RegistryShareTypeViewModel registryShareTypeViewModel;
@@ -220,6 +223,21 @@ namespace FinanceManager
                 mainGrid.Children.Remove(managerReportsView);
                 managerReportsView = null;
                 managerReportsViewModel = null;
+            }
+        }
+
+        private void OnClickMainFormManager(object sender, RoutedEventArgs e)
+        {
+            if (mainFormManager == null || !mainGrid.Children.Contains(mainFormManager))
+            {
+                mainFormManagerViewModel = new MainFormManagerViewModel(_registryServices, _managerLiquidServices);
+                mainFormManager = new MainFormManagerView(mainFormManagerViewModel);
+                mainGrid.Children.Add(mainFormManager);
+            }
+            else
+            {
+                mainGrid.Children.Remove(mainFormManager);
+                mainFormManager = null;
             }
         }
     }
