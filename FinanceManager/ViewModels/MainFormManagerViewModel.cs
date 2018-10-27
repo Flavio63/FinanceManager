@@ -157,27 +157,45 @@ namespace FinanceManager.ViewModels
         #endregion
 
         #region event
-
+        /// <summary>
+        /// Quando viene selezionato una voce del menu si compila un array di codici per
+        /// generare una query di interrogazione del database e riavere una risposta che
+        /// compili la form
+        /// </summary>
+        /// <param name="sender">La voce di menu selezionata</param>
+        /// <param name="e">evento di selezione</param>
         public void ItemChecked(object sender, RoutedEventArgs e)
         {
-            MenuItem menuItem = e.Source as MenuItem;
-            string menuTopLevel = menuItem.Name.Substring(0, menuItem.Name.IndexOf("_"));
-            switch (menuTopLevel)
+            MenuItem menuSubItem = e.Source as MenuItem;
+            MenuItem menuTopLevel = ItemsControl.ItemsControlFromItemContainer(menuSubItem) as MenuItem;
+            Grid mainGrid =((Grid)((Menu)menuTopLevel.Parent).Parent).Children[2] as Grid;
+            switch (menuTopLevel.Header)
             {
                 case ("Gestioni"):
-                    GestioniScelte.Add(Convert.ToInt16(menuItem.Name.Substring(menuItem.Name.IndexOf("_") + 1)));
+                    GestioniScelte.Add(Convert.ToInt16(menuSubItem.Name.Substring(menuSubItem.Name.IndexOf("_") + 1)));
+                    //foreach (MenuItem menuItemGestioni in MenuGestioni)
+                    //    menuItemGestioni.IsEnabled = menuItemGestioni.IsChecked ? true : false;
                     break;
-                case ("Conti"):
-                    ContiScelti.Add(Convert.ToInt16(menuItem.Name.Substring(menuItem.Name.IndexOf("_") + 1)));
+                case ("Conti di appoggio"):
+                    ContiScelti.Add(Convert.ToInt16(menuSubItem.Name.Substring(menuSubItem.Name.IndexOf("_") + 1)));
                     break;
-                case ("Cosa"):
+                case ("Cosa vuoi fare"):
                     TipoMovimentoScelto.Clear();
                     foreach (MenuItem menuItemMovimento in MenuTipoMovimenti)
-                        menuItemMovimento.IsChecked = menuItemMovimento.Header != menuItem.Header ? false : true;
-                    TipoMovimentoScelto.Add(Convert.ToInt16(menuItem.Name.Substring(menuItem.Name.IndexOf("_") + 1)));
+                        menuItemMovimento.IsChecked = menuItemMovimento.Header != menuSubItem.Header ? false : true;
+                    TipoMovimentoScelto.Add(Convert.ToInt16(menuSubItem.Name.Substring(menuSubItem.Name.IndexOf("_") + 1)));
+                    ManagerPortfolioSharesMovementViewModel managerPortfolioSharesMovementViewModel = new ManagerPortfolioSharesMovementViewModel(_services, _liquidAssetServices);
+                    ManagerPortfolioSharesMovementView managerPortfolioSharesMovementView = new ManagerPortfolioSharesMovementView(managerPortfolioSharesMovementViewModel);
+                    mainGrid.Children.Add(managerPortfolioSharesMovementView);
                     break;
             }
         }
+        /// <summary>
+        /// Quando viene deselezionata una voce di menu si toglie il 
+        /// corrispettivo valore dall'array di ID e si rilancia la query
+        /// </summary>
+        /// <param name="sender">La voce di menu selezionata</param>
+        /// <param name="e">evento di deslezione</param>
         public void ItemUnchecked(object sender, RoutedEventArgs e)
         {
             MenuItem menuItem = e.Source as MenuItem;
