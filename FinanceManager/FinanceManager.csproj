@@ -145,6 +145,7 @@
     <Compile Include="Services\SQL\DAF_Connection.cs" />
     <Compile Include="Services\SQL\ManagerScripts.cs" />
     <Compile Include="Services\SQL\RegistryScripts.cs" />
+    <Compile Include="ViewModels\AcquistoVenditaTitoliViewModel.cs" />
     <Compile Include="ViewModels\MainFormManagerViewModel.cs" />
     <Compile Include="ViewModels\ManagerPortfolioChangeCurrencyViewModel.cs" />
     <Compile Include="ViewModels\ManagerPortfolioMovementViewModel.cs" />
@@ -158,6 +159,9 @@
     <Compile Include="ViewModels\RegistryShareTypeViewModel.cs" />
     <Compile Include="ViewModels\RegistryShareViewModel.cs" />
     <Compile Include="ViewModels\ReportGuadagniAnnoViewModel.cs" />
+    <Compile Include="Views\AcquistoVenditaTitoliView.xaml.cs">
+      <DependentUpon>AcquistoVenditaTitoliView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MainFormManagerView.xaml.cs">
       <DependentUpon>MainFormManagerView.xaml</DependentUpon>
     </Compile>
@@ -215,6 +219,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\AcquistoVenditaTitoliView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainFormManagerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -181,12 +181,13 @@ namespace FinanceManager.ViewModels
                     break;
                 case ("Cosa vuoi fare"):
                     TipoMovimentoScelto.Clear();
+                    mainGrid.Children.Clear();
                     foreach (MenuItem menuItemMovimento in MenuTipoMovimenti)
                         menuItemMovimento.IsChecked = menuItemMovimento.Header != menuSubItem.Header ? false : true;
                     TipoMovimentoScelto.Add(Convert.ToInt16(menuSubItem.Name.Substring(menuSubItem.Name.IndexOf("_") + 1)));
-                    ManagerPortfolioSharesMovementViewModel managerPortfolioSharesMovementViewModel = new ManagerPortfolioSharesMovementViewModel(_services, _liquidAssetServices);
-                    ManagerPortfolioSharesMovementView managerPortfolioSharesMovementView = new ManagerPortfolioSharesMovementView(managerPortfolioSharesMovementViewModel);
-                    mainGrid.Children.Add(managerPortfolioSharesMovementView);
+                    AcquistoVenditaTitoliViewModel acquistoVenditaTitoliViewModel = new AcquistoVenditaTitoliViewModel(_services, _liquidAssetServices);
+                    AcquistoVenditaTitoliView acquistoVenditaTitoliView = new AcquistoVenditaTitoliView(acquistoVenditaTitoliViewModel);
+                    mainGrid.Children.Add(acquistoVenditaTitoliView);
                     break;
             }
         }
@@ -198,17 +199,22 @@ namespace FinanceManager.ViewModels
         /// <param name="e">evento di deslezione</param>
         public void ItemUnchecked(object sender, RoutedEventArgs e)
         {
-            MenuItem menuItem = e.Source as MenuItem;
-            string menuTopLevel = menuItem.Name.Substring(0, menuItem.Name.IndexOf("_"));
-            switch (menuTopLevel)
+            MenuItem menuSubItem = e.Source as MenuItem;
+            MenuItem menuTopLevel = ItemsControl.ItemsControlFromItemContainer(menuSubItem) as MenuItem;
+            Grid mainGrid = ((Grid)((Menu)menuTopLevel.Parent).Parent).Children[2] as Grid;
+            switch (menuTopLevel.Header)
             {
                 case ("Gestioni"):
-                    GestioniScelte.Remove(Convert.ToInt16(menuItem.Name.Substring(menuItem.Name.IndexOf("_") + 1)));
+                    GestioniScelte.Remove(Convert.ToInt16(menuSubItem.Name.Substring(menuSubItem.Name.IndexOf("_") + 1)));
+                    mainGrid.Children.Clear();
                     break;
                 case ("Conti"):
-                    ContiScelti.Remove(Convert.ToInt16(menuItem.Name.Substring(menuItem.Name.IndexOf("_") + 1))); break;
+                    ContiScelti.Remove(Convert.ToInt16(menuSubItem.Name.Substring(menuSubItem.Name.IndexOf("_") + 1)));
+                    mainGrid.Children.Clear();
+                    break;
                 case ("Cosa"):
                     TipoMovimentoScelto.Clear();
+                    mainGrid.Children.Clear();
                     break;
             }
         }
