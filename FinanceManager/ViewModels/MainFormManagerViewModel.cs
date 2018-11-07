@@ -6,6 +6,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace FinanceManager.ViewModels
@@ -15,6 +16,8 @@ namespace FinanceManager.ViewModels
         private IRegistryServices _services;
         private IManagerLiquidAssetServices _liquidAssetServices;
         public ICommand CloseMeCommand { get; set; }
+        AcquistoVenditaTitoliViewModel acquistoVenditaTitoliViewModel;
+        AcquistoVenditaTitoliView acquistoVenditaTitoliView;
 
         public MainFormManagerViewModel(IRegistryServices services, IManagerLiquidAssetServices liquidAssetServices)
         {
@@ -26,9 +29,9 @@ namespace FinanceManager.ViewModels
 
         private void SetUpData()
         {
-            GestioniScelte = new Collection<int>();
-            ContiScelti = new Collection<int>();
-            TipoMovimentoScelto = new Collection<int>();
+            GestioniScelte = new Collection<RegistryOwner>();
+            ContiScelti = new Collection<RegistryLocation>();
+            TipoMovimentoScelto = new RegistryMovementType();
 
             try
             {
@@ -139,17 +142,17 @@ namespace FinanceManager.ViewModels
             set { SetValue(() => MenuTipoMovimenti, value); }
         }
 
-        public Collection<int> GestioniScelte
+        public Collection<RegistryOwner> GestioniScelte
         {
             get { return GetValue(() => GestioniScelte); }
             set { SetValue(() => GestioniScelte, value); }
         }
-        public Collection<int> ContiScelti
+        public Collection<RegistryLocation> ContiScelti
         {
             get { return GetValue(() => ContiScelti); }
             set { SetValue(() => ContiScelti, value); }
         }
-        public Collection<int> TipoMovimentoScelto
+        public RegistryMovementType TipoMovimentoScelto
         {
             get { return GetValue(() => TipoMovimentoScelto); }
             set { SetValue(() => TipoMovimentoScelto, value); }
@@ -168,35 +171,81 @@ namespace FinanceManager.ViewModels
         {
             MenuItem menuSubItem = e.Source as MenuItem;
             MenuItem menuTopLevel = ItemsControl.ItemsControlFromItemContainer(menuSubItem) as MenuItem;
-            Grid mainGrid =((Grid)((Menu)menuTopLevel.Parent).Parent).Children[2] as Grid;
+            Grid mainGrid = ((Grid)((Menu)menuTopLevel.Parent).Parent).Children[2] as Grid;
             switch (menuTopLevel.Header)
             {
+                case ("Cosa vuoi fare"):
+                    foreach (MenuItem menuItemMovimento in MenuTipoMovimenti)
+                    {
+                        menuItemMovimento.IsChecked = menuItemMovimento.Header != menuSubItem.Header ? false : true;
+                        menuItemMovimento.IsEnabled = menuItemMovimento.Header != menuSubItem.Header ? false : true;
+                    }
+                    TipoMovimentoScelto = _services.GetMovementType((Convert.ToInt16(menuSubItem.Name.Substring(menuSubItem.Name.IndexOf("_") + 1))));
+                    break;
                 case ("Gestioni"):
-                    GestioniScelte.Add(Convert.ToInt16(menuSubItem.Name.Substring(menuSubItem.Name.IndexOf("_") + 1)));
-                    //foreach (MenuItem menuItemGestioni in MenuGestioni)
-                    //    menuItemGestioni.IsEnabled = menuItemGestioni.IsChecked ? true : false;
+                    if (TipoMovimentoScelto.IdMovement != 12)
+                    {
+                        foreach (MenuItem menuGestioni in MenuGestioni)
+                        {
+                            menuGestioni.IsChecked = menuGestioni.Header != menuSubItem.Header ? false : true;
+                            menuGestioni.IsEnabled = menuGestioni.Header != menuSubItem.Header ? false : true;
+                        }
+                    }
+                    GestioniScelte.Add(_services.GetOwner(Convert.ToInt16(menuSubItem.Name.Substring(menuSubItem.Name.IndexOf("_") + 1))));
+                    if (GestioniScelte.Count == 2)
+                    {
+                        foreach (MenuItem menuGestioni in MenuGestioni)
+                        {
+                            menuGestioni.IsEnabled = menuGestioni.IsChecked;
+                        }
+                    }
                     break;
                 case ("Conti di appoggio"):
-                    ContiScelti.Add(Convert.ToInt16(menuSubItem.Name.Substring(menuSubItem.Name.IndexOf("_") + 1)));
-                    break;
-                case ("Cosa vuoi fare"):
-                    TipoMovimentoScelto.Clear();
-                    mainGrid.Children.Clear();
-                    foreach (MenuItem menuItemMovimento in MenuTipoMovimenti)
-                        menuItemMovimento.IsChecked = menuItemMovimento.Header != menuSubItem.Header ? false : true;
-                    TipoMovimentoScelto.Add(Convert.ToInt16(menuSubItem.Name.Substring(menuSubItem.Name.IndexOf("_") + 1)));
-                    AcquistoVenditaTitoliViewModel acquistoVenditaTitoliViewModel = new AcquistoVenditaTitoliViewModel(_services, _liquidAssetServices);
-                    AcquistoVenditaTitoliView acquistoVenditaTitoliView = new AcquistoVenditaTitoliView(acquistoVenditaTitoliViewModel);
-                    mainGrid.Children.Add(acquistoVenditaTitoliView);
+                    if (TipoMovimentoScelto.IdMovement != 3 || TipoMovimentoScelto.IdMovement != 12)
+                    {
+                        foreach (MenuItem menuConto in MenuConti)
+                        {
+                            menuConto.IsChecked = menuConto.Header != menuSubItem.Header ? false : true;
+                            menuConto.IsEnabled = menuConto.Header != menuSubItem.Header ? false : true;
+                        }
+                    }
+                    ContiScelti.Add(_services.GetLocation(Convert.ToInt16(menuSubItem.Name.Substring(menuSubItem.Name.IndexOf("_") + 1))));
+                    if (TipoMovimentoScelto.IdMovement == 5 || TipoMovimentoScelto.IdMovement == 6)
+                    {
+                        acquistoVenditaTitoliViewModel =
+                          new AcquistoVenditaTitoliViewModel(_services, _liquidAssetServices, GestioniScelte, ContiScelti, TipoMovimentoScelto);
+                        acquistoVenditaTitoliView = new AcquistoVenditaTitoliView(acquistoVenditaTitoliViewModel);
+                        mainGrid.Children.Add(acquistoVenditaTitoliView);
+                        mainGrid.Visibility = Visibility.Visible;
+                        mainGrid.IsVisibleChanged += MainGrid_IsVisibleChanged;
+                    }
                     break;
             }
         }
+        /// <summary>
+        /// Quando si chiude la maschera resetta le scelte nel menu
+        /// </summary>
+        /// <param name="sender">La grid che viene chiusa</param>
+        /// <param name="e">evento di cambio visibilità</param>
+        private void MainGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            Grid grid = ((Grid)((Grid)sender).Parent).Children[2] as Grid;
+            grid.Visibility = Visibility.Visible;
+            Menu menu = ((Menu)((Grid)((Grid)sender).Parent).Children[0]);
+            foreach (MenuItem menuItem in menu.Items)
+                foreach (MenuItem subMenuItem in menuItem.Items)
+                {
+                    subMenuItem.IsChecked = false;
+                    subMenuItem.IsEnabled = true;
+                }
+        }
+
         /// <summary>
         /// Quando viene deselezionata una voce di menu si toglie il 
         /// corrispettivo valore dall'array di ID e si rilancia la query
         /// </summary>
         /// <param name="sender">La voce di menu selezionata</param>
-        /// <param name="e">evento di deslezione</param>
+        /// <param name="e">evento di deselezione</param>
         public void ItemUnchecked(object sender, RoutedEventArgs e)
         {
             MenuItem menuSubItem = e.Source as MenuItem;
@@ -204,16 +253,53 @@ namespace FinanceManager.ViewModels
             Grid mainGrid = ((Grid)((Menu)menuTopLevel.Parent).Parent).Children[2] as Grid;
             switch (menuTopLevel.Header)
             {
+                case ("Cosa vuoi fare"):
+                    foreach (MenuItem menuItemMovimento in MenuTipoMovimenti)
+                    {
+                        menuItemMovimento.IsChecked = false;
+                        menuItemMovimento.IsEnabled = true;
+                    }
+                    foreach (MenuItem menuItemGestioni in MenuGestioni)
+                    {
+                        menuItemGestioni.IsChecked = false;
+                        menuItemGestioni.IsEnabled = true;
+                    }
+                    foreach (MenuItem menuItemConti in MenuConti)
+                    {
+                        menuItemConti.IsChecked = false;
+                        menuItemConti.IsEnabled = true;
+                    }
+                    TipoMovimentoScelto = new RegistryMovementType();
+                    GestioniScelte.Clear();
+                    ContiScelti.Clear();
+                    mainGrid.Children.Clear();
+                    break;
                 case ("Gestioni"):
-                    GestioniScelte.Remove(Convert.ToInt16(menuSubItem.Name.Substring(menuSubItem.Name.IndexOf("_") + 1)));
+                    foreach (RegistryOwner registryOwner in GestioniScelte)
+                        if (registryOwner.IdOwner == Convert.ToInt16(menuSubItem.Name.Substring(menuSubItem.Name.IndexOf("_") + 1)))
+                        {
+                            GestioniScelte.Remove(registryOwner);
+                            break;
+                        }
+                    foreach (MenuItem menuGestioni in MenuGestioni)
+                        menuGestioni.IsEnabled = true;
+                    foreach (MenuItem menuItemConti in MenuConti)
+                    {
+                        menuItemConti.IsChecked = false;
+                        menuItemConti.IsEnabled = true;
+                    }
+                    ContiScelti.Clear();
                     mainGrid.Children.Clear();
                     break;
                 case ("Conti"):
-                    ContiScelti.Remove(Convert.ToInt16(menuSubItem.Name.Substring(menuSubItem.Name.IndexOf("_") + 1)));
-                    mainGrid.Children.Clear();
-                    break;
-                case ("Cosa"):
-                    TipoMovimentoScelto.Clear();
+                    foreach (RegistryLocation registryLocation in ContiScelti)
+                        if (registryLocation.IdLocation == Convert.ToInt16(menuSubItem.Name.Substring(menuSubItem.Name.IndexOf("_") + 1)))
+                        {
+                            ContiScelti.Remove(registryLocation);
+                            break;
+                        }
+                    foreach (MenuItem menuItem in MenuConti)
+                        menuItem.IsEnabled = true;
                     mainGrid.Children.Clear();
                     break;
             }

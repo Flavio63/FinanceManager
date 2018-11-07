@@ -121,7 +121,7 @@ namespace FinanceManager.ViewModels
                 {
                     RowLiquidAsset.Id_valuta = RC1.IdCurrency;
                     RowLiquidAsset.Cod_valuta = RC1.CodeCurrency;
-                    SetAvailableLiquidity(_liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto, RowLiquidAsset.Id_valuta));
+                    //SetAvailableLiquidity(_liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto, RowLiquidAsset.Id_valuta));
                     EnableControl.EnableControlInGrid(CB.Parent as Grid, "amount", true);
                 }
                 if (RC2 != null)

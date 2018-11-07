@@ -86,13 +86,13 @@ namespace FinanceManager.Services
         }
 
         /// <summary>
-        /// Estrae tutti i record di una gestione, in un conto per la valuta selezionata
+        /// Estrae tutti il valore disponibile sulla base dei parametri dati
         /// </summary>
         /// <param name="IdOwner">La gestione</param>
         /// <param name="IdLocation">Il conto</param>
         /// <param name="IdCurrency">La valuta</param>
         /// <returns>Tabella con 2 record: il totale disponibile e quello messo da parte</returns>
-        public DataTable GetCurrencyAvailable(int IdOwner, int IdLocation, int IdCurrency)
+        public double GetCurrencyAvailable(int IdOwner, int IdLocation, int IdCurrency)
         {
             try
             {
@@ -107,7 +107,10 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_valuta", IdCurrency);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     dbAdapter.Fill(DT);
-                    return DT;
+                    if (((DataRow)DT.Rows[0]).ItemArray[0].ToString() != "")
+                        return Convert.ToDouble(((DataRow)DT.Rows[0]).ItemArray[0]);
+                    else
+                        return 0;
                 }
             }
             catch (MySqlException err)
@@ -410,7 +413,7 @@ namespace FinanceManager.Services
         private ManagerLiquidAsset MLA (DataRow dr)
         {
             ManagerLiquidAsset MLA = new ManagerLiquidAsset();
-            MLA.Id_portafoglio = (int)dr.Field<uint>("id_portafoglio");
+            MLA.Id_portafoglio = (int)dr.Field<uint>("id_portafoglio_titoli");
             MLA.Id_gestione = (int)dr.Field<uint>("id_gestione");
             MLA.Nome_Gestione = dr.Field<string>("nome_gestione");
             MLA.Id_conto = (int)dr.Field<uint>("id_conto");
@@ -434,8 +437,6 @@ namespace FinanceManager.Services
             MLA.Disaggio_anticipo_cedole = dr.Field<double>("disaggio_cedole");
             MLA.RitenutaFiscale = dr.Field<double>("ritenuta_fiscale");
             MLA.Valore_di_cambio = dr.Field<double>("valore_cambio");
-            MLA.ProfitLoss = dr.Field<double>("profit_loss");
-            MLA.Available = Convert.ToBoolean(dr.Field<string>("disp"));
             MLA.Note = dr.Field<string>("note");
             return MLA;
         }

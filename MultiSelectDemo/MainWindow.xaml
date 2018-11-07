@@ -12,9 +12,9 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <xx:MultiSelectComboBox Width="200" Height="50" ItemsSource="{Binding Items}"
+     <!--   <xx:MultiSelectComboBox Width="200" Height="50" ItemsSource="{Binding Items}"
                                   SelectedItems="{Binding SelectedItems}" Name="MC"/>
-
+-->
         <xx:ComboList Width="200" Height="50" Grid.Row="1"/>
     </Grid>
 </Window>

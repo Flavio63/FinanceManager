@@ -8,6 +8,7 @@ namespace FinanceManager.Services
         void UpdateOwner(RegistryOwner owner);
         void AddOwner(string name);
         void DeleteOwner(int id);
+        RegistryOwner GetOwner(int id);
         #endregion
 
         #region ShareType
@@ -22,6 +23,7 @@ namespace FinanceManager.Services
         void UpdateLocation(RegistryLocation registryLocation);
         void AddLocation(string description);
         void DeleteLocation(int id);
+        RegistryLocation GetLocation(int id);
         #endregion
 
         #region Firm
@@ -51,6 +53,7 @@ namespace FinanceManager.Services
         void UpdateMovementType(RegistryMovementType registryMovementType);
         void AddMovementType(string name);
         void DeleteMovementType(int id);
+        RegistryMovementType GetMovementType(int id);
         #endregion
     }
 }

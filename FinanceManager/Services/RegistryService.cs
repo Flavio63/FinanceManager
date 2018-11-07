@@ -60,6 +60,37 @@ namespace FinanceManager.Services
             }
         }
 
+        public RegistryOwner GetOwner(int id)
+        {
+            try
+            {
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetOwner;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", id);
+                    DataTable dataTable = new DataTable();
+                    dbAdapter.Fill(dataTable);
+                    return new RegistryOwner(){
+                        IdOwner = Convert.ToInt16(dataTable.Rows[0].ItemArray[0]),
+                        OwnerName = dataTable.Rows[0].ItemArray[1].ToString()
+                    };
+
+
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception("GetOwnersName " + err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception("GetOwnersName " + err.Message);
+            }
+        }
+
         public RegistryOwnersList GetRegistryOwners()
         {
             try
@@ -457,6 +488,35 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
+        
+        public RegistryLocation GetLocation(int id)
+        {
+            try
+            {
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetLocation;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id", id);
+                    DataTable dataTable = new DataTable();
+                    dbAdapter.Fill(dataTable);
+                    return new RegistryLocation() {
+                        IdLocation = Convert.ToInt16(dataTable.Rows[0].ItemArray[0]),
+                        DescLocation = dataTable.Rows[0].ItemArray[1].ToString()
+                    };
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception("GetLocationName " + err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception("GetLocationName " + err.Message);
+            }
+        }
         #endregion
 
         #region Firm
@@ -845,6 +905,35 @@ namespace FinanceManager.Services
             }
         }
 
+        public RegistryMovementType GetMovementType (int id)
+        {
+            try
+            {
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetMovementType;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id", id);
+                    DataTable dataTable = new DataTable();
+                    dbAdapter.Fill(dataTable);
+                    return new RegistryMovementType()
+                    {
+                        IdMovement = Convert.ToInt16(dataTable.Rows[0].ItemArray[0]),
+                        DescMovement = dataTable.Rows[0].ItemArray[1].ToString()
+                    };
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception("GetMovementTypeName " + err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception("GetMovementTypeName " + err.Message);
+            }
+        }
         #endregion
 
     }

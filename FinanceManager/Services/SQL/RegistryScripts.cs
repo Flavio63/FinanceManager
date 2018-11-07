@@ -13,8 +13,9 @@ namespace FinanceManager.Services.SQL
         public readonly static string UpdateName = "UPDATE gestioni SET nome_gestione = @nome WHERE id_gestione = @id";
         public readonly static string AddOwner = "INSERT INTO gestioni (id_gestione, nome_gestione) VALUE (null, @nome)";
         public readonly static string DeleteOwner = "DELETE FROM gestioni WHERE id_gestione = @id";
+        public readonly static string GetOwner = "SELECT id_gestione, nome_gestione FROM gestioni WHERE id_gestione = @id_gestione";
         #endregion
-        
+
         #region TipoTitoli
         public readonly static string GetRegistryShareTypeList = "SELECT id_tipo_titolo, desc_tipo_titolo FROM tipo_titoli ORDER BY id_tipo_titolo;";
         public readonly static string UpdateShareType = "UPDATE tipo_titoli SET desc_tipo_titolo = @desc WHERE id_tipo_titolo = @id;";
@@ -34,8 +35,9 @@ namespace FinanceManager.Services.SQL
         public readonly static string UpdateLocation = "UPDATE conti SET desc_conto = @desc WHERE id_conto = @id;";
         public readonly static string DeleteLocation = "DELETE FROM conti WHERE id_conto = @id";
         public readonly static string AddLocation = "INSERT INTO conti (id_conto, desc_conto) VALUE (null, @desc);";
+        public readonly static string GetLocation = "SELECT id_conto, desc_conto FROM conti WHERE id_conto = @id";
         #endregion
-        
+
         #region Azienda
         public readonly static string GetRegistryFirmList = "SELECT id_azienda, desc_azienda FROM aziende ORDER BY desc_azienda;";
         public readonly static string UpdateFirm = "UPDATE aziende SET desc_azienda = @desc WHERE id_azienda = @id;";
@@ -60,6 +62,7 @@ namespace FinanceManager.Services.SQL
         public readonly static string UpdateMovementType = "UPDATE tipo_movimento SET desc_Movimento = @desc WHERE id_tipo_movimento = @id;";
         public readonly static string DeleteMovementType = "DELETE FROM tipo_movimento WHERE id_tipo_movimento = @id;";
         public readonly static string AddMovementType = "INSERT INTO tipo_movimento (id_tipo_movimento, desc_Movimento) VALUE (null, @desc);";
+        public readonly static string GetMovementType = "SELECT id_tipo_movimento, desc_Movimento FROM tipo_movimento WHERE id_tipo_movimento = @id";
         #endregion
     }
 }

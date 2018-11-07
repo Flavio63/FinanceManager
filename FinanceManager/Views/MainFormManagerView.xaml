@@ -8,27 +8,29 @@
              xmlns:local="clr-namespace:FinanceManager.Views"
              mc:Ignorable="d" Name="_MainFormManagerView"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="50"/>
-        </Grid.ColumnDefinitions>
-        <Menu Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top" Margin="2,5" FontSize="16" FontWeight="Bold">
-            <MenuItem Name="MI_Gestioni" Header="Gestioni" Margin="2,0" ItemsSource="{Binding MenuGestioni, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-            <MenuItem Name="MI_Conti" Header="Conti di appoggio" Margin="2,0" ItemsSource="{Binding MenuConti, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-            <MenuItem Name="MI_Cosa" Header="Cosa vuoi fare" Margin="2,0" ItemsSource="{Binding MenuTipoMovimenti, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-        </Menu>
-        <Button Content="X" Command="{Binding CloseMeCommand}" 
+    <Border Background="#FFC9C9C9" BorderBrush="#FF383838" BorderThickness="1.5">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="50"/>
+            </Grid.ColumnDefinitions>
+            <Menu Grid.Column="0" VerticalContentAlignment="Center" Grid.ColumnSpan="2" VerticalAlignment="Top" Margin="5" Height="25" FontSize="15" FontWeight="Bold">
+                <MenuItem Name="MI_Cosa" Header="Cosa vuoi fare" Margin="2,0" ItemsSource="{Binding MenuTipoMovimenti, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                <MenuItem Name="MI_Gestioni" Header="Gestioni" Margin="2,0" ItemsSource="{Binding MenuGestioni, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                <MenuItem Name="MI_Conti" Header="Conti di appoggio" Margin="2,0" ItemsSource="{Binding MenuConti, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+            </Menu>
+            <Button Content="X" Command="{Binding CloseMeCommand}" 
                 CommandParameter="{Binding ElementName=_MainFormManagerView}" 
                 HorizontalContentAlignment="Center" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right"
                     VerticalContentAlignment="Center" Width="25" Height="25" Background="LightGray" 
                 Margin="0, 0, 15, 0"></Button>
-        <Grid Name="_GridMainForm" Margin="5" Grid.Row="1" Grid.ColumnSpan="2">
-            
+            <Grid Name="_GridMainForm" Margin="5" Grid.Row="1" Grid.ColumnSpan="2" Visibility="Collapsed">
+
+            </Grid>
         </Grid>
-    </Grid>
+    </Border>
 </UserControl>
