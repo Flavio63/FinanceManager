@@ -47,6 +47,7 @@ namespace FinanceManager.ViewModels
                 TobinOk = "Collapsed";
                 DisaggioOk = "Collapsed";
                 RitenutaOk = "Collapsed";
+                ContEuroVisib = "Collapsed";
                 if (CosaMod.IdMovement == 6) RitenutaOk = "Visible";
                 Cosa = CosaMod.DescMovement;
                 Gestione = GestioneMod[0].OwnerName;
@@ -81,6 +82,13 @@ namespace FinanceManager.ViewModels
                     Disponibili = _liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto, RC.IdCurrency).
                        ToString("#,##0.0#", CultureInfo.CreateSpecificCulture("it-IT")) + " " + RC.CodeCurrency;
                     RowLiquidAsset.Id_valuta = RC.IdCurrency;
+                    if (RC.IdCurrency == 1)
+                    {
+                        ContEuroVisib = "Collapsed";
+                        RowLiquidAsset.Valore_di_cambio = 1;
+                    }
+                    else
+                        ContEuroVisib = "Visible";
                     return;
                 }
                 RegistryShare RS = e.AddedItems[0] as RegistryShare;
@@ -90,6 +98,7 @@ namespace FinanceManager.ViewModels
                     RowLiquidAsset.Id_tipo_titolo = RS.IdShareType;
                     RowLiquidAsset.Isin = RS.Isin;
                     RowLiquidAsset.Id_azienda = RS.IdFirm;
+                    SharesOwned = _liquidAssetServices.GetSharesQuantity(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto, (uint)RowLiquidAsset.Id_titolo);
                 }
                 UpdateTotals();
             }
@@ -104,19 +113,11 @@ namespace FinanceManager.ViewModels
             ManagerLiquidAsset MLA = e.AddedItems[0] as ManagerLiquidAsset;
             if (MLA != null)
             {
+                if (MLA.Id_tipo_movimento != CosaMod.IdMovement) return;
                 RowLiquidAsset = MLA;
                 if (RowLiquidAsset.Id_valuta != 1)
                 {
-                    TobinOk = "Collapsed";
                     ContEuroVisib = "Visible";
-                }
-                if (RowLiquidAsset.Id_tipo_movimento == 6)
-                    RitenutaOk = "Visible";
-                else if (RowLiquidAsset.Id_tipo_movimento == 5 && RowLiquidAsset.Id_tipo_titolo == 1 && RowLiquidAsset.Id_valuta == 1)
-                {
-                    RitenutaOk = "Collapsed";
-                    TobinOk = "Visible";
-                    DisaggioOk = "Collapsed";
                 }
                 UpdateTotals();
                 CanUpdateDelete = true;
@@ -166,20 +167,15 @@ namespace FinanceManager.ViewModels
                         break;
                     case "Valore_di_cambio":
                         RowLiquidAsset.Valore_di_cambio = Convert.ToDouble(TB.Text);
-                        if (RowLiquidAsset.Id_portafoglio == 0)
-                            CanInsert = true;
                         break;
                     case "TobinTaxValue":
                         RowLiquidAsset.TobinTax = Convert.ToDouble(TB.Text);
-                        if (RowLiquidAsset.Id_portafoglio == 0)
-                            CanInsert = true;
                         break;
                     case "RitenutaFiscale":
                         RowLiquidAsset.RitenutaFiscale = Convert.ToDouble(TB.Text);
                         break;
                     case "DisaggioValue":
-                        if (RowLiquidAsset.Id_portafoglio == 0)
-                            CanInsert = true;
+                        RowLiquidAsset.Disaggio_anticipo_cedole = Convert.ToDouble(TB.Text);
                         break;
                     case "Note":
                         RowLiquidAsset.Note = TB.Text;
@@ -194,6 +190,8 @@ namespace FinanceManager.ViewModels
             // verifico che ci sia un importo unitario e un numero di azioni
             if (RowLiquidAsset.Costo_unitario_in_valuta >= 0 && RowLiquidAsset.N_titoli != 0)
             {
+                if (RowLiquidAsset.Id_portafoglio == 0)
+                    CanInsert = true;
                 // Totale 1 VALORE TRANSAZIONE (conteggio diverso fra obbligazioni e tutto il resto)
                 RowLiquidAsset.Importo_totale = RowLiquidAsset.Id_tipo_titolo != 2 ? -1 * (RowLiquidAsset.Costo_unitario_in_valuta * RowLiquidAsset.N_titoli) :
                     -1 * (RowLiquidAsset.Costo_unitario_in_valuta * RowLiquidAsset.N_titoli) / 100;
@@ -206,7 +204,22 @@ namespace FinanceManager.ViewModels
                     TotaleContabile = RowLiquidAsset.Id_valuta == 1 ?
                         TotalLocalValue + (RowLiquidAsset.TobinTax + RowLiquidAsset.Disaggio_anticipo_cedole + RowLiquidAsset.RitenutaFiscale) * -1 :
                         TotalLocalValue + (RowLiquidAsset.Disaggio_anticipo_cedole + (RowLiquidAsset.RitenutaFiscale * RowLiquidAsset.Valore_di_cambio)) * -1;
-
+                    if ((RowLiquidAsset.Id_tipo_titolo == 1 || RowLiquidAsset.Id_tipo_titolo == 4) && RowLiquidAsset.Id_valuta == 1)
+                    {
+                        TobinOk = "Visible";
+                    }
+                    else
+                    {
+                        TobinOk = "Collapsed";
+                    }
+                    if (RowLiquidAsset.Id_tipo_titolo == 2)
+                    {
+                        DisaggioOk = "Visible";
+                    }
+                    else
+                    {
+                        DisaggioOk = "Collapsed";
+                    }
                 }
                 else if (RowLiquidAsset.Id_tipo_movimento == 6) //vendita
                 {
@@ -216,6 +229,7 @@ namespace FinanceManager.ViewModels
                     TotaleContabile = RowLiquidAsset.Id_valuta == 1 ?
                         TotalLocalValue - (RowLiquidAsset.TobinTax + RowLiquidAsset.Disaggio_anticipo_cedole + RowLiquidAsset.RitenutaFiscale) :
                         TotalLocalValue - (RowLiquidAsset.Disaggio_anticipo_cedole + (RowLiquidAsset.RitenutaFiscale * RowLiquidAsset.Valore_di_cambio));
+                    RitenutaOk = "Visible";
                 }
             }
             AmountChangedValue = TotaleContabile;
@@ -319,10 +333,10 @@ namespace FinanceManager.ViewModels
             }
         }
 
-        public double Totale1
+        public double SharesOwned
         {
-            get { return GetValue(() => Totale1); }
-            set { SetValue(() => Totale1, value); }
+            get { return GetValue(() => SharesOwned); }
+            set { SetValue(() => SharesOwned, value); }
         }
 
         public ObservableCollection<ManagerLiquidAsset> LiquidAssetList
@@ -390,19 +404,94 @@ namespace FinanceManager.ViewModels
         #region command
         public void SaveCommand(object param)
         {
+            try
+            {
+                ManagerLiquidAsset MLA = new ManagerLiquidAsset();
+                MLA.Id_gestione = RowLiquidAsset.Id_gestione;
+                MLA.Id_conto = RowLiquidAsset.Id_conto;
+                MLA.Id_valuta = RowLiquidAsset.Id_valuta;
+                MLA.Id_tipo_movimento = RowLiquidAsset.Id_tipo_movimento;
+                MLA.Id_titolo = RowLiquidAsset.Id_titolo;
+                MLA.Data_Movimento = RowLiquidAsset.Data_Movimento;
+                MLA.Importo_totale = RowLiquidAsset.Importo_totale;
+                MLA.N_titoli = RowLiquidAsset.N_titoli;
+                MLA.Costo_unitario_in_valuta = RowLiquidAsset.Costo_unitario_in_valuta;
+                MLA.Commissioni_totale = RowLiquidAsset.Commissioni_totale;
+                MLA.TobinTax = RowLiquidAsset.TobinTax;
+                MLA.Disaggio_anticipo_cedole = RowLiquidAsset.Disaggio_anticipo_cedole;
+                MLA.RitenutaFiscale = RowLiquidAsset.RitenutaFiscale;
+                MLA.Valore_di_cambio = RowLiquidAsset.Valore_di_cambio;
+                MLA.Note = RowLiquidAsset.Note;
 
+                _liquidAssetServices.AddManagerLiquidAsset(MLA);    // ho inserito il movimento in portafoglio
+                MLA = _liquidAssetServices.GetLastShareMovementByOwnerAndLocation(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto); // ricarico l'ultimo record
+                ContoCorrente cc = new ContoCorrente()
+                {
+                    Id_Conto = MLA.Id_conto,
+                    Id_Quote_Investimenti = 0,
+                    Id_Valuta = MLA.Id_valuta,
+                    Id_Portafoglio_Titoli = MLA.Id_portafoglio,
+                    Id_Tipo_Movimento = MLA.Id_tipo_movimento,
+                    Id_Gestione = MLA.Id_gestione,
+                    Id_Titolo = (int)MLA.Id_titolo,
+                    Data_Movimento = MLA.Data_Movimento,
+                    Ammontare = TotaleContabile,
+                    Valore_Cambio = MLA.Valore_di_cambio,
+                    Causale = MLA.Note
+                };
+                _liquidAssetServices.InsertAccountMovement(cc);
+                // reimposto la griglia con quanto inserito
+                LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerSharesMovementByOwnerAndLocation(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto));
+                CanInsert = false;          // disabilito la possibilità di un inserimento accidentale
+                CanUpdateDelete = true;     // abilito la possibilità di modificare / cancellare il record
+
+                RowLiquidAsset = MLA;
+                SharesOwned = _liquidAssetServices.GetSharesQuantity(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto, (uint)RowLiquidAsset.Id_titolo);
+                SrchShares = "";
+                MessageBox.Show("Record caricato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show("Problemi nel caricamento del record: " + Environment.NewLine +
+                    err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         public void UpdateCommand(object param)
         {
+            try
+            {
+                _liquidAssetServices.UpdateManagerLiquidAsset(RowLiquidAsset);      //registro la modifica in portafoglio
+                                                                                    //registro la modifica in conto corrente
 
+                // reimposto la griglia con quanto inserito
+                LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerSharesMovementByOwnerAndLocation(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto));
+                SrchShares = "";
+                MessageBox.Show("Record modificato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show("Problemi nel modificare il record" + Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(),
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         public void DeleteCommand(object param)
         {
-
+            try
+            {
+                _liquidAssetServices.DeleteManagerLiquidAsset(RowLiquidAsset.Id_portafoglio);
+                SetUpData();
+                SrchShares = "";
+                MessageBox.Show("Record eliminato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show("Problemi nell'eliminare il record" + Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(),
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         public void CleanCommand(object param)
         {
-
+            SetUpData();
         }
         public void CloseMe(object param)
         {

@@ -23,10 +23,10 @@ namespace FinanceManager.Services
                 {
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.ManagerScripts.AddManagerLiquidAsset;
-                    dbComm.Parameters.AddWithValue("id_portafoglio", managerLiquidAsset.Id_gestione);
-                    dbComm.Parameters.AddWithValue("id_location", managerLiquidAsset.Id_conto);
+                    dbComm.Parameters.AddWithValue("id_gestione", managerLiquidAsset.Id_gestione);
+                    dbComm.Parameters.AddWithValue("id_conto", managerLiquidAsset.Id_conto);
                     dbComm.Parameters.AddWithValue("id_valuta", managerLiquidAsset.Id_valuta);
-                    dbComm.Parameters.AddWithValue("id_tipoMovimento", managerLiquidAsset.Id_tipo_movimento);
+                    dbComm.Parameters.AddWithValue("id_tipo_movimento", managerLiquidAsset.Id_tipo_movimento);
                     dbComm.Parameters.AddWithValue("id_titolo", managerLiquidAsset.Id_titolo);
                     dbComm.Parameters.AddWithValue("data_movimento", managerLiquidAsset.Data_Movimento.ToString("yyyy-MM-dd"));
                     dbComm.Parameters.AddWithValue("ammontare", managerLiquidAsset.Importo_totale);
@@ -37,8 +37,6 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("disaggio_cedole", managerLiquidAsset.Disaggio_anticipo_cedole);
                     dbComm.Parameters.AddWithValue("ritenuta_fiscale", managerLiquidAsset.RitenutaFiscale);
                     dbComm.Parameters.AddWithValue("valore_cambio", managerLiquidAsset.Valore_di_cambio);
-                    dbComm.Parameters.AddWithValue("profit_loss", managerLiquidAsset.ProfitLoss);
-                    dbComm.Parameters.AddWithValue("disponibile", managerLiquidAsset.Available);
                     dbComm.Parameters.AddWithValue("note", managerLiquidAsset.Note);
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.Connection.Open();
@@ -439,6 +437,41 @@ namespace FinanceManager.Services
             MLA.Valore_di_cambio = dr.Field<double>("valore_cambio");
             MLA.Note = dr.Field<string>("note");
             return MLA;
+        }
+
+        public void InsertAccountMovement(ContoCorrente contoCorrente)
+        {
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.ManagerScripts.InsertAccountMovement;
+                    dbComm.Parameters.AddWithValue("id_conto", contoCorrente.Id_Conto);
+                    dbComm.Parameters.AddWithValue("id_quote_investimenti", contoCorrente.Id_Quote_Investimenti);
+                    dbComm.Parameters.AddWithValue("id_valuta", contoCorrente.Id_Valuta);
+                    dbComm.Parameters.AddWithValue("id_portafoglio_titoli", contoCorrente.Id_Portafoglio_Titoli);
+                    dbComm.Parameters.AddWithValue("id_tipo_movimento", contoCorrente.Id_Tipo_Movimento);
+                    dbComm.Parameters.AddWithValue("id_gestione", contoCorrente.Id_Gestione);
+                    dbComm.Parameters.AddWithValue("id_titolo", contoCorrente.Id_Titolo);
+                    dbComm.Parameters.AddWithValue("data_movimento", contoCorrente.Data_Movimento.ToString("yyyy-MM-dd"));
+                    dbComm.Parameters.AddWithValue("ammontare", contoCorrente.Ammontare);
+                    dbComm.Parameters.AddWithValue("valore_cambio", contoCorrente.Valore_Cambio);
+                    dbComm.Parameters.AddWithValue("causale", contoCorrente.Causale);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
     }
 }

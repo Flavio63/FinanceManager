@@ -117,6 +117,8 @@
     <Compile Include="Events\ExcludeChar.cs" />
     <Compile Include="Events\VerifyNumber.cs" />
     <Compile Include="Events\ViewModelBase.cs" />
+    <Compile Include="MainWindowView.cs" />
+    <Compile Include="Models\ContoCorrente.cs" />
     <Compile Include="Models\ManagerLiquidAsset.cs" />
     <Compile Include="Models\ManagerLiquidAssetList.cs" />
     <Compile Include="Models\RegistryCurrency.cs" />

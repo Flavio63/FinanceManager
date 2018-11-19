@@ -51,10 +51,10 @@ namespace FinanceManager.Services.SQL
         /// Data una gestione e una location, estrae l'ultimo record caricato
         /// </summary>
         public static readonly string GetLastSharesMovementByOwnerAndLocation = "SELECT id_portafoglio_titoli, B.id_gestione, nome_gestione, C.id_conto, desc_conto, D.id_valuta, " +
-            "cod_valuta, E.id_tipo_movimento, desc_Movimento, A.id_titolo, F.desc_titolo, F.isin, F.id_tipo_titolo, H.desc_tipo, F.id_azienda, I.desc_azienda, data_movimento, " +
+            "cod_valuta, E.id_tipo_movimento, desc_Movimento, A.id_titolo, F.desc_titolo, F.isin, F.id_tipo_titolo, H.desc_tipo_titolo, F.id_azienda, I.desc_azienda, data_movimento, " +
             "shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ritenuta_fiscale, ammontare, valore_cambio, note " +
             "FROM portafoglio_titoli A, gestioni B, conti C, valuta D, tipo_movimento E, titoli F, tipo_titoli H, aziende I " +
-            "WHERE A.id_gestione = B.id_gestione AND A.id_conto = C.id_conto AND A.id_valuta = D.id_valuta AND id_tipo_movimento = E.id_tipo_movimento AND A.id_titolo = F.id_titolo " +
+            "WHERE A.id_gestione = B.id_gestione AND A.id_conto = C.id_conto AND A.id_valuta = D.id_valuta AND A.id_tipo_movimento = E.id_tipo_movimento AND A.id_titolo = F.id_titolo " +
             "AND F.id_tipo_titolo = H.id_tipo_titolo AND F.id_azienda = I.id_azienda AND B.id_gestione = @id_gestione AND C.id_conto = @id_conto AND A.id_titolo IS NOT NULL " +
             "ORDER BY id_portafoglio_titoli DESC LIMIT 1";
 
@@ -62,8 +62,9 @@ namespace FinanceManager.Services.SQL
         /// Verifica la disponibilità di liquidità per la gestione,
         /// per il conto (location) e per la valuta selezionate
         /// </summary>
-        public static readonly string GetCurrencyAvailable = "SELECT SUM(ammontare) disponibile FROM conto_corrente WHERE id_gestione = @id_gestione AND id_conto = @id_conto " +
-            "AND id_valuta = @id_valuta ";
+        public static readonly string GetCurrencyAvailable = "SELECT SUM(ammontare) as disponibile FROM conto_corrente " +
+            "WHERE id_tipo_movimento <> 4 and id_tipo_movimento <> 15 and " +
+            "id_gestione = @id_gestione AND id_conto = @id_conto AND id_valuta = @id_valuta ";
 
         /// <summary>
         /// Estrae il numero di azioni possedute dato una gestione, un conto e un id azione
@@ -108,5 +109,9 @@ namespace FinanceManager.Services.SQL
             "AND F.id_tipo_titoli = H.id_tipo_titoli AND F.id_azienda = I.id_azienda AND B.id_portafoglio_titoli = @owner AND C.id_conto = @id_conto AND id_titolo = @id_titolo " +
             "AND (id_movimento = 5 or id_movimento = 6) " +
             "ORDER BY data_movimento";
+
+        public static readonly string InsertAccountMovement = "INSERT INTO conto_corrente (id_conto, id_quote_investimenti, id_valuta, id_portafoglio_titoli, id_tipo_movimento, " +
+            "id_gestione, id_titolo, data_movimento, ammontare, cambio, causale) VALUE ( @id_conto, @id_quote_investimenti, @id_valuta, @id_portafoglio_titoli, @id_tipo_movimento, " +
+            "@id_gestione, @id_titolo, @data_movimento, @ammontare, @cambio, @causale)";
     }
 }
