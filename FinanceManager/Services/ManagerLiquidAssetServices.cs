@@ -473,5 +473,72 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
+
+        public QuoteList GetQuote()
+        {
+            try
+            {
+                DataTable DT = new DataTable();
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetQuote;
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.Fill(DT);
+                    QuoteList quotes = new QuoteList();
+                    foreach(DataRow dataRow in DT.Rows)
+                    {
+                        Quote quote = new Quote();
+                        quote.NomeInvestitore = dataRow.Field<string>("Nome");
+                        quote.Ammontare = dataRow.Field<double>("investimento");
+                        quote.Quota = dataRow.Field<double>("quota");
+                        quote.Totale = dataRow.Field<double>("totale");
+                        quotes.Add(quote);
+                    }
+                    return quotes;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+        public InvestitoreList GetInvestitori()
+        {
+            try
+            {
+                DataTable DT = new DataTable();
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetInvestitori;
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.Fill(DT);
+                    InvestitoreList investitori = new InvestitoreList();
+                    foreach (DataRow dataRow in DT.Rows)
+                    {
+                        Investitore investitore = new Investitore();
+                        investitore.IdInvestitore = (int)dataRow.Field<uint>("id_investitore");
+                        investitore.Nome = dataRow.Field<string>("Nome");
+                        investitori.Add(investitore);
+                    }
+                    return investitori;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
     }
 }

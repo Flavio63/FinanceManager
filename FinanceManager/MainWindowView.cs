@@ -32,9 +32,6 @@ namespace FinanceManager
         public ICommand OnClickPortafoglioTitoli { get; set; }
         public ICommand OnClickManagerReports { get; set; }
 
-        MainFormManagerView mainFormManager;
-        MainFormManagerViewModel mainFormManagerViewModel;
-
         RegistryOwnerViewModel ownerViewModel;
         RegistryOwnerView ownerView;
         RegistryShareTypeViewModel registryShareTypeViewModel;
@@ -52,12 +49,13 @@ namespace FinanceManager
 
         ManagerPortfolioMovementViewModel managerPortfolioMovementViewModel;
         ManagerPortfolioMovementView managerPortfolioMovementView;
-        ManagerPortfolioChangeCurrencyViewModel managerPortfolioChangeCurrencyViewModel;
-        ManagerPortfolioChangeCurrencyView managerPortfolioChangeCurrencyView;
         ManagerPortfolioSharesMovementViewModel managerPortfolioSharesMovementViewModel;
         ManagerPortfolioSharesMovementView managerPortfolioSharesMovementView;
         ManagerReportsViewModel managerReportsViewModel;
         ManagerReportsView managerReportsView;
+
+        GestioneQuoteInvestitoriViewModel gestioneQuoteInvestitoriViewModel;
+        GestioneQuoteInvestitoriView gestioneQuoteInvestitoriView;
         #endregion
 
         public MainWindowView()
@@ -79,6 +77,7 @@ namespace FinanceManager
             OnClickManagerReports = new CommandHandler(OpenReports);
         }
 
+        #region Anagrafica
         private void OpenGestioni(object param)
         {
             DockPanel mainGrid = param as DockPanel;
@@ -197,6 +196,9 @@ namespace FinanceManager
             }
         }
 
+        #endregion Anagrafica
+
+        #region Gestionale
         private void PortafoglioTitoli(object param)
         {
             DockPanel mainGrid = param as DockPanel;
@@ -216,7 +218,19 @@ namespace FinanceManager
 
         private void OpenQuoteInvestitori(object param)
         {
-            
+            DockPanel mainGrid = param as DockPanel;
+            if (gestioneQuoteInvestitoriView == null || !mainGrid.Children.Contains(gestioneQuoteInvestitoriView))
+            {
+                gestioneQuoteInvestitoriViewModel = new GestioneQuoteInvestitoriViewModel(_registryServices, _managerLiquidServices);
+                gestioneQuoteInvestitoriView = new GestioneQuoteInvestitoriView(gestioneQuoteInvestitoriViewModel);
+                mainGrid.Children.Add(gestioneQuoteInvestitoriView);
+            }
+            else
+            {
+                mainGrid.Children.Remove(gestioneQuoteInvestitoriView);
+                gestioneQuoteInvestitoriView = null;
+                gestioneQuoteInvestitoriViewModel = null;
+            }
         }
 
         private void OpenContoCorrente(object param)
@@ -236,6 +250,10 @@ namespace FinanceManager
             }
         }
 
+        #endregion Gestionale
+
+        #region Reports
+
         private void OpenReports(object param)
         {
             DockPanel mainGrid = param as DockPanel;
@@ -250,18 +268,20 @@ namespace FinanceManager
                 managerReportsView = null;
                 managerReportsViewModel = null;
             }
-            }
-
-            //private void OpenGestioni(object param)
-            //{
-            //    {
-            //        mainFormManagerViewModel = new MainFormManagerViewModel(_registryServices, _managerLiquidServices);
-            //        mainFormManager = new MainFormManagerView(mainFormManagerViewModel);
-            //    }
-            //    {
-            //        mainFormManager = null;
-            //    }
-            //}
-
         }
+
+        #endregion Reports
+
+        //private void OpenGestioni(object param)
+        //{
+        //    {
+        //        mainFormManagerViewModel = new MainFormManagerViewModel(_registryServices, _managerLiquidServices);
+        //        mainFormManager = new MainFormManagerView(mainFormManagerViewModel);
+        //    }
+        //    {
+        //        mainFormManager = null;
+        //    }
+        //}
+
+    }
 }

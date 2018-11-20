@@ -119,8 +119,13 @@
     <Compile Include="Events\ViewModelBase.cs" />
     <Compile Include="MainWindowView.cs" />
     <Compile Include="Models\ContoCorrente.cs" />
+    <Compile Include="Models\Investitore.cs" />
+    <Compile Include="Models\InvestitoreList.cs" />
     <Compile Include="Models\ManagerLiquidAsset.cs" />
     <Compile Include="Models\ManagerLiquidAssetList.cs" />
+    <Compile Include="Models\Quote.cs" />
+    <Compile Include="Models\QuoteList.cs" />
+    <Compile Include="Models\QuoteTab.cs" />
     <Compile Include="Models\RegistryCurrency.cs" />
     <Compile Include="Models\RegistryCurrencyList.cs" />
     <Compile Include="Models\RegistryFirm.cs" />
@@ -148,6 +153,7 @@
     <Compile Include="Services\SQL\ManagerScripts.cs" />
     <Compile Include="Services\SQL\RegistryScripts.cs" />
     <Compile Include="ViewModels\AcquistoVenditaTitoliViewModel.cs" />
+    <Compile Include="ViewModels\GestioneQuoteInvestitoriViewModel.cs" />
     <Compile Include="ViewModels\MainFormManagerViewModel.cs" />
     <Compile Include="ViewModels\ManagerPortfolioChangeCurrencyViewModel.cs" />
     <Compile Include="ViewModels\ManagerPortfolioMovementViewModel.cs" />
@@ -163,6 +169,9 @@
     <Compile Include="ViewModels\ReportGuadagniAnnoViewModel.cs" />
     <Compile Include="Views\AcquistoVenditaTitoliView.xaml.cs">
       <DependentUpon>AcquistoVenditaTitoliView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\GestioneQuoteInvestitoriView.xaml.cs">
+      <DependentUpon>GestioneQuoteInvestitoriView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MainFormManagerView.xaml.cs">
       <DependentUpon>MainFormManagerView.xaml</DependentUpon>
@@ -222,6 +231,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\AcquistoVenditaTitoliView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\GestioneQuoteInvestitoriView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

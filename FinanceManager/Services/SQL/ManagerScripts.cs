@@ -113,5 +113,11 @@ namespace FinanceManager.Services.SQL
         public static readonly string InsertAccountMovement = "INSERT INTO conto_corrente (id_conto, id_quote_investimenti, id_valuta, id_portafoglio_titoli, id_tipo_movimento, " +
             "id_gestione, id_titolo, data_movimento, ammontare, cambio, causale) VALUE ( @id_conto, @id_quote_investimenti, @id_valuta, @id_portafoglio_titoli, @id_tipo_movimento, " +
             "@id_gestione, @id_titolo, @data_movimento, @ammontare, @cambio, @causale)";
+
+        public static readonly string GetQuote = "SELECT C.Nome, ROUND(SUM(ammontare), 2) AS investimento, ROUND(SUM(ammontare) / totale * 100, 2) " +
+            "AS quota, totale FROM (SELECT ROUND(SUM(ammontare), 2) AS totale FROM quote_investimenti WHERE id_movimento = 1 OR id_movimento = 2) A, " +
+            "quote_investimenti B, Investitori C WHERE B.id_investitore = C.id_investitore AND B.id_quote_inv > 0 GROUP BY B.id_investitore";
+
+        public static readonly string GetInvestitori = "SELECT id_investitore, Nome FROM Investitori WHERE id_investitore > 0 ORDER BY id_investitore";
     }
 }

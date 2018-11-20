@@ -17,5 +17,7 @@ namespace FinanceManager.Services
         void UpdateManagerLiquidAsset(ManagerLiquidAsset managerLiquidAsset);
         void DeleteManagerLiquidAsset(int id);
         void InsertAccountMovement(ContoCorrente contoCorrente);
+        QuoteList GetQuote();
+        InvestitoreList GetInvestitori();
     }
 }
