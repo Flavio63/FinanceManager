@@ -17,7 +17,11 @@ namespace FinanceManager.Services
         void UpdateManagerLiquidAsset(ManagerLiquidAsset managerLiquidAsset);
         void DeleteManagerLiquidAsset(int id);
         void InsertAccountMovement(ContoCorrente contoCorrente);
-        QuoteList GetQuote();
+        QuoteList GetQuote();   // Calcolo le quote per investitore
         InvestitoreList GetInvestitori();
+        QuoteTabList GetQuoteTab();     //Prendo tutte i record della tabella Quote
+        void AddGiroconto(); // coinvolge anche InsertAccountMovement questo è il movimento 12
+        void UpdateQuoteTab(int idQuote);   // aggiorna solo i movimenti 1 e 2
+        void UpdateGiroconto(int idQuote);     // coinvolge anche il conco corrente da fare
     }
 }

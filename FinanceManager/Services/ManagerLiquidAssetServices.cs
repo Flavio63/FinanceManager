@@ -525,7 +525,7 @@ namespace FinanceManager.Services
                     {
                         Investitore investitore = new Investitore();
                         investitore.IdInvestitore = (int)dataRow.Field<uint>("id_investitore");
-                        investitore.Nome = dataRow.Field<string>("Nome");
+                        investitore.NomeInvestitore = dataRow.Field<string>("Nome");
                         investitori.Add(investitore);
                     }
                     return investitori;
@@ -539,6 +539,60 @@ namespace FinanceManager.Services
             {
                 throw new Exception(err.Message);
             }
+        }
+
+        public QuoteTabList GetQuoteTab()
+        {
+            try
+            {
+                DataTable DT = new DataTable();
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetQuoteTab;
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.Fill(DT);
+                    QuoteTabList quotes = new QuoteTabList();
+                    foreach (DataRow dataRow in DT.Rows)
+                    {
+                        QuoteTab quote = new QuoteTab();
+                        quote.IdQuote = (int)dataRow.Field<uint>("id_quote_inv");
+                        quote.IdInvestitore = (int)dataRow.Field<uint>("id_investitore");
+                        quote.NomeInvestitore = dataRow.Field<string>("Nome");
+                        quote.IdMovimento = (int)dataRow.Field<uint>("id_movimento");
+                        quote.Movimento = dataRow.Field<string>("desc_movimento");
+                        quote.DataMovimento = dataRow.Field<DateTime>("data_movimento");
+                        quote.Ammontare = dataRow.Field<double>("ammontare");
+                        quote.Note = dataRow.Field<string>("note");
+                        quotes.Add(quote);
+                    }
+                    return quotes;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        public void AddGiroconto()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateQuoteTab(int idQuote)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateGiroconto(int idQuote)
+        {
+            throw new NotImplementedException();
         }
     }
 }

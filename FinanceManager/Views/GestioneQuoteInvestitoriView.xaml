@@ -7,7 +7,7 @@
              xmlns:iy="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:local="clr-namespace:FinanceManager.Views"
              mc:Ignorable="d" Name="_GestioneQuoteInvestitoriView"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="650" d:DesignWidth="1000">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
@@ -15,10 +15,11 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.65*"/>
-            <ColumnDefinition Width="0.35*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="0.30*"/>
+            <ColumnDefinition Width="0.10*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="26" FontWeight="Bold">
+        <TextBlock Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="26" FontWeight="Bold">
                 DISPONIBILITA' E QUOTE PER INVESTITORE
         </TextBlock>
         <Button Content="X" Command="{Binding CloseMeCommand}" 
@@ -26,24 +27,24 @@
                 HorizontalContentAlignment="Center" Grid.Column="2" HorizontalAlignment="Right"
                     VerticalContentAlignment="Center" Width="25" Height="25"
                 Margin="0,0, 15, 0"/>
-        <GroupBox Grid.Row="1" Grid.Column="1" FontWeight="Bold" Header="Scegli cosa vuoi fare" BorderBrush="Blue" 
-                      Margin="5">
-            <StackPanel Orientation="Vertical" Margin="5">
-                <RadioButton GroupName="CosaFare" Margin="5" Content="Aggiungere Capitale" FontWeight="Normal" FontSize="20" Command="{Binding CosaFai}" CommandParameter="Aggiungere"/>
-                <RadioButton GroupName="CosaFare" Margin="5" Content="Prendere Capitale" FontWeight="Normal" FontSize="20" Command="{Binding CosaFai}" CommandParameter="Togliere"/>
-                <RadioButton GroupName="CosaFare" Margin="5" Content="Giroconto" FontWeight="Normal" FontSize="20" Command="{Binding CosaFai}" CommandParameter="Giroconto"/>
-                <RadioButton GroupName="CosaFare" Margin="5" Content="Prelievo Guadagni" FontWeight="Normal" FontSize="20" Command="{Binding CosaFai}" CommandParameter="Insert"/>
+        <GroupBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" FontWeight="Bold" Header="Scegli cosa vuoi fare" BorderBrush="Blue" 
+                      Margin="5" FontSize="18">
+            <StackPanel Name="RadioButtonGroup" Orientation="Vertical" Margin="5">
+                <RadioButton GroupName="CosaFare" Margin="5" Content="Aggiungere Capitale" FontWeight="Normal" FontSize="20" Command="{Binding CosaFai}" CommandParameter="Aggiungi" VerticalContentAlignment="Center"/>
+                <RadioButton GroupName="CosaFare" Margin="5" Content="Prendere Capitale" FontWeight="Normal" FontSize="20" Command="{Binding CosaFai}" CommandParameter="Togli" VerticalContentAlignment="Center"/>
+                <RadioButton GroupName="CosaFare" Margin="5" Content="Giroconto vs C/C" FontWeight="Normal" FontSize="20" Command="{Binding CosaFai}" CommandParameter="Giroconto1" VerticalContentAlignment="Center"/>
+                <RadioButton GroupName="CosaFare" Margin="5" Content="Giroconto da C/C" FontWeight="Normal" FontSize="20" Command="{Binding CosaFai}" CommandParameter="Giroconto2" VerticalContentAlignment="Center"/>
+                <RadioButton GroupName="CosaFare" Margin="5" Content="Verifica Scritture" FontWeight="Normal" FontSize="20" Command="{Binding CosaFai}" CommandParameter="Verifica" VerticalContentAlignment="Center"/>
             </StackPanel>
         </GroupBox>
         <DataGrid Grid.Row="1" Grid.Column="0" ItemsSource="{Binding ListQuote, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
-                      AlternatingRowBackground="Azure" Margin="5"
+                      AlternatingRowBackground="Azure" Margin="5" 
                       AutoGenerateColumns="False" RowHeaderWidth="10" ColumnHeaderHeight="40" FontSize="25" FontWeight="Bold" CanUserAddRows="False" CanUserDeleteRows="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Investitore" Binding="{Binding NomeInvestitore, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                        IsReadOnly="True" FontSize="22" FontWeight="Bold"/>
+                                        IsReadOnly="True" FontSize="22" FontWeight="Bold" MinWidth="170"/>
                 <DataGridTextColumn Header="Disponibilità" Binding="{Binding Ammontare, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, 
-                        ConverterCulture=it-IT, StringFormat=C2}"
-                                        IsReadOnly="True" FontSize="22" FontWeight="Bold">
+                        ConverterCulture=it-IT, StringFormat=C2}" IsReadOnly="True" FontSize="22" FontWeight="Bold" MinWidth="180">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="{x:Type TextBlock}">
                             <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -51,8 +52,7 @@
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
                 <DataGridTextColumn Header="Quote" Binding="{Binding Quota, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, 
-                        ConverterCulture=it-IT, StringFormat={}{0}%}"
-                                        IsReadOnly="True" FontSize="22" FontWeight="Bold">
+                        ConverterCulture=it-IT, StringFormat={}{0}%}" IsReadOnly="True" FontSize="22" FontWeight="Bold" MinWidth="120">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="{x:Type TextBlock}">
                             <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -60,8 +60,7 @@
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
                 <DataGridTextColumn Header="Totale" Binding="{Binding Totale, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, 
-                        ConverterCulture=it-IT, StringFormat=C2}"
-                                        IsReadOnly="True" FontSize="22" FontWeight="Bold">
+                        ConverterCulture=it-IT, StringFormat=C2}" IsReadOnly="True" FontSize="22" FontWeight="Bold" MinWidth="180">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="{x:Type TextBlock}">
                             <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -71,50 +70,120 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <StackPanel Visibility="{Binding Visibility1_2, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
-                    Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Margin="5" HorizontalAlignment="Left" 
-                    VerticalAlignment="Top">
-            <StackPanel Orientation="Vertical" Margin="5">
-                <TextBlock Text="Seleziona l' Investitore" FontSize="18" FontWeight="Bold" Margin="5, 5, 5, 0"/>
-                <ComboBox Style="{StaticResource FormComboStyle}" FontSize="16" Margin="5, 0, 5, 5"
+        <StackPanel Orientation="Vertical" 
+            Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <TextBlock Text="Inserimento o Prelievo di Capitale" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                        Visibility="{Binding Visibility3, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" FontSize="22" FontWeight="Bold"/>
+            <TextBlock Text="Giroconto di Capitale" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                        Visibility="{Binding Visibility2, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" FontSize="22" FontWeight="Bold"/>
+            <TextBlock Text="Verifica Scritture" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                        Visibility="{Binding Visibility4, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" FontSize="22" FontWeight="Bold"/>
+
+            <StackPanel  Orientation="Horizontal" Visibility="{Binding Visibility1, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <TextBlock Text="Seleziona l' Investitore" FontSize="18" FontWeight="Bold" Margin="5, 5, 5, 0"/>
+                    <ComboBox Style="{StaticResource FormComboStyle}" FontSize="16" Margin="5, 0, 5, 5"
                           ItemsSource="{Binding ListInvestitore, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
-                          DisplayMemberPath="Nome" SelectedValuePath="IdInvestitore" >
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="SelectionChanged">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
-                </ComboBox>
-            </StackPanel>
+                              SelectedValue="{Binding ActualQuote.IdInvestitore}"
+                          DisplayMemberPath="NomeInvestitore" SelectedValuePath="IdInvestitore" >
+                        <iy:Interaction.Triggers>
+                            <iy:EventTrigger EventName="SelectionChanged">
+                                <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                            </iy:EventTrigger>
+                        </iy:Interaction.Triggers>
+                    </ComboBox>
+                    <StackPanel Orientation="Vertical" Margin="5" Visibility="{Binding Visibility2, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                        <TextBlock Text="Seleziona il Gestore" FontSize="18" FontWeight="Bold" Margin="5, 5, 5, 0"/>
+                        <ComboBox Style="{StaticResource FormComboStyle}" FontSize="16" Margin="5, 0, 5, 5"
+                          ItemsSource="{Binding ListGestione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                              SelectedValue=""
+                          DisplayMemberPath="NomeInvestitore" SelectedValuePath="IdInvestitore" >
+                            <iy:Interaction.Triggers>
+                                <iy:EventTrigger EventName="SelectionChanged">
+                                    <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                </iy:EventTrigger>
+                            </iy:Interaction.Triggers>
+                        </ComboBox>
+                    </StackPanel>
+                </StackPanel>
+
             <StackPanel Orientation="Vertical" Margin="5">
-                <TextBlock Name="labelAmmo" Text="Ammontare" FontSize="18" FontWeight="Bold" Margin="5, 5, 5, 0"/>
-                <TextBox FontSize="16" Margin="5, 0, 5, 5" Height="28" HorizontalAlignment="Right"
-                         Width="{Binding Path=Width, ElementName=labelAmmo}">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="LostFocus">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
-                        </iy:EventTrigger>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
-                </TextBox>
+                    <TextBlock Name="labelAmmo" Text="Ammontare" FontSize="18" FontWeight="Bold" Margin="5, 5, 5, 0"/>
+                    <TextBox Name="txtAmmontare" FontSize="16" Margin="5, 0, 5, 5" Height="28" VerticalContentAlignment="Center" HorizontalContentAlignment="Right"
+                             Text="{Binding ActualQuote.Ammontare, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ConverterCulture=it-IT, 
+                        StringFormat=C}" MinWidth="{Binding ElementName=labelAmmo, Path=ActualWidth}">
+                        <iy:Interaction.Triggers>
+                            <iy:EventTrigger EventName="LostFocus">
+                                <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                            </iy:EventTrigger>
+                        </iy:Interaction.Triggers>
+                    </TextBox>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <TextBlock Text="Data Movimento" FontSize="18" FontWeight="Bold" Margin="5, 5, 5, 0"/>
+                    <DatePicker  FontSize="16" SelectedDate="{Binding DataMovimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                 DisplayDate="{Binding DataMovimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                        <iy:Interaction.Triggers>
+                            <iy:EventTrigger EventName="SelectedDateChanged">
+                                <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                            </iy:EventTrigger>
+                        </iy:Interaction.Triggers>
+                    </DatePicker>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <TextBlock Text="Note eventuali" FontSize="18" FontWeight="Bold" Margin="5, 5, 5, 0"/>
+                    <TextBox Name="txtNote" FontSize="14" AcceptsReturn="True" TextWrapping="Wrap" MinWidth="250" Height="75">
+                        <iy:Interaction.Triggers>
+                            <iy:EventTrigger EventName="LostFocus">
+                                <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                            </iy:EventTrigger>
+                        </iy:Interaction.Triggers>
+                    </TextBox>
+                </StackPanel>
             </StackPanel>
-            <StackPanel Orientation="Vertical" Margin="5">
-                <TextBlock Text="Note eventuali" FontSize="18" FontWeight="Bold" Margin="5, 5, 5, 0"/>
-                <TextBox FontSize="14" AcceptsReturn="True" TextWrapping="Wrap" MinWidth="250" Height="75">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="LostFocus">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
-                </TextBox>
-            </StackPanel>
+            <DataGrid Name="TabQuote" Visibility="{Binding Visibility4, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                      ItemsSource="{Binding ListTabQuote, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                      AlternatingRowBackground="Azure" Margin="5" AutoGenerateColumns="False" RowHeaderWidth="10" 
+                      FontSize="20" FontWeight="Bold" CanUserAddRows="False" CanUserDeleteRows="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding IdQuote, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                        IsReadOnly="True" FontSize="18" FontWeight="Bold"/>
+                    <DataGridTextColumn Header="Nome" Binding="{Binding NomeInvestitore, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                        IsReadOnly="False" FontSize="18" FontWeight="Bold"/>
+                    <DataGridTextColumn Header="Operazione" Binding="{Binding Movimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                        IsReadOnly="False" FontSize="18" FontWeight="Bold"/>
+                    <DataGridTextColumn Header="Data" Binding="{Binding DataMovimento, StringFormat=d, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                        IsReadOnly="False" FontSize="18" FontWeight="Bold">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Right"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Ammontare" Binding="{Binding Ammontare, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay,
+                                        ConverterCulture=it-IT, StringFormat=C2}" IsReadOnly="False" FontSize="18" FontWeight="Bold">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Right"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Note" Binding="{Binding Note, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                        IsReadOnly="False" FontSize="18" FontWeight="Bold"/>
+                </DataGrid.Columns>
+                <iy:Interaction.Triggers>
+                    <iy:EventTrigger EventName="SelectionChanged">
+                        <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                    </iy:EventTrigger>
+                </iy:Interaction.Triggers>
+            </DataGrid>
         </StackPanel>
         
-        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Vertical" Margin="5" VerticalAlignment="Bottom">
-            <Button Content="Conferma" Margin="15" FontSize="16" FontWeight="Bold" Height="35"/>
-            <Button Content="Annulla" Margin="15" FontSize="16" FontWeight="Bold" Height="35"/>
+        <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Vertical" Margin="5" VerticalAlignment="Center">
+            <Button Content="OK" Command="{Binding OkCommand}" CommandParameter="{Binding ElementName=RadioButtonGroup}" Margin="5" FontSize="16" FontWeight="Bold" Height="55"/>
+            <Button Content="Del" Command="{Binding EraseCommand}" CommandParameter="{Binding ElementName=TabQuote}" Margin="5" FontSize="16" FontWeight="Bold" Height="55"
+                    Visibility="{Binding Visibility4, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+            <Button Content="NO" Command="{Binding ClearCommand}" CommandParameter="{Binding ElementName=RadioButtonGroup}" Margin="5" FontSize="16" FontWeight="Bold" Height="55"/>
         </StackPanel>
     </Grid>
 </UserControl>

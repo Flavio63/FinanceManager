@@ -126,6 +126,7 @@
     <Compile Include="Models\Quote.cs" />
     <Compile Include="Models\QuoteList.cs" />
     <Compile Include="Models\QuoteTab.cs" />
+    <Compile Include="Models\QuoteTabList.cs" />
     <Compile Include="Models\RegistryCurrency.cs" />
     <Compile Include="Models\RegistryCurrencyList.cs" />
     <Compile Include="Models\RegistryFirm.cs" />

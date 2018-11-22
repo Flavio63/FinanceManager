@@ -9,6 +9,6 @@ namespace FinanceManager.Models
     public class Investitore
     {
         public int IdInvestitore { get; set; }
-        public string Nome { get; set; }
+        public string NomeInvestitore { get; set; }
     }
 }

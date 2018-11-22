@@ -119,5 +119,8 @@ namespace FinanceManager.Services.SQL
             "quote_investimenti B, Investitori C WHERE B.id_investitore = C.id_investitore AND B.id_quote_inv > 0 GROUP BY B.id_investitore";
 
         public static readonly string GetInvestitori = "SELECT id_investitore, Nome FROM Investitori WHERE id_investitore > 0 ORDER BY id_investitore";
+
+        public static readonly string GetQuoteTab = "SELECT id_quote_inv, A.id_investitore, B.Nome, A.id_movimento, C.desc_movimento, data_movimento, ammontare, note " +
+            "FROM quote_investimenti A, Investitori B, tipo_movimento C WHERE A.id_investitore = B.id_investitore AND A.id_movimento = C.id_tipo_movimento AND id_quote_inv > 0";
     }
 }
