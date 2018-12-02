@@ -113,8 +113,8 @@ namespace FinanceManager.ViewModels
                 }
                 if (RMT != null)
                 {
-                    RowLiquidAsset.Id_tipo_movimento = RMT.IdMovement;
-                    RowLiquidAsset.Desc_tipo_movimento = RMT.DescMovement;
+                    RowLiquidAsset.Id_tipo_movimento = RMT.Id_tipo_movimento;
+                    RowLiquidAsset.Desc_tipo_movimento = RMT.Desc_tipo_movimento;
                     EnableControl.EnableControlInGrid(CB.Parent as Grid, "cbCurrencyDa", true);
                 }
                 if (RC1 != null)

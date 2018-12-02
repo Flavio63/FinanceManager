@@ -48,8 +48,8 @@ namespace FinanceManager.ViewModels
                 DisaggioOk = "Collapsed";
                 RitenutaOk = "Collapsed";
                 ContEuroVisib = "Collapsed";
-                if (CosaMod.IdMovement == 6) RitenutaOk = "Visible";
-                Cosa = CosaMod.DescMovement;
+                if (CosaMod.Id_tipo_movimento == 6) RitenutaOk = "Visible";
+                Cosa = CosaMod.Desc_tipo_movimento;
                 Gestione = GestioneMod[0].OwnerName;
                 Conto = ContoMod[0].DescLocation;
                 CurrencyList = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
@@ -59,7 +59,7 @@ namespace FinanceManager.ViewModels
                 _Filter = new Predicate<object>(Filter);
                 RowLiquidAsset = new ManagerLiquidAsset();
                 RowLiquidAsset.Data_Movimento = DateTime.Now;
-                RowLiquidAsset.Id_tipo_movimento = CosaMod.IdMovement;
+                RowLiquidAsset.Id_tipo_movimento = CosaMod.Id_tipo_movimento;
                 RowLiquidAsset.Id_gestione = GestioneMod[0].IdOwner;
                 RowLiquidAsset.Id_conto = ContoMod[0].IdLocation;
                 LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(
@@ -113,7 +113,7 @@ namespace FinanceManager.ViewModels
             ManagerLiquidAsset MLA = e.AddedItems[0] as ManagerLiquidAsset;
             if (MLA != null)
             {
-                if (MLA.Id_tipo_movimento != CosaMod.IdMovement) return;
+                if (MLA.Id_tipo_movimento != CosaMod.Id_tipo_movimento) return;
                 RowLiquidAsset = MLA;
                 if (RowLiquidAsset.Id_valuta != 1)
                 {
@@ -431,7 +431,7 @@ namespace FinanceManager.ViewModels
                     Id_Quote_Investimenti = 0,
                     Id_Valuta = MLA.Id_valuta,
                     Id_Portafoglio_Titoli = MLA.Id_portafoglio,
-                    Id_Tipo_Movimento = MLA.Id_tipo_movimento,
+                    Id_tipo_movimento = MLA.Id_tipo_movimento,
                     Id_Gestione = MLA.Id_gestione,
                     Id_Titolo = (int)MLA.Id_titolo,
                     Data_Movimento = MLA.Data_Movimento,

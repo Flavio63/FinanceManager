@@ -2,7 +2,7 @@
 {
     public class RegistryMovementType
     {
-        public int IdMovement { get; set; }
-        public string DescMovement { get; set; }
+        public int Id_tipo_movimento { get; set; }
+        public string Desc_tipo_movimento { get; set; }
     }
 }

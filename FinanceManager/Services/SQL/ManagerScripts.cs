@@ -114,13 +114,57 @@ namespace FinanceManager.Services.SQL
             "id_gestione, id_titolo, data_movimento, ammontare, cambio, causale) VALUE ( @id_conto, @id_quote_investimenti, @id_valuta, @id_portafoglio_titoli, @id_tipo_movimento, " +
             "@id_gestione, @id_titolo, @data_movimento, @ammontare, @cambio, @causale)";
 
+        protected static readonly string ContoCorrente = "SELECT id_fineco_euro, A.id_conto, B.desc_conto, id_quote_investimenti, A.id_valuta, C.cod_valuta, A.id_tipo_movimento, " +
+            "D.desc_movimento, A.id_gestione, E.nome_gestione, A.id_titolo, F.isin, F.desc_titolo, data_movimento, ammontare, cambio, causale FROM conto_corrente A, conti B, " +
+            "valuta C, tipo_movimento D, gestioni E, titoli F WHERE A.id_conto = B.id_conto AND A.id_valuta = C.id_valuta AND A.id_tipo_movimento = D.id_tipo_movimento AND " +
+            "A.id_gestione = E.id_gestione AND A.id_titolo = F.id_titolo AND id_fineco_euro > 0 ";
+
+        protected static readonly string OrderByData = " ORDER BY data_movimento ";
+
+        protected static readonly string Movimento = " AND A.id_tipo_movimento = @id_tipo_movimento ";
+
+        public static readonly string GetContoCorrente = ContoCorrente + OrderByData;
+
+        public static readonly string GetContoCorrenteByMovement = ContoCorrente + Movimento + OrderByData;
+
+        /// <summary>
+        /// calcola le quote per investitore
+        /// </summary>
         public static readonly string GetQuote = "SELECT C.Nome, ROUND(SUM(ammontare), 2) AS investimento, ROUND(SUM(ammontare) / totale * 100, 2) " +
-            "AS quota, totale FROM (SELECT ROUND(SUM(ammontare), 2) AS totale FROM quote_investimenti WHERE id_movimento = 1 OR id_movimento = 2) A, " +
+            "AS quota, totale FROM (SELECT ROUND(SUM(ammontare), 2) AS totale FROM quote_investimenti WHERE id_tipo_movimento = 1 OR id_tipo_movimento = 2) A, " +
             "quote_investimenti B, Investitori C WHERE B.id_investitore = C.id_investitore AND B.id_quote_inv > 0 GROUP BY B.id_investitore";
 
+        /// <summary>
+        /// esporta tutti gli investitori
+        /// </summary>
         public static readonly string GetInvestitori = "SELECT id_investitore, Nome FROM Investitori WHERE id_investitore > 0 ORDER BY id_investitore";
 
-        public static readonly string GetQuoteTab = "SELECT id_quote_inv, A.id_investitore, B.Nome, A.id_movimento, C.desc_movimento, data_movimento, ammontare, note " +
-            "FROM quote_investimenti A, Investitori B, tipo_movimento C WHERE A.id_investitore = B.id_investitore AND A.id_movimento = C.id_tipo_movimento AND id_quote_inv > 0";
+        /// <summary>
+        /// Esporta tutti i record della quote prendendo anche le descrizioni
+        /// </summary>
+        public static readonly string GetQuoteTab = "SELECT id_quote_inv, A.id_investitore, B.Nome, A.id_tipo_movimento, C.desc_movimento, data_movimento, ammontare, note " +
+            "FROM quote_investimenti A, Investitori B, tipo_movimento C WHERE A.id_investitore = B.id_investitore AND A.id_tipo_movimento = C.id_tipo_movimento AND id_quote_inv > 0 ";
+
+        /// <summary>
+        /// Aggiungo questo pezzo di script alla precendente stringa
+        /// </summary>
+        public static readonly string GetLastQuoteTab = GetQuoteTab + " ORDER BY id_quote_inv DESC LIMIT 1 ";
+
+        /// <summary>
+        /// Inserisce un nuovo record nella tabella quote_investimenti
+        /// </summary>
+        public static readonly string InsertInvestment = "INSERT INTO quote_investimenti (id_quote_inv, id_investitore, id_tipo_movimento, data_movimento, ammontare, note) " +
+            "VALUES (null, @id_investitore, @id_tipo_movimento, @data_movimento, @ammontare, @note)";
+
+        /// <summary>
+        /// Modifica un record nella tabella quote_investimenti
+        /// </summary>
+        public static readonly string UpdateQuoteTab = "UPDATE quote_investimenti SET id_investitore = @id_investitore, id_tipo_movimento = @id_tipo_movimento, data_movimento = @data_movimento, " +
+            "ammontare = @ammontare, note = @note WHERE id_quote_inv = @id_quote_inv";
+
+        /// <summary>
+        /// Elimina un record nella tabella quote_investimenti
+        /// </summary>
+        public static readonly string DeleteRecordQuoteTab = "DELETE FROM quote_investimenti WHERE id_quote_inv = @id_quote_inv";
     }
 }

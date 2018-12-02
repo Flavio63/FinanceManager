@@ -1,24 +1,17 @@
 ﻿using FinanceManager.Events;
 using FinanceManager.Services;
-using FinanceManager.ViewModels;
 using FinanceManager.Views;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace FinanceManager
+namespace FinanceManager.ViewModels
 {
-    public class MainWindowView : ViewModelBase
+    public class MainWindowViewModel : ViewModelBase
     {
         #region dichiarazioni
-        private IRegistryServices _registryServices;
-        private IManagerLiquidAssetServices _managerLiquidServices;
-        private IManagerReportServices _managerReportServices;
+        private readonly IRegistryServices _registryServices;
+        private readonly IManagerLiquidAssetServices _managerLiquidServices;
+        private readonly IManagerReportServices _managerReportServices;
 
         public ICommand OnClickOpenGestioni { get; set; }
         public ICommand OnClickOpenConti { get; set; }
@@ -58,7 +51,7 @@ namespace FinanceManager
         GestioneQuoteInvestitoriView gestioneQuoteInvestitoriView;
         #endregion
 
-        public MainWindowView()
+        public MainWindowViewModel()
         {
             _registryServices = new RegistryService();
             _managerLiquidServices = new ManagerLiquidAssetServices();

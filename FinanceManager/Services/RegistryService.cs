@@ -808,8 +808,8 @@ namespace FinanceManager.Services
                     foreach(DataRow dr in dt.Rows)
                     {
                         RegistryMovementType RMT = new RegistryMovementType();
-                        RMT.IdMovement = (int)dr.Field<uint>("id_tipo_movimento");
-                        RMT.DescMovement = dr.Field<string>("desc_Movimento");
+                        RMT.Id_tipo_movimento = (int)dr.Field<uint>("id_tipo_movimento");
+                        RMT.Desc_tipo_movimento = dr.Field<string>("desc_Movimento");
                         RMTL.Add(RMT);
                     }
                     return RMTL;
@@ -833,8 +833,8 @@ namespace FinanceManager.Services
                 {
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.UpdateMovementType;
-                    dbComm.Parameters.AddWithValue("desc", registryMovementType.DescMovement);
-                    dbComm.Parameters.AddWithValue("id", registryMovementType.IdMovement);
+                    dbComm.Parameters.AddWithValue("desc", registryMovementType.Desc_tipo_movimento);
+                    dbComm.Parameters.AddWithValue("id", registryMovementType.Id_tipo_movimento);
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -920,8 +920,8 @@ namespace FinanceManager.Services
                     dbAdapter.Fill(dataTable);
                     return new RegistryMovementType()
                     {
-                        IdMovement = Convert.ToInt16(dataTable.Rows[0].ItemArray[0]),
-                        DescMovement = dataTable.Rows[0].ItemArray[1].ToString()
+                        Id_tipo_movimento = Convert.ToInt16(dataTable.Rows[0].ItemArray[0]),
+                        Desc_tipo_movimento = dataTable.Rows[0].ItemArray[1].ToString()
                     };
                 }
             }

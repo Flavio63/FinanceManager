@@ -16,12 +16,22 @@ namespace FinanceManager.Services
         void AddManagerLiquidAsset(ManagerLiquidAsset managerLiquidAsset);
         void UpdateManagerLiquidAsset(ManagerLiquidAsset managerLiquidAsset);
         void DeleteManagerLiquidAsset(int id);
-        void InsertAccountMovement(ContoCorrente contoCorrente);
+
         QuoteList GetQuote();   // Calcolo le quote per investitore
         InvestitoreList GetInvestitori();
-        QuoteTabList GetQuoteTab();     //Prendo tutte i record della tabella Quote
-        void AddGiroconto(); // coinvolge anche InsertAccountMovement questo è il movimento 12
-        void UpdateQuoteTab(int idQuote);   // aggiorna solo i movimenti 1 e 2
-        void UpdateGiroconto(int idQuote);     // coinvolge anche il conco corrente da fare
+
+        QuoteTabList GetQuoteTab();                                 //Prendo tutti i record della tabella Quote
+        void InsertInvestment(QuoteTab ActualQuote);                // Inserisce nuovo movimento nella tabella anche il movimento 12
+        void UpdateQuoteTab(QuoteTab ActualQuote);                  // aggiorna i movimenti della tabella Quote (al momento chiamato solo per 1 e 2)
+        void DeleteRecordQuoteTab(int idQuote);                     // elimina una scrittura dal database (al momento chiamato solo per 1 e 2)
+
+        QuoteTab GetLastQuoteTab();                                 // Prendo l'ultimo record della tabella perchè nel caso di giroconto devo conoscere il nuovo ID
+
+        void InsertAccountMovement(ContoCorrente contoCorrente);    // inserisco il movimento nella tabella conto_corrente
+        ContoCorrenteList GetContoCorrenteList();                   // Prendo tutti i record della tabella ContoCorrente
+        ContoCorrenteList GetContoCorrenteByMovement(int idMovimento);  
+
+        //void AddGiroconto(); // coinvolge anche InsertAccountMovement questo è il movimento 12
+        //void UpdateGiroconto(int idQuote);     // coinvolge anche il conco corrente da fare
     }
 }

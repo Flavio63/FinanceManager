@@ -39,13 +39,13 @@ namespace FinanceManager.ViewModels
                 if (e.EditAction == DataGridEditAction.Commit)
                 {
                     MovementType = ((RegistryMovementType)e.Row.Item);
-                    if (MovementType.IdMovement > 0)
+                    if (MovementType.Id_tipo_movimento > 0)
                     {
                         _services.UpdateMovementType(MovementType);
                     }
                     else
                     {
-                        _services.AddMovementType(MovementType.DescMovement);
+                        _services.AddMovementType(MovementType.Desc_tipo_movimento);
                         MovementTypeList = new ObservableCollection<RegistryMovementType>(_services.GetRegistryMovementTypesList());
 
                     }
@@ -72,12 +72,12 @@ namespace FinanceManager.ViewModels
                 if (dg.SelectedIndex > 0)
                 {
                     MessageBoxResult result = MessageBox.Show("Attenzione verrà elemininato la seguente tipologia: " +
-                        ((RegistryMovementType)dg.SelectedItem).DescMovement, "DAF-C Gestione Movimenti", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        ((RegistryMovementType)dg.SelectedItem).Desc_tipo_movimento, "DAF-C Gestione Movimenti", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {
                         try
                         {
-                            _services.DeleteMovementType(((RegistryMovementType)dg.SelectedItem).IdMovement);
+                            _services.DeleteMovementType(((RegistryMovementType)dg.SelectedItem).Id_tipo_movimento);
                             MovementTypeList = new ObservableCollection<RegistryMovementType>(_services.GetRegistryMovementTypesList());
                         }
                         catch (Exception err)

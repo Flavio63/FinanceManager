@@ -11,12 +11,18 @@ namespace FinanceManager.Models
     {
         public int Id_RowConto { get; set; }
         public int Id_Conto { get; set; }
+        public string Desc_Conto { get; set; }
         public int Id_Quote_Investimenti { get; set; }
         public int Id_Valuta { get; set; }
+        public string Cod_Valuta { get; set; }
         public int Id_Portafoglio_Titoli { get; set; }
-        public int Id_Tipo_Movimento { get; set; }
+        public int Id_tipo_movimento { get; set; }
+        public string Desc_tipo_movimento { get; set; }
         public int Id_Gestione { get; set; }
+        public string NomeGestione { get; set; }
         public int Id_Titolo { get; set; }
+        public string Desc_Titolo { get; set; }
+        public string ISIN { get; set; }
         public DateTime Data_Movimento { get; set; }
         public double Ammontare { get; set; }
         public double Valore_Cambio { get; set; }

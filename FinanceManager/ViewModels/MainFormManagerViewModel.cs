@@ -87,11 +87,11 @@ namespace FinanceManager.ViewModels
                 MenuTipoMovimenti = new ObservableCollection<MenuItem>();
                 foreach (RegistryMovementType registryMovementType in ListaTipoMovimenti)
                 {
-                    if (registryMovementType.IdMovement > 0)
+                    if (registryMovementType.Id_tipo_movimento > 0)
                     {
                         MenuItem menuItem = new MenuItem();
-                        menuItem.Header = registryMovementType.DescMovement;
-                        menuItem.Name = "Cosa_" + registryMovementType.IdMovement;
+                        menuItem.Header = registryMovementType.Desc_tipo_movimento;
+                        menuItem.Name = "Cosa_" + registryMovementType.Id_tipo_movimento;
                         menuItem.IsCheckable = true;
                         menuItem.FontWeight = new System.Windows.FontWeight();
                         menuItem.FontSize = 12;
@@ -183,7 +183,7 @@ namespace FinanceManager.ViewModels
                     TipoMovimentoScelto = _services.GetMovementType((Convert.ToInt16(menuSubItem.Name.Substring(menuSubItem.Name.IndexOf("_") + 1))));
                     break;
                 case ("Gestioni"):
-                    if (TipoMovimentoScelto.IdMovement != 12)
+                    if (TipoMovimentoScelto.Id_tipo_movimento != 12)
                     {
                         foreach (MenuItem menuGestioni in MenuGestioni)
                         {
@@ -201,7 +201,7 @@ namespace FinanceManager.ViewModels
                     }
                     break;
                 case ("Conti di appoggio"):
-                    if (TipoMovimentoScelto.IdMovement != 3 || TipoMovimentoScelto.IdMovement != 12)
+                    if (TipoMovimentoScelto.Id_tipo_movimento != 3 || TipoMovimentoScelto.Id_tipo_movimento != 12)
                     {
                         foreach (MenuItem menuConto in MenuConti)
                         {
@@ -210,7 +210,7 @@ namespace FinanceManager.ViewModels
                         }
                     }
                     ContiScelti.Add(_services.GetLocation(Convert.ToInt16(menuSubItem.Name.Substring(menuSubItem.Name.IndexOf("_") + 1))));
-                    if (TipoMovimentoScelto.IdMovement == 5 || TipoMovimentoScelto.IdMovement == 6)
+                    if (TipoMovimentoScelto.Id_tipo_movimento == 5 || TipoMovimentoScelto.Id_tipo_movimento == 6)
                     {
                         acquistoVenditaTitoliViewModel =
                           new AcquistoVenditaTitoliViewModel(_services, _liquidAssetServices, GestioniScelte, ContiScelti, TipoMovimentoScelto);
