@@ -7,6 +7,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Linq;
 
 namespace FinanceManager.ViewModels
 {
@@ -23,15 +24,6 @@ namespace FinanceManager.ViewModels
             _managerLiquidServices = managerLiquidServices ?? throw new ArgumentNullException("Liquid Asset Services in Manager Portfolio Movement View Model");
 
             Init();
-
-            ListQuote = _managerLiquidServices.GetQuote();
-            ListTabQuote = _managerLiquidServices.GetQuoteTab();
-            ListInvestitore = _managerLiquidServices.GetInvestitori();
-            ListMovementType = _registryServices.GetRegistryMovementTypesList();
-            
-            DataMovimento = DateTime.Now.Date;
-
-            Visibility2 = Visibility.Collapsed;
         }
 
         private void Init()
@@ -43,18 +35,35 @@ namespace FinanceManager.ViewModels
             ListMovementType = new RegistryMovementTypeList();
             ListContoCorrente = new ContoCorrenteList();
             ActualQuote = new QuoteTab();
+
+            RegistryMovementTypeList listaOriginale = new RegistryMovementTypeList();
+            listaOriginale = _registryServices.GetRegistryMovementTypesList();
+            var RMTL = from movimento in listaOriginale
+                       where (movimento.Id_tipo_movimento == 1 || movimento.Id_tipo_movimento == 2 || movimento.Id_tipo_movimento == 12)
+                       select movimento;
+            foreach (RegistryMovementType registry in RMTL)
+                ListMovementType.Add(registry);
+
+            DataMovimento = DateTime.Now.Date;
+
+            UpdateCollection();
+        }
+
+        private void UpdateCollection()
+        {
+            ListQuote = _managerLiquidServices.GetQuote();
+            ListTabQuote = _managerLiquidServices.GetQuoteTab();
+            ListInvestitore = _managerLiquidServices.GetInvestitori();
+            TotDFCedole = _managerLiquidServices.GetCurrencyAvailable(2, 0, 1, new int[] { 4 });
+            TotDFUtili = _managerLiquidServices.GetCurrencyAvailable(2, 0, 1, new int[] { 15 });
+            TotDFDisponibili = _managerLiquidServices.GetCurrencyAvailable(2, 0, 1, new int[] { 4, 15 });
+            TotRCedole = _managerLiquidServices.GetCurrencyAvailable(1, 0, 1, new int[] { 4 });
+            TotRUtili = _managerLiquidServices.GetCurrencyAvailable(1, 0, 1, new int[] { 15 });
+            TotRDisponibili = _managerLiquidServices.GetCurrencyAvailable(1, 0, 1, new int[] { 4, 15 });
+            ListContoCorrente = _managerLiquidServices.GetContoCorrenteByMovement(12);
         }
 
         #region Getter&Setter
-        /// <summary>
-        /// Visualizza la griglia con le modifiche fatte alla tabella conto corrente
-        /// </summary>
-        public Visibility Visibility2
-        {
-            get { return GetValue(() => Visibility2); }
-            set { SetValue(() => Visibility2, value); }
-        }
-
         /// <summary>
         /// Gestisce l'elenco dei tipi di movimento
         /// </summary>
@@ -80,28 +89,12 @@ namespace FinanceManager.ViewModels
             set { SetValue(() => ListTabQuote, value); }
         }
         /// <summary>
-        /// la lista degli investitori
-        /// </summary>
-        public InvestitoreList ListInvestitore
-        {
-            get { return GetValue(() => ListInvestitore); }
-            set { SetValue(() => ListInvestitore, value); }
-        }
-        /// <summary>
         /// il record selezionato nella griglia dei record 
         /// </summary>
         public QuoteTab ActualQuote
         {
             get { return GetValue(() => ActualQuote); }
             set { SetValue(() => ActualQuote, value); }
-        }
-        /// <summary>
-        /// Memorizzo il record prima della modifica
-        /// </summary>
-        public QuoteTab QuoteTabPrevious
-        {
-            get { return GetValue(() => QuoteTabPrevious); }
-            set { SetValue(() => QuoteTabPrevious, value); }
         }
 
         /// <summary>
@@ -113,6 +106,41 @@ namespace FinanceManager.ViewModels
             set { SetValue(() => ListContoCorrente, value); }
         }
 
+        /// <summary>
+        /// la lista degli investitori
+        /// </summary>
+        public InvestitoreList ListInvestitore
+        {
+            get { return GetValue(() => ListInvestitore); }
+            set { SetValue(() => ListInvestitore, value); }
+        }
+        
+        /// <summary>
+        /// Memorizzo la scelta del conto
+        /// </summary>
+        public RegistryLocation RegistryLocation
+        {
+            get { return GetValue(() => RegistryLocation); }
+            private set { SetValue(() => RegistryLocation, value); }
+        }
+        
+        /// <summary>
+        /// Memorizzo la scelta della gestione
+        /// </summary>
+        public RegistryOwner RegistryOwner
+        {
+            get { return GetValue(() => RegistryOwner); }
+            private set { SetValue(() => RegistryOwner, value); }
+        }
+        
+        /// <summary>
+        /// Memorizzo il record prima della modifica
+        /// </summary>
+        public QuoteTab QuoteTabPrevious
+        {
+            get { return GetValue(() => QuoteTabPrevious); }
+            private set { SetValue(() => QuoteTabPrevious, value); }
+        }
         public DateTime DataMovimento
         {
             get { return GetValue(() => DataMovimento); }
@@ -123,8 +151,57 @@ namespace FinanceManager.ViewModels
             }
         }
 
-        #endregion
+        /// <summary>
+        /// Memorizzo il valore delle cedole per Dany&Fla
+        /// </summary>
+        public double TotDFCedole
+        {
+            get { return GetValue(() => TotDFCedole); }
+            private set { SetValue(() => TotDFCedole, value); }
+        }
+        /// <summary>
+        /// Memorizzo il valore degli utili per Dany&Fla
+        /// </summary>
+        public double TotDFUtili
+        {
+            get { return GetValue(() => TotDFUtili); }
+            private set { SetValue(() => TotDFUtili, value); }
+        }
+        /// <summary>
+        /// Memorizzo il valore della disponibilità per Dany&Fla
+        /// </summary>
+        public double TotDFDisponibili
+        {
+            get { return GetValue(() => TotDFDisponibili); }
+            private set { SetValue(() => TotDFDisponibili, value); }
+        }
         
+        /// <summary>
+        /// Memorizzo il valore delle cedole per Rubiu
+        /// </summary>
+        public double TotRCedole
+        {
+            get { return GetValue(() => TotRCedole); }
+            private set { SetValue(() => TotRCedole, value); }
+        }
+        /// <summary>
+        /// Memorizzo il valore degli utili per Rubiu
+        /// </summary>
+        public double TotRUtili
+        {
+            get { return GetValue(() => TotRUtili); }
+            private set { SetValue(() => TotRUtili, value); }
+        }
+        /// <summary>
+        /// Memorizzo il valore della disponibilità per Rubiu
+        /// </summary>
+        public double TotRDisponibili
+        {
+            get { return GetValue(() => TotRDisponibili); }
+            private set { SetValue(() => TotRDisponibili, value); }
+        }
+        #endregion
+
         /// <summary>
         /// Verifica che il codice dell'operazione corrisponda al segno della cifra
         /// </summary>
@@ -182,6 +259,17 @@ namespace FinanceManager.ViewModels
                         Desc_tipo_movimento = ActualQuote.Desc_tipo_movimento,
                         NomeInvestitore = ActualQuote.NomeInvestitore
                     };
+                    if (ActualQuote.Id_tipo_movimento == 12 && ActualQuote.IdQuote > 0)
+                    {
+                        // estraggo solo il record corrispondente alla selezione nella griglia quote
+                        ListContoCorrente = _managerLiquidServices.GetContoCorrenteByIdQuote(ActualQuote.IdQuote);
+                        //ListContoCorrente = _managerLiquidServices.GetContoCorrenteByMovement(12);
+                    }
+                    else if (ActualQuote.Id_tipo_movimento == 12 && ActualQuote.Id_tipo_movimento == 0)
+                    {
+                        // estraggo tutti i record con codice "giroconto"
+                        ListContoCorrente = _managerLiquidServices.GetContoCorrenteByMovement(12);
+                    }
                 }
             }
         }
@@ -205,8 +293,6 @@ namespace FinanceManager.ViewModels
                         {
                             ActualQuote = QuoteTabPrevious;
                             QuoteTabPrevious = new QuoteTab();
-                            ListTabQuote = _managerLiquidServices.GetQuoteTab();
-                            return;
                         }
                         if (ActualQuote.IdQuote > 0)
                         {
@@ -215,21 +301,61 @@ namespace FinanceManager.ViewModels
                         else
                         {
                             _managerLiquidServices.InsertInvestment(ActualQuote);
-                            ListTabQuote = _managerLiquidServices.GetQuoteTab();
-                            ListQuote = _managerLiquidServices.GetQuote();
                         }
                         QuoteTabPrevious = new QuoteTab();
-                        ListQuote = _managerLiquidServices.GetQuote();
                     }
                     else if (ActualQuote.Id_tipo_movimento == 12 && ActualQuote.IdQuote == 0)
                     {
-                        OnOpenDialog(this);
+                        if ( OnOpenDialog(this) == true)
+                        {
+                            _managerLiquidServices.InsertInvestment(ActualQuote);                           // aggiungo il record al db
+                            ActualQuote.IdQuote = ((QuoteTab)_managerLiquidServices.GetLastQuoteTab()).IdQuote; // aggiorno il record selezionato
+                            ContoCorrente cc = new ContoCorrente();                 // nuovo record
+                            cc.Ammontare = ActualQuote.Ammontare * -1;              // la cifra inversa di quella inserita in gestione investimenti
+                            cc.DataMovimento = ActualQuote.DataMovimento;          // la data dell'operazione
+                            cc.Id_Quote_Investimenti = ActualQuote.IdQuote;         // il record di riferimento della gestione investimenti
+                            cc.Id_Valuta = 1;                                       // codice valuta (sempre euro)
+                            cc.Cod_Valuta = "EUR";
+                            cc.Causale = ActualQuote.Note;                          // le stesse note
+                            cc.Id_Portafoglio_Titoli = 0;
+                            cc.Id_tipo_movimento = 12;
+                            cc.Id_Titolo = 0;
+                            cc.Id_Gestione = RegistryOwner.IdOwner;
+                            cc.NomeGestione = RegistryOwner.OwnerName;
+                            cc.Id_Conto = RegistryLocation.IdLocation;
+                            cc.Desc_Conto = RegistryLocation.DescLocation;
+                            _managerLiquidServices.InsertAccountMovement(cc);                               // aggiungo il record al db
+                        }
+                        else
+                        {
+                            ActualQuote = QuoteTabPrevious;     // riporto la situazione all'origine
+                        }
                     }
-                    else
+                    else if (ActualQuote.Id_tipo_movimento == 12 && ActualQuote.IdQuote > 0)
                     {
-                        // Riporta i dati com'erano
-                        ActualQuote = QuoteTabPrevious;
+                        if ( OnOpenDialog(this))
+                        {
+                            _managerLiquidServices.UpdateQuoteTab(ActualQuote);         // aggiorno i dati nel db
+                            ContoCorrente cc = ListContoCorrente[0];
+                            if (cc.Id_Quote_Investimenti == ActualQuote.IdQuote)
+                            {
+                                cc.Ammontare = ActualQuote.Ammontare * -1;              // la cifra inversa di quella inserita in gestione investimenti
+                                cc.DataMovimento = ActualQuote.DataMovimento;          // la data dell'operazione
+                                cc.Id_Quote_Investimenti = ActualQuote.IdQuote;         // il record di riferimento della gestione investimenti
+                                cc.Causale = ActualQuote.Note;                          // le stesse note
+                                cc.Id_Gestione = RegistryOwner.IdOwner;
+                                cc.NomeGestione = RegistryOwner.OwnerName;
+                                cc.Id_Conto = RegistryLocation.IdLocation;
+                                cc.Desc_Conto = RegistryLocation.DescLocation;
+                                _managerLiquidServices.UpdateContoCorrenteByIdQuote(cc);         // aggiorno i dati nel db
+                            }
+                        }
+                        else
+                        {
+                            ActualQuote = QuoteTabPrevious;         // Riporta i dati com'erano
+                        }
                     }
+                    UpdateCollection();     // Aggiorno tutte le griglie di dati
                 }
             }
             catch (Exception err)
@@ -262,16 +388,21 @@ namespace FinanceManager.ViewModels
                     if (quoteTab.Id_tipo_movimento == 1 || quoteTab.Id_tipo_movimento == 2)
                     {
                         _managerLiquidServices.DeleteRecordQuoteTab(quoteTab.IdQuote);
-                        ListTabQuote = _managerLiquidServices.GetQuoteTab();
-                        ListQuote = _managerLiquidServices.GetQuote();
                         MessageBox.Show("Il record è stato correttamente eliminato", "Gestione Quote Investitori", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
                     {
-                        ListTabQuote = _managerLiquidServices.GetQuoteTab();
-                        ListQuote = _managerLiquidServices.GetQuote();
-                        MessageBox.Show("Il record selezionato non si può, al momento, eliminare", "Gestione Quote Investitori", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        var Risposta = MessageBox.Show("Stai per eliminare il record selezionato da 2 tabelle." + Environment.NewLine + "Sei sicoro?",
+                            "Gestione Quote", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        if (Risposta == MessageBoxResult.Yes)
+                        {
+                            _managerLiquidServices.DeleteAccount(ListContoCorrente[0].Id_RowConto);
+                            _managerLiquidServices.DeleteRecordQuoteTab(ActualQuote.IdQuote);
+                            ActualQuote = new QuoteTab();
+                            MessageBox.Show("I 2 record sono stati correttamente eliminati", "Gestione Quote Investitori", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
                     }
+                    UpdateCollection();     //Aggiorno tutti i dati della griglia
                 }
                 catch (Exception err)
                 {
@@ -296,46 +427,6 @@ namespace FinanceManager.ViewModels
         #endregion
 
         #region Commands
-        public void AzioneScelta(object param)
-        {
-            string scelta = param.ToString();
-            if (scelta == "Giroconto")
-            {
-                ActualQuote = new QuoteTab();
-                QuoteTabPrevious = new QuoteTab();
-                DataMovimento = DateTime.Now.Date;
-                ListTabQuote = _managerLiquidServices.GetQuoteTab();
-                ListContoCorrente = _managerLiquidServices.GetContoCorrenteByMovement(12);
-                Visibility2 = Visibility.Visible;
-            }
-        }
-        public void SaveCommand(object param)
-        {
-            try
-            {
-                _managerLiquidServices.InsertInvestment(ActualQuote);
-                ActualQuote = new QuoteTab();
-                Visibility2 = Visibility.Collapsed;
-                MessageBox.Show("Operazione eseguita correttamente.", "Gestione Quote Investitori", MessageBoxButton.OK, MessageBoxImage.Information);
-                ListQuote = _managerLiquidServices.GetQuote();
-            }
-            catch (Exception err)
-            {
-                MessageBox.Show("Problemi con l'operazione richiesta." + Environment.NewLine + err.Message, "Gestione Quote Investitori", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        public void UpdateCommand(Object param)
-        {
-            try
-            {
-            }
-            catch (Exception err)
-            {
-                MessageBox.Show(err.Message);
-            }
-        }
-
         public void CloseMe(object param)
         {
             GestioneQuoteInvestitoriView view = param as GestioneQuoteInvestitoriView;
@@ -343,39 +434,28 @@ namespace FinanceManager.ViewModels
             wp.Children.Remove(view);
         }
 
-        private void OnOpenDialog(object param)
+        private bool OnOpenDialog(object param)
         {
             Dialogs.DialogService.DialogViewModelBase vm = new 
                 Dialogs.DialogYesNo.DialogYesNoViewModel("Selezionare il conto e la gestione", _registryServices.GetRegistryLocationList(), _registryServices.GetRegistryOwners());
             Dialogs.DialogService.DialogResult result = Dialogs.DialogService.DialogService.OpenDialog(vm, param as Window);
             if (result == Dialogs.DialogService.DialogResult.Yes)
             {
-                Visibility2 = Visibility.Visible;
-                _managerLiquidServices.InsertInvestment(ActualQuote);
-                int IdQuote = ((QuoteTab) _managerLiquidServices.GetLastQuoteTab()).IdQuote;
-                ActualQuote.IdQuote = IdQuote;
-                ContoCorrente cc = new ContoCorrente();
-                cc.Ammontare = ActualQuote.Ammontare * -1;
-                cc.Data_Movimento = ActualQuote.DataMovimento;
-                cc.Id_Quote_Investimenti = IdQuote;
-                cc.Id_Valuta = 1;
-                cc.Cod_Valuta = "EUR";
-                cc.Causale = ActualQuote.Note;
-                cc.Id_Portafoglio_Titoli = 0;
-                cc.Id_tipo_movimento = 12;
-                cc.Id_Titolo = 0;
-                cc.Desc_Conto = Dialogs.DialogService.DialogService.Location.DescLocation;
-                cc.Id_Conto = Dialogs.DialogService.DialogService.Location.IdLocation;
-                cc.Id_Gestione = Dialogs.DialogService.DialogService.Owner.IdOwner;
-                cc.NomeGestione = Dialogs.DialogService.DialogService.Owner.OwnerName;
-                ListContoCorrente.Add(cc);
-                _managerLiquidServices.InsertAccountMovement(cc);
-                ListContoCorrente = _managerLiquidServices.GetContoCorrenteByMovement(12);
-                ListTabQuote = _managerLiquidServices.GetQuoteTab();
+                RegistryOwner = new RegistryOwner()
+                {
+                    IdOwner = Dialogs.DialogService.DialogService.Owner.IdOwner,
+                    OwnerName = Dialogs.DialogService.DialogService.Owner.OwnerName
+                };
+                RegistryLocation = new RegistryLocation()
+                {
+                    IdLocation = Dialogs.DialogService.DialogService.Location.IdLocation,
+                    DescLocation = Dialogs.DialogService.DialogService.Location.DescLocation
+                };
+                return true;
             }
             else
             {
-                // pulisci tutto
+                return false;
             }
         }
 

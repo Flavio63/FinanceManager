@@ -4,8 +4,10 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:viewModels="clr-namespace:FinanceManager.ViewModels"
              xmlns:dialogYesNo="clr-namespace:FinanceManager.Dialogs.DialogYesNo"
+             xmlns:Events="clr-namespace:FinanceManager.Events"
              StartupUri="Views/MainWindow.xaml">
     <Application.Resources>
+        <Events:ComboboxDisableConverter x:Key="itemDisableconverter"/>
         <viewModels:MainWindowViewModel x:Key="MainWindowViewModel"/>
         <DataTemplate DataType="{x:Type dialogYesNo:DialogYesNoViewModel}">
             <dialogYesNo:DialogYesNoView></dialogYesNo:DialogYesNoView>

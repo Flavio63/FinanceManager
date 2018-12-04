@@ -8,6 +8,18 @@ namespace FinanceManager.Services.SQL
 {
     public class ManagerScripts
     {
+        public static readonly string SrchGestione = " id_gestione = {0} ";
+        public static readonly string SrchCurrency = " id_valuta = {0} ";
+        public static readonly string SrchMovementType = " id_tipo_movimento = {0} ";
+        public static readonly string NotMovementType = " id_tipo_movimento <> {0} ";
+        /// <summary>
+        /// Verifica la disponibilità di liquidità per la gestione,
+        /// per il conto (location) e per la valuta selezionate
+        /// </summary>
+        public static readonly string GetCurrencyAvailable = "SELECT SUM(ammontare) as disponibile FROM conto_corrente WHERE ";
+        //"WHERE id_tipo_movimento <> 4 and id_tipo_movimento <> 15 and " +
+        //"id_gestione = @id_gestione AND id_conto = @id_conto AND id_valuta = @id_valuta ";
+
         /// <summary>
         /// Data una gestione estrae tutti i record
         /// </summary>
@@ -57,14 +69,6 @@ namespace FinanceManager.Services.SQL
             "WHERE A.id_gestione = B.id_gestione AND A.id_conto = C.id_conto AND A.id_valuta = D.id_valuta AND A.id_tipo_movimento = E.id_tipo_movimento AND A.id_titolo = F.id_titolo " +
             "AND F.id_tipo_titolo = H.id_tipo_titolo AND F.id_azienda = I.id_azienda AND B.id_gestione = @id_gestione AND C.id_conto = @id_conto AND A.id_titolo IS NOT NULL " +
             "ORDER BY id_portafoglio_titoli DESC LIMIT 1";
-
-        /// <summary>
-        /// Verifica la disponibilità di liquidità per la gestione,
-        /// per il conto (location) e per la valuta selezionate
-        /// </summary>
-        public static readonly string GetCurrencyAvailable = "SELECT SUM(ammontare) as disponibile FROM conto_corrente " +
-            "WHERE id_tipo_movimento <> 4 and id_tipo_movimento <> 15 and " +
-            "id_gestione = @id_gestione AND id_conto = @id_conto AND id_valuta = @id_valuta ";
 
         /// <summary>
         /// Estrae il numero di azioni possedute dato una gestione, un conto e un id azione
@@ -122,17 +126,26 @@ namespace FinanceManager.Services.SQL
         protected static readonly string OrderByData = " ORDER BY data_movimento ";
 
         protected static readonly string Movimento = " AND A.id_tipo_movimento = @id_tipo_movimento ";
+        protected static readonly string Quote = " AND A.id_quote_investimenti = @id_quote_investimenti";
 
         public static readonly string GetContoCorrente = ContoCorrente + OrderByData;
-
+        public static readonly string GetContoCorrenteByIdQuote = ContoCorrente + Quote;
         public static readonly string GetContoCorrenteByMovement = ContoCorrente + Movimento + OrderByData;
+
+        public static readonly string UpdateContoCorrenteByIdQuote = "UPDATE conto_corrente SET id_conto = @id_conto, id_valuta = @id_valuta, id_portafoglio_titoli = @id_portafoglio_titoli, " +
+            "id_tipo_movimento = @id_tipo_movimento, id_gestione = @id_gestione, id_titolo = @id_titolo, data_movimento = @data_movimento, ammontare = @ammontare, " +
+            "cambio = @cambio, causale = @causale WHERE id_quote_investimenti = @id_quote_investimenti";
+
+        public static readonly string DeleteAccount = "DELETE FROM conto_corrente WHERE id_fineco_euro = @id_fineco_euro";
 
         /// <summary>
         /// calcola le quote per investitore
         /// </summary>
-        public static readonly string GetQuote = "SELECT C.Nome, ROUND(SUM(ammontare), 2) AS investimento, ROUND(SUM(ammontare) / totale * 100, 2) " +
-            "AS quota, totale FROM (SELECT ROUND(SUM(ammontare), 2) AS totale FROM quote_investimenti WHERE id_tipo_movimento = 1 OR id_tipo_movimento = 2) A, " +
-            "quote_investimenti B, Investitori C WHERE B.id_investitore = C.id_investitore AND B.id_quote_inv > 0 GROUP BY B.id_investitore";
+        public static readonly string GetQuote = "SELECT Investitori.Nome, ROUND(SUM(CASE WHEN id_tipo_movimento = 1 OR id_tipo_movimento = 2 THEN ammontare ELSE 0 END), 2) AS investito, " +
+            "ROUND(SUM(CASE WHEN id_tipo_movimento = 1 OR id_tipo_movimento = 2 THEN ammontare ELSE 0 END) / totale * 100, 2) AS quota, totale, ROUND(SUM(ammontare), 2) AS disponibili, " +
+            "tot_disponibile FROM (SELECT ROUND(SUM(CASE WHEN id_tipo_movimento = 1 OR id_tipo_movimento = 2 THEN ammontare ELSE 0 END), 2) AS totale, ROUND(SUM(ammontare), 2) AS tot_disponibile " +
+            "FROM quote_investimenti) A, quote_investimenti, Investitori WHERE quote_investimenti.id_investitore = Investitori.id_investitore AND quote_investimenti.id_quote_inv > 0 " +
+            "GROUP BY quote_investimenti.id_investitore ";
 
         /// <summary>
         /// esporta tutti gli investitori

@@ -23,7 +23,7 @@ namespace FinanceManager.Models
         public int Id_Titolo { get; set; }
         public string Desc_Titolo { get; set; }
         public string ISIN { get; set; }
-        public DateTime Data_Movimento { get; set; }
+        public DateTime DataMovimento { get; set; }
         public double Ammontare { get; set; }
         public double Valore_Cambio { get; set; }
         public string Causale { set; get; }

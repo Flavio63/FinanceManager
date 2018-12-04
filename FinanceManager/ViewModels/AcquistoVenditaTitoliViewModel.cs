@@ -54,7 +54,7 @@ namespace FinanceManager.ViewModels
                 Conto = ContoMod[0].DescLocation;
                 CurrencyList = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
                 SharesList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
-                Disponibili = _liquidAssetServices.GetCurrencyAvailable(GestioneMod[0].IdOwner, ContoMod[0].IdLocation, 1).
+                Disponibili = _liquidAssetServices.GetCurrencyAvailable(GestioneMod[0].IdOwner, ContoMod[0].IdLocation, 1, new int[] { 4, 15}).
                     ToString("#,##0.0#", CultureInfo.CreateSpecificCulture("it-IT")) + " EUR";
                 _Filter = new Predicate<object>(Filter);
                 RowLiquidAsset = new ManagerLiquidAsset();
@@ -79,7 +79,7 @@ namespace FinanceManager.ViewModels
                 RegistryCurrency RC = e.AddedItems[0] as RegistryCurrency;
                 if (RC != null)
                 {
-                    Disponibili = _liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto, RC.IdCurrency).
+                    Disponibili = _liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto, RC.IdCurrency, new int[] { 4, 15}).
                        ToString("#,##0.0#", CultureInfo.CreateSpecificCulture("it-IT")) + " " + RC.CodeCurrency;
                     RowLiquidAsset.Id_valuta = RC.IdCurrency;
                     if (RC.IdCurrency == 1)
@@ -434,7 +434,7 @@ namespace FinanceManager.ViewModels
                     Id_tipo_movimento = MLA.Id_tipo_movimento,
                     Id_Gestione = MLA.Id_gestione,
                     Id_Titolo = (int)MLA.Id_titolo,
-                    Data_Movimento = MLA.Data_Movimento,
+                    DataMovimento = MLA.Data_Movimento,
                     Ammontare = TotaleContabile,
                     Valore_Cambio = MLA.Valore_di_cambio,
                     Causale = MLA.Note

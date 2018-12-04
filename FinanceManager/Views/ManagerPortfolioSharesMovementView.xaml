@@ -9,7 +9,6 @@
              xmlns:local="clr-namespace:FinanceManager.Views"
              mc:Ignorable="d" Name="_ManagerPortfolioShareMovementView">
     <UserControl.Resources>
-        <conv:ComboboxDisableConverter x:Key="itemDisableconverter"/>
         <TextBlock Text="PortfolioShares" x:Key="ObjName"/>
     </UserControl.Resources>
     <Grid Background="LightSeaGreen" Margin="5">
