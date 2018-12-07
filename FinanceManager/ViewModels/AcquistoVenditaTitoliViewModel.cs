@@ -5,6 +5,7 @@ using FinanceManager.Views;
 using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -14,7 +15,7 @@ namespace FinanceManager.ViewModels
 {
     public class AcquistoVenditaTitoliViewModel : ViewModelBase
     {
-        private IRegistryServices _services;
+        private IRegistryServices _registryServices;
         private IManagerLiquidAssetServices _liquidAssetServices;
         public ICommand CloseMeCommand { get; set; }
         public ICommand InsertCommand { get; set; }
@@ -24,46 +25,50 @@ namespace FinanceManager.ViewModels
         Predicate<object> _Filter;
 
         public AcquistoVenditaTitoliViewModel
-            (IRegistryServices services, IManagerLiquidAssetServices liquidAssetServices, Collection<RegistryOwner> GestioniScelte,
-            Collection<RegistryLocation> ContiScelti, RegistryMovementType TipoMovimentoScelto)
+            (IRegistryServices services, IManagerLiquidAssetServices liquidAssetServices)
         {
-            _services = services ?? throw new ArgumentNullException("Services in Manager Portfolio Movement View Model");
+            _registryServices = services ?? throw new ArgumentNullException("Services in Manager Portfolio Movement View Model");
             _liquidAssetServices = liquidAssetServices ?? throw new ArgumentNullException("Liquid Asset Services in Manager Portfolio Movement View Model");
-            GestioneMod = GestioniScelte;
-            ContoMod = ContiScelti;
-            CosaMod = TipoMovimentoScelto;
+            //GestioneMod = GestioniScelte;
+            //ContoMod = ContiScelti;
+            //CosaMod = TipoMovimentoScelto;
             CloseMeCommand = new CommandHandler(CloseMe);
             SetUpData();
             InsertCommand = new CommandHandler(SaveCommand, CanSave);
             ModifyCommand = new CommandHandler(UpdateCommand, CanModify);
             EraseCommand = new CommandHandler(DeleteCommand, CanModify);
             ClearCommand = new CommandHandler(CleanCommand);
+            SintesiSoldiR = _liquidAssetServices.GetCurrencyAvailable(1);
+            SintesiSoldiDF = _liquidAssetServices.GetCurrencyAvailable(2);
         }
 
         private void SetUpData()
         {
             try
             {
-                TobinOk = "Collapsed";
-                DisaggioOk = "Collapsed";
-                RitenutaOk = "Collapsed";
-                ContEuroVisib = "Collapsed";
-                if (CosaMod.Id_tipo_movimento == 6) RitenutaOk = "Visible";
-                Cosa = CosaMod.Desc_tipo_movimento;
-                Gestione = GestioneMod[0].OwnerName;
-                Conto = ContoMod[0].DescLocation;
-                CurrencyList = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
-                SharesList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
-                Disponibili = _liquidAssetServices.GetCurrencyAvailable(GestioneMod[0].IdOwner, ContoMod[0].IdLocation, 1, new int[] { 4, 15}).
-                    ToString("#,##0.0#", CultureInfo.CreateSpecificCulture("it-IT")) + " EUR";
+                TobinOk = false;
+                DisaggioOk = false;
+                RitenutaOk = false;
+                ListMovimenti = new RegistryMovementTypeList();
+                ListGestioni = new RegistryOwnersList();
+                ListConti = new RegistryLocationList();
+                ListValute = new RegistryCurrencyList();
+                RegistryMovementTypeList listaOriginale = new RegistryMovementTypeList();
+                listaOriginale = _registryServices.GetRegistryMovementTypesList();
+                var RMTL = from movimento in listaOriginale
+                           where (movimento.Id_tipo_movimento == 5 || movimento.Id_tipo_movimento == 6 || movimento.Id_tipo_movimento == 13 || movimento.Id_tipo_movimento == 14)
+                           select movimento;
+                foreach (RegistryMovementType registry in RMTL)
+                    ListMovimenti.Add(registry);
+                ListValute = _registryServices.GetRegistryCurrencyList();
+                ListGestioni = _registryServices.GetRegistryOwners();
+                ListConti = _registryServices.GetRegistryLocationList();
+
+                SharesList = new ObservableCollection<RegistryShare>(_registryServices.GetRegistryShareList());
                 _Filter = new Predicate<object>(Filter);
                 RowLiquidAsset = new ManagerLiquidAsset();
                 RowLiquidAsset.Data_Movimento = DateTime.Now;
-                RowLiquidAsset.Id_tipo_movimento = CosaMod.Id_tipo_movimento;
-                RowLiquidAsset.Id_gestione = GestioneMod[0].IdOwner;
-                RowLiquidAsset.Id_conto = ContoMod[0].IdLocation;
-                LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(
-                    _liquidAssetServices.GetManagerSharesMovementByOwnerAndLocation(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto));
+                LiquidAssetList = new ManagerLiquidAssetList();
             }
             catch (Exception err)
             {
@@ -79,8 +84,6 @@ namespace FinanceManager.ViewModels
                 RegistryCurrency RC = e.AddedItems[0] as RegistryCurrency;
                 if (RC != null)
                 {
-                    Disponibili = _liquidAssetServices.GetCurrencyAvailable(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto, RC.IdCurrency, new int[] { 4, 15}).
-                       ToString("#,##0.0#", CultureInfo.CreateSpecificCulture("it-IT")) + " " + RC.CodeCurrency;
                     RowLiquidAsset.Id_valuta = RC.IdCurrency;
                     if (RC.IdCurrency == 1)
                     {
@@ -113,15 +116,15 @@ namespace FinanceManager.ViewModels
             ManagerLiquidAsset MLA = e.AddedItems[0] as ManagerLiquidAsset;
             if (MLA != null)
             {
-                if (MLA.Id_tipo_movimento != CosaMod.Id_tipo_movimento) return;
-                RowLiquidAsset = MLA;
-                if (RowLiquidAsset.Id_valuta != 1)
-                {
-                    ContEuroVisib = "Visible";
-                }
-                UpdateTotals();
-                CanUpdateDelete = true;
-                CanInsert = false;
+                //if (MLA.Id_tipo_movimento != ListMovimenti.Id_tipo_movimento) return;
+                //RowLiquidAsset = MLA;
+                //if (RowLiquidAsset.Id_valuta != 1)
+                //{
+                //    ContEuroVisib = "Visible";
+                //}
+                //UpdateTotals();
+                //CanUpdateDelete = true;
+                //CanInsert = false;
             }
         }
 
@@ -206,19 +209,19 @@ namespace FinanceManager.ViewModels
                         TotalLocalValue + (RowLiquidAsset.Disaggio_anticipo_cedole + (RowLiquidAsset.RitenutaFiscale * RowLiquidAsset.Valore_di_cambio)) * -1;
                     if ((RowLiquidAsset.Id_tipo_titolo == 1 || RowLiquidAsset.Id_tipo_titolo == 4) && RowLiquidAsset.Id_valuta == 1)
                     {
-                        TobinOk = "Visible";
+                        TobinOk = true;
                     }
                     else
                     {
-                        TobinOk = "Collapsed";
+                        TobinOk = false;
                     }
                     if (RowLiquidAsset.Id_tipo_titolo == 2)
                     {
-                        DisaggioOk = "Visible";
+                        DisaggioOk = true;
                     }
                     else
                     {
-                        DisaggioOk = "Collapsed";
+                        DisaggioOk = false;
                     }
                 }
                 else if (RowLiquidAsset.Id_tipo_movimento == 6) //vendita
@@ -229,7 +232,7 @@ namespace FinanceManager.ViewModels
                     TotaleContabile = RowLiquidAsset.Id_valuta == 1 ?
                         TotalLocalValue - (RowLiquidAsset.TobinTax + RowLiquidAsset.Disaggio_anticipo_cedole + RowLiquidAsset.RitenutaFiscale) :
                         TotalLocalValue - (RowLiquidAsset.Disaggio_anticipo_cedole + (RowLiquidAsset.RitenutaFiscale * RowLiquidAsset.Valore_di_cambio));
-                    RitenutaOk = "Visible";
+                    RitenutaOk = true;
                 }
             }
             AmountChangedValue = TotaleContabile;
@@ -257,46 +260,55 @@ namespace FinanceManager.ViewModels
 
         #region Getter&Setter
         /// <summary>
-        /// E' l'indicazione della gestione
+        /// il riepilogo dei soldi per la gestione Dany&Fla
         /// </summary>
-        public RegistryMovementType CosaMod
+        public SintesiSoldiList SintesiSoldiDF
         {
-            get { return GetValue(() => CosaMod); }
-            set { SetValue(() => CosaMod, value); }
+            get { return GetValue(() => SintesiSoldiDF); }
+            private set { SetValue(() => SintesiSoldiDF, value); }
         }
-        public string Cosa
+        /// <summary>
+        /// il riepilogo dei soldi per la gestione Rubiu
+        /// </summary>
+        public SintesiSoldiList SintesiSoldiR
         {
-            get { return GetValue(() => Cosa); }
-            set { SetValue(() => Cosa, "Hai scelto: " + value); }
-        }
-
-        public Collection<RegistryOwner> GestioneMod
-        {
-            get { return GetValue(() => GestioneMod); }
-            set { SetValue(() => GestioneMod, value); }
-        }
-        public string Gestione
-        {
-            get { return GetValue(() => Gestione); }
-            set { SetValue(() => Gestione, "per la gestione di: " + value); }
+            get { return GetValue(() => SintesiSoldiR); }
+            private set { SetValue(() => SintesiSoldiR, value); }
         }
 
-        public Collection<RegistryLocation> ContoMod
+        /// <summary>
+        /// Combo box con i movimenti
+        /// </summary>
+        public RegistryMovementTypeList ListMovimenti
         {
-            get { return GetValue(() => ContoMod); }
-            set { SetValue(() => ContoMod, value); }
+            get { return GetValue(() => ListMovimenti); }
+            set { SetValue(() => ListMovimenti, value); }
         }
-        public string Conto
+        /// <summary>
+        /// combo box con la lista delle valute
+        /// </summary>
+        public RegistryCurrencyList ListValute
         {
-            get { return GetValue(() => Conto); }
-            set { SetValue(() => Conto, "sul conto in: " + value); }
+            get { return GetValue(() => ListValute); }
+            set { SetValue(() => ListValute, value); }
+        }
+        /// <summary>
+        /// combo box con la lista dei C/C
+        /// </summary>
+        public RegistryLocationList ListConti
+        {
+            get { return GetValue(() => ListConti); }
+            set { SetValue(() => ListConti, value); }
+        }
+        /// <summary>
+        /// combo box con la lista dei C/C
+        /// </summary>
+        public RegistryOwnersList ListGestioni
+        {
+            get { return GetValue(() => ListGestioni); }
+            set { SetValue(() => ListGestioni, value); }
         }
 
-        public string Disponibili
-        {
-            get { return GetValue(() => Disponibili); }
-            set { SetValue(() => Disponibili, "Ci sono: " + value + " disponibili"); }
-        }
         /// <summary>
         /// E' il totale comprensivo delle commissioni
         /// </summary>
@@ -339,7 +351,7 @@ namespace FinanceManager.ViewModels
             set { SetValue(() => SharesOwned, value); }
         }
 
-        public ObservableCollection<ManagerLiquidAsset> LiquidAssetList
+        public ManagerLiquidAssetList LiquidAssetList
         {
             get { return GetValue(() => LiquidAssetList); }
             set { SetValue(() => LiquidAssetList, value); }
@@ -348,12 +360,6 @@ namespace FinanceManager.ViewModels
         {
             get { return GetValue(() => RowLiquidAsset); }
             set { SetValue(() => RowLiquidAsset, value); }
-        }
-
-        public ObservableCollection<RegistryCurrency> CurrencyList
-        {
-            get { return GetValue(() => CurrencyList); }
-            set { SetValue(() => CurrencyList, value); }
         }
 
         public ObservableCollection<RegistryShare> SharesList
@@ -372,23 +378,25 @@ namespace FinanceManager.ViewModels
             set { SetValue(() => SharesListView, value); }
         }
         /// <summary>
-        /// Gestisce la visualizzazione del campo TobinTax
+        /// Gestisce l'abilitazione del campo TobinTax
         /// </summary>
-        public string TobinOk
+        public bool TobinOk
         {
             get { return GetValue(() => TobinOk); }
             set { SetValue(() => TobinOk, value); }
         }
         /// <summary>
-        /// Gestisce la visualizzazione del campo Disaggio
+        /// Gestisce l'abilitazione del campo Disaggio
         /// </summary>
-        public string DisaggioOk
+        public bool DisaggioOk
         {
             get { return GetValue(() => DisaggioOk); }
             set { SetValue(() => DisaggioOk, value); }
         }
-
-        public string RitenutaOk
+        /// <summary>
+        /// Gestisce l'abilitazione del campo Ritenuta Fiscale
+        /// </summary>
+        public bool RitenutaOk
         {
             get { return GetValue(() => RitenutaOk); }
             set { SetValue(() => RitenutaOk, value); }
@@ -441,7 +449,7 @@ namespace FinanceManager.ViewModels
                 };
                 _liquidAssetServices.InsertAccountMovement(cc);
                 // reimposto la griglia con quanto inserito
-                LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerSharesMovementByOwnerAndLocation(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto));
+                LiquidAssetList = _liquidAssetServices.GetManagerSharesMovementByOwnerAndLocation(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto);
                 CanInsert = false;          // disabilito la possibilità di un inserimento accidentale
                 CanUpdateDelete = true;     // abilito la possibilità di modificare / cancellare il record
 
@@ -464,7 +472,7 @@ namespace FinanceManager.ViewModels
                                                                                     //registro la modifica in conto corrente
 
                 // reimposto la griglia con quanto inserito
-                LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerSharesMovementByOwnerAndLocation(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto));
+                LiquidAssetList = _liquidAssetServices.GetManagerSharesMovementByOwnerAndLocation(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto);
                 SrchShares = "";
                 MessageBox.Show("Record modificato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -496,9 +504,8 @@ namespace FinanceManager.ViewModels
         public void CloseMe(object param)
         {
             AcquistoVenditaTitoliView MFMV = param as AcquistoVenditaTitoliView;
-            Grid wp = MFMV.Parent as Grid;
+            DockPanel wp = MFMV.Parent as DockPanel;
             wp.Children.Remove(MFMV);
-            wp.Visibility = Visibility.Collapsed;
         }
 
         public bool CanInsert

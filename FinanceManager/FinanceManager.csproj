@@ -128,6 +128,8 @@
     <Compile Include="Events\ExcludeChar.cs" />
     <Compile Include="Events\VerifyNumber.cs" />
     <Compile Include="Events\ViewModelBase.cs" />
+    <Compile Include="Models\SintesiSoldi.cs" />
+    <Compile Include="Models\SintesiSoldiList.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Models\ContoCorrente.cs" />
     <Compile Include="Models\ContoCorrenteList.cs" />

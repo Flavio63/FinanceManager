@@ -54,12 +54,8 @@ namespace FinanceManager.ViewModels
             ListQuote = _managerLiquidServices.GetQuote();
             ListTabQuote = _managerLiquidServices.GetQuoteTab();
             ListInvestitore = _managerLiquidServices.GetInvestitori();
-            TotDFCedole = _managerLiquidServices.GetCurrencyAvailable(2, 0, 1, new int[] { 4 });
-            TotDFUtili = _managerLiquidServices.GetCurrencyAvailable(2, 0, 1, new int[] { 15 });
-            TotDFDisponibili = _managerLiquidServices.GetCurrencyAvailable(2, 0, 1, new int[] { 4, 15 });
-            TotRCedole = _managerLiquidServices.GetCurrencyAvailable(1, 0, 1, new int[] { 4 });
-            TotRUtili = _managerLiquidServices.GetCurrencyAvailable(1, 0, 1, new int[] { 15 });
-            TotRDisponibili = _managerLiquidServices.GetCurrencyAvailable(1, 0, 1, new int[] { 4, 15 });
+            SintesiSoldiR = _managerLiquidServices.GetCurrencyAvailable(1);
+            SintesiSoldiDF = _managerLiquidServices.GetCurrencyAvailable(2);
             ListContoCorrente = _managerLiquidServices.GetContoCorrenteByMovement(12);
         }
 
@@ -151,54 +147,16 @@ namespace FinanceManager.ViewModels
             }
         }
 
-        /// <summary>
-        /// Memorizzo il valore delle cedole per Dany&Fla
-        /// </summary>
-        public double TotDFCedole
+        public SintesiSoldiList SintesiSoldiDF
         {
-            get { return GetValue(() => TotDFCedole); }
-            private set { SetValue(() => TotDFCedole, value); }
+            get { return GetValue(() => SintesiSoldiDF); }
+            private set { SetValue(() => SintesiSoldiDF, value); }
         }
-        /// <summary>
-        /// Memorizzo il valore degli utili per Dany&Fla
-        /// </summary>
-        public double TotDFUtili
+
+        public SintesiSoldiList SintesiSoldiR
         {
-            get { return GetValue(() => TotDFUtili); }
-            private set { SetValue(() => TotDFUtili, value); }
-        }
-        /// <summary>
-        /// Memorizzo il valore della disponibilità per Dany&Fla
-        /// </summary>
-        public double TotDFDisponibili
-        {
-            get { return GetValue(() => TotDFDisponibili); }
-            private set { SetValue(() => TotDFDisponibili, value); }
-        }
-        
-        /// <summary>
-        /// Memorizzo il valore delle cedole per Rubiu
-        /// </summary>
-        public double TotRCedole
-        {
-            get { return GetValue(() => TotRCedole); }
-            private set { SetValue(() => TotRCedole, value); }
-        }
-        /// <summary>
-        /// Memorizzo il valore degli utili per Rubiu
-        /// </summary>
-        public double TotRUtili
-        {
-            get { return GetValue(() => TotRUtili); }
-            private set { SetValue(() => TotRUtili, value); }
-        }
-        /// <summary>
-        /// Memorizzo il valore della disponibilità per Rubiu
-        /// </summary>
-        public double TotRDisponibili
-        {
-            get { return GetValue(() => TotRDisponibili); }
-            private set { SetValue(() => TotRDisponibili, value); }
+            get { return GetValue(() => SintesiSoldiR); }
+            private set { SetValue(() => SintesiSoldiR, value); }
         }
         #endregion
 
@@ -220,6 +178,7 @@ namespace FinanceManager.ViewModels
                     "Gestione Quote", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
+            // inserire anche la verifica di disponibilità della cifra nel caso di giroconto e di prelievo
             return true;
         }
 
@@ -270,6 +229,10 @@ namespace FinanceManager.ViewModels
                         // estraggo tutti i record con codice "giroconto"
                         ListContoCorrente = _managerLiquidServices.GetContoCorrenteByMovement(12);
                     }
+                    else
+                    {
+                        ListContoCorrente = _managerLiquidServices.GetContoCorrenteByMovement(12);
+                    }
                 }
             }
         }
@@ -297,10 +260,12 @@ namespace FinanceManager.ViewModels
                         if (ActualQuote.IdQuote > 0)
                         {
                             _managerLiquidServices.UpdateQuoteTab(ActualQuote);
+                            ListQuote = _managerLiquidServices.GetQuote();
                         }
                         else
                         {
                             _managerLiquidServices.InsertInvestment(ActualQuote);
+                            ListQuote = _managerLiquidServices.GetQuote();
                         }
                         QuoteTabPrevious = new QuoteTab();
                     }
@@ -325,6 +290,11 @@ namespace FinanceManager.ViewModels
                             cc.Id_Conto = RegistryLocation.IdLocation;
                             cc.Desc_Conto = RegistryLocation.DescLocation;
                             _managerLiquidServices.InsertAccountMovement(cc);                               // aggiungo il record al db
+                            ListQuote = _managerLiquidServices.GetQuote();
+                            ListTabQuote = _managerLiquidServices.GetQuoteTab();
+                            SintesiSoldiR = _managerLiquidServices.GetCurrencyAvailable(1);
+                            SintesiSoldiDF = _managerLiquidServices.GetCurrencyAvailable(2);
+                            ListContoCorrente = _managerLiquidServices.GetContoCorrenteByMovement(12);
                         }
                         else
                         {
@@ -348,6 +318,11 @@ namespace FinanceManager.ViewModels
                                 cc.Id_Conto = RegistryLocation.IdLocation;
                                 cc.Desc_Conto = RegistryLocation.DescLocation;
                                 _managerLiquidServices.UpdateContoCorrenteByIdQuote(cc);         // aggiorno i dati nel db
+                                ListQuote = _managerLiquidServices.GetQuote();
+                                ListTabQuote = _managerLiquidServices.GetQuoteTab();
+                                SintesiSoldiR = _managerLiquidServices.GetCurrencyAvailable(1);
+                                SintesiSoldiDF = _managerLiquidServices.GetCurrencyAvailable(2);
+                                ListContoCorrente = _managerLiquidServices.GetContoCorrenteByMovement(12);
                             }
                         }
                         else
@@ -355,7 +330,7 @@ namespace FinanceManager.ViewModels
                             ActualQuote = QuoteTabPrevious;         // Riporta i dati com'erano
                         }
                     }
-                    UpdateCollection();     // Aggiorno tutte le griglie di dati
+                    //UpdateCollection();     // Aggiorno tutte le griglie di dati
                 }
             }
             catch (Exception err)

@@ -85,46 +85,36 @@ namespace FinanceManager.Services
         }
 
         /// <summary>
-        /// Estrae tutti il valore disponibile sulla base dei parametri dati
+        /// Estrae tutti i valori di cedole, utili e disponibilità 
+        /// sulla base della gestione richiesta
         /// </summary>
-        /// <param name="IdOwner">La gestione</param>
-        /// <param name="IdLocation">Il conto</param>
-        /// <param name="IdCurrency">La valuta</param>
-        /// <returns>Tabella con 2 record: il totale disponibile e quello messo da parte</returns>
-        public double GetCurrencyAvailable(int IdOwner, int IdLocation, int IdCurrency, int[] IdMovementType)
+        /// <param name="IdGestione">La gestione</param>
+        /// <returns>Observable collection </returns>
+        public SintesiSoldiList GetCurrencyAvailable(int IdGestione)
         {
             try
             {
-                string Script = ManagerScripts.GetCurrencyAvailable;
-                if (IdLocation == 0 && IdMovementType.Count() == 1)
-                {
-                    Script += string.Format(ManagerScripts.SrchGestione, IdOwner + " AND ");
-                    Script += string.Format(ManagerScripts.SrchCurrency, IdCurrency + " AND ");
-                    Script += string.Format(ManagerScripts.SrchMovementType, IdMovementType[0]);
-                }
-                else if (IdLocation == 0 && IdMovementType.Count() > 1)
-                {
-                    Script += string.Format(ManagerScripts.SrchGestione, IdOwner + " AND ");
-                    Script += string.Format(ManagerScripts.SrchCurrency, IdCurrency + " AND ");
-                    foreach (int id in IdMovementType)
-                    {
-                        Script += string.Format(ManagerScripts.NotMovementType, id + " AND ");
-                    }
-                    Script = Script.Remove(Script.Count() - 5, 5);
-                }
-
                 DataTable DT = new DataTable();
                 using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
                 {
                     dbAdapter.SelectCommand = new MySqlCommand();
-                    dbAdapter.SelectCommand.CommandType = System.Data.CommandType.Text;
-                    dbAdapter.SelectCommand.CommandText = Script;
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetCurrencyAvailable;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", IdGestione);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     dbAdapter.Fill(DT);
-                    if (((DataRow)DT.Rows[0]).ItemArray[0].ToString() != "")
-                        return Convert.ToDouble(((DataRow)DT.Rows[0]).ItemArray[0]);
-                    else
-                        return 0;
+                    SintesiSoldiList sintesiSoldis = new SintesiSoldiList();
+                    foreach (DataRow dataRow in DT.Rows)
+                    {
+                        SintesiSoldi sintesiSoldi = new SintesiSoldi();
+                        sintesiSoldi.DescCont = dataRow.Field<string>("desc_conto");
+                        sintesiSoldi.CodValuta = dataRow.Field<string>("cod_valuta");
+                        sintesiSoldi.Cedole = dataRow.Field<double>("Cedole");
+                        sintesiSoldi.Utili = dataRow.Field<double>("Utili");
+                        sintesiSoldi.Disponibili = dataRow.Field<double>("Disponibili");
+                        sintesiSoldis.Add(sintesiSoldi);
+                    }
+                    return sintesiSoldis;
                 }
             }
             catch (MySqlException err)

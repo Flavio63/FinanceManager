@@ -40,8 +40,6 @@ namespace FinanceManager.ViewModels
         RegistryMovementTypeViewModel registryMovementTypeViewModel;
         RegistryMovementTypeView registryMovementTypeView;
 
-        ManagerPortfolioMovementViewModel managerPortfolioMovementViewModel;
-        ManagerPortfolioMovementView managerPortfolioMovementView;
         ManagerPortfolioSharesMovementViewModel managerPortfolioSharesMovementViewModel;
         ManagerPortfolioSharesMovementView managerPortfolioSharesMovementView;
         ManagerReportsViewModel managerReportsViewModel;
@@ -49,6 +47,8 @@ namespace FinanceManager.ViewModels
 
         GestioneQuoteInvestitoriViewModel gestioneQuoteInvestitoriViewModel;
         GestioneQuoteInvestitoriView gestioneQuoteInvestitoriView;
+        AcquistoVenditaTitoliViewModel acquistoVenditaTitoliViewModel;
+        AcquistoVenditaTitoliView acquistoVenditaTitoliView;
         #endregion
 
         public MainWindowViewModel()
@@ -195,17 +195,17 @@ namespace FinanceManager.ViewModels
         private void PortafoglioTitoli(object param)
         {
             DockPanel mainGrid = param as DockPanel;
-            if (managerPortfolioMovementView == null || !mainGrid.Children.Contains(managerPortfolioMovementView))
+            if (acquistoVenditaTitoliView == null || !mainGrid.Children.Contains(acquistoVenditaTitoliView))
             {
-                managerPortfolioMovementViewModel = new ManagerPortfolioMovementViewModel(_registryServices, _managerLiquidServices);
-                managerPortfolioMovementView = new ManagerPortfolioMovementView(managerPortfolioMovementViewModel);
-                mainGrid.Children.Add(managerPortfolioMovementView);
+                acquistoVenditaTitoliViewModel = new AcquistoVenditaTitoliViewModel(_registryServices, _managerLiquidServices);
+                acquistoVenditaTitoliView = new AcquistoVenditaTitoliView(acquistoVenditaTitoliViewModel);
+                mainGrid.Children.Add(acquistoVenditaTitoliView);
             }
             else
             {
-                mainGrid.Children.Remove(managerPortfolioMovementView);
-                managerPortfolioMovementView = null;
-                managerPortfolioMovementViewModel = null;
+                mainGrid.Children.Remove(acquistoVenditaTitoliView);
+                acquistoVenditaTitoliView = null;
+                acquistoVenditaTitoliViewModel = null;
             }
         }
 

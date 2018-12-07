@@ -212,8 +212,8 @@ namespace FinanceManager.ViewModels
                     ContiScelti.Add(_services.GetLocation(Convert.ToInt16(menuSubItem.Name.Substring(menuSubItem.Name.IndexOf("_") + 1))));
                     if (TipoMovimentoScelto.Id_tipo_movimento == 5 || TipoMovimentoScelto.Id_tipo_movimento == 6)
                     {
-                        acquistoVenditaTitoliViewModel =
-                          new AcquistoVenditaTitoliViewModel(_services, _liquidAssetServices, GestioniScelte, ContiScelti, TipoMovimentoScelto);
+                        //acquistoVenditaTitoliViewModel =
+                        //  new AcquistoVenditaTitoliViewModel(_services, _liquidAssetServices, GestioniScelte, ContiScelti, TipoMovimentoScelto);
                         acquistoVenditaTitoliView = new AcquistoVenditaTitoliView(acquistoVenditaTitoliViewModel);
                         mainGrid.Children.Add(acquistoVenditaTitoliView);
                         mainGrid.Visibility = Visibility.Visible;

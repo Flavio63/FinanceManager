@@ -13,12 +13,15 @@ namespace FinanceManager.Services.SQL
         public static readonly string SrchMovementType = " id_tipo_movimento = {0} ";
         public static readonly string NotMovementType = " id_tipo_movimento <> {0} ";
         /// <summary>
-        /// Verifica la disponibilità di liquidità per la gestione,
-        /// per il conto (location) e per la valuta selezionate
+        /// Data una gestione estrae il totale cedole, utili e disponibilità
+        /// per c/c e per valuta
         /// </summary>
-        public static readonly string GetCurrencyAvailable = "SELECT SUM(ammontare) as disponibile FROM conto_corrente WHERE ";
-        //"WHERE id_tipo_movimento <> 4 and id_tipo_movimento <> 15 and " +
-        //"id_gestione = @id_gestione AND id_conto = @id_conto AND id_valuta = @id_valuta ";
+        public static readonly string GetCurrencyAvailable = "SELECT C.desc_conto, B.cod_valuta, " +
+            "ROUND(SUM(CASE WHEN id_tipo_movimento = 4 THEN ammontare ELSE 0 END), 2) AS Cedole, " +
+            "ROUND(SUM(CASE WHEN id_tipo_movimento = 15 THEN ammontare ELSE 0 END), 2) AS Utili, " +
+            "ROUND(SUM(CASE WHEN id_tipo_movimento <> 4 AND id_tipo_movimento <> 15 THEN ammontare ELSE 0 END), 2) AS Disponibili " +
+            "FROM conto_corrente A, valuta B, conti C WHERE A.id_conto = C.id_conto and A.id_valuta = B.id_valuta and A.id_gestione = @id_gestione " +
+            "GROUP BY A.id_conto, A.id_valuta ";
 
         /// <summary>
         /// Data una gestione estrae tutti i record
