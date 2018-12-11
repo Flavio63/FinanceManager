@@ -16,7 +16,7 @@ namespace FinanceManager.Services
         /// Aggiunge un movimento
         /// </summary>
         /// <param name="managerLiquidAsset">Il movimento da aggiungere</param>
-        public void AddManagerLiquidAsset(ManagerLiquidAsset managerLiquidAsset)
+        public void AddManagerLiquidAsset(PortafoglioTitoli managerLiquidAsset)
         {
             try
             {
@@ -132,7 +132,7 @@ namespace FinanceManager.Services
         /// </summary>
         /// <param name="idOwner">La gestione</param>
         /// <returns>Lista dei movimenti</returns>
-        public ManagerLiquidAssetList GetManagerLiquidAssetListByOwnerAndLocation(int idOwner, int idLocation)
+        public PortafoglioTitoliList GetManagerLiquidAssetListByOwnerAndLocation(int idOwner, int idLocation)
         {
             try
             {
@@ -167,7 +167,7 @@ namespace FinanceManager.Services
         /// <param name="IdLocation">Il conto</param>
         /// <param name="IdsMovement">I tipi di movimenti</param>
         /// <returns>Una lista dei movimenti</returns>
-        public ManagerLiquidAssetList GetManagerLiquidAssetListByOwnerLocationAndMovementType(int IdOwner, int IdLocation, int[] IdsMovement)
+        public PortafoglioTitoliList GetManagerLiquidAssetListByOwnerLocationAndMovementType(int IdOwner, int IdLocation, int[] IdsMovement)
         {
             try
             {
@@ -204,7 +204,7 @@ namespace FinanceManager.Services
             }
         }
 
-        public ManagerLiquidAsset GetLastShareMovementByOwnerAndLocation(int IdOwner, int IdLocation)
+        public PortafoglioTitoli GetLastShareMovementByOwnerAndLocation(int IdOwner, int IdLocation)
         {
             try
             {
@@ -238,7 +238,7 @@ namespace FinanceManager.Services
         /// <param name="IdOwner">La gestione</param>
         /// <param name="IdLocation">Il conto</param>
         /// <returns>Lista di movimenti</returns>
-        public ManagerLiquidAssetList GetManagerSharesMovementByOwnerAndLocation(int IdOwner, int IdLocation)
+        public PortafoglioTitoliList GetManagerSharesMovementByOwnerAndLocation(int IdOwner, int IdLocation)
         {
             try
             {
@@ -334,7 +334,7 @@ namespace FinanceManager.Services
         /// Aggiorna i campi di un movimento
         /// </summary>
         /// <param name="managerLiquidAsset">Il record da modificare</param>
-        public void UpdateManagerLiquidAsset(ManagerLiquidAsset managerLiquidAsset)
+        public void UpdateManagerLiquidAsset(PortafoglioTitoli managerLiquidAsset)
         {
             try
             {
@@ -359,7 +359,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("profit_loss", managerLiquidAsset.ProfitLoss);
                     dbComm.Parameters.AddWithValue("disponibile", managerLiquidAsset.Available);
                     dbComm.Parameters.AddWithValue("note", managerLiquidAsset.Note);
-                    dbComm.Parameters.AddWithValue("id_portafoglio", managerLiquidAsset.Id_portafoglio);
+                    dbComm.Parameters.AddWithValue("id_portafoglio_titoli", managerLiquidAsset.Id_portafoglio);
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -376,7 +376,7 @@ namespace FinanceManager.Services
             }
         }
 
-        public ManagerLiquidAssetList GetShareMovements(int IdOwner, int IdLocation, uint IdShare)
+        public PortafoglioTitoliList GetShareMovements(int IdOwner, int IdLocation, uint IdShare)
         {
             try
             {
@@ -404,9 +404,9 @@ namespace FinanceManager.Services
             }
         }
 
-        private ManagerLiquidAssetList MLAL(DataTable dt)
+        private PortafoglioTitoliList MLAL(DataTable dt)
         {
-            ManagerLiquidAssetList MLAL = new ManagerLiquidAssetList();
+            PortafoglioTitoliList MLAL = new PortafoglioTitoliList();
             foreach (DataRow dr in dt.Rows)
             {
                 MLAL.Add(MLA(dr));
@@ -414,9 +414,9 @@ namespace FinanceManager.Services
             return MLAL;
         }
 
-        private ManagerLiquidAsset MLA(DataRow dr)
+        private PortafoglioTitoli MLA(DataRow dr)
         {
-            ManagerLiquidAsset MLA = new ManagerLiquidAsset();
+            PortafoglioTitoli MLA = new PortafoglioTitoli();
             MLA.Id_portafoglio = (int)dr.Field<uint>("id_portafoglio_titoli");
             MLA.Id_gestione = (int)dr.Field<uint>("id_gestione");
             MLA.Nome_Gestione = dr.Field<string>("nome_gestione");
@@ -901,6 +901,67 @@ namespace FinanceManager.Services
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.ManagerScripts.DeleteAccount;
                     dbComm.Parameters.AddWithValue("id_fineco_euro", idCC);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        public void DeleteContoCorrenteByIdPortafoglioTitoli(int idContoTitoli)
+        {
+            try
+            {
+                using(MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = ManagerScripts.DeleteContoCorrenteByIdPortafoglioTitoli;
+                    dbComm.Parameters.AddWithValue("id_portafoglio_titoli", idContoTitoli);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch(MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        public void UpdateContoCorrenteByIdPortafoglioTitoli(ContoCorrente contoCorrente)
+        {
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.ManagerScripts.UpdateContoCorrenteByIdPortafoglioTitoli;
+                    dbComm.Parameters.AddWithValue("id_fineco_euro", contoCorrente.Id_RowConto);
+                    dbComm.Parameters.AddWithValue("id_conto", contoCorrente.Id_Conto);
+                    dbComm.Parameters.AddWithValue("id_quote_investimenti", contoCorrente.Id_Quote_Investimenti);
+                    dbComm.Parameters.AddWithValue("id_valuta", contoCorrente.Id_Valuta);
+                    dbComm.Parameters.AddWithValue("id_portafoglio_titoli", contoCorrente.Id_Portafoglio_Titoli);
+                    dbComm.Parameters.AddWithValue("id_tipo_movimento", contoCorrente.Id_tipo_movimento);
+                    dbComm.Parameters.AddWithValue("id_gestione", contoCorrente.Id_Gestione);
+                    dbComm.Parameters.AddWithValue("id_titolo", contoCorrente.Id_Titolo);
+                    dbComm.Parameters.AddWithValue("data_movimento", contoCorrente.DataMovimento.ToString("yyyy-MM-dd"));
+                    dbComm.Parameters.AddWithValue("ammontare", contoCorrente.Ammontare);
+                    dbComm.Parameters.AddWithValue("cambio", contoCorrente.Valore_Cambio);
+                    dbComm.Parameters.AddWithValue("causale", contoCorrente.Causale);
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();

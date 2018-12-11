@@ -5,16 +5,16 @@ namespace FinanceManager.Services
 {
     public interface IManagerLiquidAssetServices
     {
-        ManagerLiquidAssetList GetManagerLiquidAssetListByOwnerAndLocation(int IdOwner, int idLocation);
-        ManagerLiquidAssetList GetManagerLiquidAssetListByOwnerLocationAndMovementType(int IdOwner, int IdLocation, int[] IdMovement);
-        ManagerLiquidAssetList GetManagerSharesMovementByOwnerAndLocation(int IdOwner, int IdLocation);
-        ManagerLiquidAsset GetLastShareMovementByOwnerAndLocation(int IdOwner, int IdLocation);
+        PortafoglioTitoliList GetManagerLiquidAssetListByOwnerAndLocation(int IdOwner, int idLocation);
+        PortafoglioTitoliList GetManagerLiquidAssetListByOwnerLocationAndMovementType(int IdOwner, int IdLocation, int[] IdMovement);
+        PortafoglioTitoliList GetManagerSharesMovementByOwnerAndLocation(int IdOwner, int IdLocation);
+        PortafoglioTitoli GetLastShareMovementByOwnerAndLocation(int IdOwner, int IdLocation);
         SintesiSoldiList GetCurrencyAvailable(int IdGestione);
-        ManagerLiquidAssetList GetShareMovements(int IdOwner, int IdLocation, uint IdShare);
+        PortafoglioTitoliList GetShareMovements(int IdOwner, int IdLocation, uint IdShare);
         double GetSharesQuantity(int IdOwner, int IdLocation, uint idShare);
         double GetProfitLossByCurrency(int IdOwner, int IdLocation, int IdCurrency);
-        void AddManagerLiquidAsset(ManagerLiquidAsset managerLiquidAsset);
-        void UpdateManagerLiquidAsset(ManagerLiquidAsset managerLiquidAsset);
+        void AddManagerLiquidAsset(PortafoglioTitoli managerLiquidAsset);
+        void UpdateManagerLiquidAsset(PortafoglioTitoli managerLiquidAsset);
         void DeleteManagerLiquidAsset(int id);
 
         QuoteList GetQuote();   // Calcolo le quote per investitore
@@ -31,7 +31,9 @@ namespace FinanceManager.Services
         ContoCorrenteList GetContoCorrenteList();                       // Prendo tutti i record della tabella ContoCorrente
         ContoCorrenteList GetContoCorrenteByIdQuote(int idQuote);       // Il movimento del conto legato al giroconto selezionato
         ContoCorrenteList GetContoCorrenteByMovement(int idMovimento);  // Tutti i movimenti di giroconto
-        void UpdateContoCorrenteByIdQuote(ContoCorrente contoCorrente);          // Aggiorno i movimenti della tabella ContoCorrente
-        void DeleteAccount(int idCC);                                            // Elimino il movimento dalla tabella ContoCorrente
+        void UpdateContoCorrenteByIdQuote(ContoCorrente contoCorrente);             // Aggiorno i movimenti della tabella ContoCorrente
+        void UpdateContoCorrenteByIdPortafoglioTitoli(ContoCorrente contoCorrente); // Aggiorno il movimento della tabella ContoCorrente sulla base del conto titoli
+        void DeleteContoCorrenteByIdPortafoglioTitoli(int idContoTitoli);           // Elimino il movimento dalla tabella ContoCorrente sulla base del conto titoli
+        void DeleteAccount(int idCC);                                               // Elimino il movimento dalla tabella ContoCorrente
     }
 }

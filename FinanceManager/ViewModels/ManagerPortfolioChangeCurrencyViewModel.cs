@@ -48,7 +48,7 @@ namespace FinanceManager.ViewModels
                 CurrencyListFrom = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
                 CurrencyListTo = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
                 SharesList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
-                RowLiquidAsset = new ManagerLiquidAsset();
+                RowLiquidAsset = new PortafoglioTitoli();
                 IsLiquiditySaved = true;
                 AmountChangedValue = 0;
                 RowLiquidAsset.Data_Movimento = DateTime.Now;
@@ -85,7 +85,7 @@ namespace FinanceManager.ViewModels
                 RegistryShare RS = e.AddedItems[0] as RegistryShare;
                 DateTime DT = DateTime.Now;
                 ComboBoxItem CBI = e.AddedItems[0] as ComboBoxItem;
-                ManagerLiquidAsset MLA = e.AddedItems[0] as ManagerLiquidAsset;
+                PortafoglioTitoli MLA = e.AddedItems[0] as PortafoglioTitoli;
 
                 bool dTime = false;
                 try
@@ -108,7 +108,7 @@ namespace FinanceManager.ViewModels
                 {
                     RowLiquidAsset.Id_conto = RL.IdLocation;
                     RowLiquidAsset.Desc_conto = RL.DescLocation;
-                    LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.Id_gestione, RL.IdLocation, enabledMovement));
+                    LiquidAssetList = new ObservableCollection<PortafoglioTitoli>(_liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.Id_gestione, RL.IdLocation, enabledMovement));
                     EnableControl.EnableControlInGrid(CB.Parent as Grid, "cbMovement", true);
                 }
                 if (RMT != null)
@@ -227,7 +227,7 @@ namespace FinanceManager.ViewModels
 
         #region Models
 
-        public ManagerLiquidAsset RowLiquidAsset
+        public PortafoglioTitoli RowLiquidAsset
         {
             get { return GetValue(() => RowLiquidAsset); }
             set { SetValue(() => RowLiquidAsset, value); }
@@ -291,7 +291,7 @@ namespace FinanceManager.ViewModels
             set { SetValue(() => SharesList, value); }
         }
 
-        public ObservableCollection<ManagerLiquidAsset> LiquidAssetList
+        public ObservableCollection<PortafoglioTitoli> LiquidAssetList
         {
             get { return GetValue(() => LiquidAssetList); }
             set
@@ -336,7 +336,7 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                ManagerLiquidAsset MLA = new ManagerLiquidAsset();
+                PortafoglioTitoli MLA = new PortafoglioTitoli();
                 MLA = RowLiquidAsset;
                 MLA.Id_titolo = 0;
                 MLA.Importo_totale = RowLiquidAsset.Importo_totale * -1;
@@ -350,7 +350,7 @@ namespace FinanceManager.ViewModels
                 MLA.Note = "(da " + RowLiquidAsset.Cod_valuta + " con cambio di " + RowLiquidAsset.Valore_di_cambio + ")";
                 _liquidAssetServices.AddManagerLiquidAsset(MLA);
 
-                LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(
+                LiquidAssetList = new ObservableCollection<PortafoglioTitoli>(
                     _liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto, enabledMovement));
                 SetUpViewModel();
                 MessageBox.Show("Record caricato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
@@ -367,7 +367,7 @@ namespace FinanceManager.ViewModels
             try
             {
                 _liquidAssetServices.UpdateManagerLiquidAsset(RowLiquidAsset);
-                LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(
+                LiquidAssetList = new ObservableCollection<PortafoglioTitoli>(
                     _liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto, enabledMovement));
                 SetUpViewModel();
                 MessageBox.Show("Record modificato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
@@ -384,7 +384,7 @@ namespace FinanceManager.ViewModels
             try
             {
                 _liquidAssetServices.DeleteManagerLiquidAsset(RowLiquidAsset.Id_portafoglio);
-                LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>(
+                LiquidAssetList = new ObservableCollection<PortafoglioTitoli>(
                     _liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndMovementType(RowLiquidAsset.Id_gestione, RowLiquidAsset.Id_conto, enabledMovement));
                 SetUpViewModel();
                 MessageBox.Show("Record eliminato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
@@ -428,14 +428,14 @@ namespace FinanceManager.ViewModels
                 if (button.Name == "btnClearAll")
                 {
                     SetUpViewModel();
-                    LiquidAssetList = new ObservableCollection<ManagerLiquidAsset>();
+                    LiquidAssetList = new ObservableCollection<PortafoglioTitoli>();
                     SelectedOwner = "";
                     CanInsert = false;
                     CanUpdateDelete = false;
                 }
                 else
                 {
-                    ManagerLiquidAsset MLA = new ManagerLiquidAsset();
+                    PortafoglioTitoli MLA = new PortafoglioTitoli();
                     MLA = RowLiquidAsset;
                     SetUpViewModel();
                     StackPanel sp = button.Parent as StackPanel;

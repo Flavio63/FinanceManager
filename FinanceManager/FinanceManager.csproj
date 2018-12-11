@@ -135,8 +135,8 @@
     <Compile Include="Models\ContoCorrenteList.cs" />
     <Compile Include="Models\Investitore.cs" />
     <Compile Include="Models\InvestitoreList.cs" />
-    <Compile Include="Models\ManagerLiquidAsset.cs" />
-    <Compile Include="Models\ManagerLiquidAssetList.cs" />
+    <Compile Include="Models\PortafoglioTitoli.cs" />
+    <Compile Include="Models\PortafoglioTitoliList.cs" />
     <Compile Include="Models\Quote.cs" />
     <Compile Include="Models\QuoteList.cs" />
     <Compile Include="Models\QuoteTab.cs" />
@@ -169,7 +169,6 @@
     <Compile Include="Services\SQL\RegistryScripts.cs" />
     <Compile Include="ViewModels\AcquistoVenditaTitoliViewModel.cs" />
     <Compile Include="ViewModels\GestioneQuoteInvestitoriViewModel.cs" />
-    <Compile Include="ViewModels\MainFormManagerViewModel.cs" />
     <Compile Include="ViewModels\ManagerPortfolioChangeCurrencyViewModel.cs" />
     <Compile Include="ViewModels\ManagerPortfolioMovementViewModel.cs" />
     <Compile Include="ViewModels\ManagerPortfolioSharesMovementViewModel.cs" />
@@ -187,9 +186,6 @@
     </Compile>
     <Compile Include="Views\GestioneQuoteInvestitoriView.xaml.cs">
       <DependentUpon>GestioneQuoteInvestitoriView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MainFormManagerView.xaml.cs">
-      <DependentUpon>MainFormManagerView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ManagerPortfolioChangeCurrencyView.xaml.cs">
       <DependentUpon>ManagerPortfolioChangeCurrencyView.xaml</DependentUpon>
@@ -258,10 +254,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\GestioneQuoteInvestitoriView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\MainFormManagerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

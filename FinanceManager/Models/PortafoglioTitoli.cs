@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FinanceManager.Models
 {
-    public class ManagerLiquidAsset : ViewModelBase
+    public class PortafoglioTitoli : ViewModelBase
     {
         private DateTime _MovementDate;
 

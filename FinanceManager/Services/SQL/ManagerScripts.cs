@@ -139,6 +139,10 @@ namespace FinanceManager.Services.SQL
             "id_tipo_movimento = @id_tipo_movimento, id_gestione = @id_gestione, id_titolo = @id_titolo, data_movimento = @data_movimento, ammontare = @ammontare, " +
             "cambio = @cambio, causale = @causale WHERE id_quote_investimenti = @id_quote_investimenti";
 
+        public static readonly string UpdateContoCorrenteByIdPortafoglioTitoli = "UPDATE conto_corrente SET id_conto = @id_conto, id_valuta = @id_valuta, id_quote_investimenti = @id_quote_investimenti, " +
+            "id_tipo_movimento = @id_tipo_movimento, id_gestione = @id_gestione, id_titolo = @id_titolo, data_movimento = @data_movimento, ammontare = @ammontare, " +
+            "cambio = @cambio, causale = @causale WHERE id_portafoglio_titoli = @id_portafoglio_titoli";
+
         public static readonly string DeleteAccount = "DELETE FROM conto_corrente WHERE id_fineco_euro = @id_fineco_euro";
 
         /// <summary>
@@ -182,5 +186,10 @@ namespace FinanceManager.Services.SQL
         /// Elimina un record nella tabella quote_investimenti
         /// </summary>
         public static readonly string DeleteRecordQuoteTab = "DELETE FROM quote_investimenti WHERE id_quote_inv = @id_quote_inv";
+
+        /// <summary>
+        /// Elimina un record dalla tabella conto_corrente sulla base di una eliminazione fatta sul portafoglio titoli
+        /// </summary>
+        public static readonly string DeleteContoCorrenteByIdPortafoglioTitoli = "DELETE FROM conto_corrente WHERE id_portafoglio_titoli = @id_portafoglio_titoli";
     }
 }

@@ -2,7 +2,7 @@
 
 namespace FinanceManager.Models
 {
-    public class ManagerLiquidAssetList : ObservableCollection<ManagerLiquidAsset>
+    public class PortafoglioTitoliList : ObservableCollection<PortafoglioTitoli>
     {
     }
 }
