@@ -148,11 +148,16 @@ namespace FinanceManager.Services.SQL
         /// <summary>
         /// calcola le quote per investitore
         /// </summary>
-        public static readonly string GetQuote = "SELECT Investitori.Nome, ROUND(SUM(CASE WHEN id_tipo_movimento = 1 OR id_tipo_movimento = 2 THEN ammontare ELSE 0 END), 2) AS investito, " +
-            "ROUND(SUM(CASE WHEN id_tipo_movimento = 1 OR id_tipo_movimento = 2 THEN ammontare ELSE 0 END) / totale * 100, 2) AS quota, totale, ROUND(SUM(ammontare), 2) AS disponibili, " +
-            "tot_disponibile FROM (SELECT ROUND(SUM(CASE WHEN id_tipo_movimento = 1 OR id_tipo_movimento = 2 THEN ammontare ELSE 0 END), 2) AS totale, ROUND(SUM(ammontare), 2) AS tot_disponibile " +
-            "FROM quote_investimenti) A, quote_investimenti, Investitori WHERE quote_investimenti.id_investitore = Investitori.id_investitore AND quote_investimenti.id_quote_inv > 0 " +
-            "GROUP BY quote_investimenti.id_investitore ";
+        public static readonly string GetQuote = "SELECT CC.Nome, ROUND(SUM(CASE WHEN id_tipo_movimento = 1 OR id_tipo_movimento = 2 THEN ammontare ELSE 0 END), 2) AS investito, " +
+            "round(sum(case when id_tipo_movimento = 1 or id_tipo_movimento = 2 then ammontare else 0 end) / totale * 100, 2) as quota, totale, " +
+            "round(sum(case when id_tipo_movimento <> 4 and id_tipo_movimento <> 15 then ammontare else 0 end), 2) as disponibili, tot_disponibile, " +
+            "round(sum(case when id_tipo_movimento = 4 or id_tipo_movimento = 15 then ammontare else 0 end), 2) as guadagno,  " +
+            "round(sum(case when id_tipo_movimento = 4 or id_tipo_movimento = 15 then ammontare else 0 end) / guadagno_totale * 100, 2) as quota_guadagno, guadagno_totale, cedole, utili " +
+            "from ( SELECT round(sum(case when id_tipo_movimento = 1 or id_tipo_movimento = 2 then ammontare else 0 end), 2) as totale, " +
+            "round(sum(case when id_tipo_movimento <> 4 and id_tipo_movimento <> 15 then ammontare else 0 end), 2) as tot_disponibile, " +
+            "round(sum(case when id_tipo_movimento = 4 then ammontare else 0 end), 2) as cedole, round(sum(case when id_tipo_movimento = 15 then ammontare else 0 end), 2) as utili, " +
+            "round(sum(case when id_tipo_movimento = 4 or id_tipo_movimento = 15 then ammontare else 0 end), 2) as guadagno_totale " +
+            "from quote_investimenti ) A, quote_investimenti BB, Investitori CC where BB.id_investitore = CC.id_investitore and id_tipo_movimento > 0 and BB.id_quote_inv > 0 group by BB.id_investitore ";
 
         /// <summary>
         /// esporta tutti gli investitori

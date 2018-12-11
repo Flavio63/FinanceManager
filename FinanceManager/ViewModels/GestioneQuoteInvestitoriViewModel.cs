@@ -29,7 +29,7 @@ namespace FinanceManager.ViewModels
         private void Init()
         {
             CloseMeCommand = new CommandHandler(CloseMe);
-            ListQuote = new QuoteList();
+            //ListQuote = new QuoteList();
             ListTabQuote = new QuoteTabList();
             ListInvestitore = new InvestitoreList();
             ListMovementType = new RegistryMovementTypeList();
@@ -39,7 +39,11 @@ namespace FinanceManager.ViewModels
             RegistryMovementTypeList listaOriginale = new RegistryMovementTypeList();
             listaOriginale = _registryServices.GetRegistryMovementTypesList();
             var RMTL = from movimento in listaOriginale
-                       where (movimento.Id_tipo_movimento == 1 || movimento.Id_tipo_movimento == 2 || movimento.Id_tipo_movimento == 12)
+                       where (movimento.Id_tipo_movimento == 1 || 
+                       movimento.Id_tipo_movimento == 2 || 
+                       movimento.Id_tipo_movimento == 12 ||
+                       movimento.Id_tipo_movimento == 4 ||
+                       movimento.Id_tipo_movimento == 15)
                        select movimento;
             foreach (RegistryMovementType registry in RMTL)
                 ListMovementType.Add(registry);
@@ -74,7 +78,40 @@ namespace FinanceManager.ViewModels
         public QuoteList ListQuote
         {
             get { return GetValue(() => ListQuote); }
-            set { SetValue(() => ListQuote, value); }
+            set
+            {
+                SetValue(() => ListQuote, value);
+                Totale = value[0].Totale;
+                TotDisponibile = value[0].TotDisponibile;
+                GuadagnoTotale = value[0].GuadagnoTotale;
+                Cedole = value[0].Cedole;
+                Utili = value[0].Utili;
+            }
+        }
+        public double Totale
+        {
+            get { return GetValue(() => Totale); }
+            private set { SetValue(() => Totale, value); }
+        }
+        public double TotDisponibile
+        {
+            get { return GetValue(() => TotDisponibile); }
+            private set { SetValue(() => TotDisponibile, value); }
+        }
+        public double GuadagnoTotale
+        {
+            get { return GetValue(() => GuadagnoTotale); }
+            private set { SetValue(() => GuadagnoTotale, value); }
+        }
+        public double Cedole
+        {
+            get { return GetValue(() => Cedole); }
+            private set { SetValue(() => Cedole, value); }
+        }
+        public double Utili
+        {
+            get { return GetValue(() => Utili); }
+            private set { SetValue(() => Utili, value); }
         }
         /// <summary>
         /// Aggiorna la tabella degli investitori
@@ -330,7 +367,6 @@ namespace FinanceManager.ViewModels
                             ActualQuote = QuoteTabPrevious;         // Riporta i dati com'erano
                         }
                     }
-                    //UpdateCollection();     // Aggiorno tutte le griglie di dati
                 }
             }
             catch (Exception err)

@@ -541,6 +541,11 @@ namespace FinanceManager.Services
                         quote.Totale = dataRow.Field<double>("totale");
                         quote.Disponibili = dataRow.Field<double>("disponibili");
                         quote.TotDisponibile = dataRow.Field<double>("tot_disponibile");
+                        quote.Guadagno = dataRow.Field<double>("guadagno");
+                        quote.QuotaGuadagno = dataRow.Field<double>("quota_guadagno");
+                        quote.GuadagnoTotale = dataRow.Field<double>("guadagno_totale");
+                        quote.Cedole = dataRow.Field<double>("cedole");
+                        quote.Utili = dataRow.Field<double>("utili");
                         quotes.Add(quote);
                     }
                     return quotes;
