@@ -542,7 +542,7 @@ namespace FinanceManager.Services
                         quote.Disponibili = dataRow.Field<double>("disponibili");
                         quote.TotDisponibile = dataRow.Field<double>("tot_disponibile");
                         quote.Guadagno = dataRow.Field<double>("guadagno");
-                        quote.QuotaGuadagno = dataRow.Field<double>("quota_guadagno");
+                        quote.QuotaGuadagno = dataRow.ItemArray[7].GetType().Name == "DBNull" ? 0 : Convert.ToDouble(dataRow.ItemArray[7]);
                         quote.GuadagnoTotale = dataRow.Field<double>("guadagno_totale");
                         quote.Cedole = dataRow.Field<double>("cedole");
                         quote.Utili = dataRow.Field<double>("utili");
@@ -926,7 +926,7 @@ namespace FinanceManager.Services
         {
             try
             {
-                using(MySqlCommand dbComm = new MySqlCommand())
+                using (MySqlCommand dbComm = new MySqlCommand())
                 {
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = ManagerScripts.DeleteContoCorrenteByIdPortafoglioTitoli;
@@ -937,7 +937,7 @@ namespace FinanceManager.Services
                     dbComm.Connection.Close();
                 }
             }
-            catch(MySqlException err)
+            catch (MySqlException err)
             {
                 throw new Exception(err.Message);
             }

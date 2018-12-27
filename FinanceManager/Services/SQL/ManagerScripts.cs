@@ -8,18 +8,26 @@ namespace FinanceManager.Services.SQL
 {
     public class ManagerScripts
     {
-        public static readonly string SrchGestione = " id_gestione = {0} ";
-        public static readonly string SrchCurrency = " id_valuta = {0} ";
-        public static readonly string SrchMovementType = " id_tipo_movimento = {0} ";
-        public static readonly string NotMovementType = " id_tipo_movimento <> {0} ";
+        private static readonly string SrchGestione = " id_gestione = {0} ";
+        private static readonly string SrchCurrency = " id_valuta = {0} ";
+        private static readonly string SrchMovementType = " id_tipo_movimento = {0} ";
+        private static readonly string NotMovementType = " id_tipo_movimento <> {0} ";
+
+        private static readonly string OrderByQuoteLimit1 = " ORDER BY id_quote_inv DESC LIMIT 1 ";
+        private static readonly string GetTableQuote = "SELECT id_quote_inv, A.id_investitore, B.Nome, A.id_tipo_movimento, C.desc_movimento, data_movimento, ammontare, note " +
+            "FROM quote_investimenti A, Investitori B, tipo_movimento C WHERE A.id_investitore = B.id_investitore AND A.id_tipo_movimento = C.id_tipo_movimento AND id_quote_inv > 0 ";
+        private static readonly string OrderByData = " ORDER BY data_movimento ";
+        private static readonly string Movimento = " AND A.id_tipo_movimento = @id_tipo_movimento ";
+        private static readonly string Quote = " AND A.id_quote_investimenti = @id_quote_investimenti";
+
         /// <summary>
         /// Data una gestione estrae il totale cedole, utili e disponibilità
         /// per c/c e per valuta
         /// </summary>
         public static readonly string GetCurrencyAvailable = "SELECT C.desc_conto, B.cod_valuta, " +
-            "ROUND(SUM(CASE WHEN id_tipo_movimento = 4 THEN ammontare ELSE 0 END), 2) AS Cedole, " +
-            "ROUND(SUM(CASE WHEN id_tipo_movimento = 15 THEN ammontare ELSE 0 END), 2) AS Utili, " +
-            "ROUND(SUM(CASE WHEN id_tipo_movimento <> 4 AND id_tipo_movimento <> 15 THEN ammontare ELSE 0 END), 2) AS Disponibili " +
+            "ROUND(SUM(CASE WHEN id_tipo_soldi = 4 THEN ammontare ELSE 0 END), 2) AS Cedole, " +
+            "ROUND(SUM(CASE WHEN id_tipo_soldi = 15 THEN ammontare ELSE 0 END), 2) AS Utili, " +
+            "ROUND(SUM(CASE WHEN id_tipo_soldi = 1 THEN ammontare ELSE 0 END), 2) AS Disponibili " +
             "FROM conto_corrente A, valuta B, conti C WHERE A.id_conto = C.id_conto and A.id_valuta = B.id_valuta and A.id_gestione = @id_gestione " +
             "GROUP BY A.id_conto, A.id_valuta ";
 
@@ -126,10 +134,6 @@ namespace FinanceManager.Services.SQL
             "valuta C, tipo_movimento D, gestioni E, titoli F WHERE A.id_conto = B.id_conto AND A.id_valuta = C.id_valuta AND A.id_tipo_movimento = D.id_tipo_movimento AND " +
             "A.id_gestione = E.id_gestione AND A.id_titolo = F.id_titolo AND id_fineco_euro > 0 ";
 
-        protected static readonly string OrderByData = " ORDER BY data_movimento ";
-
-        protected static readonly string Movimento = " AND A.id_tipo_movimento = @id_tipo_movimento ";
-        protected static readonly string Quote = " AND A.id_quote_investimenti = @id_quote_investimenti";
 
         public static readonly string GetContoCorrente = ContoCorrente + OrderByData;
         public static readonly string GetContoCorrenteByIdQuote = ContoCorrente + Quote;
@@ -167,13 +171,12 @@ namespace FinanceManager.Services.SQL
         /// <summary>
         /// Esporta tutti i record della quote prendendo anche le descrizioni
         /// </summary>
-        public static readonly string GetQuoteTab = "SELECT id_quote_inv, A.id_investitore, B.Nome, A.id_tipo_movimento, C.desc_movimento, data_movimento, ammontare, note " +
-            "FROM quote_investimenti A, Investitori B, tipo_movimento C WHERE A.id_investitore = B.id_investitore AND A.id_tipo_movimento = C.id_tipo_movimento AND id_quote_inv > 0 ";
+        public static readonly string GetQuoteTab = GetTableQuote + OrderByData;
 
         /// <summary>
         /// Aggiungo questo pezzo di script alla precendente stringa
         /// </summary>
-        public static readonly string GetLastQuoteTab = GetQuoteTab + " ORDER BY id_quote_inv DESC LIMIT 1 ";
+        public static readonly string GetLastQuoteTab = GetTableQuote + OrderByQuoteLimit1;
 
         /// <summary>
         /// Inserisce un nuovo record nella tabella quote_investimenti

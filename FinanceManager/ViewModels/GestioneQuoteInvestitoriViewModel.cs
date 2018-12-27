@@ -91,27 +91,27 @@ namespace FinanceManager.ViewModels
         public double Totale
         {
             get { return GetValue(() => Totale); }
-            private set { SetValue(() => Totale, value); }
+            set { SetValue(() => Totale, value); }
         }
         public double TotDisponibile
         {
             get { return GetValue(() => TotDisponibile); }
-            private set { SetValue(() => TotDisponibile, value); }
+            set { SetValue(() => TotDisponibile, value); }
         }
         public double GuadagnoTotale
         {
             get { return GetValue(() => GuadagnoTotale); }
-            private set { SetValue(() => GuadagnoTotale, value); }
+            set { SetValue(() => GuadagnoTotale, value); }
         }
         public double Cedole
         {
             get { return GetValue(() => Cedole); }
-            private set { SetValue(() => Cedole, value); }
+            set { SetValue(() => Cedole, value); }
         }
         public double Utili
         {
             get { return GetValue(() => Utili); }
-            private set { SetValue(() => Utili, value); }
+            set { SetValue(() => Utili, value); }
         }
         /// <summary>
         /// Aggiorna la tabella degli investitori
@@ -255,7 +255,7 @@ namespace FinanceManager.ViewModels
                         Desc_tipo_movimento = ActualQuote.Desc_tipo_movimento,
                         NomeInvestitore = ActualQuote.NomeInvestitore
                     };
-                    if (ActualQuote.Id_tipo_movimento == 12 && ActualQuote.IdQuote > 0)
+                    if (ActualQuote.Id_tipo_movimento != 1 && ActualQuote.Id_tipo_movimento != 2 && ActualQuote.IdQuote > 0)
                     {
                         // estraggo solo il record corrispondente alla selezione nella griglia quote
                         ListContoCorrente = _managerLiquidServices.GetContoCorrenteByIdQuote(ActualQuote.IdQuote);
@@ -287,26 +287,34 @@ namespace FinanceManager.ViewModels
             {
                 if (e.EditAction == DataGridEditAction.Commit && !quoteTabComparator.Equals(QuoteTabPrevious, ActualQuote))
                 {
-                    if (ActualQuote.Id_tipo_movimento == 1 || ActualQuote.Id_tipo_movimento == 2)
+                    // se il movimento è 1 o 2 oppure se è 4 o 15 con cifra negativa allora l'operazione si scrive solo sulla
+                    // tabella quote_investitori
+                    if (ActualQuote.Id_tipo_movimento == 1 || ActualQuote.Id_tipo_movimento == 2 || 
+                        (ActualQuote.Ammontare < 0 && (ActualQuote.Id_tipo_movimento == 4 || ActualQuote.Id_tipo_movimento == 15)) )
                     {
                         if (!VerifyQuoteTabOperation())
                         {
                             ActualQuote = QuoteTabPrevious;
                             QuoteTabPrevious = new QuoteTab();
+                            return;
                         }
                         if (ActualQuote.IdQuote > 0)
                         {
                             _managerLiquidServices.UpdateQuoteTab(ActualQuote);
-                            ListQuote = _managerLiquidServices.GetQuote();
                         }
                         else
                         {
                             _managerLiquidServices.InsertInvestment(ActualQuote);
-                            ListQuote = _managerLiquidServices.GetQuote();
                         }
+                        ListQuote = _managerLiquidServices.GetQuote();
+                        ListTabQuote = _managerLiquidServices.GetQuoteTab();
+                        SintesiSoldiR = _managerLiquidServices.GetCurrencyAvailable(1);
+                        SintesiSoldiDF = _managerLiquidServices.GetCurrencyAvailable(2);
+                        ListContoCorrente = _managerLiquidServices.GetContoCorrenteByMovement(12);
                         QuoteTabPrevious = new QuoteTab();
                     }
-                    else if (ActualQuote.Id_tipo_movimento == 12 && ActualQuote.IdQuote == 0)
+                    else if ( (ActualQuote.Id_tipo_movimento == 12 && ActualQuote.IdQuote == 0) || 
+                        (ActualQuote.Ammontare > 0 && ActualQuote.IdQuote == 0 && (ActualQuote.Id_tipo_movimento == 4 || ActualQuote.Id_tipo_movimento == 15) ) )
                     {
                         if ( OnOpenDialog(this) == true)
                         {
@@ -320,7 +328,7 @@ namespace FinanceManager.ViewModels
                             cc.Cod_Valuta = "EUR";
                             cc.Causale = ActualQuote.Note;                          // le stesse note
                             cc.Id_Portafoglio_Titoli = 0;
-                            cc.Id_tipo_movimento = 12;
+                            cc.Id_tipo_movimento = ActualQuote.Id_tipo_movimento;
                             cc.Id_Titolo = 0;
                             cc.Id_Gestione = RegistryOwner.IdOwner;
                             cc.NomeGestione = RegistryOwner.OwnerName;
@@ -338,7 +346,8 @@ namespace FinanceManager.ViewModels
                             ActualQuote = QuoteTabPrevious;     // riporto la situazione all'origine
                         }
                     }
-                    else if (ActualQuote.Id_tipo_movimento == 12 && ActualQuote.IdQuote > 0)
+                    else if ( (ActualQuote.Id_tipo_movimento == 12 && ActualQuote.IdQuote > 0 ) || 
+                        ((ActualQuote.Id_tipo_movimento == 4 || ActualQuote.Id_tipo_movimento == 15) && ActualQuote.IdQuote > 0) )
                     {
                         if ( OnOpenDialog(this))
                         {
@@ -348,7 +357,6 @@ namespace FinanceManager.ViewModels
                             {
                                 cc.Ammontare = ActualQuote.Ammontare * -1;              // la cifra inversa di quella inserita in gestione investimenti
                                 cc.DataMovimento = ActualQuote.DataMovimento;          // la data dell'operazione
-                                cc.Id_Quote_Investimenti = ActualQuote.IdQuote;         // il record di riferimento della gestione investimenti
                                 cc.Causale = ActualQuote.Note;                          // le stesse note
                                 cc.Id_Gestione = RegistryOwner.IdOwner;
                                 cc.NomeGestione = RegistryOwner.OwnerName;
@@ -395,6 +403,7 @@ namespace FinanceManager.ViewModels
                 {
                     DataGrid dataGrid = sender as DataGrid;
                     QuoteTab quoteTab = dataGrid.SelectedItem as QuoteTab;
+                    if (quoteTab.IdQuote == 0) return;
                     // verifico che tipo di movimento voglio cancellare
                     if (quoteTab.Id_tipo_movimento == 1 || quoteTab.Id_tipo_movimento == 2)
                     {
