@@ -48,13 +48,13 @@ namespace FinanceManager.ViewModels
                 if (e.EditAction == DataGridEditAction.Commit)
                 {
                     Location = ((RegistryLocation)e.Row.Item);
-                    if (Location.IdLocation > 0)
+                    if (Location.Id_conto > 0)
                     {
                         _services.UpdateLocation(Location);
                     }
                     else
                     {
-                        _services.AddLocation(Location.DescLocation);
+                        _services.AddLocation(Location.Desc_conto);
                         LocationList = new ObservableCollection<RegistryLocation>(_services.GetRegistryLocationList());
 
                     }
@@ -80,12 +80,12 @@ namespace FinanceManager.ViewModels
                 if (dg.SelectedIndex > 0)
                 {
                     MessageBoxResult result = MessageBox.Show("Attenzione verrà elemininata la location: " +
-                        ((RegistryLocation)dg.SelectedItem).DescLocation, "DAF-C Gestione Location", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        ((RegistryLocation)dg.SelectedItem).Desc_conto, "DAF-C Gestione Location", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {
                         try
                         {
-                            _services.DeleteLocation(((RegistryLocation)dg.SelectedItem).IdLocation);
+                            _services.DeleteLocation(((RegistryLocation)dg.SelectedItem).Id_conto);
                             LocationList = new ObservableCollection<RegistryLocation>(_services.GetRegistryLocationList());
                         }
                         catch (Exception err)

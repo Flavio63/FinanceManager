@@ -9,6 +9,7 @@
     <Application.Resources>
         <Events:ComboboxDisableConverter x:Key="itemDisableconverter"/>
         <viewModels:MainWindowViewModel x:Key="MainWindowViewModel"/>
+        <!--<viewModels:GestioneContoCorrenteViewModel x:Key="GestioneContoCorrenteViewModel"/>-->
         <DataTemplate DataType="{x:Type dialogYesNo:DialogYesNoViewModel}">
             <dialogYesNo:DialogYesNoView></dialogYesNo:DialogYesNoView>
         </DataTemplate>

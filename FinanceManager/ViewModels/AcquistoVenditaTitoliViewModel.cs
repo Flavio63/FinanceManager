@@ -34,6 +34,7 @@ namespace FinanceManager.ViewModels
             //CosaMod = TipoMovimentoScelto;
             CloseMeCommand = new CommandHandler(CloseMe);
             SetUpData();
+            Init();
             InsertCommand = new CommandHandler(SaveCommand, CanSave);
             ModifyCommand = new CommandHandler(UpdateCommand, CanModify);
             EraseCommand = new CommandHandler(DeleteCommand, CanModify);
@@ -46,9 +47,6 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                TobinOk = false;
-                DisaggioOk = false;
-                RitenutaOk = false;
                 ListMovimenti = new RegistryMovementTypeList();
                 ListGestioni = new RegistryOwnersList();
                 ListConti = new RegistryLocationList();
@@ -67,12 +65,33 @@ namespace FinanceManager.ViewModels
                 SharesList = new ObservableCollection<RegistryShare>(_registryServices.GetRegistryShareList());
                 _Filter = new Predicate<object>(Filter);
                 RecordPortafoglioTitoli = new PortafoglioTitoli();
-                RecordPortafoglioTitoli.Data_Movimento = DateTime.Now;
                 ListPortafoglioTitoli = new PortafoglioTitoliList();
             }
             catch (Exception err)
             {
                 MessageBox.Show(err.Message, "Set up Acquisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void Init()
+        {
+            TobinOk = false;
+            DisaggioOk = false;
+            RitenutaOk = false;
+            ImportoTotale = 0;
+            TotalLocalValue = 0;
+            TotaleContabile = 0;
+            AmountChangedValue = 0;
+            SrchShares = "";
+            try
+            {
+                ListSelectedPortafoglioTitoli = new PortafoglioTitoliList();
+                RecordPortafoglioTitoli = new PortafoglioTitoli();
+                ListPortafoglioTitoli = _liquidAssetServices.GetManagerLiquidAssetListByOwnerAndLocation();
+            }
+            catch(Exception err)
+            {
+                MessageBox.Show(err.Message, "Init Acquisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -88,25 +107,29 @@ namespace FinanceManager.ViewModels
                 }
                 if (e.AddedItems[0] is RegistryLocation RL)
                 {
-                    RecordPortafoglioTitoli.Id_conto = RL.IdLocation;
-                    RecordPortafoglioTitoli.Desc_conto = RL.DescLocation;
+                    RecordPortafoglioTitoli.Id_conto = RL.Id_conto;
+                    RecordPortafoglioTitoli.Desc_conto = RL.Desc_conto;
                 }
                 if (e.AddedItems[0] is RegistryOwner RO)
                 {
-                    RecordPortafoglioTitoli.Id_gestione = RO.IdOwner;
-                    RecordPortafoglioTitoli.Nome_Gestione = RO.OwnerName;
+                    RecordPortafoglioTitoli.Id_gestione = RO.Id_gestione;
+                    RecordPortafoglioTitoli.Nome_Gestione = RO.Nome_Gestione;
                 }
                 if (e.AddedItems[0] is RegistryCurrency RC)
                 {
                     RecordPortafoglioTitoli.Id_valuta = RC.IdCurrency;
+                    if (RC.IdCurrency > 0)
+                        CurrencyAvailable = _liquidAssetServices.GetCurrencyAvailable(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_conto, RC.IdCurrency)[0].Disponibili;
+                    if (CurrencyAvailable == 0 && RecordPortafoglioTitoli.Id_tipo_movimento == 5)
+                    {
+                        MessageBox.Show("Non hai soldi in questa valuta!", "Acquisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                        Init();
+                        return;
+                    }
                     if (RC.IdCurrency == 1)
                     {
-                        //ContEuroVisib = "Collapsed";
                         RecordPortafoglioTitoli.Valore_di_cambio = 1;
                     }
-                    else
-                        //ContEuroVisib = "Visible";
-                    return;
                 }
                 if (e.AddedItems[0] is RegistryShare RS)
                 {
@@ -115,6 +138,13 @@ namespace FinanceManager.ViewModels
                     RecordPortafoglioTitoli.Isin = RS.Isin;
                     RecordPortafoglioTitoli.Id_azienda = RS.IdFirm;
                     SharesOwned = _liquidAssetServices.GetSharesQuantity(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_conto, (uint)RecordPortafoglioTitoli.Id_titolo);
+                    if (SharesOwned == 0 && RecordPortafoglioTitoli.Id_tipo_movimento == 6)
+                    {
+                        MessageBox.Show("Non hai titoli da vendere con queste impostazioni!", "Acuisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                        RecordPortafoglioTitoli.Id_titolo = 0;
+                        RS.IdShare = 0;
+                        return;
+                    }
                 }
                 if (e.AddedItems[0] is DateTime DT)
                 {
@@ -130,18 +160,18 @@ namespace FinanceManager.ViewModels
         /// <param name="e">Cambio di selezione</param>
         public void GridSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            PortafoglioTitoli MLA = e.AddedItems[0] as PortafoglioTitoli;
-            if (MLA != null)
+            if (e.AddedItems.Count == 0)
             {
-                //if (MLA.Id_tipo_movimento != ListMovimenti.Id_tipo_movimento) return;
-                //RowLiquidAsset = MLA;
-                //if (RowLiquidAsset.Id_valuta != 1)
-                //{
-                //    ContEuroVisib = "Visible";
-                //}
-                //UpdateTotals();
-                //CanUpdateDelete = true;
-                //CanInsert = false;
+                e.Handled = true;
+                return;
+            }
+            if (e.AddedItems[0] is PortafoglioTitoli PT)
+            {
+                RecordPortafoglioTitoli = PT;
+                ListSelectedPortafoglioTitoli = _liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndTitolo(PT.Id_gestione, PT.Id_conto, (int)PT.Id_titolo);
+                UpdateTotals();
+                CanUpdateDelete = true;
+                CanInsert = false;
             }
         }
 
@@ -326,7 +356,9 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => ListGestioni); }
             set { SetValue(() => ListGestioni, value); }
         }
-
+        /// <summary>
+        /// E' l'importo dato dai titoli per il costo unitario
+        /// </summary>
         public double ImportoTotale
         {
             get { return GetValue(() => ImportoTotale); }
@@ -359,6 +391,14 @@ namespace FinanceManager.ViewModels
             set { SetValue<double>(() => AmountChangedValue, value); }
         }
 
+        /// <summary>
+        /// E' la valta disponibile per effettuare acquisti
+        /// </summary>
+        public double CurrencyAvailable
+        {
+            get { return GetValue(() => CurrencyAvailable); }
+            private set { SetValue(() => CurrencyAvailable, value); }
+        }
         public string SrchShares
         {
             get { return GetValue(() => SrchShares); }
@@ -383,6 +423,14 @@ namespace FinanceManager.ViewModels
         {
             get { return GetValue(() => ListPortafoglioTitoli); }
             set { SetValue(() => ListPortafoglioTitoli, value); }
+        }
+        /// <summary>
+        /// Elenco con tutti i records selezionati dall'elenco generale
+        /// </summary>
+        public PortafoglioTitoliList ListSelectedPortafoglioTitoli
+        {
+            get { return GetValue(() => ListSelectedPortafoglioTitoli); }
+            set { SetValue(() => ListSelectedPortafoglioTitoli, value); }
         }
         /// <summary>
         /// Singolo record del portafoglio
@@ -444,6 +492,12 @@ namespace FinanceManager.ViewModels
         {
             try
             {
+                // verifico la disponibilità di liquidità in conto corrente
+                if (CurrencyAvailable < Math.Abs(TotalLocalValue))
+                {
+                    MessageBox.Show("Non hai abbastanza soldi per questo acquisto!", "Acquisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    return;
+                }
                 PortafoglioTitoli MLA = new PortafoglioTitoli();
                 MLA.Id_gestione = RecordPortafoglioTitoli.Id_gestione;
                 MLA.Id_conto = RecordPortafoglioTitoli.Id_conto;
@@ -528,12 +582,11 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                _liquidAssetServices.DeleteManagerLiquidAsset(RecordPortafoglioTitoli.Id_portafoglio);                  // registro l'eliminazione dal portafoglio
                 _liquidAssetServices.DeleteContoCorrenteByIdPortafoglioTitoli(RecordPortafoglioTitoli.Id_portafoglio);  // registro l'eliminazione in conto corrente
+                _liquidAssetServices.DeleteManagerLiquidAsset(RecordPortafoglioTitoli.Id_portafoglio);                  // registro l'eliminazione dal portafoglio
                 SintesiSoldiR = _liquidAssetServices.GetCurrencyAvailable(1);                           // aggiorno la disponibilità
                 SintesiSoldiDF = _liquidAssetServices.GetCurrencyAvailable(2);                          // aggiorno la disponibilità
-                SetUpData();
-                SrchShares = "";
+                Init();
                 MessageBox.Show("Record eliminato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception err)
@@ -544,7 +597,7 @@ namespace FinanceManager.ViewModels
         }
         public void CleanCommand(object param)
         {
-            SetUpData();
+            Init();
         }
         public void CloseMe(object param)
         {

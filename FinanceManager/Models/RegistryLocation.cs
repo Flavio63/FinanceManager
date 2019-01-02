@@ -8,7 +8,7 @@ namespace FinanceManager.Models
 {
     public class RegistryLocation
     {
-        public int IdLocation { get; set; }
-        public string DescLocation { get; set; }
+        public int Id_conto { get; set; }
+        public string Desc_conto { get; set; }
     }
 }

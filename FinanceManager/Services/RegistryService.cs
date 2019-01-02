@@ -74,8 +74,8 @@ namespace FinanceManager.Services
                     DataTable dataTable = new DataTable();
                     dbAdapter.Fill(dataTable);
                     return new RegistryOwner(){
-                        IdOwner = Convert.ToInt16(dataTable.Rows[0].ItemArray[0]),
-                        OwnerName = dataTable.Rows[0].ItemArray[1].ToString()
+                        Id_gestione = Convert.ToInt16(dataTable.Rows[0].ItemArray[0]),
+                        Nome_Gestione = dataTable.Rows[0].ItemArray[1].ToString()
                     };
 
 
@@ -107,8 +107,8 @@ namespace FinanceManager.Services
                     foreach (DataRow dr in dataTable.Rows)
                     {
                         RegistryOwner RO = new RegistryOwner();
-                        RO.IdOwner = (int)dr.Field<uint>("id_gestione");
-                        RO.OwnerName = dr.Field<string>("nome_gestione");
+                        RO.Id_gestione = (int)dr.Field<uint>("id_gestione");
+                        RO.Nome_Gestione = dr.Field<string>("nome_gestione");
                         ROL.Add(RO);
                     }
                     return ROL;
@@ -133,8 +133,8 @@ namespace FinanceManager.Services
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.UpdateName;
-                    dbComm.Parameters.AddWithValue("nome", owner.OwnerName);
-                    dbComm.Parameters.AddWithValue("id", owner.IdOwner);
+                    dbComm.Parameters.AddWithValue("nome", owner.Nome_Gestione);
+                    dbComm.Parameters.AddWithValue("id", owner.Id_gestione);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -396,8 +396,8 @@ namespace FinanceManager.Services
                     foreach (DataRow dr in dt.Rows)
                     {
                         RegistryLocation RL = new RegistryLocation();
-                        RL.IdLocation = (int)dr.Field<uint>("id_conto");
-                        RL.DescLocation = dr.Field<string>("desc_conto");
+                        RL.Id_conto = (int)dr.Field<uint>("id_conto");
+                        RL.Desc_conto = dr.Field<string>("desc_conto");
                         RLL.Add(RL);
                     }
                     return RLL;
@@ -421,8 +421,8 @@ namespace FinanceManager.Services
                 {
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.UpdateLocation;
-                    dbComm.Parameters.AddWithValue("desc", registryLocation.DescLocation);
-                    dbComm.Parameters.AddWithValue("id", registryLocation.IdLocation);
+                    dbComm.Parameters.AddWithValue("desc", registryLocation.Desc_conto);
+                    dbComm.Parameters.AddWithValue("id", registryLocation.Id_conto);
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -503,8 +503,8 @@ namespace FinanceManager.Services
                     DataTable dataTable = new DataTable();
                     dbAdapter.Fill(dataTable);
                     return new RegistryLocation() {
-                        IdLocation = Convert.ToInt16(dataTable.Rows[0].ItemArray[0]),
-                        DescLocation = dataTable.Rows[0].ItemArray[1].ToString()
+                        Id_conto = Convert.ToInt16(dataTable.Rows[0].ItemArray[0]),
+                        Desc_conto = dataTable.Rows[0].ItemArray[1].ToString()
                     };
                 }
             }

@@ -67,7 +67,7 @@ namespace FinanceManager.Services
                 {
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.ManagerScripts.DeleteManagerLiquidAsset;
-                    dbComm.Parameters.AddWithValue("id_liquid_movement", id);
+                    dbComm.Parameters.AddWithValue("id_portafoglio_titoli", id);
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -90,7 +90,7 @@ namespace FinanceManager.Services
         /// </summary>
         /// <param name="IdGestione">La gestione</param>
         /// <returns>Observable collection </returns>
-        public SintesiSoldiList GetCurrencyAvailable(int IdGestione)
+        public SintesiSoldiList GetCurrencyAvailable(int IdGestione, int IdConto, int IdValuta)
         {
             try
             {
@@ -99,8 +99,15 @@ namespace FinanceManager.Services
                 {
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
-                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetCurrencyAvailable;
+                    if (IdGestione > 0 && IdConto > 0 && IdValuta > 0)
+                        dbAdapter.SelectCommand.CommandText = ManagerScripts.GetCurrencyAvByOwnerContoValuta;
+                    else if (IdGestione > 0 && IdConto == 0 && IdValuta == 0)
+                        dbAdapter.SelectCommand.CommandText = ManagerScripts.GetCurrencyAvByOwner;
+                    else
+                        throw new Exception("Richiesta di liquidità non ancora disponibile.");
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", IdGestione);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdConto);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_valuta", IdValuta);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     dbAdapter.Fill(DT);
                     SintesiSoldiList sintesiSoldis = new SintesiSoldiList();
@@ -109,9 +116,9 @@ namespace FinanceManager.Services
                         SintesiSoldi sintesiSoldi = new SintesiSoldi();
                         sintesiSoldi.DescCont = dataRow.Field<string>("desc_conto");
                         sintesiSoldi.CodValuta = dataRow.Field<string>("cod_valuta");
-                        sintesiSoldi.Cedole = dataRow.Field<double>("Cedole");
-                        sintesiSoldi.Utili = dataRow.Field<double>("Utili");
-                        sintesiSoldi.Disponibili = dataRow.Field<double>("Disponibili");
+                        sintesiSoldi.Cedole = dataRow.IsNull("Cedole") ? 0 : (double)dataRow.ItemArray[2];
+                        sintesiSoldi.Utili = dataRow.IsNull("Utili") ? 0 : (double)dataRow.ItemArray[3];
+                        sintesiSoldi.Disponibili = dataRow.IsNull("Disponibili") ? 0 : (double)dataRow.ItemArray[4];
                         sintesiSoldis.Add(sintesiSoldi);
                     }
                     return sintesiSoldis;
@@ -140,9 +147,50 @@ namespace FinanceManager.Services
                 {
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = System.Data.CommandType.Text;
-                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetManagerLiquidAssetListByOwnerAndLocation;
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("owner", idOwner);
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("location", idLocation);
+                    if (idOwner == 0 && idLocation == 0)
+                        dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetManagerLiquidAssetListTotal;
+                    else if (idOwner > 0 && idLocation == 0)
+                        dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetManagerLiquidAssetListByOwner;
+                    else if (idOwner == 0 && idLocation > 0)
+                        dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetManagerLiquidAssetListByLocation;
+                    else
+                        dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetManagerLiquidAssetListByOwnerAndLocation;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", idOwner);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", idLocation);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    DataTable dt = new DataTable();
+                    dbAdapter.Fill(dt);
+                    return MLAL(dt);
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+        /// <summary>
+        /// Estrae tutti i record di una gestione in un conto di un titolo
+        /// </summary>
+        /// <param name="idGestione">la gestione scelta</param>
+        /// <param name="idConti">il conto corrente</param>
+        /// <param name="idTitolo">il titolo</param>
+        /// <returns></returns>
+        public PortafoglioTitoliList GetManagerLiquidAssetListByOwnerLocationAndTitolo(int idGestione, int idConto, int idTitolo)
+        {
+            try
+            {
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = System.Data.CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = ManagerScripts.GetManagerLiquidAssetListByOwnerLocatioAndShare;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", idGestione);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", idConto);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", idTitolo);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     DataTable dt = new DataTable();
                     dbAdapter.Fill(dt);

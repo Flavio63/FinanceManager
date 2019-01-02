@@ -81,6 +81,8 @@ namespace FinanceManager.ViewModels
             set
             {
                 SetValue(() => ListQuote, value);
+                if (value.Count() == 0)
+                    return;
                 Totale = value[0].Totale;
                 TotDisponibile = value[0].TotDisponibile;
                 GuadagnoTotale = value[0].GuadagnoTotale;
@@ -206,13 +208,13 @@ namespace FinanceManager.ViewModels
             if (ActualQuote.Id_tipo_movimento == 2 && ActualQuote.Ammontare > 0)
             {
                 MessageBox.Show("Attenzione devi inserire una cifra negativa se vuoi prelevare",
-                    "Gestione Quote", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    "Gestione AndQuote", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
             if (ActualQuote.Id_tipo_movimento == 1 && ActualQuote.Ammontare < 0)
             {
                 MessageBox.Show("Attenzione devi inserire una cifra positiva se vuoi versare",
-                    "Gestione Quote", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    "Gestione AndQuote", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
             // inserire anche la verifica di disponibilità della cifra nel caso di giroconto e di prelievo
@@ -330,10 +332,11 @@ namespace FinanceManager.ViewModels
                             cc.Id_Portafoglio_Titoli = 0;
                             cc.Id_tipo_movimento = ActualQuote.Id_tipo_movimento;
                             cc.Id_Titolo = 0;
-                            cc.Id_Gestione = RegistryOwner.IdOwner;
-                            cc.NomeGestione = RegistryOwner.OwnerName;
-                            cc.Id_Conto = RegistryLocation.IdLocation;
-                            cc.Desc_Conto = RegistryLocation.DescLocation;
+                            cc.Id_Gestione = RegistryOwner.Id_gestione;
+                            cc.NomeGestione = RegistryOwner.Nome_Gestione;
+                            cc.Id_Conto = RegistryLocation.Id_conto;
+                            cc.Desc_Conto = RegistryLocation.Desc_conto;
+                            cc.Valore_Cambio = 1;
                             _managerLiquidServices.InsertAccountMovement(cc);                               // aggiungo il record al db
                             ListQuote = _managerLiquidServices.GetQuote();
                             ListTabQuote = _managerLiquidServices.GetQuoteTab();
@@ -358,10 +361,10 @@ namespace FinanceManager.ViewModels
                                 cc.Ammontare = ActualQuote.Ammontare * -1;              // la cifra inversa di quella inserita in gestione investimenti
                                 cc.DataMovimento = ActualQuote.DataMovimento;          // la data dell'operazione
                                 cc.Causale = ActualQuote.Note;                          // le stesse note
-                                cc.Id_Gestione = RegistryOwner.IdOwner;
-                                cc.NomeGestione = RegistryOwner.OwnerName;
-                                cc.Id_Conto = RegistryLocation.IdLocation;
-                                cc.Desc_Conto = RegistryLocation.DescLocation;
+                                cc.Id_Gestione = RegistryOwner.Id_gestione;
+                                cc.NomeGestione = RegistryOwner.Nome_Gestione;
+                                cc.Id_Conto = RegistryLocation.Id_conto;
+                                cc.Desc_Conto = RegistryLocation.Desc_conto;
                                 _managerLiquidServices.UpdateContoCorrenteByIdQuote(cc);         // aggiorno i dati nel db
                                 ListQuote = _managerLiquidServices.GetQuote();
                                 ListTabQuote = _managerLiquidServices.GetQuoteTab();
@@ -379,7 +382,7 @@ namespace FinanceManager.ViewModels
             }
             catch (Exception err)
             {
-                MessageBox.Show(err.Message, "Gestione Quote", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(err.Message, "Gestione AndQuote", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -408,18 +411,18 @@ namespace FinanceManager.ViewModels
                     if (quoteTab.Id_tipo_movimento == 1 || quoteTab.Id_tipo_movimento == 2)
                     {
                         _managerLiquidServices.DeleteRecordQuoteTab(quoteTab.IdQuote);
-                        MessageBox.Show("Il record è stato correttamente eliminato", "Gestione Quote Investitori", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show("Il record è stato correttamente eliminato", "Gestione AndQuote Investitori", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
                     {
                         var Risposta = MessageBox.Show("Stai per eliminare il record selezionato da 2 tabelle." + Environment.NewLine + "Sei sicoro?",
-                            "Gestione Quote", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                            "Gestione AndQuote", MessageBoxButton.YesNo, MessageBoxImage.Question);
                         if (Risposta == MessageBoxResult.Yes)
                         {
                             _managerLiquidServices.DeleteAccount(ListContoCorrente[0].Id_RowConto);
                             _managerLiquidServices.DeleteRecordQuoteTab(ActualQuote.IdQuote);
                             ActualQuote = new QuoteTab();
-                            MessageBox.Show("I 2 record sono stati correttamente eliminati", "Gestione Quote Investitori", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            MessageBox.Show("I 2 record sono stati correttamente eliminati", "Gestione AndQuote Investitori", MessageBoxButton.OK, MessageBoxImage.Warning);
                         }
                     }
                     UpdateCollection();     //Aggiorno tutti i dati della griglia
@@ -463,13 +466,13 @@ namespace FinanceManager.ViewModels
             {
                 RegistryOwner = new RegistryOwner()
                 {
-                    IdOwner = Dialogs.DialogService.DialogService.Owner.IdOwner,
-                    OwnerName = Dialogs.DialogService.DialogService.Owner.OwnerName
+                    Id_gestione = Dialogs.DialogService.DialogService.Owner.Id_gestione,
+                    Nome_Gestione = Dialogs.DialogService.DialogService.Owner.Nome_Gestione
                 };
                 RegistryLocation = new RegistryLocation()
                 {
-                    IdLocation = Dialogs.DialogService.DialogService.Location.IdLocation,
-                    DescLocation = Dialogs.DialogService.DialogService.Location.DescLocation
+                    Id_conto = Dialogs.DialogService.DialogService.Location.Id_conto,
+                    Desc_conto = Dialogs.DialogService.DialogService.Location.Desc_conto
                 };
                 return true;
             }

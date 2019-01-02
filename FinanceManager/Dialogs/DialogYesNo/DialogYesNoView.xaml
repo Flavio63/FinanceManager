@@ -17,7 +17,7 @@
         <Label Content="{Binding Message}" Grid.Row="0"/>
         <Label Content="Conti Disponibili:" Grid.Row="1" Margin="15,0,0,5"/>
         <ComboBox Grid.Row="1" Margin="15, 25, 0, 0" ItemsSource="{Binding LocationList, UpdateSourceTrigger=PropertyChanged}"
-                  HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" DisplayMemberPath="DescLocation" SelectedValuePath="IdLocation">
+                  HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" DisplayMemberPath="Desc_conto" SelectedValuePath="Id_conto">
             <iy:Interaction.Triggers>
                 <iy:EventTrigger EventName="SelectionChanged">
                     <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
@@ -26,7 +26,7 @@
         </ComboBox>
         <Label Content="Gestioni Disponibili:" Grid.Row="1" Margin="200,0,0,5"/>
         <ComboBox Grid.Row="1" Margin="200,25,0,0" ItemsSource="{Binding OwnerList, UpdateSourceTrigger=PropertyChanged}"
-                  HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" DisplayMemberPath="OwnerName" SelectedValuePath="IdOwner">
+                  HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" DisplayMemberPath="Nome_Gestione" SelectedValuePath="Id_gestione">
             <iy:Interaction.Triggers>
                 <iy:EventTrigger EventName="SelectionChanged">
                     <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>

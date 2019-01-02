@@ -5,11 +5,12 @@ namespace FinanceManager.Services
 {
     public interface IManagerLiquidAssetServices
     {
-        PortafoglioTitoliList GetManagerLiquidAssetListByOwnerAndLocation(int IdOwner, int idLocation);
+        PortafoglioTitoliList GetManagerLiquidAssetListByOwnerAndLocation(int IdOwner = 0, int idLocation = 0);
         PortafoglioTitoliList GetManagerLiquidAssetListByOwnerLocationAndMovementType(int IdOwner, int IdLocation, int[] IdMovement);
         PortafoglioTitoliList GetManagerSharesMovementByOwnerAndLocation(int IdOwner, int IdLocation);
+        PortafoglioTitoliList GetManagerLiquidAssetListByOwnerLocationAndTitolo(int idGestione, int idConto, int idTitolo);
         PortafoglioTitoli GetLastShareMovementByOwnerAndLocation(int IdOwner, int IdLocation);
-        SintesiSoldiList GetCurrencyAvailable(int IdGestione);
+        SintesiSoldiList GetCurrencyAvailable(int IdGestione = 0, int IdConto = 0, int IdValuta = 0);
         PortafoglioTitoliList GetShareMovements(int IdOwner, int IdLocation, uint IdShare);
         double GetSharesQuantity(int IdOwner, int IdLocation, uint idShare);
         double GetProfitLossByCurrency(int IdOwner, int IdLocation, int IdCurrency);
@@ -20,9 +21,9 @@ namespace FinanceManager.Services
         QuoteList GetQuote();   // Calcolo le quote per investitore
         InvestitoreList GetInvestitori();
 
-        QuoteTabList GetQuoteTab();                                     //Prendo tutti i record della tabella Quote
+        QuoteTabList GetQuoteTab();                                     //Prendo tutti i record della tabella AndQuote
         void InsertInvestment(QuoteTab ActualQuote);                    // Inserisce nuovo movimento nella tabella anche il movimento 12
-        void UpdateQuoteTab(QuoteTab ActualQuote);                      // aggiorna i movimenti della tabella Quote
+        void UpdateQuoteTab(QuoteTab ActualQuote);                      // aggiorna i movimenti della tabella AndQuote
         void DeleteRecordQuoteTab(int idQuote);                         // elimina una scrittura dal database
 
         QuoteTab GetLastQuoteTab();                                     // Prendo l'ultimo record della tabella perchè nel caso di giroconto devo conoscere il nuovo ID

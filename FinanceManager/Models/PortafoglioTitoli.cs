@@ -50,13 +50,13 @@ namespace FinanceManager.Models
         {
             get
             {
-                if (_MovementDate.Date.ToShortDateString() == "01/01/0001")
+                if (_MovementDate.Date.ToShortDateString() == "01/01/0001" || _MovementDate.Date.ToShortDateString() == "01/01/01")
                     _MovementDate = DateTime.Now.Date;
                 return _MovementDate;
             }
             set
             {
-                if (value.Date.ToShortDateString() == "01/01/0001")
+                if (value.Date.ToShortDateString() == "01/01/0001" || _MovementDate.Date.ToShortDateString() == "01/01/01")
                     _MovementDate = DateTime.Now.Date;
                 _MovementDate = value;
             }

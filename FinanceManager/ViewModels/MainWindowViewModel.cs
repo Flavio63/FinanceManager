@@ -40,8 +40,8 @@ namespace FinanceManager.ViewModels
         RegistryMovementTypeViewModel registryMovementTypeViewModel;
         RegistryMovementTypeView registryMovementTypeView;
 
-        ManagerPortfolioSharesMovementViewModel managerPortfolioSharesMovementViewModel;
-        ManagerPortfolioSharesMovementView managerPortfolioSharesMovementView;
+        GestioneContoCorrenteView gestioneContoCorrenteView;
+        GestioneContoCorrenteViewModel gestioneContoCorrenteViewModel;
         ManagerReportsViewModel managerReportsViewModel;
         ManagerReportsView managerReportsView;
 
@@ -229,17 +229,17 @@ namespace FinanceManager.ViewModels
         private void OpenContoCorrente(object param)
         {
             DockPanel mainGrid = param as DockPanel;
-            if (managerPortfolioSharesMovementView == null || !mainGrid.Children.Contains(managerPortfolioSharesMovementView))
+            if (gestioneContoCorrenteView == null || !mainGrid.Children.Contains(gestioneContoCorrenteView))
             {
-                managerPortfolioSharesMovementViewModel = new ManagerPortfolioSharesMovementViewModel(_registryServices, _managerLiquidServices);
-                managerPortfolioSharesMovementView = new ManagerPortfolioSharesMovementView(managerPortfolioSharesMovementViewModel);
-                mainGrid.Children.Add(managerPortfolioSharesMovementView);
+                gestioneContoCorrenteViewModel = new GestioneContoCorrenteViewModel(_registryServices, _managerLiquidServices);
+                gestioneContoCorrenteView = new GestioneContoCorrenteView(gestioneContoCorrenteViewModel);
+                mainGrid.Children.Add(gestioneContoCorrenteView);
             }
             else
             {
-                mainGrid.Children.Remove(managerPortfolioSharesMovementView);
-                managerPortfolioSharesMovementView = null;
-                managerPortfolioSharesMovementViewModel = null;
+                mainGrid.Children.Remove(gestioneContoCorrenteView);
+                gestioneContoCorrenteView = null;
+                gestioneContoCorrenteViewModel = null;
             }
         }
 

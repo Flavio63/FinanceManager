@@ -68,7 +68,7 @@ namespace FinanceManager.ViewModels
                     case "ListOwners":
                         _selectedOwners.Clear();
                         foreach (RegistryOwner item in LB.SelectedItems)
-                            _selectedOwners.Add(item.IdOwner);
+                            _selectedOwners.Add(item.Id_gestione);
                         break;
                     case "ListYears":
                         SelectedYears.Clear();

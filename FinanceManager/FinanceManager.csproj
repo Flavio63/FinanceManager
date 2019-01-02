@@ -130,6 +130,7 @@
     <Compile Include="Events\ViewModelBase.cs" />
     <Compile Include="Models\SintesiSoldi.cs" />
     <Compile Include="Models\SintesiSoldiList.cs" />
+    <Compile Include="ViewModels\GestioneContoCorrenteViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Models\ContoCorrente.cs" />
     <Compile Include="Models\ContoCorrenteList.cs" />
@@ -184,6 +185,9 @@
     <Compile Include="Views\AcquistoVenditaTitoliView.xaml.cs">
       <DependentUpon>AcquistoVenditaTitoliView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\GestioneContoCorrenteView.xaml.cs">
+      <DependentUpon>GestioneContoCorrenteView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\GestioneQuoteInvestitoriView.xaml.cs">
       <DependentUpon>GestioneQuoteInvestitoriView.xaml</DependentUpon>
     </Compile>
@@ -234,6 +238,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\DialogYesNo\DialogYesNoView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\GestioneContoCorrenteView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

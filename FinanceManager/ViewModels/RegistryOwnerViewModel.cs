@@ -52,13 +52,13 @@ namespace FinanceManager.ViewModels
                 if (e.EditAction == DataGridEditAction.Commit)
                 {
                     Owner = ((RegistryOwner)e.Row.Item);
-                    if (Owner.IdOwner > 0)
+                    if (Owner.Id_gestione > 0)
                     {
                         _services.UpdateOwner(Owner);
                     }
                     else
                     {
-                        _services.AddOwner(Owner.OwnerName);
+                        _services.AddOwner(Owner.Nome_Gestione);
                         OwnerList = new ObservableCollection<RegistryOwner>(_services.GetRegistryOwners());
                         
                     }
@@ -84,12 +84,12 @@ namespace FinanceManager.ViewModels
                 if (dg.SelectedIndex > 0)
                 {
                     MessageBoxResult result = MessageBox.Show("Attenzione verrà elemininata la gestione: " +
-                        ((RegistryOwner)dg.SelectedItem).OwnerName, "DAF-C Gestione Gestioni", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        ((RegistryOwner)dg.SelectedItem).Nome_Gestione, "DAF-C Gestione Gestioni", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {
                         try
                         {
-                            _services.DeleteOwner(((RegistryOwner)dg.SelectedItem).IdOwner);
+                            _services.DeleteOwner(((RegistryOwner)dg.SelectedItem).Id_gestione);
                             OwnerList = new ObservableCollection<RegistryOwner>(_services.GetRegistryOwners());
                         }
                         catch (Exception err)

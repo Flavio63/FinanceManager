@@ -86,20 +86,20 @@ namespace FinanceManager.ViewModels
 
                 if (RO != null)
                 {
-                    SelectedOwner = RO.OwnerName;
+                    SelectedOwner = RO.Nome_Gestione;
                     RowLiquidAsset = new PortafoglioTitoli();
                     AmountChangedValue = 0;
                     RowLiquidAsset.Data_Movimento = DT.Date;
-                    RowLiquidAsset.Id_gestione = RO.IdOwner;
-                    RowLiquidAsset.Nome_Gestione = RO.OwnerName;
+                    RowLiquidAsset.Id_gestione = RO.Id_gestione;
+                    RowLiquidAsset.Nome_Gestione = RO.Nome_Gestione;
                     EnableControl.EnableControlInGrid(CB.Parent as Grid, "cbLocation", true);
 
                 }
                 if (RL != null)
                 {
-                    RowLiquidAsset.Id_conto = RL.IdLocation;
-                    RowLiquidAsset.Desc_conto = RL.DescLocation;
-                    LiquidAssetList = new ObservableCollection<PortafoglioTitoli>(_liquidAssetServices.GetManagerSharesMovementByOwnerAndLocation(RowLiquidAsset.Id_gestione, RL.IdLocation));
+                    RowLiquidAsset.Id_conto = RL.Id_conto;
+                    RowLiquidAsset.Desc_conto = RL.Desc_conto;
+                    LiquidAssetList = new ObservableCollection<PortafoglioTitoli>(_liquidAssetServices.GetManagerSharesMovementByOwnerAndLocation(RowLiquidAsset.Id_gestione, RL.Id_conto));
                     EnableControl.EnableControlInGrid(CB.Parent as Grid, "cbMovement", true);
                 }
                 if (RMT != null)
