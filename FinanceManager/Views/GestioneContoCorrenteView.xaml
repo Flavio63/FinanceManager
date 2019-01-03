@@ -7,12 +7,12 @@
              xmlns:iy="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:local="clr-namespace:FinanceManager.Views"
              mc:Ignorable="d" Name="_GestioneContoCorrente"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="550" d:DesignWidth="1000">
     <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
@@ -22,7 +22,7 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Text="GESTIONE CONTI CORRENTI" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="26" 
-                   FontWeight="Bold" Grid.ColumnSpan="2"/>
+                   FontWeight="Bold" Grid.ColumnSpan="4"/>
         <Button Content="X" Command="{Binding CloseMeCommand}" 
                 CommandParameter="{Binding ElementName=_AcquistoVenditaTitoliView}" 
                 HorizontalContentAlignment="Center" Grid.Column="5" HorizontalAlignment="Right"
@@ -143,10 +143,11 @@
             <Button Content="Elimina" Margin="10" Command="{Binding EraseCommand}"/>
         </StackPanel>
 
-        <!-- Parametri da selezionare -->
+        <!-- Parametri comuni da selezionare -->
         <Border Grid.Row="1" Grid.Column="2" BorderBrush="LightGray" BorderThickness="0.8" Margin="5">
             <Grid Margin="5">
                 <Grid.RowDefinitions>
+                    <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition/>
@@ -159,7 +160,7 @@
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.ColumnSpan="4" Grid.Row="0" Text="Parametri da Selezionare" FontSize="22" FontWeight="Bold" 
+                <TextBlock Grid.ColumnSpan="4" Grid.Row="0" Text="Parametri Comuni da Selezionare" FontSize="22" FontWeight="Bold" 
                        HorizontalAlignment="Center" Margin="3, 2, 3, 7"/>
                 <TextBlock Grid.Row="1" Text="Il conto" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
                 <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding ListConti, UpdateSourceTrigger=PropertyChanged}"
@@ -181,6 +182,28 @@
                         </iy:EventTrigger>
                     </iy:Interaction.Triggers>
                 </ComboBox>
+                <TextBlock Grid.Row="3" Text="Valuta" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
+                <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding ListValute, UpdateSourceTrigger=PropertyChanged}"
+                          SelectedValuePath="IdCurrency" DisplayMemberPath="DescCurrency" Margin="5, 2" MinWidth="100"
+                          SelectedValue="{Binding RecordPortafoglioTitoli.Id_valuta}" HorizontalAlignment="Center">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="SelectionChanged">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </ComboBox>
+                <TextBlock Grid.Row="4" Text="Tipo Soldi" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
+                <ComboBox Grid.Row="4" Grid.Column="1" VerticalAlignment="Center"
+                              ItemsSource="{Binding TipoSoldi, UpdateSourceTrigger=PropertyChanged}"
+                          SelectedValuePath="IdCurrency" DisplayMemberPath="DescCurrency" Margin="5, 2" MinWidth="100"
+                          SelectedValue="{Binding RecordPortafoglioTitoli.Id_valuta}" HorizontalAlignment="Center">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="SelectionChanged">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </ComboBox>
+
                 <TextBlock Grid.Row="1" Grid.Column="2" Text="L'operazione" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
                 <ComboBox Grid.Row="1" Grid.Column="3" ItemsSource="{Binding ListMovimenti, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValuePath="Id_tipo_movimento" DisplayMemberPath="Desc_tipo_movimento" Margin="5, 2" MinWidth="100"
@@ -191,9 +214,6 @@
                         </iy:EventTrigger>
                     </iy:Interaction.Triggers>
                 </ComboBox>
-                <TextBlock Grid.Row="3" Text="Causale" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
-                <TextBox Grid.Row="3" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="3" FontSize="16" Margin="5, 2, 5, 2" 
-                         VerticalAlignment="Stretch" AcceptsReturn="True" TextWrapping="Wrap"/>
                 <TextBlock Grid.Row="2" Grid.Column="2" Text="La data" FontSize="16" Margin="10, 2, 5, 2"/>
                 <DatePicker Grid.Row="2" Grid.Column="3" Name="MovementDate" Margin="5, 2, 5, 2" SelectedDate="{Binding RecordPortafoglioTitoli.Data_Movimento, 
                     UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Center" 
@@ -204,8 +224,135 @@
                         </iy:EventTrigger>
                     </iy:Interaction.Triggers>
                 </DatePicker>
+                <TextBlock Grid.Row="3" Grid.Column="2" Text="Cifra" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="3" Grid.Column="3" Margin="5, 2"
+                         Text="{Binding ammontare, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=N4, ConverterCulture=it-IT}"/>
+
+                <TextBlock Grid.Row="5" Grid.Column="1" Text="Causale" FontSize="16" Margin="0, 2, 5, 2" HorizontalAlignment="Right"/>
+                <TextBox Grid.Row="4" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="2" FontSize="16" Margin="5, 2, 5, 2" 
+                         VerticalAlignment="Stretch" AcceptsReturn="True" TextWrapping="Wrap"/>
             </Grid>
         </Border>
+        <!-- gruppi dedicati alle singole operazioni -->
+        <Grid Grid.Row="2" Grid.ColumnSpan="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+        <!-- Nel caso di cambio valuta-->
+        <Border BorderBrush="LightCoral" BorderThickness="0.8" Margin="5">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="CAMBIO VALUTA" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20" 
+                   FontWeight="Bold" Grid.ColumnSpan="2"/>
+                <StackPanel Grid.Row="1" Orientation="Vertical">
+                    <TextBlock Text="... a Valuta" FontSize="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <ComboBox Grid.Row="4" Grid.Column="1" ItemsSource="{Binding ListValute, UpdateSourceTrigger=PropertyChanged}"
+                          SelectedValuePath="IdCurrency" DisplayMemberPath="DescCurrency" Margin="5" MinWidth="100"
+                          SelectedValue="{Binding RecordPortafoglioTitoli.Id_valuta}" HorizontalAlignment="Center">
+                        <iy:Interaction.Triggers>
+                            <iy:EventTrigger EventName="SelectionChanged">
+                                <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                            </iy:EventTrigger>
+                        </iy:Interaction.Triggers>
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical">
+                    <TextBlock Text="Valore del cambio" FontSize="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding ValoreCambio, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=N5, ConverterCulture=it-IT}"
+                             FontSize="16" VerticalAlignment="Center" HorizontalContentAlignment="Right" Margin="5"/>
+                </StackPanel>
+                    <TextBlock Grid.Row="2" Text="Cifra cambiata" FontSize="16" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding ammontare, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=N, ConverterCulture=it-IT}"
+                             FontSize="16" VerticalAlignment="Center" HorizontalContentAlignment="Right"
+                             IsEnabled="False" Margin="5"/>
+            </Grid>
+        </Border>
+        
+        <!-- Nel caso di REGISTRAZIONE CEDOLE-->
+        <Border Grid.Column="1" BorderBrush="LightGreen" BorderThickness="0.8" Margin="5">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.ColumnSpan="2" Text="REGISTRAZIONE CEDOLE" VerticalAlignment="Center" FontSize="20" 
+                   FontWeight="Bold" Margin="5" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" Text="Filtro ISIN" FontSize="16" Margin="5" HorizontalAlignment="Right"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SrchShares, UpdateSourceTrigger=PropertyChanged}" 
+                         Style="{StaticResource FormCenterTextBoxStyle}" Margin="5, 5" HorizontalAlignment="Left"/>
+                    <TextBlock Grid.Row="2" Text="Il titolo" FontSize="16" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding SharesListView}" SelectedValuePath="IdShare" VerticalAlignment="Center" 
+                          SelectedValue="{Binding RecordPortafoglioTitoli.Id_titolo}" MinWidth="100" HorizontalAlignment="Left" Margin="5">
+                        <TextSearch.TextPath>DescShare</TextSearch.TextPath>
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="{Binding Isin}" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding DescShare}" FontFamily="Arial Narrow" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                        <iy:Interaction.Triggers>
+                            <iy:EventTrigger EventName="SelectionChanged">
+                                <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                            </iy:EventTrigger>
+                        </iy:Interaction.Triggers>
+                    </ComboBox>
+            </Grid>
+        </Border>
+    
+        <!-- Nel caso di Giroconto -->
+        <Border Grid.Column="2" BorderBrush="LightBlue" BorderThickness="0.8" Margin="5">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="REGISTRAZIONE GIROCONTI" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20" 
+                   FontWeight="Bold" Grid.ColumnSpan="3"/>
+                <TextBlock Grid.Row="1" Text="Il conto di destinazione" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding ListConti, UpdateSourceTrigger=PropertyChanged}"
+                          SelectedValuePath="Id_conto" DisplayMemberPath="Desc_conto" Margin="5, 2" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Left"
+                          SelectedValue="{Binding RecordPortafoglioTitoli.Id_conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="SelectionChanged">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </ComboBox>
+                <TextBlock Grid.Row="2" Text="La gestione di destinazione" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding ListGestioni, UpdateSourceTrigger=PropertyChanged}"
+                          SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione" Margin="5, 2" MinWidth="100"
+                          SelectedValue="{Binding RecordPortafoglioTitoli.Id_gestione}" VerticalAlignment="Center" HorizontalAlignment="Left">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="SelectionChanged">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </ComboBox>
 
+            </Grid>
+        </Border>
+        </Grid>
     </Grid>
 </UserControl>
