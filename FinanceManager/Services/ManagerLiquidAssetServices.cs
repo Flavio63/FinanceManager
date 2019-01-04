@@ -524,6 +524,8 @@ namespace FinanceManager.Services
             conto.Ammontare = dataRow.Field<double>("ammontare");
             conto.Valore_Cambio = dataRow.Field<double>("cambio");
             conto.Causale = dataRow.Field<string>("causale");
+            conto.Id_Tipo_Soldi = (int)dataRow.Field<uint>("id_tipo_soldi");
+            conto.Desc_Tipo_Soldi = dataRow.Field<string>("desc_tipo_soldi");
             return conto;
         }
 
@@ -547,6 +549,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("ammontare", contoCorrente.Ammontare);
                     dbComm.Parameters.AddWithValue("cambio", contoCorrente.Valore_Cambio);
                     dbComm.Parameters.AddWithValue("causale", contoCorrente.Causale);
+                    dbComm.Parameters.AddWithValue("id_tipo_soldi", contoCorrente.Id_Tipo_Soldi);
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -929,6 +932,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("ammontare", contoCorrente.Ammontare);
                     dbComm.Parameters.AddWithValue("cambio", contoCorrente.Valore_Cambio);
                     dbComm.Parameters.AddWithValue("causale", contoCorrente.Causale);
+                    dbComm.Parameters.AddWithValue("id_tipo_soldi", contoCorrente.Id_Tipo_Soldi);
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -1015,6 +1019,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("ammontare", contoCorrente.Ammontare);
                     dbComm.Parameters.AddWithValue("cambio", contoCorrente.Valore_Cambio);
                     dbComm.Parameters.AddWithValue("causale", contoCorrente.Causale);
+                    dbComm.Parameters.AddWithValue("id_tipo_soldi", contoCorrente.Id_Tipo_Soldi);
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();

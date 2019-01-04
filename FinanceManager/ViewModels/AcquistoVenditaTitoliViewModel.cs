@@ -29,9 +29,6 @@ namespace FinanceManager.ViewModels
         {
             _registryServices = services ?? throw new ArgumentNullException("Services in Manager Portfolio Movement View Model");
             _liquidAssetServices = liquidAssetServices ?? throw new ArgumentNullException("Liquid Asset Services in Manager Portfolio Movement View Model");
-            //GestioneMod = GestioniScelte;
-            //ContoMod = ContiScelti;
-            //CosaMod = TipoMovimentoScelto;
             CloseMeCommand = new CommandHandler(CloseMe);
             SetUpData();
             Init();
@@ -392,13 +389,16 @@ namespace FinanceManager.ViewModels
         }
 
         /// <summary>
-        /// E' la valta disponibile per effettuare acquisti
+        /// E' la valuta disponibile per effettuare acquisti
         /// </summary>
         public double CurrencyAvailable
         {
             get { return GetValue(() => CurrencyAvailable); }
             private set { SetValue(() => CurrencyAvailable, value); }
         }
+        /// <summary>
+        /// La ricerca degli isin dei titoli
+        /// </summary>
         public string SrchShares
         {
             get { return GetValue(() => SrchShares); }
@@ -552,7 +552,8 @@ namespace FinanceManager.ViewModels
                 DataMovimento = portafoglioTitoli.Data_Movimento,
                 Ammontare = TotaleContabile,
                 Valore_Cambio = portafoglioTitoli.Valore_di_cambio,
-                Causale = portafoglioTitoli.Note
+                Causale = portafoglioTitoli.Note,
+                Id_Tipo_Soldi = 1
             };
             return cc;
         }

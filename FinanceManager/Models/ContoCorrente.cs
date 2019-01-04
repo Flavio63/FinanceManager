@@ -27,5 +27,7 @@ namespace FinanceManager.Models
         public double Ammontare { get; set; }
         public double Valore_Cambio { get; set; }
         public string Causale { set; get; }
+        public int Id_Tipo_Soldi { set; get; }
+        public string Desc_Tipo_Soldi { set; get; }
     }
 }

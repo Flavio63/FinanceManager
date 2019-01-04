@@ -337,6 +337,7 @@ namespace FinanceManager.ViewModels
                             cc.Id_Conto = RegistryLocation.Id_conto;
                             cc.Desc_Conto = RegistryLocation.Desc_conto;
                             cc.Valore_Cambio = 1;
+                            cc.Id_Tipo_Soldi = 1;
                             _managerLiquidServices.InsertAccountMovement(cc);                               // aggiungo il record al db
                             ListQuote = _managerLiquidServices.GetQuote();
                             ListTabQuote = _managerLiquidServices.GetQuoteTab();
