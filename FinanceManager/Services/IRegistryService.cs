@@ -55,5 +55,8 @@ namespace FinanceManager.Services
         void DeleteMovementType(int id);
         RegistryMovementType GetMovementType(int id);
         #endregion
+
+        TipoSoldiList GetTipoSoldiList();
+        TipoSoldi GetTipoSoldiById(int id);
     }
 }

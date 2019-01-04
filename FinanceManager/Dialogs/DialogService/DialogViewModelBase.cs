@@ -1,9 +1,10 @@
-﻿using FinanceManager.Models;
+﻿using FinanceManager.Events;
+using FinanceManager.Models;
 using System.Windows;
 
 namespace FinanceManager.Dialogs.DialogService
 {
-    public abstract class DialogViewModelBase
+    public abstract class DialogViewModelBase : ViewModelBase
     {
 
         public DialogResult UserDialogResult
@@ -12,56 +13,18 @@ namespace FinanceManager.Dialogs.DialogService
             private set;
         }
 
-        public void CloseDialogWithResult(Window dialog, DialogResult result)
+        public virtual void CloseDialogWithResult(Window dialog, DialogResult result)
         {
             this.UserDialogResult = result;
             if (dialog != null)
                 dialog.DialogResult = true;
         }
 
-        public void CloseDialogWithResult(Window dialog, DialogResult result, RegistryLocation location, RegistryOwner owner)
-        {
-            this.UserDialogResult = result;
-            this.Location = location;
-            this.Owner = owner;
-            if (dialog != null)
-                dialog.DialogResult = true;
-        }
+        public string Message { get; private set; }
 
-        public RegistryLocation Location
-        {
-            get;
-            private set;
-        }
-
-        public RegistryOwner Owner
-        {
-            get;
-            private set;
-        }
-
-        public string Message
-        {
-            get;
-            private set;
-        }
-
-        public RegistryLocationList LocationList
-        {
-            get;
-            private set;
-        }
-
-        public RegistryOwnersList OwnerList
-        {
-            get;
-            private set;
-        }
-        public DialogViewModelBase(string messagge, RegistryLocationList registryLocations, RegistryOwnersList registryOwners)
+        public DialogViewModelBase(string messagge)
         {
             this.Message = messagge;
-            this.LocationList = registryLocations;
-            this.OwnerList = registryOwners;
         }
     }
 }

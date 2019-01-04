@@ -112,6 +112,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Comparators\QuoteTabComparator.cs" />
+    <Compile Include="Dialogs\Dialog3Combos\Dialog3CombosView.xaml.cs">
+      <DependentUpon>Dialog3CombosView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\Dialog3Combos\Dialog3CombosViewModel.cs" />
+    <Compile Include="Dialogs\DialogService\Dialog3CombosService.cs" />
     <Compile Include="Dialogs\DialogService\DialogResultEnum.cs" />
     <Compile Include="Dialogs\DialogService\DialogService.cs" />
     <Compile Include="Dialogs\DialogService\DialogViewModelBase.cs" />
@@ -130,6 +135,8 @@
     <Compile Include="Events\ViewModelBase.cs" />
     <Compile Include="Models\SintesiSoldi.cs" />
     <Compile Include="Models\SintesiSoldiList.cs" />
+    <Compile Include="Models\TipoSoldi.cs" />
+    <Compile Include="Models\TipoSoldiList.cs" />
     <Compile Include="ViewModels\GestioneContoCorrenteViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Models\ContoCorrente.cs" />
@@ -233,6 +240,10 @@
     <Compile Include="Views\ReportTrendAnno.xaml.cs">
       <DependentUpon>ReportTrendAnno.xaml</DependentUpon>
     </Compile>
+    <Page Include="Dialogs\Dialog3Combos\Dialog3CombosView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\DialogService\DialogWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

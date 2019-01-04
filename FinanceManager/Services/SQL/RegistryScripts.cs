@@ -64,5 +64,9 @@ namespace FinanceManager.Services.SQL
         public readonly static string AddMovementType = "INSERT INTO tipo_movimento (id_tipo_movimento, desc_Movimento) VALUE (null, @desc);";
         public readonly static string GetMovementType = "SELECT id_tipo_movimento, desc_Movimento FROM tipo_movimento WHERE id_tipo_movimento = @id";
         #endregion
+
+        public static readonly string GetTipoSoldiList = "SELECT id_tipo_soldi, desc_tipo_soldi FROM tipo_soldi";
+
+        public static readonly string GetTipoSoldiById = "SELECT id_tipo_soldi, desc_tipo_soldi FROM tipo_soldi WHERE id_tipo_soldi = @id_tipo_soldi";
     }
 }

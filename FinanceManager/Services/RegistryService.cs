@@ -936,5 +936,68 @@ namespace FinanceManager.Services
         }
         #endregion
 
+        public TipoSoldiList GetTipoSoldiList()
+        {
+            try
+            {
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetTipoSoldiList;
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    DataTable dt = new DataTable();
+                    dbAdapter.Fill(dt);
+                    TipoSoldiList TSL = new TipoSoldiList();
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        TipoSoldi TS = new TipoSoldi();
+                        TS.Id_Tipo_Soldi = (int)dr.Field<uint>("id_tipo_soldi");
+                        TS.Desc_Tipo_Soldi = dr.Field<string>("desc_tipo_soldi");
+                        TSL.Add(TS);
+                    }
+                    return TSL;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        public TipoSoldi GetTipoSoldiById(int id)
+        {
+            try
+            {
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetTipoSoldiById;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_tipo_soldi", id);
+                    DataTable dataTable = new DataTable();
+                    dbAdapter.Fill(dataTable);
+                    return new TipoSoldi()
+                    {
+                        Id_Tipo_Soldi = Convert.ToInt16(dataTable.Rows[0].ItemArray[0]),
+                        Desc_Tipo_Soldi = dataTable.Rows[0].ItemArray[1].ToString()
+                    };
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception("GetTipoSoldiById " + err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception("GetTipoSoldiById " + err.Message);
+            }
+        }
+
     }
 }

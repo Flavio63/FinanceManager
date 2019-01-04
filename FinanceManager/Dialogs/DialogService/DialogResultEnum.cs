@@ -8,7 +8,7 @@ namespace FinanceManager.Dialogs.DialogService
 {
     public enum DialogResult
     {
-        Undefined,
+        Cancel,
         Yes,
         No
     }

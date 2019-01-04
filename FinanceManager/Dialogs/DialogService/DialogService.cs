@@ -18,21 +18,7 @@ namespace FinanceManager.Dialogs.DialogService
             win.DataContext = vm;
             win.ShowDialog();
             DialogResult result = (win.DataContext as DialogViewModelBase).UserDialogResult;
-            Location = (win.DataContext as DialogViewModelBase).Location;
-            Owner = (win.DataContext as DialogViewModelBase).Owner;
             return result;
-        }
-
-        public static RegistryLocation Location
-        {
-            get;
-            private set;
-        }
-
-        public static RegistryOwner Owner
-        {
-            get;
-            private set;
         }
     }
 }

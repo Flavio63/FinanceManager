@@ -168,6 +168,12 @@ namespace FinanceManager.ViewModels
             private set { SetValue(() => RegistryOwner, value); }
         }
         
+        public TipoSoldi Tipo_Soldi
+        {
+            get { return GetValue(() => Tipo_Soldi); }
+            private set { SetValue(() => Tipo_Soldi, value); }
+        }
+
         /// <summary>
         /// Memorizzo il record prima della modifica
         /// </summary>
@@ -337,7 +343,7 @@ namespace FinanceManager.ViewModels
                             cc.Id_Conto = RegistryLocation.Id_conto;
                             cc.Desc_Conto = RegistryLocation.Desc_conto;
                             cc.Valore_Cambio = 1;
-                            cc.Id_Tipo_Soldi = 1;
+                            cc.Id_Tipo_Soldi = Tipo_Soldi.Id_Tipo_Soldi;
                             _managerLiquidServices.InsertAccountMovement(cc);                               // aggiungo il record al db
                             ListQuote = _managerLiquidServices.GetQuote();
                             ListTabQuote = _managerLiquidServices.GetQuoteTab();
@@ -460,21 +466,17 @@ namespace FinanceManager.ViewModels
 
         private bool OnOpenDialog(object param)
         {
-            Dialogs.DialogService.DialogViewModelBase vm = new 
-                Dialogs.DialogYesNo.DialogYesNoViewModel("Selezionare il conto e la gestione", _registryServices.GetRegistryLocationList(), _registryServices.GetRegistryOwners());
-            Dialogs.DialogService.DialogResult result = Dialogs.DialogService.DialogService.OpenDialog(vm, param as Window);
+            Dialogs.Dialog3Combos.Dialog3CombosViewModel vm = new
+                Dialogs.Dialog3Combos.Dialog3CombosViewModel("Selezionare il conto, la gestione e il tipo soldi",
+                _registryServices.GetRegistryLocationList(), _registryServices.GetRegistryOwners(), _registryServices.GetTipoSoldiList());
+
+            Dialogs.DialogService.DialogResult result = Dialogs.DialogService.Dialog3CombosService.OpenDialog(vm, param as Window);
+
             if (result == Dialogs.DialogService.DialogResult.Yes)
             {
-                RegistryOwner = new RegistryOwner()
-                {
-                    Id_gestione = Dialogs.DialogService.DialogService.Owner.Id_gestione,
-                    Nome_Gestione = Dialogs.DialogService.DialogService.Owner.Nome_Gestione
-                };
-                RegistryLocation = new RegistryLocation()
-                {
-                    Id_conto = Dialogs.DialogService.DialogService.Location.Id_conto,
-                    Desc_conto = Dialogs.DialogService.DialogService.Location.Desc_conto
-                };
+                RegistryOwner = Dialogs.DialogService.Dialog3CombosService.Owner;
+                RegistryLocation = Dialogs.DialogService.Dialog3CombosService.Location;
+                Tipo_Soldi = Dialogs.DialogService.Dialog3CombosService.Soldi;
                 return true;
             }
             else
