@@ -10,6 +10,7 @@ namespace FinanceManager.Dialogs.Dialog3Combos
 {
     public class Dialog3CombosViewModel : DialogViewModelBase
     {
+        #region commands
         public ICommand YesCommand
         {
             get { return GetValue(() => YesCommand); }
@@ -27,8 +28,10 @@ namespace FinanceManager.Dialogs.Dialog3Combos
             get { return GetValue(() => CancelCommand); }
             set { SetValue(() => CancelCommand, value); }
         }
-        
-        public Dialog3CombosViewModel(string message, RegistryLocationList locationList, RegistryOwnersList ownerList, TipoSoldiList tipoSoldis)
+        #endregion
+
+        public Dialog3CombosViewModel(string message, RegistryLocationList locationList, RegistryOwnersList ownerList, TipoSoldiList tipoSoldis,
+            RegistryLocation location = null, RegistryOwner owner = null, TipoSoldi soldi = null)
             : base (message)
         {
             RegistryLocations = locationList;
@@ -37,6 +40,21 @@ namespace FinanceManager.Dialogs.Dialog3Combos
             NoCommand = new CommandHandler(OnNoClicked);
             CancelCommand = new CommandHandler(OnCancelClicked);
             YesCommand = new CommandHandler(OnYesClicked);
+            if (location == null || owner == null || soldi == null)
+            {
+                Id_Location = 0;
+                Id_Owner = 0;
+                Id_Soldi = 0;
+            }
+            else
+            {
+                Id_Location = location.Id_conto;
+                Id_Owner = owner.Id_gestione;
+                Id_Soldi = soldi.Id_Tipo_Soldi;
+                Location = new RegistryLocation() { Id_conto = location.Id_conto, Desc_conto = location.Desc_conto };
+                Owner = new RegistryOwner() { Id_gestione = owner.Id_gestione, Nome_Gestione = owner.Nome_Gestione };
+                Soldi = new TipoSoldi() { Id_Tipo_Soldi = soldi.Id_Tipo_Soldi, Desc_Tipo_Soldi = soldi.Desc_Tipo_Soldi };
+            }
         }
 
         public void CloseDialogWithResult(Window window, DialogResult result, RegistryLocation location, RegistryOwner owner, TipoSoldi soldi)
@@ -62,9 +80,13 @@ namespace FinanceManager.Dialogs.Dialog3Combos
             CloseDialogWithResult(param as Window, DialogResult.Cancel);
         }
 
-        public RegistryLocation Location { get; private set; }
-        public RegistryOwner Owner { get; private set; }
-        public TipoSoldi Soldi { get; private set; }
+        public RegistryLocation Location { get; set; }
+        public RegistryOwner Owner { get; set; }
+        public TipoSoldi Soldi { get; set; }
+
+        public int Id_Location { get; set; }
+        public int Id_Owner { get; set; }
+        public int Id_Soldi { get; set; }
 
         public RegistryLocationList RegistryLocations { get; private set; }
         public RegistryOwnersList RegistryOwners { get; private set; }

@@ -24,7 +24,7 @@
         <StackPanel Orientation="Vertical" Grid.Row="1" Margin="5">
             <Label Content="Conti Correnti Disponibili" FontSize="14" HorizontalContentAlignment="Center"/>
             <ComboBox Margin="15" ItemsSource="{Binding RegistryLocations, UpdateSourceTrigger=PropertyChanged}"
-                  DisplayMemberPath="Desc_conto" SelectedValuePath="Id_conto">
+                  DisplayMemberPath="Desc_conto" SelectedValuePath="Id_conto" SelectedValue="{Binding Id_Location, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                 <iy:Interaction.Triggers>
                     <iy:EventTrigger EventName="SelectionChanged">
                         <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
@@ -35,7 +35,7 @@
         <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1" Margin="5">
             <Label Content="Gestioni Disponibili" FontSize="14" HorizontalContentAlignment="Center"/>
             <ComboBox Margin="15" ItemsSource="{Binding RegistryOwners, UpdateSourceTrigger=PropertyChanged}"
-                  DisplayMemberPath="Nome_Gestione" SelectedValuePath="Id_gestione">
+                  DisplayMemberPath="Nome_Gestione" SelectedValuePath="Id_gestione" SelectedValue="{Binding Id_Owner, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                 <iy:Interaction.Triggers>
                     <iy:EventTrigger EventName="SelectionChanged">
                         <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
@@ -46,7 +46,7 @@
         <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="2" Margin="5">
             <Label Content="Attribuzione Tipo Soldi" FontSize="14" HorizontalContentAlignment="Center"/>
             <ComboBox Margin="15" ItemsSource="{Binding TipoSoldis, UpdateSourceTrigger=PropertyChanged}"
-                  DisplayMemberPath="Desc_Tipo_Soldi" SelectedValuePath="Id_Tipo_Soldi">
+                  DisplayMemberPath="Desc_Tipo_Soldi" SelectedValuePath="Id_Tipo_Soldi" SelectedValue="{Binding Id_Soldi, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                 <iy:Interaction.Triggers>
                     <iy:EventTrigger EventName="SelectionChanged">
                         <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>

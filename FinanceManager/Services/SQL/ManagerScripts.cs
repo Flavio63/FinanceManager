@@ -138,8 +138,8 @@ namespace FinanceManager.Services.SQL
             "ORDER BY data_movimento";
 
         public static readonly string InsertAccountMovement = "INSERT INTO conto_corrente (id_conto, id_quote_investimenti, id_valuta, id_portafoglio_titoli, id_tipo_movimento, " +
-            "id_gestione, id_titolo, data_movimento, ammontare, cambio, causale) VALUE ( @id_conto, @id_quote_investimenti, @id_valuta, @id_portafoglio_titoli, @id_tipo_movimento, " +
-            "@id_gestione, @id_titolo, @data_movimento, @ammontare, @cambio, @causale)";
+            "id_gestione, id_titolo, data_movimento, ammontare, cambio, causale, id_tipo_soldi) VALUE ( @id_conto, @id_quote_investimenti, @id_valuta, @id_portafoglio_titoli, @id_tipo_movimento, " +
+            "@id_gestione, @id_titolo, @data_movimento, @ammontare, @cambio, @causale, @id_tipo_soldi)";
 
         protected static readonly string ContoCorrente = "SELECT id_fineco_euro, A.id_conto, B.desc_conto, id_quote_investimenti, A.id_valuta, C.cod_valuta, A.id_tipo_movimento, " +
             "D.desc_movimento, A.id_gestione, E.nome_gestione, A.id_titolo, F.isin, F.desc_titolo, data_movimento, ammontare, cambio, causale, A.id_tipo_soldi, G.desc_tipo_soldi " +
@@ -154,7 +154,7 @@ namespace FinanceManager.Services.SQL
 
         public static readonly string UpdateContoCorrenteByIdQuote = "UPDATE conto_corrente SET id_conto = @id_conto, id_valuta = @id_valuta, id_portafoglio_titoli = @id_portafoglio_titoli, " +
             "id_tipo_movimento = @id_tipo_movimento, id_gestione = @id_gestione, id_titolo = @id_titolo, data_movimento = @data_movimento, ammontare = @ammontare, " +
-            "cambio = @cambio, causale = @causale WHERE id_quote_investimenti = @id_quote_investimenti";
+            "cambio = @cambio, causale = @causale, id_tipo_soldi = @id_tipo_soldi WHERE id_quote_investimenti = @id_quote_investimenti";
 
         public static readonly string UpdateContoCorrenteByIdPortafoglioTitoli = "UPDATE conto_corrente SET id_conto = @id_conto, id_valuta = @id_valuta, id_quote_investimenti = @id_quote_investimenti, " +
             "id_tipo_movimento = @id_tipo_movimento, id_gestione = @id_gestione, id_titolo = @id_titolo, data_movimento = @data_movimento, ammontare = @ammontare, " +

@@ -39,8 +39,8 @@ namespace FinanceManager.ViewModels
             RegistryMovementTypeList listaOriginale = new RegistryMovementTypeList();
             listaOriginale = _registryServices.GetRegistryMovementTypesList();
             var RMTL = from movimento in listaOriginale
-                       where (movimento.Id_tipo_movimento == 1 || 
-                       movimento.Id_tipo_movimento == 2 || 
+                       where (movimento.Id_tipo_movimento == 1 ||
+                       movimento.Id_tipo_movimento == 2 ||
                        movimento.Id_tipo_movimento == 12 ||
                        movimento.Id_tipo_movimento == 4 ||
                        movimento.Id_tipo_movimento == 15)
@@ -149,7 +149,7 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => ListInvestitore); }
             set { SetValue(() => ListInvestitore, value); }
         }
-        
+
         /// <summary>
         /// Memorizzo la scelta del conto
         /// </summary>
@@ -158,7 +158,7 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => RegistryLocation); }
             private set { SetValue(() => RegistryLocation, value); }
         }
-        
+
         /// <summary>
         /// Memorizzo la scelta della gestione
         /// </summary>
@@ -167,7 +167,7 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => RegistryOwner); }
             private set { SetValue(() => RegistryOwner, value); }
         }
-        
+
         public TipoSoldi Tipo_Soldi
         {
             get { return GetValue(() => Tipo_Soldi); }
@@ -297,8 +297,8 @@ namespace FinanceManager.ViewModels
                 {
                     // se il movimento è 1 o 2 oppure se è 4 o 15 con cifra negativa allora l'operazione si scrive solo sulla
                     // tabella quote_investitori
-                    if (ActualQuote.Id_tipo_movimento == 1 || ActualQuote.Id_tipo_movimento == 2 || 
-                        (ActualQuote.Ammontare < 0 && (ActualQuote.Id_tipo_movimento == 4 || ActualQuote.Id_tipo_movimento == 15)) )
+                    if (ActualQuote.Id_tipo_movimento == 1 || ActualQuote.Id_tipo_movimento == 2 ||
+                        (ActualQuote.Ammontare < 0 && (ActualQuote.Id_tipo_movimento == 4 || ActualQuote.Id_tipo_movimento == 15)))
                     {
                         if (!VerifyQuoteTabOperation())
                         {
@@ -321,10 +321,12 @@ namespace FinanceManager.ViewModels
                         ListContoCorrente = _managerLiquidServices.GetContoCorrenteByMovement(12);
                         QuoteTabPrevious = new QuoteTab();
                     }
-                    else if ( (ActualQuote.Id_tipo_movimento == 12 && ActualQuote.IdQuote == 0) || 
-                        (ActualQuote.Ammontare > 0 && ActualQuote.IdQuote == 0 && (ActualQuote.Id_tipo_movimento == 4 || ActualQuote.Id_tipo_movimento == 15) ) )
+                    else if ((ActualQuote.Id_tipo_movimento == 12 && ActualQuote.IdQuote == 0) || (ActualQuote.Ammontare > 0 && ActualQuote.IdQuote == 0 && (ActualQuote.Id_tipo_movimento == 4 || ActualQuote.Id_tipo_movimento == 15)))
                     {
-                        if ( OnOpenDialog(this) == true)
+                        RegistryLocation = null;
+                        RegistryOwner = null;
+                        Tipo_Soldi = null;
+                        if (OnOpenDialog(this) == true)
                         {
                             _managerLiquidServices.InsertInvestment(ActualQuote);                           // aggiungo il record al db
                             ActualQuote.IdQuote = ((QuoteTab)_managerLiquidServices.GetLastQuoteTab()).IdQuote; // aggiorno il record selezionato
@@ -356,10 +358,12 @@ namespace FinanceManager.ViewModels
                             ActualQuote = QuoteTabPrevious;     // riporto la situazione all'origine
                         }
                     }
-                    else if ( (ActualQuote.Id_tipo_movimento == 12 && ActualQuote.IdQuote > 0 ) || 
-                        ((ActualQuote.Id_tipo_movimento == 4 || ActualQuote.Id_tipo_movimento == 15) && ActualQuote.IdQuote > 0) )
+                    else if ((ActualQuote.Id_tipo_movimento == 12 && ActualQuote.IdQuote > 0) || ((ActualQuote.Id_tipo_movimento == 4 || ActualQuote.Id_tipo_movimento == 15) && ActualQuote.IdQuote > 0))
                     {
-                        if ( OnOpenDialog(this))
+                        RegistryOwner = _registryServices.GetOwner(ListContoCorrente[0].Id_Gestione);
+                        RegistryLocation = _registryServices.GetLocation(ListContoCorrente[0].Id_Conto);
+                        Tipo_Soldi = _registryServices.GetTipoSoldiById(ListContoCorrente[0].Id_Tipo_Soldi);
+                        if (OnOpenDialog(this))
                         {
                             _managerLiquidServices.UpdateQuoteTab(ActualQuote);         // aggiorno i dati nel db
                             ContoCorrente cc = ListContoCorrente[0];
@@ -372,6 +376,8 @@ namespace FinanceManager.ViewModels
                                 cc.NomeGestione = RegistryOwner.Nome_Gestione;
                                 cc.Id_Conto = RegistryLocation.Id_conto;
                                 cc.Desc_Conto = RegistryLocation.Desc_conto;
+                                cc.Id_Tipo_Soldi = Tipo_Soldi.Id_Tipo_Soldi;
+                                cc.Desc_Tipo_Soldi = Tipo_Soldi.Desc_Tipo_Soldi;
                                 _managerLiquidServices.UpdateContoCorrenteByIdQuote(cc);         // aggiorno i dati nel db
                                 ListQuote = _managerLiquidServices.GetQuote();
                                 ListTabQuote = _managerLiquidServices.GetQuoteTab();
@@ -389,7 +395,7 @@ namespace FinanceManager.ViewModels
             }
             catch (Exception err)
             {
-                MessageBox.Show(err.Message, "Gestione AndQuote", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(err.Message, "Gestione And Quote", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -468,7 +474,8 @@ namespace FinanceManager.ViewModels
         {
             Dialogs.Dialog3Combos.Dialog3CombosViewModel vm = new
                 Dialogs.Dialog3Combos.Dialog3CombosViewModel("Selezionare il conto, la gestione e il tipo soldi",
-                _registryServices.GetRegistryLocationList(), _registryServices.GetRegistryOwners(), _registryServices.GetTipoSoldiList());
+                _registryServices.GetRegistryLocationList(), _registryServices.GetRegistryOwners(), _registryServices.GetTipoSoldiList(),
+                RegistryLocation, RegistryOwner, Tipo_Soldi);
 
             Dialogs.DialogService.DialogResult result = Dialogs.DialogService.Dialog3CombosService.OpenDialog(vm, param as Window);
 
