@@ -39,6 +39,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("ritenuta_fiscale", managerLiquidAsset.RitenutaFiscale);
                     dbComm.Parameters.AddWithValue("valore_cambio", managerLiquidAsset.Valore_di_cambio);
                     dbComm.Parameters.AddWithValue("note", managerLiquidAsset.Note);
+                    dbComm.Parameters.AddWithValue("attivo", managerLiquidAsset.Attivo);
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -407,6 +408,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("profit_loss", managerLiquidAsset.ProfitLoss);
                     dbComm.Parameters.AddWithValue("disponibile", managerLiquidAsset.Available);
                     dbComm.Parameters.AddWithValue("note", managerLiquidAsset.Note);
+                    dbComm.Parameters.AddWithValue("attivo", managerLiquidAsset.Attivo);
                     dbComm.Parameters.AddWithValue("id_portafoglio_titoli", managerLiquidAsset.Id_portafoglio);
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.Connection.Open();
@@ -490,6 +492,7 @@ namespace FinanceManager.Services
             MLA.RitenutaFiscale = dr.Field<double>("ritenuta_fiscale");
             MLA.Valore_di_cambio = dr.Field<double>("valore_cambio");
             MLA.Note = dr.Field<string>("note");
+            MLA.Attivo = dr.Field<int>("attivo");
             return MLA;
         }
         #region ContoCorrente
@@ -1024,6 +1027,90 @@ namespace FinanceManager.Services
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        public void UpdateContoCorrenteByIdCC(ContoCorrente contoCorrente)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Ptf_CCList GetShare_AccountMovement(int id_gestione, int id_conto, int id_titolo)
+        {
+            try
+            {
+                DataTable DT = new DataTable();
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = System.Data.CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetShare_AccountMovement;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", id_gestione);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", id_conto);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", id_titolo);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.Fill(DT);
+                    Ptf_CCList _CCs = new Ptf_CCList();
+                    foreach (DataRow row in DT.Rows)
+                    {
+                        Ptf_CC ptf_CC = new Ptf_CC();
+                        ptf_CC.Id_portafoglio_titoli = (int)row.Field<uint>("id_portafoglio_titoli");
+                        ptf_CC.Id_gestione = (int)row.Field<uint>("id_gestione");
+                        ptf_CC.Id_conto = (int)row.Field<uint>("id_conto");
+                        ptf_CC.Id_valuta = (int)row.Field<uint>("id_valuta");
+                        ptf_CC.Id_tipo_movimento = (int)row.Field<uint>("id_tipo_movimento");
+                        ptf_CC.Id_titolo = (int)row.Field<uint>("id_titolo");
+                        ptf_CC.Data_Movimento = row.Field<DateTime>("data_movimento");
+                        ptf_CC.ValoreAzione = row.Field<double>("ValoreAzione");
+                        ptf_CC.N_titoli = row.Field<double>("shares_quantity");
+                        ptf_CC.Valore_unitario_in_valuta = row.Field<double>("unity_local_value");
+                        ptf_CC.Commissioni_totale = row.Field<double>("total_commission");
+                        ptf_CC.TobinTax = row.Field<double>("tobin_tax");
+                        ptf_CC.Disaggio_anticipo_cedole = row.Field<double>("disaggio_cedole");
+                        ptf_CC.RitenutaFiscale = row.Field<double>("ritenuta_fiscale");
+                        ptf_CC.Valore_di_cambio = row.Field<double>("valore_cambio");
+                        ptf_CC.Note = row.Field<string>("note");
+                        ptf_CC.Id_RowConto = (int)row.Field<uint>("id_fineco_euro");
+                        ptf_CC.Valore_in_CC = row.Field<double>("Valore_in_CC");
+                        ptf_CC.Id_Tipo_Soldi = (int)row.Field<uint>("id_tipo_soldi");
+                        _CCs.Add(ptf_CC);
+                    }
+                    return _CCs;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        public PortafoglioTitoli GetPortafoglioTitoliById(int IdPortafoglioTitoli)
+        {
+            try
+            {
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = System.Data.CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetPortafoglioTitoliById;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_portafoglio_titoli", IdPortafoglioTitoli);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    DataTable dt = new DataTable();
+                    dbAdapter.Fill(dt);
+                    return MLA(dt.Rows[0]);
                 }
             }
             catch (MySqlException err)

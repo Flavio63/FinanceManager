@@ -1,5 +1,6 @@
 ﻿using FinanceManager.Events;
 using FinanceManager.Models;
+using FinanceManager.Models.Enum;
 using FinanceManager.Services;
 using FinanceManager.Views;
 using System;
@@ -61,8 +62,6 @@ namespace FinanceManager.ViewModels
 
                 SharesList = new ObservableCollection<RegistryShare>(_registryServices.GetRegistryShareList());
                 _Filter = new Predicate<object>(Filter);
-                RecordPortafoglioTitoli = new PortafoglioTitoli();
-                ListPortafoglioTitoli = new PortafoglioTitoliList();
             }
             catch (Exception err)
             {
@@ -493,38 +492,113 @@ namespace FinanceManager.ViewModels
             try
             {
                 // verifico la disponibilità di liquidità in conto corrente
-                if (CurrencyAvailable < Math.Abs(TotalLocalValue))
+                if (CurrencyAvailable < Math.Abs(TotalLocalValue) && RecordPortafoglioTitoli.Id_tipo_movimento == 5)
                 {
                     MessageBox.Show("Non hai abbastanza soldi per questo acquisto!", "Acquisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     return;
                 }
-                PortafoglioTitoli MLA = new PortafoglioTitoli();
-                MLA.Id_gestione = RecordPortafoglioTitoli.Id_gestione;
-                MLA.Id_conto = RecordPortafoglioTitoli.Id_conto;
-                MLA.Id_valuta = RecordPortafoglioTitoli.Id_valuta;
-                MLA.Id_tipo_movimento = RecordPortafoglioTitoli.Id_tipo_movimento;
-                MLA.Id_titolo = RecordPortafoglioTitoli.Id_titolo;
-                MLA.Data_Movimento = RecordPortafoglioTitoli.Data_Movimento;
-                MLA.Importo_totale = RecordPortafoglioTitoli.Importo_totale;
-                MLA.N_titoli = RecordPortafoglioTitoli.N_titoli;
-                MLA.Costo_unitario_in_valuta = RecordPortafoglioTitoli.Costo_unitario_in_valuta;
-                MLA.Commissioni_totale = RecordPortafoglioTitoli.Commissioni_totale;
-                MLA.TobinTax = RecordPortafoglioTitoli.TobinTax;
-                MLA.Disaggio_anticipo_cedole = RecordPortafoglioTitoli.Disaggio_anticipo_cedole;
-                MLA.RitenutaFiscale = RecordPortafoglioTitoli.RitenutaFiscale;
-                MLA.Valore_di_cambio = RecordPortafoglioTitoli.Valore_di_cambio;
-                MLA.Note = RecordPortafoglioTitoli.Note;
+                if (RecordPortafoglioTitoli.Id_tipo_movimento == 5)
+                {
+                    PortafoglioTitoli MLA = new PortafoglioTitoli();
+                    MLA.Id_gestione = RecordPortafoglioTitoli.Id_gestione;
+                    MLA.Id_conto = RecordPortafoglioTitoli.Id_conto;
+                    MLA.Id_valuta = RecordPortafoglioTitoli.Id_valuta;
+                    MLA.Id_tipo_movimento = RecordPortafoglioTitoli.Id_tipo_movimento;
+                    MLA.Id_titolo = RecordPortafoglioTitoli.Id_titolo;
+                    MLA.Data_Movimento = RecordPortafoglioTitoli.Data_Movimento;
+                    MLA.Importo_totale = RecordPortafoglioTitoli.Importo_totale;
+                    MLA.N_titoli = RecordPortafoglioTitoli.N_titoli;
+                    MLA.Costo_unitario_in_valuta = RecordPortafoglioTitoli.Costo_unitario_in_valuta;
+                    MLA.Commissioni_totale = RecordPortafoglioTitoli.Commissioni_totale;
+                    MLA.TobinTax = RecordPortafoglioTitoli.TobinTax;
+                    MLA.Disaggio_anticipo_cedole = RecordPortafoglioTitoli.Disaggio_anticipo_cedole;
+                    MLA.RitenutaFiscale = RecordPortafoglioTitoli.RitenutaFiscale;
+                    MLA.Valore_di_cambio = RecordPortafoglioTitoli.Valore_di_cambio;
+                    MLA.Note = RecordPortafoglioTitoli.Note;
 
-                _liquidAssetServices.AddManagerLiquidAsset(MLA);    // ho inserito il movimento in portafoglio
-                MLA = _liquidAssetServices.GetLastShareMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_conto); // ricarico l'ultimo record
-                _liquidAssetServices.InsertAccountMovement(ContoCorrente(MLA));     // ho inserito il movimento in conto corrente
-                // reimposto la griglia con quanto inserito
-                ListPortafoglioTitoli = _liquidAssetServices.GetManagerSharesMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_conto);
-                CanInsert = false;          // disabilito la possibilità di un inserimento accidentale
-                CanUpdateDelete = true;     // abilito la possibilità di modificare / cancellare il record
+                    _liquidAssetServices.AddManagerLiquidAsset(MLA);    // ho inserito il movimento in portafoglio
+                    MLA = _liquidAssetServices.GetLastShareMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_conto); // ricarico l'ultimo record
+                    _liquidAssetServices.InsertAccountMovement(ContoCorrente(MLA, TotaleContabile, (int)TipologiaSoldi.CAPITALE));     // ho inserito il movimento in conto corrente
+                    // reimposto la griglia con quanto inserito
+                    ListPortafoglioTitoli = _liquidAssetServices.GetManagerSharesMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_conto);
+                    CanInsert = false;          // disabilito la possibilità di un inserimento accidentale
+                    CanUpdateDelete = true;     // abilito la possibilità di modificare / cancellare il record
+                    RecordPortafoglioTitoli = MLA;
+                }
+                else if ( RecordPortafoglioTitoli.Id_tipo_movimento == 6)
+                {
+                    // estraggo tutti gli acquisti / vendite del titolo ancora attive
+                    Ptf_CCList ptf_CCs = _liquidAssetServices.GetShare_AccountMovement(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_conto, (int)RecordPortafoglioTitoli.Id_titolo);
+                    double valoreAcquisto = 0;      // n. azioni per costo unitario in valuta
+                    double numeroAzioni = 0;        // n. azioni
+                    double valoreInCC = 0;          // valore in CC
+                    foreach (Ptf_CC row in ptf_CCs)
+                    {
+                        //se il movimento estratto è un acquisto e per tutti gli acquisti consecutivi ne sommo costo e quote:
+                        if (row.Id_tipo_movimento == 5)
+                        {
+                            //nel caso sia stato comprato in euro e adesso in maschera c'è un valore diverso da euro
+                            if (row.Id_valuta == 1 && RecordPortafoglioTitoli.Id_valuta != 1)
+                            {
+                                valoreAcquisto += (row.ValoreAzione + (row.Commissioni_totale + row.Disaggio_anticipo_cedole) * -1) * row.Valore_di_cambio;
+                                valoreInCC += row.Valore_in_CC * row.Valore_di_cambio;
+                            }
+                            //nel caso sia stato comprato e venduto in una valuta diversa da euro
+                            else if (row.Id_valuta == RecordPortafoglioTitoli.Id_valuta && row.Id_valuta != 1)
+                            {
+                                valoreAcquisto += row.ValoreAzione + (row.Commissioni_totale + row.Disaggio_anticipo_cedole) * -1;
+                                valoreInCC += row.Valore_in_CC;
+                            }
+                            //nel caso sia stato comprato e venduto in euro
+                            else
+                            {
+                                valoreAcquisto += row.ValoreAzione + (row.Commissioni_totale + row.TobinTax + row.Disaggio_anticipo_cedole) * -1;
+                                valoreInCC += row.Valore_in_CC;
+                            }
+                            numeroAzioni += row.N_titoli;
+                        }
+                        //se il movimento estratto è una vendita e che non sia lo stessa vendita
+                        else if (row.Id_tipo_movimento == 6 && row.Id_portafoglio_titoli != RecordPortafoglioTitoli.Id_portafoglio)
+                        {
+                            //nel caso i precedenti movimenti (acquisti) e questa vendita NON azzerino il totale azioni
+                            //vuol dire che sono rimasti dei pezzi invenduti e quindi ne calcolo il costo medio rimanente
+                            if (numeroAzioni + row.N_titoli != 0)
+                            {
+                                valoreAcquisto = valoreAcquisto / numeroAzioni * (numeroAzioni + row.N_titoli);
+                                numeroAzioni += row.N_titoli;
+                            }
+                        }
+                    }
+                    //ciclo del passato finito calcolo il profit loss nel caso di vendita totale
+                    if (numeroAzioni + RecordPortafoglioTitoli.N_titoli == 0)
+                    {
+                        // disattivo tutti i record coinvolti
+                        foreach (Ptf_CC row in ptf_CCs)
+                        {
+                            PortafoglioTitoli pt = _liquidAssetServices.GetPortafoglioTitoliById(row.Id_portafoglio_titoli);
+                            pt.Attivo = 0;
+                            _liquidAssetServices.UpdateManagerLiquidAsset(pt);
+                        }
+                        RecordPortafoglioTitoli.Attivo = 0;
+                        _liquidAssetServices.AddManagerLiquidAsset(RecordPortafoglioTitoli);    // ho inserito il movimento in portafoglio titoli
+                        RecordPortafoglioTitoli = _liquidAssetServices.GetLastShareMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_conto); // ricarico l'ultimo record
+                        if (valoreAcquisto + TotaleContabile > 0)
+                        {
+                            _liquidAssetServices.InsertAccountMovement(ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto * -1, (int)TipologiaSoldi.CAPITALE));
+                            _liquidAssetServices.InsertAccountMovement(ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, (int)TipologiaSoldi.UTILI));
+                        }
+                        else
+                        {
+                            _liquidAssetServices.InsertAccountMovement(ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, 1));
+                        }
+                    }
+                    else //e nel caso di vendita parziale
+                    {
+                        RecordPortafoglioTitoli.ProfitLoss = valoreAcquisto / numeroAzioni * RecordPortafoglioTitoli.N_titoli * -1 +
+                            (RecordPortafoglioTitoli.Importo_totale + (RecordPortafoglioTitoli.Commissioni_totale + RecordPortafoglioTitoli.TobinTax + RecordPortafoglioTitoli.Disaggio_anticipo_cedole + RecordPortafoglioTitoli.RitenutaFiscale) * -1);
+                    }
+                }
 
-                RecordPortafoglioTitoli = MLA;
-                SharesOwned = _liquidAssetServices.GetSharesQuantity(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_conto, (uint)RecordPortafoglioTitoli.Id_titolo);
                 SrchShares = "";
                 // aggiorno la disponibilità
                 SintesiSoldiR = _liquidAssetServices.GetCurrencyAvailable(1);
@@ -538,7 +612,7 @@ namespace FinanceManager.ViewModels
                     err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        private ContoCorrente ContoCorrente (PortafoglioTitoli portafoglioTitoli)
+        private ContoCorrente ContoCorrente (PortafoglioTitoli portafoglioTitoli, double valoreInCC, int idTipoSoldi)
         {
             ContoCorrente cc = new ContoCorrente()
             {
@@ -550,10 +624,10 @@ namespace FinanceManager.ViewModels
                 Id_Gestione = portafoglioTitoli.Id_gestione,
                 Id_Titolo = (int)portafoglioTitoli.Id_titolo,
                 DataMovimento = portafoglioTitoli.Data_Movimento,
-                Ammontare = TotaleContabile,
+                Ammontare = valoreInCC,
                 Valore_Cambio = portafoglioTitoli.Valore_di_cambio,
                 Causale = portafoglioTitoli.Note,
-                Id_Tipo_Soldi = 1
+                Id_Tipo_Soldi = idTipoSoldi
             };
             return cc;
         }
@@ -562,7 +636,7 @@ namespace FinanceManager.ViewModels
             try
             {
                 _liquidAssetServices.UpdateManagerLiquidAsset(RecordPortafoglioTitoli);                                   //registro la modifica in portafoglio
-                _liquidAssetServices.UpdateContoCorrenteByIdPortafoglioTitoli(ContoCorrente(RecordPortafoglioTitoli));    //registro la modifica in conto corrente
+                _liquidAssetServices.UpdateContoCorrenteByIdPortafoglioTitoli(ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, 1));    //registro la modifica in conto corrente
 
                 // aggiorno la disponibilità
                 SintesiSoldiR = _liquidAssetServices.GetCurrencyAvailable(1);

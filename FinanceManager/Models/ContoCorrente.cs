@@ -9,6 +9,8 @@ namespace FinanceManager.Models
 {
     public class ContoCorrente : ViewModelBase
     {
+        private DateTime _MovementDate;
+
         public int Id_RowConto { get; set; }
         public int Id_Conto { get; set; }
         public string Desc_Conto { get; set; }
@@ -23,7 +25,21 @@ namespace FinanceManager.Models
         public int Id_Titolo { get; set; }
         public string Desc_Titolo { get; set; }
         public string ISIN { get; set; }
-        public DateTime DataMovimento { get; set; }
+        public DateTime DataMovimento
+        {
+            get
+            {
+                if (_MovementDate.Date.ToShortDateString() == "01/01/0001" || _MovementDate.Date.ToShortDateString() == "01/01/01")
+                    _MovementDate = DateTime.Now.Date;
+                return _MovementDate;
+            }
+            set
+            {
+                if (value.Date.ToShortDateString() == "01/01/0001" || _MovementDate.Date.ToShortDateString() == "01/01/01")
+                    _MovementDate = DateTime.Now.Date;
+                _MovementDate = value;
+            }
+        }
         public double Ammontare { get; set; }
         public double Valore_Cambio { get; set; }
         public string Causale { set; get; }

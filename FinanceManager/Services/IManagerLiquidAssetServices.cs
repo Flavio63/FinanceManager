@@ -10,6 +10,8 @@ namespace FinanceManager.Services
         PortafoglioTitoliList GetManagerSharesMovementByOwnerAndLocation(int IdOwner, int IdLocation);
         PortafoglioTitoliList GetManagerLiquidAssetListByOwnerLocationAndTitolo(int idGestione, int idConto, int idTitolo);
         PortafoglioTitoli GetLastShareMovementByOwnerAndLocation(int IdOwner, int IdLocation);
+        PortafoglioTitoli GetPortafoglioTitoliById(int IdPortafoglioTitoli);
+        Ptf_CCList GetShare_AccountMovement(int id_gestione, int id_conto, int id_titolo);
         SintesiSoldiList GetCurrencyAvailable(int IdGestione = 0, int IdConto = 0, int IdValuta = 0);
         PortafoglioTitoliList GetShareMovements(int IdOwner, int IdLocation, uint IdShare);
         double GetSharesQuantity(int IdOwner, int IdLocation, uint idShare);
@@ -32,7 +34,8 @@ namespace FinanceManager.Services
         ContoCorrenteList GetContoCorrenteList();                       // Prendo tutti i record della tabella ContoCorrente
         ContoCorrenteList GetContoCorrenteByIdQuote(int idQuote);       // Il movimento del conto legato al giroconto selezionato
         ContoCorrenteList GetContoCorrenteByMovement(int idMovimento);  // Tutti i movimenti di giroconto
-        void UpdateContoCorrenteByIdQuote(ContoCorrente contoCorrente);             // Aggiorno i movimenti della tabella ContoCorrente
+        void UpdateContoCorrenteByIdCC(ContoCorrente contoCorrente);                // Aggiorno il movimento della tabella ContoCorrente sulla base dell'id del record
+        void UpdateContoCorrenteByIdQuote(ContoCorrente contoCorrente);             // Aggiorno il movimento della tabella ContoCorrente sulla base della tabella quote investimento
         void UpdateContoCorrenteByIdPortafoglioTitoli(ContoCorrente contoCorrente); // Aggiorno il movimento della tabella ContoCorrente sulla base del conto titoli
         void DeleteContoCorrenteByIdPortafoglioTitoli(int idContoTitoli);           // Elimino il movimento dalla tabella ContoCorrente sulla base del conto titoli
         void DeleteAccount(int idCC);                                               // Elimino il movimento dalla tabella ContoCorrente

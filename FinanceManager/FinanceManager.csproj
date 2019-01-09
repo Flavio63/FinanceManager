@@ -133,10 +133,13 @@
     <Compile Include="Events\ExcludeChar.cs" />
     <Compile Include="Events\VerifyNumber.cs" />
     <Compile Include="Events\ViewModelBase.cs" />
+    <Compile Include="Models\Ptf_CC.cs" />
+    <Compile Include="Models\Ptf_CCList.cs" />
     <Compile Include="Models\SintesiSoldi.cs" />
     <Compile Include="Models\SintesiSoldiList.cs" />
     <Compile Include="Models\TipoSoldi.cs" />
     <Compile Include="Models\TipoSoldiList.cs" />
+    <Compile Include="Models\Enum\TipologiaSoldi.cs" />
     <Compile Include="ViewModels\GestioneContoCorrenteViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Models\ContoCorrente.cs" />

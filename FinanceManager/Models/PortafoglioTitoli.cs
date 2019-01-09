@@ -77,5 +77,6 @@ namespace FinanceManager.Models
         public double Importo_cambiato { get; set; }
         public bool Available { get; set; }
         public string Note { get; set; }
+        public int Attivo { get; set; }
     }
 }
