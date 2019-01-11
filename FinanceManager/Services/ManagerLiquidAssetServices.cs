@@ -527,7 +527,7 @@ namespace FinanceManager.Services
             conto.Ammontare = dataRow.Field<double>("ammontare");
             conto.Valore_Cambio = dataRow.Field<double>("cambio");
             conto.Causale = dataRow.Field<string>("causale");
-            conto.Id_Tipo_Soldi = (int)dataRow.Field<uint>("id_tipo_soldi");
+            conto.Id_Tipo_Soldi = (Models.Enum.TipologiaSoldi)(int)dataRow.Field<uint>("id_tipo_soldi");
             conto.Desc_Tipo_Soldi = dataRow.Field<string>("desc_tipo_soldi");
             return conto;
         }

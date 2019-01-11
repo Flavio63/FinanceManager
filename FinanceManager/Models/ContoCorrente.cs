@@ -1,9 +1,6 @@
 ﻿using FinanceManager.Events;
+using FinanceManager.Models.Enum;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FinanceManager.Models
 {
@@ -43,7 +40,36 @@ namespace FinanceManager.Models
         public double Ammontare { get; set; }
         public double Valore_Cambio { get; set; }
         public string Causale { set; get; }
-        public int Id_Tipo_Soldi { set; get; }
+        public TipologiaSoldi Id_Tipo_Soldi { set; get; }
         public string Desc_Tipo_Soldi { set; get; }
+
+        /// <summary>
+        /// Inizializza un record vuoto di ContoCorrente
+        /// </summary>
+        public ContoCorrente() { }
+        
+        /// <summary>
+        /// Inizializza un record di ContoCorrente prendendo
+        /// i campi principali dal record di PortafoglioTitoli
+        /// specificando il valore dell'operazione per il c/c e la tipologia di soldi
+        /// </summary>
+        /// <param name="portafoglioTitoli">Record di PortafoglioTitoli</param>
+        /// <param name="valoreInCC">Valore da registrare in c/c</param>
+        /// <param name="idTipoSoldi">Destinazione d'uso dei soldi</param>
+        public ContoCorrente(PortafoglioTitoli portafoglioTitoli, double valoreInCC, TipologiaSoldi idTipoSoldi)
+        {
+            Id_Conto = portafoglioTitoli.Id_conto;
+            Id_Quote_Investimenti = 0;
+            Id_Valuta = portafoglioTitoli.Id_valuta;
+            Id_Portafoglio_Titoli = portafoglioTitoli.Id_portafoglio;
+            Id_tipo_movimento = portafoglioTitoli.Id_tipo_movimento;
+            Id_Gestione = portafoglioTitoli.Id_gestione;
+            Id_Titolo = (int)portafoglioTitoli.Id_titolo;
+            DataMovimento = portafoglioTitoli.Data_Movimento;
+            Ammontare = valoreInCC;
+            Valore_Cambio = portafoglioTitoli.Valore_di_cambio;
+            Causale = portafoglioTitoli.Note;
+            Id_Tipo_Soldi = idTipoSoldi;
+        }
     }
 }

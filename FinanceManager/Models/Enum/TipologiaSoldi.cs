@@ -2,9 +2,10 @@
 {
     public enum TipologiaSoldi
     {
-        NOTHING = 0,
-        CAPITALE = 1,
-        CEDOLA = 4,
-        UTILI = 15
+        Nothing = 0,
+        Capitale = 1,
+        Cedole = 4,
+        PerditaCapitale = 11,
+        Utili = 15
     }
 }

@@ -228,8 +228,8 @@
                     </iy:Interaction.Triggers>
                 </DatePicker>
                 <TextBlock Grid.Row="3" Grid.Column="2" Text="Cifra" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
-                <TextBox Name="Ammontare" Grid.Row="3" Grid.Column="3" Margin="5, 2" HorizontalContentAlignment="Right"
-                         Text="{Binding RecordContoCorrente.Ammontare, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat={}{0:n4}, ConverterCulture=it-IT}">
+                <TextBox Name="Ammontare" Grid.Row="3" Grid.Column="3" Margin="5, 2" Padding="0,0,5,0" HorizontalContentAlignment="Right"
+                         Text="{Binding RecordContoCorrente.Ammontare, UpdateSourceTrigger=PropertyChanged, ConverterCulture=it-IT}">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="LostFocus">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
@@ -452,7 +452,7 @@
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
                 <DataGridTextColumn Header="Ammontare" Binding="{Binding Ammontare, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay,
-                                        ConverterCulture=it-IT, StringFormat=C2}" IsReadOnly="True" FontSize="14" FontWeight="Normal">
+                                        ConverterCulture=it-IT, StringFormat=N2}" IsReadOnly="True" FontSize="14" FontWeight="Normal">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="{x:Type TextBlock}">
                             <Setter Property="HorizontalAlignment" Value="Right"/>

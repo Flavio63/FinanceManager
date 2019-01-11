@@ -345,7 +345,7 @@ namespace FinanceManager.ViewModels
                             cc.Id_Conto = RegistryLocation.Id_conto;
                             cc.Desc_Conto = RegistryLocation.Desc_conto;
                             cc.Valore_Cambio = 1;
-                            cc.Id_Tipo_Soldi = Tipo_Soldi.Id_Tipo_Soldi;
+                            cc.Id_Tipo_Soldi = (Models.Enum.TipologiaSoldi)Tipo_Soldi.Id_Tipo_Soldi;
                             _managerLiquidServices.InsertAccountMovement(cc);                               // aggiungo il record al db
                             ListQuote = _managerLiquidServices.GetQuote();
                             ListTabQuote = _managerLiquidServices.GetQuoteTab();
@@ -362,7 +362,7 @@ namespace FinanceManager.ViewModels
                     {
                         RegistryOwner = _registryServices.GetOwner(ListContoCorrente[0].Id_Gestione);
                         RegistryLocation = _registryServices.GetLocation(ListContoCorrente[0].Id_Conto);
-                        Tipo_Soldi = _registryServices.GetTipoSoldiById(ListContoCorrente[0].Id_Tipo_Soldi);
+                        Tipo_Soldi = _registryServices.GetTipoSoldiById((int)ListContoCorrente[0].Id_Tipo_Soldi);
                         if (OnOpenDialog(this))
                         {
                             _managerLiquidServices.UpdateQuoteTab(ActualQuote);         // aggiorno i dati nel db
@@ -376,7 +376,7 @@ namespace FinanceManager.ViewModels
                                 cc.NomeGestione = RegistryOwner.Nome_Gestione;
                                 cc.Id_Conto = RegistryLocation.Id_conto;
                                 cc.Desc_Conto = RegistryLocation.Desc_conto;
-                                cc.Id_Tipo_Soldi = Tipo_Soldi.Id_Tipo_Soldi;
+                                cc.Id_Tipo_Soldi = (Models.Enum.TipologiaSoldi) Tipo_Soldi.Id_Tipo_Soldi;
                                 cc.Desc_Tipo_Soldi = Tipo_Soldi.Desc_Tipo_Soldi;
                                 _managerLiquidServices.UpdateContoCorrenteByIdQuote(cc);         // aggiorno i dati nel db
                                 ListQuote = _managerLiquidServices.GetQuote();

@@ -518,7 +518,7 @@ namespace FinanceManager.ViewModels
 
                     _liquidAssetServices.AddManagerLiquidAsset(MLA);    // ho inserito il movimento in portafoglio
                     MLA = _liquidAssetServices.GetLastShareMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_conto); // ricarico l'ultimo record
-                    _liquidAssetServices.InsertAccountMovement(ContoCorrente(MLA, TotaleContabile, (int)TipologiaSoldi.CAPITALE));     // ho inserito il movimento in conto corrente
+                    _liquidAssetServices.InsertAccountMovement(new ContoCorrente(MLA, TotaleContabile, TipologiaSoldi.Capitale));     // ho inserito il movimento in conto corrente
                     // reimposto la griglia con quanto inserito
                     ListPortafoglioTitoli = _liquidAssetServices.GetManagerSharesMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_conto);
                     CanInsert = false;          // disabilito la possibilità di un inserimento accidentale
@@ -584,12 +584,13 @@ namespace FinanceManager.ViewModels
                         RecordPortafoglioTitoli = _liquidAssetServices.GetLastShareMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_conto); // ricarico l'ultimo record
                         if (valoreAcquisto + TotaleContabile > 0)
                         {
-                            _liquidAssetServices.InsertAccountMovement(ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto * -1, (int)TipologiaSoldi.CAPITALE));
-                            _liquidAssetServices.InsertAccountMovement(ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, (int)TipologiaSoldi.UTILI));
+                            _liquidAssetServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto * -1, TipologiaSoldi.Capitale));
+                            _liquidAssetServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.Utili));
                         }
-                        else
+                        else if (valoreAcquisto + TotaleContabile < 0)
                         {
-                            _liquidAssetServices.InsertAccountMovement(ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, 1));
+                            _liquidAssetServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale));
+                            _liquidAssetServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, (TotaleContabile + valoreAcquisto) * -1, TipologiaSoldi.PerditaCapitale));
                         }
                     }
                     else //e nel caso di vendita parziale
@@ -612,31 +613,13 @@ namespace FinanceManager.ViewModels
                     err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        private ContoCorrente ContoCorrente (PortafoglioTitoli portafoglioTitoli, double valoreInCC, int idTipoSoldi)
-        {
-            ContoCorrente cc = new ContoCorrente()
-            {
-                Id_Conto = portafoglioTitoli.Id_conto,
-                Id_Quote_Investimenti = 0,
-                Id_Valuta = portafoglioTitoli.Id_valuta,
-                Id_Portafoglio_Titoli = portafoglioTitoli.Id_portafoglio,
-                Id_tipo_movimento = portafoglioTitoli.Id_tipo_movimento,
-                Id_Gestione = portafoglioTitoli.Id_gestione,
-                Id_Titolo = (int)portafoglioTitoli.Id_titolo,
-                DataMovimento = portafoglioTitoli.Data_Movimento,
-                Ammontare = valoreInCC,
-                Valore_Cambio = portafoglioTitoli.Valore_di_cambio,
-                Causale = portafoglioTitoli.Note,
-                Id_Tipo_Soldi = idTipoSoldi
-            };
-            return cc;
-        }
+
         public void UpdateCommand(object param)
         {
             try
             {
                 _liquidAssetServices.UpdateManagerLiquidAsset(RecordPortafoglioTitoli);                                   //registro la modifica in portafoglio
-                _liquidAssetServices.UpdateContoCorrenteByIdPortafoglioTitoli(ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, 1));    //registro la modifica in conto corrente
+                _liquidAssetServices.UpdateContoCorrenteByIdPortafoglioTitoli(new ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale));    //registro la modifica in conto corrente
 
                 // aggiorno la disponibilità
                 SintesiSoldiR = _liquidAssetServices.GetCurrencyAvailable(1);

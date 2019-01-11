@@ -349,9 +349,9 @@ namespace FinanceManager.ViewModels
                 }
                 else if (e.AddedItems[0] is TipoSoldi TS)
                 {
-                    RecordContoCorrente.Id_Tipo_Soldi = TS.Id_Tipo_Soldi;
+                    RecordContoCorrente.Id_Tipo_Soldi = (Models.Enum.TipologiaSoldi) TS.Id_Tipo_Soldi;
                     RecordContoCorrente.Desc_Tipo_Soldi = TS.Desc_Tipo_Soldi;
-                    Record2ContoCorrente.Id_Tipo_Soldi = TS.Id_Tipo_Soldi;
+                    Record2ContoCorrente.Id_Tipo_Soldi = (Models.Enum.TipologiaSoldi)TS.Id_Tipo_Soldi;
                     Record2ContoCorrente.Desc_Tipo_Soldi = TS.Desc_Tipo_Soldi;
                 }
                 else if (e.AddedItems[0] is RegistryMovementType RMT)
@@ -485,9 +485,9 @@ namespace FinanceManager.ViewModels
                     CurrencyAvailable = _liquidAssetServices.GetCurrencyAvailable(IdGestione: RecordContoCorrente.Id_Gestione,
                         IdConto: RecordContoCorrente.Id_Conto, IdValuta: RecordContoCorrente.Id_Valuta)[0];
 
-                    if ( RecordContoCorrente.Ammontare > CurrencyAvailable.Disponibili && RecordContoCorrente.Id_Tipo_Soldi == 1 || 
-                        RecordContoCorrente.Ammontare > CurrencyAvailable.Cedole && RecordContoCorrente.Id_Tipo_Soldi == 4 || 
-                        RecordContoCorrente.Ammontare > CurrencyAvailable.Utili && RecordContoCorrente.Id_Tipo_Soldi == 15)
+                    if ( RecordContoCorrente.Ammontare > CurrencyAvailable.Disponibili && RecordContoCorrente.Id_Tipo_Soldi == Models.Enum.TipologiaSoldi.Capitale || 
+                        RecordContoCorrente.Ammontare > CurrencyAvailable.Cedole && RecordContoCorrente.Id_Tipo_Soldi == Models.Enum.TipologiaSoldi.Cedole || 
+                        RecordContoCorrente.Ammontare > CurrencyAvailable.Utili && RecordContoCorrente.Id_Tipo_Soldi == Models.Enum.TipologiaSoldi.Utili)
                     {
                         MessageBox.Show(String.Format("Non hai abbastanza soldi in {0} per effettuare un {1} di {2}.{3}" +
                             "Ricontrollare i parametri inseriti.", RecordContoCorrente.Cod_Valuta, RecordContoCorrente.Desc_tipo_movimento, RecordContoCorrente.Desc_Tipo_Soldi,

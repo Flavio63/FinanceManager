@@ -53,7 +53,7 @@ namespace FinanceManager.Dialogs.Dialog3Combos
                 Id_Soldi = soldi.Id_Tipo_Soldi;
                 Location = new RegistryLocation() { Id_conto = location.Id_conto, Desc_conto = location.Desc_conto };
                 Owner = new RegistryOwner() { Id_gestione = owner.Id_gestione, Nome_Gestione = owner.Nome_Gestione };
-                Soldi = new TipoSoldi() { Id_Tipo_Soldi = soldi.Id_Tipo_Soldi, Desc_Tipo_Soldi = soldi.Desc_Tipo_Soldi };
+                Soldi = new TipoSoldi((Models.Enum.TipologiaSoldi)soldi.Id_Tipo_Soldi); // { Id_Tipo_Soldi = soldi.Id_Tipo_Soldi, Desc_Tipo_Soldi = soldi.Desc_Tipo_Soldi };
             }
         }
 
