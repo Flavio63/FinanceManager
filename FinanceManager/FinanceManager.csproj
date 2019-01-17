@@ -134,6 +134,7 @@
     <Compile Include="Events\ExcludeChar.cs" />
     <Compile Include="Events\VerifyNumber.cs" />
     <Compile Include="Events\ViewModelBase.cs" />
+    <Compile Include="Models\Enum\TipologiaMovimento.cs" />
     <Compile Include="Models\Ptf_CC.cs" />
     <Compile Include="Models\Ptf_CCList.cs" />
     <Compile Include="Models\SintesiSoldi.cs" />

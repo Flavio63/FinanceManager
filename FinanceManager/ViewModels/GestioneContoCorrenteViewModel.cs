@@ -2,6 +2,7 @@
 using FinanceManager.Models;
 using FinanceManager.Services;
 using FinanceManager.Views;
+using FinanceManager.Models.Enum;
 using System;
 using System.Linq;
 using System.Collections.ObjectModel;
@@ -48,7 +49,7 @@ namespace FinanceManager.ViewModels
                 RegistryMovementTypeList listaOriginale = new RegistryMovementTypeList();
                 listaOriginale = _registryServices.GetRegistryMovementTypesList();
                 var RMTL = from movimento in listaOriginale
-                           where (movimento.Id_tipo_movimento == 3 || movimento.Id_tipo_movimento == 4 || movimento.Id_tipo_movimento == 12)
+                           where (movimento.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || movimento.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
                            select movimento;
                 foreach (RegistryMovementType registry in RMTL)
                     ListMovimenti.Add(registry);
@@ -361,9 +362,9 @@ namespace FinanceManager.ViewModels
                     Record2ContoCorrente.Id_tipo_movimento = RMT.Id_tipo_movimento;
                     Record2ContoCorrente.Desc_tipo_movimento = RMT.Desc_tipo_movimento;
                     // abilito il blocco di input dati sulla base di questa scelta
-                    CambioValutaEnabled = RMT.Id_tipo_movimento == 3 ? true : false;
-                    CedoleEnabled = RMT.Id_tipo_movimento == 4 ? true : false;
-                    GirocontoEnabled = RMT.Id_tipo_movimento == 12 ? true : false;
+                    // CambioValutaEnabled = RMT.Id_tipo_movimento == 3 ? true : false; non più attivo
+                    CedoleEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ? true : false;
+                    GirocontoEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ? true : false;
                 }
                 else if (e.AddedItems[0] is RegistryShare RS)
                 {
@@ -383,14 +384,23 @@ namespace FinanceManager.ViewModels
             if (e.AddedItems.Count == 0)
             {
                 e.Handled = true;
-                return;
             }
-            if (e.AddedItems[0] is ContoCorrente CC)
+            else if (e.AddedItems[0] is ContoCorrente CC)
             {
-                RecordContoCorrente = CC;
+                if (CC.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
+                {
+                    RecordContoCorrente = CC;
 
-                CanUpdateDelete = true;
-                CanInsert = false;
+                    CanUpdateDelete = true;
+                    CanInsert = false;
+                }
+                else
+                {
+                    RecordContoCorrente = new ContoCorrente();
+                    CanUpdateDelete = false;
+                    CanInsert = true;
+                }
+                e.Handled = true;
             }
         }
 
@@ -416,7 +426,7 @@ namespace FinanceManager.ViewModels
                     QuoteTab quoteTab = dataGrid.SelectedItem as QuoteTab;
                     if (quoteTab.IdQuote == 0) return;
                     // verifico che tipo di movimento voglio cancellare
-                    if (quoteTab.Id_tipo_movimento == 1 || quoteTab.Id_tipo_movimento == 2)
+                    if (quoteTab.Id_tipo_movimento == (int)TipologiaMovimento.Versamento || quoteTab.Id_tipo_movimento == (int)TipologiaMovimento.Prelevamento)
                     {
                         //_managerLiquidServices.DeleteRecordQuoteTab(quoteTab.IdQuote);
                         MessageBox.Show("Il record è stato correttamente eliminato", "Gestione AndQuote Investitori", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -424,13 +434,13 @@ namespace FinanceManager.ViewModels
                     else
                     {
                         var Risposta = MessageBox.Show("Stai per eliminare il record selezionato da 2 tabelle." + Environment.NewLine + "Sei sicoro?",
-                            "Gestione AndQuote", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                            "Gestione And Quote", MessageBoxButton.YesNo, MessageBoxImage.Question);
                         if (Risposta == MessageBoxResult.Yes)
                         {
                             //_managerLiquidServices.DeleteAccount(ListContoCorrente[0].Id_RowConto);
                             //_managerLiquidServices.DeleteRecordQuoteTab(ActualQuote.IdQuote);
                             //ActualQuote = new QuoteTab();
-                            MessageBox.Show("I 2 record sono stati correttamente eliminati", "Gestione AndQuote Investitori", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            MessageBox.Show("I 2 record sono stati correttamente eliminati", "Gestione And Quote Investitori", MessageBoxButton.OK, MessageBoxImage.Warning);
                         }
                     }
                     //UpdateCollection();     //Aggiorno tutti i dati della griglia
@@ -480,7 +490,7 @@ namespace FinanceManager.ViewModels
             try
             {
                 // In base all'operazione scelta decido:
-                if (RecordContoCorrente.Id_tipo_movimento == 3 || RecordContoCorrente.Id_tipo_movimento == 12)
+                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
                 {
                     CurrencyAvailable = _liquidAssetServices.GetCurrencyAvailable(IdGestione: RecordContoCorrente.Id_Gestione,
                         IdConto: RecordContoCorrente.Id_Conto, IdValuta: RecordContoCorrente.Id_Valuta)[0];
@@ -498,7 +508,7 @@ namespace FinanceManager.ViewModels
                     _liquidAssetServices.InsertAccountMovement(RecordContoCorrente);
                     _liquidAssetServices.InsertAccountMovement(Record2ContoCorrente);
                 }
-                else if(RecordContoCorrente.Id_tipo_movimento == 4)
+                else if(RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola)
                 {
                     _liquidAssetServices.InsertAccountMovement(RecordContoCorrente);
                 }
