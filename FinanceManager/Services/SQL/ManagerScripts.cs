@@ -155,7 +155,7 @@ namespace FinanceManager.Services.SQL
             "A.id_gestione = E.id_gestione AND A.id_titolo = F.id_titolo AND A.id_tipo_soldi = G.id_tipo_soldi AND id_fineco_euro > 0 ";
 
 
-        public static readonly string GetContoCorrente = ContoCorrente + OrderBy + ADataMovimento + Comma + AId_fineco_euro;
+        public static readonly string GetContoCorrente = ContoCorrente + OrderBy + DataMovimentoDesc + Comma + AId_fineco_euro;
         public static readonly string GetContoCorrenteByIdQuote = ContoCorrente + AndQuote + OrderBy + ADataMovimento;
         public static readonly string GetContoCorrenteByMovement = ContoCorrente + AndTipoMovimento + OrderBy + ADataMovimento + Comma + AId_fineco_euro;
 
