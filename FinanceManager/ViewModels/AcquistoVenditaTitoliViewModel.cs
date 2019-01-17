@@ -514,6 +514,7 @@ namespace FinanceManager.ViewModels
                     MLA.Disaggio_anticipo_cedole = RecordPortafoglioTitoli.Disaggio_anticipo_cedole;
                     MLA.RitenutaFiscale = RecordPortafoglioTitoli.RitenutaFiscale;
                     MLA.Valore_di_cambio = RecordPortafoglioTitoli.Valore_di_cambio;
+                    MLA.Attivo = 1;
                     MLA.Note = RecordPortafoglioTitoli.Note;
 
                     _liquidAssetServices.AddManagerLiquidAsset(MLA);    // ho inserito il movimento in portafoglio
