@@ -32,12 +32,18 @@ namespace FinanceManager.Services
 
         void InsertAccountMovement(ContoCorrente contoCorrente);        // inserisco il movimento nella tabella conto_corrente
         ContoCorrenteList GetContoCorrenteList();                       // Prendo tutti i record della tabella ContoCorrente
+        ContoCorrente GetContoCorrenteByIdCC(int idRecord);             // Prendo un solo record dalla tabella ContoCorrente
         ContoCorrenteList GetContoCorrenteByIdQuote(int idQuote);       // Il movimento del conto legato al giroconto selezionato
         ContoCorrenteList GetContoCorrenteByMovement(int idMovimento);  // Tutti i movimenti di giroconto
         void UpdateContoCorrenteByIdCC(ContoCorrente contoCorrente);                // Aggiorno il movimento della tabella ContoCorrente sulla base dell'id del record
         void UpdateContoCorrenteByIdQuote(ContoCorrente contoCorrente);             // Aggiorno il movimento della tabella ContoCorrente sulla base della tabella quote investimento
         void UpdateContoCorrenteByIdPortafoglioTitoli(ContoCorrente contoCorrente); // Aggiorno il movimento della tabella ContoCorrente sulla base del conto titoli
         void DeleteContoCorrenteByIdPortafoglioTitoli(int idContoTitoli);           // Elimino il movimento dalla tabella ContoCorrente sulla base del conto titoli
-        void DeleteAccount(int idCC);                                               // Elimino il movimento dalla tabella ContoCorrente
+        /// <summary>
+        /// Elimina un record dalla tabella ContoCorrente
+        /// sulla base di un id di riga
+        /// </summary>
+        /// <param name="idCC">id del record da eliminare</param>
+        void DeleteRecordContoCorrente(int idCC);
     }
 }

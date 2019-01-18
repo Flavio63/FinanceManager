@@ -527,7 +527,7 @@ namespace FinanceManager.Services
             conto.Ammontare = dataRow.Field<double>("ammontare");
             conto.Valore_Cambio = dataRow.Field<double>("cambio");
             conto.Causale = dataRow.Field<string>("causale");
-            conto.Id_Tipo_Soldi = (Models.Enum.TipologiaSoldi)(int)dataRow.Field<uint>("id_tipo_soldi");
+            conto.Id_Tipo_Soldi = (int)dataRow.Field<uint>("id_tipo_soldi");
             conto.Desc_Tipo_Soldi = dataRow.Field<string>("desc_tipo_soldi");
             return conto;
         }
@@ -951,8 +951,12 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
-
-        public void DeleteAccount(int idCC)
+        /// <summary>
+        /// Elimina un record dalla tabella ContoCorrente
+        /// sulla base di un id di riga
+        /// </summary>
+        /// <param name="idCC">id del record da eliminare</param>
+        public void DeleteRecordContoCorrente(int idCC)
         {
             try
             {
@@ -1041,7 +1045,39 @@ namespace FinanceManager.Services
 
         public void UpdateContoCorrenteByIdCC(ContoCorrente contoCorrente)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.ManagerScripts.UpdateContoCorrenteByIdCC;
+                    dbComm.Parameters.AddWithValue("id_fineco_euro", contoCorrente.Id_RowConto);
+                    dbComm.Parameters.AddWithValue("id_conto", contoCorrente.Id_Conto);
+                    dbComm.Parameters.AddWithValue("id_quote_investimenti", contoCorrente.Id_Quote_Investimenti);
+                    dbComm.Parameters.AddWithValue("id_valuta", contoCorrente.Id_Valuta);
+                    dbComm.Parameters.AddWithValue("id_portafoglio_titoli", contoCorrente.Id_Portafoglio_Titoli);
+                    dbComm.Parameters.AddWithValue("id_tipo_movimento", contoCorrente.Id_tipo_movimento);
+                    dbComm.Parameters.AddWithValue("id_gestione", contoCorrente.Id_Gestione);
+                    dbComm.Parameters.AddWithValue("id_titolo", contoCorrente.Id_Titolo);
+                    dbComm.Parameters.AddWithValue("data_movimento", contoCorrente.DataMovimento.ToString("yyyy-MM-dd"));
+                    dbComm.Parameters.AddWithValue("ammontare", contoCorrente.Ammontare);
+                    dbComm.Parameters.AddWithValue("cambio", contoCorrente.Valore_Cambio);
+                    dbComm.Parameters.AddWithValue("causale", contoCorrente.Causale);
+                    dbComm.Parameters.AddWithValue("id_tipo_soldi", contoCorrente.Id_Tipo_Soldi);
+                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
 
         public Ptf_CCList GetShare_AccountMovement(int id_gestione, int id_conto, int id_titolo)
@@ -1111,6 +1147,32 @@ namespace FinanceManager.Services
                     DataTable dt = new DataTable();
                     dbAdapter.Fill(dt);
                     return MLA(dt.Rows[0]);
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        public ContoCorrente GetContoCorrenteByIdCC(int idRecord)
+        {
+            try
+            {
+                DataTable DT = new DataTable();
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetContoCorrenteByIdCC;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_fineco_euro", idRecord);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.Fill(DT);
+                    return contoCorrente(DT.Rows[0]);
                 }
             }
             catch (MySqlException err)

@@ -10,7 +10,8 @@ namespace FinanceManager.Models
             Id_Tipo_Soldi = (int)tipologiaSoldi;
             Desc_Tipo_Soldi = tipologiaSoldi.ToString();
         }
-        public int Id_Tipo_Soldi { get; private set; }
-        public string Desc_Tipo_Soldi { get; private set; }
+
+        public int Id_Tipo_Soldi { get; set; }
+        public string Desc_Tipo_Soldi { get; set; }
     }
 }

@@ -40,7 +40,7 @@ namespace FinanceManager.Models
         public double Ammontare { get; set; }
         public double Valore_Cambio { get; set; }
         public string Causale { set; get; }
-        public TipologiaSoldi Id_Tipo_Soldi { set; get; }
+        public int Id_Tipo_Soldi { set; get; }
         public string Desc_Tipo_Soldi { set; get; }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace FinanceManager.Models
             Ammontare = valoreInCC;
             Valore_Cambio = portafoglioTitoli.Valore_di_cambio;
             Causale = portafoglioTitoli.Note;
-            Id_Tipo_Soldi = idTipoSoldi;
+            Id_Tipo_Soldi = (int)idTipoSoldi;
         }
     }
 }

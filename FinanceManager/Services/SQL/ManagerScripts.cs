@@ -16,6 +16,7 @@ namespace FinanceManager.Services.SQL
         private static readonly string AndTitolo = " AND A.id_titolo = @id_titolo ";
         private static readonly string AndValuta = " AND A.id_valuta = @id_valuta ";
         private static readonly string AndIdPortafoglioTitoli = " AND A.id_portafoglio_titoli = @id_portafoglio_titoli ";
+        private static readonly string AndIdFinecoEuro = " AND A.id_fineco_euro = @id_fineco_euro ";
         private static readonly string DataMovimentoDesc = " data_movimento desc ";
         private static readonly string OrderBy = " ORDER BY ";
         private static readonly string GroupBy = " GROUP BY ";
@@ -156,6 +157,7 @@ namespace FinanceManager.Services.SQL
 
 
         public static readonly string GetContoCorrente = ContoCorrente + OrderBy + DataMovimentoDesc + Comma + AId_fineco_euro;
+        public static readonly string GetContoCorrenteByIdCC = ContoCorrente + AndIdFinecoEuro;
         public static readonly string GetContoCorrenteByIdQuote = ContoCorrente + AndQuote + OrderBy + ADataMovimento;
         public static readonly string GetContoCorrenteByMovement = ContoCorrente + AndTipoMovimento + OrderBy + ADataMovimento + Comma + AId_fineco_euro;
 
@@ -166,6 +168,10 @@ namespace FinanceManager.Services.SQL
         public static readonly string UpdateContoCorrenteByIdPortafoglioTitoli = "UPDATE conto_corrente SET id_conto = @id_conto, id_valuta = @id_valuta, id_quote_investimenti = @id_quote_investimenti, " +
             "id_tipo_movimento = @id_tipo_movimento, id_gestione = @id_gestione, id_titolo = @id_titolo, data_movimento = @data_movimento, ammontare = @ammontare, " +
             "cambio = @cambio, causale = @causale WHERE id_portafoglio_titoli = @id_portafoglio_titoli";
+
+        public static readonly string UpdateContoCorrenteByIdCC = "UPDATE conto_corrente SET id_conto = @id_conto, id_quote_investimenti = @id_quote_investimenti, id_valuta = @id_valuta, " +
+            "id_portafoglio_titoli = @id_portafoglio_titoli, id_tipo_movimento = @id_tipo_movimento, id_gestione = @id_gestione, id_titolo = @id_titolo, data_movimento = @data_movimento, " +
+            "ammontare = @ammontare, cambio = @cambio, causale = @causale WHERE id_fineco_euro = @id_fineco_euro";
 
         public static readonly string DeleteAccount = "DELETE FROM conto_corrente WHERE id_fineco_euro = @id_fineco_euro";
 

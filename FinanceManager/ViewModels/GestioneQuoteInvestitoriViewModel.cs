@@ -345,7 +345,7 @@ namespace FinanceManager.ViewModels
                             cc.Id_Conto = RegistryLocation.Id_conto;
                             cc.Desc_Conto = RegistryLocation.Desc_conto;
                             cc.Valore_Cambio = 1;
-                            cc.Id_Tipo_Soldi = (Models.Enum.TipologiaSoldi)Tipo_Soldi.Id_Tipo_Soldi;
+                            cc.Id_Tipo_Soldi = (int)Tipo_Soldi.Id_Tipo_Soldi;
                             _managerLiquidServices.InsertAccountMovement(cc);                               // aggiungo il record al db
                             ListQuote = _managerLiquidServices.GetQuote();
                             ListTabQuote = _managerLiquidServices.GetQuoteTab();
@@ -376,7 +376,7 @@ namespace FinanceManager.ViewModels
                                 cc.NomeGestione = RegistryOwner.Nome_Gestione;
                                 cc.Id_Conto = RegistryLocation.Id_conto;
                                 cc.Desc_Conto = RegistryLocation.Desc_conto;
-                                cc.Id_Tipo_Soldi = (Models.Enum.TipologiaSoldi) Tipo_Soldi.Id_Tipo_Soldi;
+                                cc.Id_Tipo_Soldi = (int)Tipo_Soldi.Id_Tipo_Soldi;
                                 cc.Desc_Tipo_Soldi = Tipo_Soldi.Desc_Tipo_Soldi;
                                 _managerLiquidServices.UpdateContoCorrenteByIdQuote(cc);         // aggiorno i dati nel db
                                 ListQuote = _managerLiquidServices.GetQuote();
@@ -432,7 +432,7 @@ namespace FinanceManager.ViewModels
                             "Gestione AndQuote", MessageBoxButton.YesNo, MessageBoxImage.Question);
                         if (Risposta == MessageBoxResult.Yes)
                         {
-                            _managerLiquidServices.DeleteAccount(ListContoCorrente[0].Id_RowConto);
+                            _managerLiquidServices.DeleteRecordContoCorrente(ListContoCorrente[0].Id_RowConto);
                             _managerLiquidServices.DeleteRecordQuoteTab(ActualQuote.IdQuote);
                             ActualQuote = new QuoteTab();
                             MessageBox.Show("I 2 record sono stati correttamente eliminati", "Gestione AndQuote Investitori", MessageBoxButton.OK, MessageBoxImage.Warning);

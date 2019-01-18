@@ -76,9 +76,10 @@ namespace FinanceManager.ViewModels
             SintesiSoldiDF = _liquidAssetServices.GetCurrencyAvailable(2);
             SrchShares = "";
             ListContoCorrente = _liquidAssetServices.GetContoCorrenteList();
-            CambioValutaEnabled = false;
+            GirocontoFieldEnabled = true;
             CedoleEnabled = false;
             GirocontoEnabled = false;
+            CanUpdateDelete = false;
             CanInsert = false;
         }
 
@@ -251,21 +252,21 @@ namespace FinanceManager.ViewModels
         }
 
         /// <summary>
-        /// Gestisce l'abilitazione del blocco dedicato al cambiavalute
-        /// </summary>
-        public bool CambioValutaEnabled
-        {
-            get { return GetValue(() => CambioValutaEnabled); }
-            private set { SetValue(() => CambioValutaEnabled, value); }
-        }
-
-        /// <summary>
         /// Gestisce l'abilitazione del blocco dedicato alla registrazione delle cedole
         /// </summary>
         public bool CedoleEnabled
         {
             get { return GetValue(() => CedoleEnabled); }
             private set { SetValue(() => CedoleEnabled, value); }
+        }
+
+        ///<summary>
+        /// Abilita / disabilita la possibilità di modificare i campi nei parametri comuni
+        ///</summary>
+        public bool GirocontoFieldEnabled
+        {
+            get { return GetValue(() => GirocontoFieldEnabled); }
+            set { SetValue(() => GirocontoFieldEnabled, value); }
         }
 
         /// <summary>
@@ -350,9 +351,9 @@ namespace FinanceManager.ViewModels
                 }
                 else if (e.AddedItems[0] is TipoSoldi TS)
                 {
-                    RecordContoCorrente.Id_Tipo_Soldi = (Models.Enum.TipologiaSoldi) TS.Id_Tipo_Soldi;
+                    RecordContoCorrente.Id_Tipo_Soldi = TS.Id_Tipo_Soldi;
                     RecordContoCorrente.Desc_Tipo_Soldi = TS.Desc_Tipo_Soldi;
-                    Record2ContoCorrente.Id_Tipo_Soldi = (Models.Enum.TipologiaSoldi)TS.Id_Tipo_Soldi;
+                    Record2ContoCorrente.Id_Tipo_Soldi = TS.Id_Tipo_Soldi;
                     Record2ContoCorrente.Desc_Tipo_Soldi = TS.Desc_Tipo_Soldi;
                 }
                 else if (e.AddedItems[0] is RegistryMovementType RMT)
@@ -362,14 +363,14 @@ namespace FinanceManager.ViewModels
                     Record2ContoCorrente.Id_tipo_movimento = RMT.Id_tipo_movimento;
                     Record2ContoCorrente.Desc_tipo_movimento = RMT.Desc_tipo_movimento;
                     // abilito il blocco di input dati sulla base di questa scelta
-                    // CambioValutaEnabled = RMT.Id_tipo_movimento == 3 ? true : false; non più attivo
                     CedoleEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ? true : false;
                     GirocontoEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ? true : false;
                 }
                 else if (e.AddedItems[0] is RegistryShare RS)
                 {
                     RecordContoCorrente.Id_Titolo = (int)RS.IdShare;
-                    CanInsert = true;
+                    RecordContoCorrente.Desc_Titolo = RS.DescShare;
+                    CanInsert = RecordContoCorrente.Id_RowConto > 0 ? false : true ;
                 }
             }
         }
@@ -390,65 +391,20 @@ namespace FinanceManager.ViewModels
                 if (CC.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
                 {
                     RecordContoCorrente = CC;
-
+                    GirocontoFieldEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ? true : false;
+                    CedoleEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ? true : false;
                     CanUpdateDelete = true;
-                    CanInsert = false;
                 }
                 else
                 {
                     RecordContoCorrente = new ContoCorrente();
+                    GirocontoEnabled = false;
+                    CedoleEnabled = false;
+                    GirocontoFieldEnabled = true;
                     CanUpdateDelete = false;
-                    CanInsert = true;
                 }
+                CanInsert = false;
                 e.Handled = true;
-            }
-        }
-
-        public void StartNewRow(object sender, AddingNewItemEventArgs e)
-        {
-            //ActualQuote = new QuoteTab();
-            //e.NewItem = ActualQuote;
-            //DataMovimento = DateTime.Now.Date;
-        }
-
-        /// <summary>
-        /// Gestisco la cancellazione del record
-        /// </summary>
-        /// <param name="sender">tastiera</param>
-        /// <param name="e">tasto premuto</param>
-        public void DeleteRow(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Delete)
-            {
-                try
-                {
-                    DataGrid dataGrid = sender as DataGrid;
-                    QuoteTab quoteTab = dataGrid.SelectedItem as QuoteTab;
-                    if (quoteTab.IdQuote == 0) return;
-                    // verifico che tipo di movimento voglio cancellare
-                    if (quoteTab.Id_tipo_movimento == (int)TipologiaMovimento.Versamento || quoteTab.Id_tipo_movimento == (int)TipologiaMovimento.Prelevamento)
-                    {
-                        //_managerLiquidServices.DeleteRecordQuoteTab(quoteTab.IdQuote);
-                        MessageBox.Show("Il record è stato correttamente eliminato", "Gestione AndQuote Investitori", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
-                    else
-                    {
-                        var Risposta = MessageBox.Show("Stai per eliminare il record selezionato da 2 tabelle." + Environment.NewLine + "Sei sicoro?",
-                            "Gestione And Quote", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                        if (Risposta == MessageBoxResult.Yes)
-                        {
-                            //_managerLiquidServices.DeleteAccount(ListContoCorrente[0].Id_RowConto);
-                            //_managerLiquidServices.DeleteRecordQuoteTab(ActualQuote.IdQuote);
-                            //ActualQuote = new QuoteTab();
-                            MessageBox.Show("I 2 record sono stati correttamente eliminati", "Gestione And Quote Investitori", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        }
-                    }
-                    //UpdateCollection();     //Aggiorno tutti i dati della griglia
-                }
-                catch (Exception err)
-                {
-                    MessageBox.Show(err.Message);
-                }
             }
         }
 
@@ -495,9 +451,9 @@ namespace FinanceManager.ViewModels
                     CurrencyAvailable = _liquidAssetServices.GetCurrencyAvailable(IdGestione: RecordContoCorrente.Id_Gestione,
                         IdConto: RecordContoCorrente.Id_Conto, IdValuta: RecordContoCorrente.Id_Valuta)[0];
 
-                    if ( RecordContoCorrente.Ammontare > CurrencyAvailable.Disponibili && RecordContoCorrente.Id_Tipo_Soldi == Models.Enum.TipologiaSoldi.Capitale || 
-                        RecordContoCorrente.Ammontare > CurrencyAvailable.Cedole && RecordContoCorrente.Id_Tipo_Soldi == Models.Enum.TipologiaSoldi.Cedole || 
-                        RecordContoCorrente.Ammontare > CurrencyAvailable.Utili && RecordContoCorrente.Id_Tipo_Soldi == Models.Enum.TipologiaSoldi.Utili)
+                    if ( RecordContoCorrente.Ammontare > CurrencyAvailable.Disponibili && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Capitale || 
+                        RecordContoCorrente.Ammontare > CurrencyAvailable.Cedole && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Cedole || 
+                        RecordContoCorrente.Ammontare > CurrencyAvailable.Utili && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Utili)
                     {
                         MessageBox.Show(String.Format("Non hai abbastanza soldi in {0} per effettuare un {1} di {2}.{3}" +
                             "Ricontrollare i parametri inseriti.", RecordContoCorrente.Cod_Valuta, RecordContoCorrente.Desc_tipo_movimento, RecordContoCorrente.Desc_Tipo_Soldi,
@@ -527,12 +483,38 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                //_liquidAssetServices.UpdateConto(RecordContoCorrente);    //registro la modifica in conto corrente
-
-                // aggiorno la disponibilità
-                Init();
-                
+                // se è una registrazione cedola modifico direttamente il record 1
+                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola)
+                {
+                    _liquidAssetServices.UpdateContoCorrenteByIdCC(RecordContoCorrente);    //registro la modifica in conto corrente
+                }
+                else
+                {
+                    // cerco il record corrispondente al giroconto
+                    Record2ContoCorrente = _liquidAssetServices.GetContoCorrenteByIdCC(RecordContoCorrente.Id_RowConto + 1);
+                    // verifico che il record abbia lo stesso tipo di movimento
+                    if (Record2ContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
+                    {
+                        // modifico il record 2 sulla base delle modifiche apportate al record 1
+                        Record2ContoCorrente.Id_Tipo_Soldi = RecordContoCorrente.Id_Tipo_Soldi;
+                        Record2ContoCorrente.DataMovimento = RecordContoCorrente.DataMovimento;
+                        Record2ContoCorrente.Ammontare = RecordContoCorrente.Ammontare * -1;
+                        Record2ContoCorrente.Causale = RecordContoCorrente.Causale;
+                    }
+                    else
+                    {
+                        Record2ContoCorrente = _liquidAssetServices.GetContoCorrenteByIdCC(RecordContoCorrente.Id_RowConto - 1);
+                        // modifico il record 2 sulla base delle modifiche apportate al record 1
+                        Record2ContoCorrente.Id_Tipo_Soldi = RecordContoCorrente.Id_Tipo_Soldi;
+                        Record2ContoCorrente.DataMovimento = RecordContoCorrente.DataMovimento;
+                        Record2ContoCorrente.Ammontare = RecordContoCorrente.Ammontare * -1;
+                        Record2ContoCorrente.Causale = RecordContoCorrente.Causale;
+                    }
+                    _liquidAssetServices.UpdateContoCorrenteByIdCC(Record2ContoCorrente);    //registro la modifica in conto corrente
+                    _liquidAssetServices.UpdateContoCorrenteByIdCC(RecordContoCorrente);    //registro la modifica in conto corrente
+                }
                 MessageBox.Show("Record modificato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
+                Init();
             }
             catch (Exception err)
             {
@@ -544,11 +526,29 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                //_liquidAssetServices.DeleteManagerLiquidAsset;  // registro l'eliminazione in conto corrente
-                SintesiSoldiR = _liquidAssetServices.GetCurrencyAvailable(1);                           // aggiorno la disponibilità
-                SintesiSoldiDF = _liquidAssetServices.GetCurrencyAvailable(2);                          // aggiorno la disponibilità
-                Init();
+                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola)
+                {
+                    _liquidAssetServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);  // registro l'eliminazione in conto corrente
+                }
+                else
+                {
+                    // cerco il record corrispondente al giroconto
+                    Record2ContoCorrente = _liquidAssetServices.GetContoCorrenteByIdCC(RecordContoCorrente.Id_RowConto + 1);
+                    // verifico che il record abbia lo stesso tipo di movimento
+                    if (Record2ContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
+                    {
+                        _liquidAssetServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);
+                        _liquidAssetServices.DeleteRecordContoCorrente(Record2ContoCorrente.Id_RowConto);
+                    }
+                    else
+                    {
+                        Record2ContoCorrente = _liquidAssetServices.GetContoCorrenteByIdCC(RecordContoCorrente.Id_RowConto - 1);
+                        _liquidAssetServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);
+                        _liquidAssetServices.DeleteRecordContoCorrente(Record2ContoCorrente.Id_RowConto);
+                    }
+                }
                 MessageBox.Show("Record eliminato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
+                Init();
             }
             catch (Exception err)
             {
@@ -560,6 +560,7 @@ namespace FinanceManager.ViewModels
         {
             Init();
         }
+
         public void CloseMe(object param)
         {
             GestioneContoCorrenteView MFMV = param as GestioneContoCorrenteView;
