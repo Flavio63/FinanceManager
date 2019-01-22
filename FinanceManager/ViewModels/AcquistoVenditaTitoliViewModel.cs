@@ -18,6 +18,8 @@ namespace FinanceManager.ViewModels
     {
         private IRegistryServices _registryServices;
         private IManagerLiquidAssetServices _liquidAssetServices;
+        private double _CurrencyAvailable;
+        private ObservableCollection<RegistryShare> _SharesList;
         public ICommand CloseMeCommand { get; set; }
         public ICommand InsertCommand { get; set; }
         public ICommand ModifyCommand { get; set; }
@@ -78,10 +80,8 @@ namespace FinanceManager.ViewModels
             TotalLocalValue = 0;
             TotaleContabile = 0;
             AmountChangedValue = 0;
-            SrchShares = "";
             try
             {
-                ListSelectedPortafoglioTitoli = new PortafoglioTitoliList();
                 RecordPortafoglioTitoli = new PortafoglioTitoli();
                 ListPortafoglioTitoli = _liquidAssetServices.GetManagerLiquidAssetListByOwnerAndLocation();
             }
@@ -89,9 +89,17 @@ namespace FinanceManager.ViewModels
             {
                 MessageBox.Show(err.Message, "Init Acquisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            SrchShares = "";
+            Conto = "";
+            Gestione = "";
         }
 
         #region events
+        /// <summary>
+        /// Gestore dell'evento nei combo box dei parametri comuni
+        /// </summary>
+        /// <param name="sender">Combo Box</param>
+        /// <param name="e">Cambio scelta item</param>
         public void CbSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems.Count > 0)
@@ -105,11 +113,13 @@ namespace FinanceManager.ViewModels
                 {
                     RecordPortafoglioTitoli.Id_conto = RL.Id_conto;
                     RecordPortafoglioTitoli.Desc_conto = RL.Desc_conto;
+                    Conto = RL.Desc_conto;
                 }
                 if (e.AddedItems[0] is RegistryOwner RO)
                 {
                     RecordPortafoglioTitoli.Id_gestione = RO.Id_gestione;
                     RecordPortafoglioTitoli.Nome_Gestione = RO.Nome_Gestione;
+                    Gestione = RO.Nome_Gestione;
                 }
                 if (e.AddedItems[0] is RegistryCurrency RC)
                 {
@@ -133,14 +143,8 @@ namespace FinanceManager.ViewModels
                     RecordPortafoglioTitoli.Id_tipo_titolo = RS.IdShareType;
                     RecordPortafoglioTitoli.Isin = RS.Isin;
                     RecordPortafoglioTitoli.Id_azienda = RS.IdFirm;
+                    ISIN = RS.Isin;
                     SharesOwned = _liquidAssetServices.GetSharesQuantity(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_conto, (uint)RecordPortafoglioTitoli.Id_titolo);
-                    if (SharesOwned == 0 && RecordPortafoglioTitoli.Id_tipo_movimento == 6)
-                    {
-                        MessageBox.Show("Non hai titoli da vendere con queste impostazioni!", "Acuisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        RecordPortafoglioTitoli.Id_titolo = 0;
-                        RS.IdShare = 0;
-                        return;
-                    }
                 }
                 if (e.AddedItems[0] is DateTime DT)
                 {
@@ -149,6 +153,7 @@ namespace FinanceManager.ViewModels
                 UpdateTotals();
             }
         }
+        
         /// <summary>
         /// Imposto i campi sopra la griglia quando viene selezionata una riga
         /// </summary>
@@ -164,13 +169,17 @@ namespace FinanceManager.ViewModels
             if (e.AddedItems[0] is PortafoglioTitoli PT)
             {
                 RecordPortafoglioTitoli = PT;
-                ListSelectedPortafoglioTitoli = _liquidAssetServices.GetManagerLiquidAssetListByOwnerLocationAndTitolo(PT.Id_gestione, PT.Id_conto, (int)PT.Id_titolo);
                 UpdateTotals();
                 CanUpdateDelete = true;
                 CanInsert = false;
             }
         }
 
+        /// <summary>
+        /// Controlla che il punto del tastierino numerico venga trasformato in virgola
+        /// </summary>
+        /// <param name="sender">Tastiera</param>
+        /// <param name="e">Pressione del tasto</param>
         public void PreviewKeyDown(object sender, KeyEventArgs e)
         {
             TextBox textBox = sender as TextBox;
@@ -182,7 +191,11 @@ namespace FinanceManager.ViewModels
             }
         }
 
-
+        /// <summary>
+        /// Gestore dell'evento nei text box dei campi da riempire
+        /// </summary>
+        /// <param name="sender">Text Box</param>
+        /// <param name="e">Uscita del campo</param>
         public void LostFocus(object sender, EventArgs e)
         {
             TextBox TB = sender as TextBox;
@@ -231,6 +244,9 @@ namespace FinanceManager.ViewModels
             UpdateTotals();
         }
 
+        /// <summary>
+        /// Verifico e aggiorno i totali da pubblicare e registrare
+        /// </summary>
         private void UpdateTotals()
         {
             // verifico che ci sia un importo unitario e un numero di azioni
@@ -285,7 +301,10 @@ namespace FinanceManager.ViewModels
                 AmountChangedValue = RecordPortafoglioTitoli.Valore_di_cambio == 0 ? 0 : (TotaleContabile / RecordPortafoglioTitoli.Valore_di_cambio);
         }
 
-
+        /// <summary>
+        /// E' il filtro da applicare all'elenco delle azioni
+        /// e contestualmente al datagrid sottostante
+        /// </summary>
         public bool Filter(object obj)
         {
             if (obj != null)
@@ -296,13 +315,65 @@ namespace FinanceManager.ViewModels
                     if (!string.IsNullOrEmpty(SrchShares))
                         return data.Isin.ToUpper().Contains(SrchShares.ToUpper());
                 }
+                else if (obj is PortafoglioTitoli Ptf)
+                {
+                    if (!string.IsNullOrEmpty(Conto) && !string.IsNullOrEmpty(Gestione) && !string.IsNullOrEmpty(ISIN))    // tutte e 3 i filtri
+                    {
+                        return Ptf.Desc_conto.ToLower().Contains(Conto.ToLower()) && Ptf.Nome_Gestione.ToLower().Contains(Gestione.ToLower()) && Ptf.Isin.ToLower().Contains(ISIN.ToLower());
+                    }
+                    else if (!string.IsNullOrEmpty(Conto) && !string.IsNullOrEmpty(Gestione) && string.IsNullOrEmpty(ISIN)) // 2 filtri su 3
+                    {
+                        return Ptf.Desc_conto.ToLower().Contains(Conto.ToLower()) && Ptf.Nome_Gestione.ToLower().Contains(Gestione.ToLower());
+                    }
+                    else if (!string.IsNullOrEmpty(Conto) && string.IsNullOrEmpty(Gestione) && !string.IsNullOrEmpty(ISIN)) // 2 filtri su 3
+                    {
+                        return Ptf.Desc_conto.ToLower().Contains(Conto.ToLower()) && Ptf.Isin.ToLower().Contains(ISIN.ToLower());
+                    }
+                    else if (string.IsNullOrEmpty(Conto) && !string.IsNullOrEmpty(Gestione) && !string.IsNullOrEmpty(ISIN)) // 2 filtri su 3
+                    {
+                        return Ptf.Nome_Gestione.ToLower().Contains(Gestione.ToLower()) && Ptf.Isin.ToLower().Contains(ISIN.ToLower());
+                    }
+                    else if (!string.IsNullOrEmpty(Conto) && string.IsNullOrEmpty(Gestione) && string.IsNullOrEmpty(ISIN)) // 1 filtri su 3
+                    {
+                        return Ptf.Desc_conto.ToLower().Contains(Conto.ToLower());
+                    }
+                    if (string.IsNullOrEmpty(Conto) && !string.IsNullOrEmpty(Gestione) && string.IsNullOrEmpty(ISIN)) // 1 filtri su 3
+                    {
+                        return Ptf.Nome_Gestione.ToLower().Contains(Gestione.ToLower());
+                    }
+                    if (string.IsNullOrEmpty(Conto) && string.IsNullOrEmpty(Gestione) && !string.IsNullOrEmpty(ISIN)) // 1 filtri su 3
+                    {
+                        return Ptf.Isin.ToLower().Contains(ISIN.ToLower());
+                    }
+                }
             }
             return true;
         }
 
         #endregion
 
-        #region Getter&Setter
+        #region Filtri per DataGrid
+        private string _conto;
+        private string Conto
+        {
+            get { return _conto; }
+            set { _conto = value; PtfCollectionView.Filter = _Filter; PtfCollectionView.Refresh(); }
+        }
+        private string _gestione;
+        private string Gestione
+        {
+            get { return _gestione; }
+            set { _gestione = value; PtfCollectionView.Filter = _Filter; PtfCollectionView.Refresh(); }
+        }
+        private string _isin;
+        private string ISIN
+        {
+            get { return _isin; }
+            set { _isin = value; PtfCollectionView.Filter = _Filter; PtfCollectionView.Refresh(); }
+        }
+        #endregion
+
+        #region SintesiSoldi
         /// <summary>
         /// il riepilogo dei soldi per la gestione Dany&Fla
         /// </summary>
@@ -319,9 +390,27 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => SintesiSoldiR); }
             private set { SetValue(() => SintesiSoldiR, value); }
         }
+        #endregion
 
+        #region Parametri comuni
         /// <summary>
-        /// Combo box con i movimenti
+        /// combo box con la lista dei C/C
+        /// </summary>
+        public RegistryLocationList ListConti
+        {
+            get { return GetValue(() => ListConti); }
+            set { SetValue(() => ListConti, value); }
+        }
+        /// <summary>
+        /// combo box con la lista delle gestioni
+        /// </summary>
+        public RegistryOwnersList ListGestioni
+        {
+            get { return GetValue(() => ListGestioni); }
+            set { SetValue(() => ListGestioni, value); }
+        }
+        /// <summary>
+        /// Combo box con i tipi di movimenti
         /// </summary>
         public RegistryMovementTypeList ListMovimenti
         {
@@ -337,20 +426,38 @@ namespace FinanceManager.ViewModels
             set { SetValue(() => ListValute, value); }
         }
         /// <summary>
-        /// combo box con la lista dei C/C
+        /// La ricerca degli isin dei titoli per l'acquisto / vendita
         /// </summary>
-        public RegistryLocationList ListConti
+        public string SrchShares
         {
-            get { return GetValue(() => ListConti); }
-            set { SetValue(() => ListConti, value); }
+            get { return GetValue(() => SrchShares); }
+            set
+            {
+                SetValue(() => SrchShares, value);
+                ISIN = value;
+                SharesListView.Filter = _Filter;
+                SharesListView.Refresh();
+            }
         }
         /// <summary>
-        /// combo box con la lista dei C/C
+        /// Combo box con i titoli da selezionare filtrato da SrchShares
         /// </summary>
-        public RegistryOwnersList ListGestioni
+        public ListCollectionView SharesListView
         {
-            get { return GetValue(() => ListGestioni); }
-            set { SetValue(() => ListGestioni, value); }
+            get { return GetValue(() => SharesListView); }
+            set { SetValue(() => SharesListView, value); }
+        }
+
+        #endregion
+
+        #region Totali operazione
+        /// <summary>
+        /// Sono le azioni possedute di un determinato titolo
+        /// </summary>
+        public double SharesOwned
+        {
+            get { return GetValue(() => SharesOwned); }
+            private set { SetValue(() => SharesOwned, value); }
         }
         /// <summary>
         /// E' l'importo dato dai titoli per il costo unitario
@@ -377,7 +484,6 @@ namespace FinanceManager.ViewModels
             get { return GetValue<double>(() => TotaleContabile); }
             set { SetValue<double>(() => TotaleContabile, value); }
         }
-
         /// <summary>
         /// Totale Contabile convertito in euro
         /// </summary>
@@ -386,50 +492,46 @@ namespace FinanceManager.ViewModels
             get { return GetValue<double>(() => AmountChangedValue); }
             set { SetValue<double>(() => AmountChangedValue, value); }
         }
+        #endregion
 
+        #region PrivateFields
+        /// <summary>
+        /// Elenco con i titoli disponibili
+        /// </summary>
+        private ObservableCollection<RegistryShare> SharesList
+        {
+            get { return _SharesList; }
+            set
+            {
+                _SharesList = value;
+                SharesListView = new ListCollectionView(value);
+            }
+        }
         /// <summary>
         /// E' la valuta disponibile per effettuare acquisti
         /// </summary>
-        public double CurrencyAvailable
+        private double CurrencyAvailable
         {
-            get { return GetValue(() => CurrencyAvailable); }
-            private set { SetValue(() => CurrencyAvailable, value); }
-        }
-        /// <summary>
-        /// La ricerca degli isin dei titoli
-        /// </summary>
-        public string SrchShares
-        {
-            get { return GetValue(() => SrchShares); }
-            set
-            {
-                SetValue(() => SrchShares, value);
-                SharesListView.Filter = _Filter;
-                SharesListView.Refresh();
-
-            }
+            get { return _CurrencyAvailable; }
+            set { _CurrencyAvailable = value; }
         }
 
-        public double SharesOwned
-        {
-            get { return GetValue(() => SharesOwned); }
-            set { SetValue(() => SharesOwned, value); }
-        }
+        #endregion
+
+        #region DataGrid
         /// <summary>
         /// Elenco con tutti i records del portafoglio
         /// </summary>
         public PortafoglioTitoliList ListPortafoglioTitoli
         {
             get { return GetValue(() => ListPortafoglioTitoli); }
-            set { SetValue(() => ListPortafoglioTitoli, value); }
+            private set { SetValue(() => ListPortafoglioTitoli, value); PtfCollectionView = CollectionViewSource.GetDefaultView(value); }
         }
-        /// <summary>
-        /// Elenco con tutti i records selezionati dall'elenco generale
-        /// </summary>
-        public PortafoglioTitoliList ListSelectedPortafoglioTitoli
+
+        public System.ComponentModel.ICollectionView PtfCollectionView
         {
-            get { return GetValue(() => ListSelectedPortafoglioTitoli); }
-            set { SetValue(() => ListSelectedPortafoglioTitoli, value); }
+            get { return GetValue(() => PtfCollectionView); }
+            set { SetValue(() => PtfCollectionView, value); }
         }
         /// <summary>
         /// Singolo record del portafoglio
@@ -439,26 +541,9 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => RecordPortafoglioTitoli); }
             set { SetValue(() => RecordPortafoglioTitoli, value); }
         }
-        /// <summary>
-        /// Elenco con i titoli disponibili
-        /// </summary>
-        public ObservableCollection<RegistryShare> SharesList
-        {
-            get { return GetValue(() => SharesList); }
-            set
-            {
-                SetValue(() => SharesList, value);
-                SharesListView = new ListCollectionView(value);
-            }
-        }
-        /// <summary>
-        /// Elenco con i titoli disponibili da verificare se serve
-        /// </summary>
-        public ListCollectionView SharesListView
-        {
-            get { return GetValue(() => SharesListView); }
-            set { SetValue(() => SharesListView, value); }
-        }
+        #endregion
+
+        #region AbilitazioneCampi
         /// <summary>
         /// Gestisce l'abilitazione del campo TobinTax
         /// </summary>
@@ -483,7 +568,6 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => RitenutaOk); }
             set { SetValue(() => RitenutaOk, value); }
         }
-
         #endregion
 
         #region command
@@ -495,6 +579,12 @@ namespace FinanceManager.ViewModels
                 if (CurrencyAvailable < Math.Abs(TotalLocalValue) && RecordPortafoglioTitoli.Id_tipo_movimento == 5)
                 {
                     MessageBox.Show("Non hai abbastanza soldi per questo acquisto!", "Acquisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    return;
+                }
+                SharesOwned = _liquidAssetServices.GetSharesQuantity(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_conto, (uint)RecordPortafoglioTitoli.Id_titolo);
+                if (SharesOwned == 0 && RecordPortafoglioTitoli.Id_tipo_movimento == 6)
+                {
+                    MessageBox.Show("Non hai titoli da vendere con queste impostazioni!", "Acuisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
                 if (RecordPortafoglioTitoli.Id_tipo_movimento == 5)
@@ -526,7 +616,7 @@ namespace FinanceManager.ViewModels
                     CanUpdateDelete = true;     // abilito la possibilità di modificare / cancellare il record
                     RecordPortafoglioTitoli = MLA;
                 }
-                else if ( RecordPortafoglioTitoli.Id_tipo_movimento == 6)
+                else if (RecordPortafoglioTitoli.Id_tipo_movimento == 6)
                 {
                     // estraggo tutti gli acquisti / vendite del titolo ancora attive
                     Ptf_CCList ptf_CCs = _liquidAssetServices.GetShare_AccountMovement(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_conto, (int)RecordPortafoglioTitoli.Id_titolo);

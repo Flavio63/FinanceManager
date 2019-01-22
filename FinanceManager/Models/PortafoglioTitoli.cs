@@ -46,29 +46,12 @@ namespace FinanceManager.Models
         public double RitenutaFiscale { get; set; }
         public double ProfitLoss { get; set; }
 
-        public DateTime Data_Movimento
-        {
-            get
-            {
-                if (_MovementDate.Date.ToShortDateString() == "01/01/0001" || _MovementDate.Date.ToShortDateString() == "01/01/01")
-                    _MovementDate = DateTime.Now.Date;
-                return _MovementDate;
-            }
-            set
-            {
-                if (value.Date.ToShortDateString() == "01/01/0001" || _MovementDate.Date.ToShortDateString() == "01/01/01")
-                    _MovementDate = DateTime.Now.Date;
-                _MovementDate = value;
-            }
-        }
-        //[ExcludeChar("/[a-z][A-Z]!@#$£€", ErrorMessage = "Sono permessi solo numeri")]
-        //[VerifyNumber(ErrorMessage = "Inserire una cifra diversa da zero e che sia disponibile.")]
+        public DateTime Data_Movimento { get; set; }
         public double Importo_totale
         {
             get { return GetValue(() => Importo_totale); }
             set { SetValue(() => Importo_totale, value); }
         }
-        //[Range(0.2, 1.8, ErrorMessage = "Controllare la cifra immessa.")]
         public double Valore_di_cambio
         {
             get { return GetValue(() => Valore_di_cambio); }
@@ -78,5 +61,34 @@ namespace FinanceManager.Models
         public bool Available { get; set; }
         public string Note { get; set; }
         public int Attivo { get; set; }
+
+        public PortafoglioTitoli()
+        {
+            Id_gestione = 0;
+            Nome_Gestione = "";
+            Id_valuta = 1;
+            Cod_valuta = "EUR";
+            Id_tipo_movimento = 0;
+            Desc_tipo_movimento = "";
+            Id_azienda = 0;
+            Desc_azienda = "";
+            Id_titolo = 0;
+            Desc_titolo = "";
+            Isin = "";
+            Id_tipo_titolo = 0;
+            Desc_tipo_titolo = "";
+            N_titoli = 0;
+            Costo_unitario_in_valuta = 0;
+            Commissioni_totale = 0;
+            TobinTax = 0;
+            Disaggio_anticipo_cedole = 0;
+            RitenutaFiscale = 0;
+            Data_Movimento = DateTime.Now.Date;
+            Importo_totale = 0;
+            Valore_di_cambio = 1;
+            Importo_cambiato = 0;
+            Attivo = 1;
+            Note = "";
+        }
     }
 }
