@@ -202,12 +202,7 @@
                 <TextBlock Grid.Row="4" Text="La valuta" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
                 <ComboBox Grid.Row="4" Grid.Column="1" ItemsSource="{Binding ListValute, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValuePath="IdCurrency" DisplayMemberPath="DescCurrency" Margin="5, 2" MinWidth="100"
-                          SelectedValue="{Binding RecordPortafoglioTitoli.Id_valuta}">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="SelectionChanged">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                          SelectedValue="{Binding RecordPortafoglioTitoli.Id_valuta}" IsEnabled="False">
                 </ComboBox>
                 <TextBlock Grid.Row="1" Grid.Column="2" Text="Filtro ISIN" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
                 <TextBox Grid.Row="1" Grid.Column="3"  Text="{Binding SrchShares, UpdateSourceTrigger=PropertyChanged}" 
