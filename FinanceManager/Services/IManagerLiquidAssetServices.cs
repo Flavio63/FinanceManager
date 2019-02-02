@@ -1,4 +1,5 @@
 ﻿using FinanceManager.Models;
+using System;
 using System.Data;
 
 namespace FinanceManager.Services
@@ -9,9 +10,10 @@ namespace FinanceManager.Services
         PortafoglioTitoliList GetManagerLiquidAssetListByOwnerLocationAndMovementType(int IdOwner, int IdLocation, int[] IdMovement);
         PortafoglioTitoliList GetManagerSharesMovementByOwnerAndLocation(int IdOwner, int IdLocation);
         PortafoglioTitoliList GetManagerLiquidAssetListByOwnerLocationAndTitolo(int idGestione, int idConto, int idTitolo);
+        PortafoglioTitoliList GetManagerLiquidAssetListByLinkMovimenti(DateTime link_movimenti);
         PortafoglioTitoli GetLastShareMovementByOwnerAndLocation(int IdOwner, int IdLocation);
         PortafoglioTitoli GetPortafoglioTitoliById(int IdPortafoglioTitoli);
-        Ptf_CCList GetShare_AccountMovement(int id_gestione, int id_conto, int id_titolo);
+        Ptf_CCList GetShareActiveAndAccountMovement(int id_gestione, int id_conto, int id_titolo);
         SintesiSoldiList GetCurrencyAvailable(int IdGestione = 0, int IdConto = 0, int IdValuta = 0);
         PortafoglioTitoliList GetShareMovements(int IdOwner, int IdLocation, uint IdShare);
         double GetSharesQuantity(int IdOwner, int IdLocation, uint idShare);
@@ -35,6 +37,7 @@ namespace FinanceManager.Services
         ContoCorrente GetContoCorrenteByIdCC(int idRecord);             // Prendo un solo record dalla tabella ContoCorrente
         ContoCorrenteList GetContoCorrenteByIdQuote(int idQuote);       // Il movimento del conto legato al giroconto selezionato
         ContoCorrenteList GetContoCorrenteByMovement(int idMovimento);  // Tutti i movimenti di giroconto
+        ContoCorrenteList GetContoCorrenteByIdPortafoglio(int idPortafoglioTitoli); // I max 2 movimenti di ContoCorrente associati al trade
         void UpdateContoCorrenteByIdCC(ContoCorrente contoCorrente);                // Aggiorno il movimento della tabella ContoCorrente sulla base dell'id del record
         void UpdateContoCorrenteByIdQuote(ContoCorrente contoCorrente);             // Aggiorno il movimento della tabella ContoCorrente sulla base della tabella quote investimento
         void UpdateContoCorrenteByIdPortafoglioTitoli(ContoCorrente contoCorrente); // Aggiorno il movimento della tabella ContoCorrente sulla base del conto titoli

@@ -171,7 +171,8 @@
                        HorizontalAlignment="Center" Margin="3, 2, 3, 7"/>
                 <TextBlock Grid.Row="1" Text="Il conto" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
                 <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding ListConti, UpdateSourceTrigger=PropertyChanged}"
-                          SelectedValuePath="Id_conto" DisplayMemberPath="Desc_conto" Margin="5, 2" MinWidth="100"
+                          SelectedValuePath="Id_conto" DisplayMemberPath="Desc_conto" Margin="5, 2" MinWidth="100" 
+                          IsEnabled="{Binding CanModifyBaseParameters, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                           SelectedValue="{Binding RecordPortafoglioTitoli.Id_conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="SelectionChanged">
@@ -181,6 +182,7 @@
                 </ComboBox>
                 <TextBlock Grid.Row="2" Text="La gestione" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
                 <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding ListGestioni, UpdateSourceTrigger=PropertyChanged}"
+                          IsEnabled="{Binding CanModifyBaseParameters, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                           SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione" Margin="5, 2" MinWidth="100"
                           SelectedValue="{Binding RecordPortafoglioTitoli.Id_gestione}">
                     <iy:Interaction.Triggers>
@@ -192,6 +194,7 @@
                 <TextBlock Grid.Row="3" Text="L'operazione" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
                 <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding ListMovimenti, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValuePath="Id_tipo_movimento" DisplayMemberPath="Desc_tipo_movimento" Margin="5, 2" MinWidth="100"
+                          IsEnabled="{Binding CanModifyBaseParameters, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                           SelectedValue="{Binding RecordPortafoglioTitoli.Id_tipo_movimento}">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="SelectionChanged">
@@ -209,6 +212,7 @@
                          Style="{StaticResource FormCenterTextBoxStyle}" Margin="10, 2, 5, 2"/>
                 <TextBlock Grid.Row="2" Grid.Column="2" Text="Il titolo" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
                 <ComboBox Grid.Row="2" Grid.Column="3" Name="cbShares" ItemsSource="{Binding SharesListView}" 
+                          IsEnabled="{Binding CanModifyBaseParameters, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                           SelectedValuePath="IdShare" Margin="10, 2, 5, 2" SelectedValue="{Binding RecordPortafoglioTitoli.Id_titolo}">
                     <TextSearch.TextPath>DescShare</TextSearch.TextPath>
                     <ComboBox.ItemTemplate>
@@ -392,7 +396,7 @@
 
         <!-- Datagrid con tutti i movimenti del portafoglio -->
         <DataGrid Grid.Row="3" Grid.ColumnSpan="4"  CanUserAddRows="False" CanUserDeleteRows="False"  AutoGenerateColumns="False" RowHeaderWidth="16"
-                      SelectionMode="Single" FontSize="14" AlternatingRowBackground="LightGray" ItemsSource="{Binding PtfCollectionView, UpdateSourceTrigger=PropertyChanged}"
+                      SelectionMode="Single" FontSize="14" AlternatingRowBackground="LightGreen" ItemsSource="{Binding PtfCollectionView, UpdateSourceTrigger=PropertyChanged}"
                       Margin="5" MaxWidth="{Binding Path=ActualWidth, ElementName=BorderGrid}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" IsReadOnly="True" Binding="{Binding Id_portafoglio, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">

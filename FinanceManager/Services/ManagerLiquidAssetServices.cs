@@ -40,6 +40,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("valore_cambio", managerLiquidAsset.Valore_di_cambio);
                     dbComm.Parameters.AddWithValue("note", managerLiquidAsset.Note);
                     dbComm.Parameters.AddWithValue("attivo", managerLiquidAsset.Attivo);
+                    dbComm.Parameters.AddWithValue("link_movimenti", managerLiquidAsset.Link_Movimenti.ToString("yyyy-MM-dd HH:mm:ss"));
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -192,6 +193,39 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", idGestione);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", idConto);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", idTitolo);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    DataTable dt = new DataTable();
+                    dbAdapter.Fill(dt);
+                    return MLAL(dt);
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        /// <summary>
+        /// Estrae tutti i record di una gestione in un conto di un titolo
+        /// </summary>
+        /// <param name="idGestione">la gestione scelta</param>
+        /// <param name="idConti">il conto corrente</param>
+        /// <param name="idTitolo">il titolo</param>
+        /// <returns></returns>
+        public PortafoglioTitoliList GetManagerLiquidAssetListByLinkMovimenti(DateTime link_movimenti)
+        {
+            try
+            {
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = System.Data.CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = ManagerScripts.GetManagerLiquidAssetListByLinkMovimenti;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("link_movimenti", link_movimenti);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     DataTable dt = new DataTable();
                     dbAdapter.Fill(dt);
@@ -410,6 +444,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("note", managerLiquidAsset.Note);
                     dbComm.Parameters.AddWithValue("attivo", managerLiquidAsset.Attivo);
                     dbComm.Parameters.AddWithValue("id_portafoglio_titoli", managerLiquidAsset.Id_portafoglio);
+                    dbComm.Parameters.AddWithValue("link_movimenti", managerLiquidAsset.Link_Movimenti.ToString("yyyy-MM-dd hh:mm:ss"));
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -493,6 +528,7 @@ namespace FinanceManager.Services
             MLA.Valore_di_cambio = dr.Field<double>("valore_cambio");
             MLA.Note = dr.Field<string>("note");
             MLA.Attivo = dr.Field<int>("attivo");
+            MLA.Link_Movimenti = dr.Field<DateTime>("link_movimenti");
             return MLA;
         }
         #region ContoCorrente
@@ -516,6 +552,7 @@ namespace FinanceManager.Services
             conto.Id_Quote_Investimenti = (int)dataRow.Field<uint>("id_quote_investimenti");
             conto.Id_Valuta = (int)dataRow.Field<uint>("id_valuta");
             conto.Cod_Valuta = dataRow.Field<string>("cod_valuta");
+            conto.Id_Portafoglio_Titoli = (int)dataRow.Field<uint>("id_portafoglio_titoli");
             conto.Id_tipo_movimento = (int)dataRow.Field<uint>("id_tipo_movimento");
             conto.Desc_tipo_movimento = dataRow.Field<string>("desc_movimento");
             conto.Id_Gestione = (int)dataRow.Field<uint>("id_gestione");
@@ -914,7 +951,32 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
-
+        
+        public ContoCorrenteList GetContoCorrenteByIdPortafoglio(int idPortafoglioTitoli)
+        {
+            try
+            {
+                DataTable DT = new DataTable();
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetContoCorrenteByIdPortafoglio;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_portafoglio_titoli", idPortafoglioTitoli);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.Fill(DT);
+                    return contoCorrentes(DT);
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
         public void UpdateContoCorrenteByIdQuote(ContoCorrente contoCorrente)
         {
             try
@@ -1080,7 +1142,7 @@ namespace FinanceManager.Services
             }
         }
 
-        public Ptf_CCList GetShare_AccountMovement(int id_gestione, int id_conto, int id_titolo)
+        public Ptf_CCList GetShareActiveAndAccountMovement(int id_gestione, int id_conto, int id_titolo)
         {
             try
             {
@@ -1089,7 +1151,7 @@ namespace FinanceManager.Services
                 {
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = System.Data.CommandType.Text;
-                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetShare_AccountMovement;
+                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetShareActiveAndAccountMovement;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", id_gestione);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", id_conto);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", id_titolo);

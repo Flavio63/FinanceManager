@@ -61,6 +61,7 @@ namespace FinanceManager.Models
         public bool Available { get; set; }
         public string Note { get; set; }
         public int Attivo { get; set; }
+        public DateTime Link_Movimenti { get; set; }
 
         public PortafoglioTitoli()
         {
@@ -89,6 +90,7 @@ namespace FinanceManager.Models
             Importo_cambiato = 0;
             Attivo = 1;
             Note = "";
+            Link_Movimenti = DateTime.Now;
         }
     }
 }
