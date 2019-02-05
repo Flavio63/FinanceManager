@@ -341,7 +341,10 @@
         <!-- La griglia da utilizzare per selezionare un movimento da modificare -->
         <DataGrid Grid.Row="3" Grid.ColumnSpan="3" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="True"
                   ItemsSource="{Binding ListContoCorrente, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" SelectionMode="Single"
-                  AlternatingRowBackground="LightGray" Margin="5" FontSize="16" FontWeight="Bold" >
+                  AlternatingRowBackground="LightGreen" Margin="5" FontSize="16" FontWeight="Bold" >
+            <DataGrid.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="LightBlue"/>
+            </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding Id_RowConto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                         IsReadOnly="True" FontSize="14" FontWeight="Normal">

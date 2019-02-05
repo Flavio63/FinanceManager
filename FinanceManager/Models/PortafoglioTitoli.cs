@@ -10,8 +10,6 @@ namespace FinanceManager.Models
 {
     public class PortafoglioTitoli : ViewModelBase
     {
-        private DateTime _MovementDate;
-
         public int Id_portafoglio { get; set; }
         public int Id_gestione { get; set; }
         public string Nome_Gestione { get; set; }

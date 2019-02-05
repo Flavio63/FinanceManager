@@ -398,6 +398,9 @@
         <DataGrid Grid.Row="3" Grid.ColumnSpan="4"  CanUserAddRows="False" CanUserDeleteRows="False"  AutoGenerateColumns="False" RowHeaderWidth="16"
                       SelectionMode="Single" FontSize="14" AlternatingRowBackground="LightGreen" ItemsSource="{Binding PtfCollectionView, UpdateSourceTrigger=PropertyChanged}"
                       Margin="5" MaxWidth="{Binding Path=ActualWidth, ElementName=BorderGrid}">
+            <DataGrid.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="LightBlue"/>
+            </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" IsReadOnly="True" Binding="{Binding Id_portafoglio, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <DataGridTextColumn.ElementStyle>
