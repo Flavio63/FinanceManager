@@ -66,64 +66,6 @@
                     </iy:EventTrigger>
                 </iy:Interaction.Triggers>
             </ListBox>
-            <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="5" Orientation="Horizontal" HorizontalAlignment="Center">
-                <RadioButton GroupName="currencies" Content="Singole Valute" Margin="5" IsChecked="True">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="Checked">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
-                </RadioButton>
-                <RadioButton GroupName="currencies" Content="Tutto in Euro" Margin="5" IsChecked="False">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="Checked">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
-                </RadioButton>
-            </StackPanel>
-            <ListBox Grid.Row="4" Grid.ColumnSpan="3" Name="listCurrency" ItemsSource="{Binding CurrencyList}" 
-                     VerticalContentAlignment="Center" SelectionMode="Multiple" MinWidth="100" FontSize="14" FontWeight="Bold" Visibility="Visible"
-                      DisplayMemberPath="DescCurrency" SelectedValuePath="IdCurrency" Margin="15">
-                <iy:Interaction.Triggers>
-                    <iy:EventTrigger EventName="SelectionChanged">
-                        <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                    </iy:EventTrigger>
-                </iy:Interaction.Triggers>
-            </ListBox>
-            <StackPanel Name="stackpanelCurrency" Orientation="Vertical" Grid.Row="4" Grid.ColumnSpan="3" Margin="15" Visibility="Collapsed"
-                        Background="#FFC9C9C9">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Height="30" Margin="15,0,15,0">
-                    <TextBlock Text="Combio Dollaro / Euro" VerticalAlignment="Center" Margin="5,0,10,0" FontWeight="Bold"/>
-                    <TextBox Name="exchangeDollar" Text="{Binding ExchangeDollar, NotifyOnSourceUpdated=True, ConverterCulture=it-IT}" Margin="5" MinWidth="55" VerticalContentAlignment="Center" HorizontalContentAlignment="Right">
-                        <iy:Interaction.Triggers>
-                            <iy:EventTrigger EventName="LostFocus">
-                                <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
-                            </iy:EventTrigger>
-                        </iy:Interaction.Triggers>
-                    </TextBox>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Height="30" Margin="15,0,15,0">
-                    <TextBlock Text="Combio Sterlina / Euro" VerticalAlignment="Center" Margin="5,0,10,0" FontWeight="Bold"/>
-                    <TextBox Name="exchangePound" Text="{Binding ExchangePound, NotifyOnSourceUpdated=True, ConverterCulture=it-IT}" Margin="5" MinWidth="55" VerticalContentAlignment="Center" HorizontalContentAlignment="Right">
-                        <iy:Interaction.Triggers>
-                            <iy:EventTrigger EventName="LostFocus">
-                                <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
-                            </iy:EventTrigger>
-                        </iy:Interaction.Triggers>
-                    </TextBox>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Height="30" Margin="15,0,15,0">
-                    <TextBlock Text="Combio Franchi / Euro" VerticalAlignment="Center" Margin="5,0,10,0" FontWeight="Bold"/>
-                    <TextBox Name="exchangeFranchi" Text="{Binding ExchangeFranchi, NotifyOnSourceUpdated=True, ConverterCulture=it-IT}" Margin="5" MinWidth="55" VerticalContentAlignment="Center" HorizontalContentAlignment="Right">
-                        <iy:Interaction.Triggers>
-                            <iy:EventTrigger EventName="LostFocus">
-                                <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
-                            </iy:EventTrigger>
-                        </iy:Interaction.Triggers>
-                    </TextBox>
-                </StackPanel>
-            </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.ColumnSpan="3" Margin="5" HorizontalAlignment="Center">
                 <Button Name="btnViewReport" Content="Visualizza" Margin="15,10, 5, 10" Width="90" FontSize="14" FontWeight="Bold"
                              Command="{Binding ViewCommand}" CommandParameter="{Binding ElementName=BackgroundReport}"/>

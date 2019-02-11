@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FinanceManager" WindowStartupLocation="CenterScreen"
         mc:Ignorable="d" x:Name="FinestraPrincipale" DataContext="{StaticResource ResourceKey=MainWindowViewModel}"
-        Title="DAF-C GESTIONE FINANZIARIA">
+        Title="{Binding Titolo, UpdateSourceTrigger=PropertyChanged}"
+        Icon="Piggy_Bank.ico">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>

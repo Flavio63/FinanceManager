@@ -1,6 +1,8 @@
 ﻿using FinanceManager.Events;
 using FinanceManager.Services;
 using FinanceManager.Views;
+using System.Reflection;
+using System.Deployment.Application;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -53,6 +55,17 @@ namespace FinanceManager.ViewModels
 
         public MainWindowViewModel()
         {
+            string versione = "";
+            try
+            {
+                versione = ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
+                Assembly.GetExecutingAssembly().GetName().Version = ApplicationDeployment.CurrentDeployment.CurrentVersion;
+            }
+            catch
+            {
+                versione = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            }
+            Titolo = string.Format("DAF-C Gestione Finanza ({0})", versione);
             _registryServices = new RegistryService();
             _managerLiquidServices = new ManagerLiquidAssetServices();
             _managerReportServices = new ManagerReportServices();
@@ -265,16 +278,13 @@ namespace FinanceManager.ViewModels
 
         #endregion Reports
 
-        //private void OpenGestioni(object param)
-        //{
-        //    {
-        //        mainFormManagerViewModel = new MainFormManagerViewModel(_registryServices, _managerLiquidServices);
-        //        mainFormManager = new MainFormManagerView(mainFormManagerViewModel);
-        //    }
-        //    {
-        //        mainFormManager = null;
-        //    }
-        //}
+        #region Versioni
+        public string Titolo
+        {
+            get { return GetValue(() => Titolo); }
+            set { SetValue(() => Titolo, value); }
+        }
+        #endregion
 
     }
 }

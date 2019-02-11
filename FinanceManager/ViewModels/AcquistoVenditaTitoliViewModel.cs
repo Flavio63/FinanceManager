@@ -635,38 +635,40 @@ namespace FinanceManager.ViewModels
                         {
                             double _valoreAcquisto;
                             double _totaleContabile;
-                            _valoreAcquisto = valoreAcquisto / numeroAzioni * portafoglio.N_titoli * -1;
+                            _valoreAcquisto = valoreAcquisto / numeroAzioni * portafoglio.N_titoli * -1; //valore medio di acquisto delle azioni che si vendono
                             _totaleContabile = portafoglio.Importo_totale + (portafoglio.Commissioni_totale + portafoglio.TobinTax + portafoglio.Disaggio_anticipo_cedole) * -1;
+                            ContoCorrenteList CCs = _liquidAssetServices.GetContoCorrenteByIdPortafoglio(portafoglio.Id_portafoglio);
+                            ContoCorrente CCcapitale;
+                            ContoCorrente CCprofitloss;
                             if (numeroAzioni + portafoglio.N_titoli != 0)
                             {
-                                ContoCorrenteList CCs = _liquidAssetServices.GetContoCorrenteByIdPortafoglio(portafoglio.Id_portafoglio);
-                                ContoCorrente CCcapitale;
-                                ContoCorrente CCprofitloss;
-
-                                if (CCs.Count != 2) throw new Exception("Ci devono essere 2 record con lo stesso id_portafoglio_titoli! >_< !");
-                                if (_valoreAcquisto + _totaleContabile > 0)
+                                // ricalcolo valoreAcquisto e numeroAzioni rimanti
+                                valoreAcquisto = valoreAcquisto / numeroAzioni * (numeroAzioni + portafoglio.N_titoli);
+                                numeroAzioni = numeroAzioni + portafoglio.N_titoli;
+                            }
+                            if (CCs.Count != 2) throw new Exception("Ci devono essere 2 record con lo stesso id_portafoglio_titoli! >_< !");
+                            if (_valoreAcquisto + _totaleContabile > 0)
+                            {
+                                CCcapitale = new ContoCorrente(pt, _valoreAcquisto * -1, TipologiaSoldi.Capitale);
+                                CCprofitloss = new ContoCorrente(pt, (_valoreAcquisto + _totaleContabile), TipologiaSoldi.Utili);
+                                if (CCs[0].Id_Tipo_Soldi == (int)TipologiaSoldi.Capitale)
                                 {
-                                    CCcapitale = new ContoCorrente(pt, _valoreAcquisto, TipologiaSoldi.Capitale);
-                                    CCprofitloss = new ContoCorrente(pt, (_valoreAcquisto + _totaleContabile), TipologiaSoldi.Utili);
-                                    if (CCs[0].Id_Tipo_Soldi == (int)TipologiaSoldi.Capitale)
-                                    {
-                                        CCcapitale.Id_RowConto = CCs[0].Id_RowConto;
-                                        _liquidAssetServices.UpdateContoCorrenteByIdCC(CCcapitale);
-                                        CCprofitloss.Id_RowConto = CCs[1].Id_RowConto;
-                                        _liquidAssetServices.UpdateContoCorrenteByIdCC(CCprofitloss);
-                                    }
+                                    CCcapitale.Id_RowConto = CCs[0].Id_RowConto;
+                                    _liquidAssetServices.UpdateContoCorrenteByIdCC(CCcapitale);
+                                    CCprofitloss.Id_RowConto = CCs[1].Id_RowConto;
+                                    _liquidAssetServices.UpdateContoCorrenteByIdCC(CCprofitloss);
                                 }
-                                else if (_valoreAcquisto + _totaleContabile < 0)
+                            }
+                            else if (_valoreAcquisto + _totaleContabile < 0)
+                            {
+                                CCcapitale = new ContoCorrente(pt, _valoreAcquisto * -1, TipologiaSoldi.Capitale);
+                                CCprofitloss = new ContoCorrente(pt, (_totaleContabile + _valoreAcquisto) * -1, TipologiaSoldi.PerditaCapitale);
+                                if (CCs[0].Id_Tipo_Soldi == (int)TipologiaSoldi.Capitale)
                                 {
-                                    CCcapitale = new ContoCorrente(pt, _valoreAcquisto, TipologiaSoldi.Capitale);
-                                    CCprofitloss = new ContoCorrente(pt, (_totaleContabile + _valoreAcquisto) * -1, TipologiaSoldi.PerditaCapitale);
-                                    if (CCs[0].Id_Tipo_Soldi == (int)TipologiaSoldi.Capitale)
-                                    {
-                                        CCcapitale.Id_RowConto = CCs[0].Id_RowConto;
-                                        _liquidAssetServices.UpdateContoCorrenteByIdCC(CCcapitale);
-                                        CCprofitloss.Id_RowConto = CCs[1].Id_RowConto;
-                                        _liquidAssetServices.UpdateContoCorrenteByIdCC(CCprofitloss);
-                                    }
+                                    CCcapitale.Id_RowConto = CCs[0].Id_RowConto;
+                                    _liquidAssetServices.UpdateContoCorrenteByIdCC(CCcapitale);
+                                    CCprofitloss.Id_RowConto = CCs[1].Id_RowConto;
+                                    _liquidAssetServices.UpdateContoCorrenteByIdCC(CCprofitloss);
                                 }
                             }
                         }
@@ -808,7 +810,7 @@ namespace FinanceManager.ViewModels
         {
             UpdateDB();
             MessageBox.Show("Record modificato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
-                Init();
+            Init();
         }
         public void DeleteCommand(object param)
         {
