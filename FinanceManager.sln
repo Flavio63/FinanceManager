@@ -4,10 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27130.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinanceManager", "FinanceManager\FinanceManager.csproj", "{A5BE88ED-299A-4CDA-AFC9-679922FF63AF}"
-	ProjectSection(ProjectDependencies) = postProject
-		{7633B3E5-743D-49C8-9A36-C3ACA882C736} = {7633B3E5-743D-49C8-9A36-C3ACA882C736}
-		{DDCCB4E6-01E1-42B6-8E86-D6FC05FE4E71} = {DDCCB4E6-01E1-42B6-8E86-D6FC05FE4E71}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAFc_library", "DAFc_library\DAFc_library.csproj", "{7633B3E5-743D-49C8-9A36-C3ACA882C736}"
 EndProject
