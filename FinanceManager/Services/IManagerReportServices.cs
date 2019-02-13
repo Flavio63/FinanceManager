@@ -8,6 +8,6 @@ namespace FinanceManager.Services
     {
         IList<int> GetAvailableYears();
         ReportProfitLossList GetReport1(IList<int> _selectedOwners, 
-            IList<int> _selectedYears, IList<int> _selectedCurrency, double[] exchangeValue = null);
+            IList<int> _selectedYears);
     }
 }

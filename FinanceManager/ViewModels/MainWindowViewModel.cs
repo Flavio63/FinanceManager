@@ -267,6 +267,7 @@ namespace FinanceManager.ViewModels
             {
                 managerReportsViewModel = new ManagerReportsViewModel(_registryServices, _managerReportServices);
                 managerReportsView = new ManagerReportsView(managerReportsViewModel);
+                mainGrid.Children.Add(managerReportsView);
             }
             else
             {

@@ -4,11 +4,11 @@ namespace FinanceManager.Services
     public interface IRegistryServices
     {
         #region Owner
-        RegistryOwnersList GetRegistryOwners();
-        void UpdateOwner(RegistryOwner owner);
-        void AddOwner(string name);
-        void DeleteOwner(int id);
-        RegistryOwner GetOwner(int id);
+        RegistryOwnersList GetGestioneList();
+        void UpdateGestioneName(RegistryOwner owner);
+        void AddGestione(string name);
+        void DeleteGestione(int id);
+        RegistryOwner GetGestione(int id);
         #endregion
 
         #region ShareType

@@ -360,7 +360,7 @@ namespace FinanceManager.ViewModels
                     }
                     else if ((ActualQuote.Id_tipo_movimento == 12 && ActualQuote.IdQuote > 0) || ((ActualQuote.Id_tipo_movimento == 4 || ActualQuote.Id_tipo_movimento == 15) && ActualQuote.IdQuote > 0))
                     {
-                        RegistryOwner = _registryServices.GetOwner(ListContoCorrente[0].Id_Gestione);
+                        RegistryOwner = _registryServices.GetGestione(ListContoCorrente[0].Id_Gestione);
                         RegistryLocation = _registryServices.GetLocation(ListContoCorrente[0].Id_Conto);
                         Tipo_Soldi = _registryServices.GetTipoSoldiById((int)ListContoCorrente[0].Id_Tipo_Soldi);
                         if (OnOpenDialog(this))
@@ -474,7 +474,7 @@ namespace FinanceManager.ViewModels
         {
             Dialogs.Dialog3Combos.Dialog3CombosViewModel vm = new
                 Dialogs.Dialog3Combos.Dialog3CombosViewModel("Selezionare il conto, la gestione e il tipo soldi",
-                _registryServices.GetRegistryLocationList(), _registryServices.GetRegistryOwners(), _registryServices.GetTipoSoldiList(),
+                _registryServices.GetRegistryLocationList(), _registryServices.GetGestioneList(), _registryServices.GetTipoSoldiList(),
                 RegistryLocation, RegistryOwner, Tipo_Soldi);
 
             Dialogs.DialogService.DialogResult result = Dialogs.DialogService.Dialog3CombosService.OpenDialog(vm, param as Window);

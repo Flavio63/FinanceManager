@@ -57,7 +57,7 @@ namespace FinanceManager.ViewModels
                 foreach (RegistryMovementType registry in RMTL)
                     ListMovimenti.Add(registry);
                 ListValute = _registryServices.GetRegistryCurrencyList();
-                ListGestioni = _registryServices.GetRegistryOwners();
+                ListGestioni = _registryServices.GetGestioneList();
                 ListConti = _registryServices.GetRegistryLocationList();
 
                 SharesList = new ObservableCollection<RegistryShare>(_registryServices.GetRegistryShareList());

@@ -10,7 +10,7 @@ namespace FinanceManager.Services
     public class RegistryService : SQL.DAFconnection, IRegistryServices
     {
         #region Owner
-        public void AddOwner(string name)
+        public void AddGestione(string name)
         {
             try
             {
@@ -18,7 +18,7 @@ namespace FinanceManager.Services
                 {
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.CommandType = CommandType.Text;
-                    dbComm.CommandText = SQL.RegistryScripts.AddOwner;
+                    dbComm.CommandText = SQL.RegistryScripts.AddGestione;
                     dbComm.Parameters.AddWithValue("nome", name);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -35,7 +35,7 @@ namespace FinanceManager.Services
             }
         }
 
-        public void DeleteOwner(int id)
+        public void DeleteGestione(int id)
         {
             try
             {
@@ -43,7 +43,7 @@ namespace FinanceManager.Services
                 {
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.CommandType = CommandType.Text;
-                    dbComm.CommandText = SQL.RegistryScripts.DeleteOwner;
+                    dbComm.CommandText = SQL.RegistryScripts.DeleteGestione;
                     dbComm.Parameters.AddWithValue("id", id);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -60,7 +60,7 @@ namespace FinanceManager.Services
             }
         }
 
-        public RegistryOwner GetOwner(int id)
+        public RegistryOwner GetGestione(int id)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
-                    dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetOwner;
+                    dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetGestione;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", id);
                     DataTable dataTable = new DataTable();
                     dbAdapter.Fill(dataTable);
@@ -91,7 +91,7 @@ namespace FinanceManager.Services
             }
         }
 
-        public RegistryOwnersList GetRegistryOwners()
+        public RegistryOwnersList GetGestioneList()
         {
             try
             {
@@ -100,7 +100,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
-                    dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetAccountList;
+                    dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetGestioneList;
                     DataTable dataTable = new DataTable();
                     dbAdapter.Fill(dataTable);
                     RegistryOwnersList ROL = new RegistryOwnersList();
@@ -116,15 +116,15 @@ namespace FinanceManager.Services
             }
             catch (MySqlException err)
             {
-                throw new Exception("GetRegistryOwners " + err.Message);
+                throw new Exception("GetGestioneList " + err.Message);
             }
             catch (Exception err)
             {
-                throw new Exception("GetRegistryOwners " + err.Message);
+                throw new Exception("GetGestioneList " + err.Message);
             }
         }
 
-        public void UpdateOwner(RegistryOwner owner)
+        public void UpdateGestioneName(RegistryOwner owner)
         {
             try
             {
@@ -132,7 +132,7 @@ namespace FinanceManager.Services
                 {
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.CommandType = CommandType.Text;
-                    dbComm.CommandText = SQL.RegistryScripts.UpdateName;
+                    dbComm.CommandText = SQL.RegistryScripts.UpdateGestioneName;
                     dbComm.Parameters.AddWithValue("nome", owner.Nome_Gestione);
                     dbComm.Parameters.AddWithValue("id", owner.Id_gestione);
                     dbComm.Connection.Open();

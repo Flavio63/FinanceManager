@@ -9,11 +9,11 @@ namespace FinanceManager.Services.SQL
     public class RegistryScripts
     {
         #region Gestione
-        public readonly static string GetAccountList = "SELECT id_gestione, nome_gestione FROM gestioni ORDER BY id_gestione;";
-        public readonly static string UpdateName = "UPDATE gestioni SET nome_gestione = @nome WHERE id_gestione = @id";
-        public readonly static string AddOwner = "INSERT INTO gestioni (id_gestione, nome_gestione) VALUE (null, @nome)";
-        public readonly static string DeleteOwner = "DELETE FROM gestioni WHERE id_gestione = @id";
-        public readonly static string GetOwner = "SELECT id_gestione, nome_gestione FROM gestioni WHERE id_gestione = @id_gestione";
+        public readonly static string GetGestioneList = "SELECT id_gestione, nome_gestione FROM gestioni ORDER BY id_gestione;";
+        public readonly static string UpdateGestioneName = "UPDATE gestioni SET nome_gestione = @nome WHERE id_gestione = @id";
+        public readonly static string AddGestione = "INSERT INTO gestioni (id_gestione, nome_gestione) VALUE (null, @nome)";
+        public readonly static string DeleteGestione = "DELETE FROM gestioni WHERE id_gestione = @id";
+        public readonly static string GetGestione = "SELECT id_gestione, nome_gestione FROM gestioni WHERE id_gestione = @id_gestione";
         #endregion
 
         #region TipoTitoli

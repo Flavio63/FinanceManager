@@ -27,7 +27,7 @@ namespace FinanceManager.ViewModels
         public RegistryOwnerViewModel(IRegistryServices services)
         {
             _services = services ?? throw new ArgumentNullException("RegistryOwnerViewModel With No Services");
-            OwnerList = new ObservableCollection<RegistryOwner>(services.GetRegistryOwners());
+            OwnerList = new ObservableCollection<RegistryOwner>(services.GetGestioneList());
             OwnerList.CollectionChanged += CollectionHasChanged;
             CloseMeCommand = new CommandHandler(CloseMe);
         }
@@ -54,12 +54,12 @@ namespace FinanceManager.ViewModels
                     Owner = ((RegistryOwner)e.Row.Item);
                     if (Owner.Id_gestione > 0)
                     {
-                        _services.UpdateOwner(Owner);
+                        _services.UpdateGestioneName(Owner);
                     }
                     else
                     {
-                        _services.AddOwner(Owner.Nome_Gestione);
-                        OwnerList = new ObservableCollection<RegistryOwner>(_services.GetRegistryOwners());
+                        _services.AddGestione(Owner.Nome_Gestione);
+                        OwnerList = new ObservableCollection<RegistryOwner>(_services.GetGestioneList());
                         
                     }
                 }
@@ -89,8 +89,8 @@ namespace FinanceManager.ViewModels
                     {
                         try
                         {
-                            _services.DeleteOwner(((RegistryOwner)dg.SelectedItem).Id_gestione);
-                            OwnerList = new ObservableCollection<RegistryOwner>(_services.GetRegistryOwners());
+                            _services.DeleteGestione(((RegistryOwner)dg.SelectedItem).Id_gestione);
+                            OwnerList = new ObservableCollection<RegistryOwner>(_services.GetGestioneList());
                         }
                         catch (Exception err)
                         {

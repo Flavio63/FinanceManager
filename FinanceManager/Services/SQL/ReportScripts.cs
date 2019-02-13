@@ -8,15 +8,17 @@ namespace FinanceManager.Services.SQL
 {
     public class ReportScripts
     {
-        public static readonly string GetAvailableYears = "SELECT YEAR(data_movimento) AS anni FROM portafoglio GROUP BY anni ORDER BY anni DESC";
+        public static readonly string GetAvailableYears = "SELECT YEAR(data_movimento) AS anni FROM portafoglio_titoli GROUP BY anni ORDER BY anni DESC";
 
-        public static readonly string GetProfitLoss1 = "SELECT YEAR(data_movimento) as Anno, A.id_valuta, C.cod_valuta, D.id_tipo_titolo, D.desc_tipo_titolo, A.id_tipo_movimento, B.desc_Movimento, " +
-            "SUM(CASE WHEN A.id_valuta = 1 THEN profit_loss WHEN A.id_valuta = 2 THEN profit_loss * @EuroDollaro WHEN A.id_valuta = 3 " +
-            "THEN profit_loss * @EuroSterlina WHEN A.id_valuta = 4 THEN profit_loss * @EuroFranchiSvizzeri END) AS PL " +
-            "FROM portafoglio A, tipo_movimento B, valuta C, tipo_titoli D, titoli E " +
-            "WHERE  A.id_tipo_movimento = B.id_tipo_movimento AND A.id_valuta = C.id_valuta AND A.id_titolo = E.id_titolo AND E.id_tipo_titolo = D.id_tipo_titolo " +
-            "AND D.id_tipo_titolo > 0 AND ({0}) AND ({1}) AND ({2}) " +
-            "GROUP BY Anno, cod_valuta, D.id_tipo_titolo, id_tipo_movimento " +
-            "ORDER BY Anno, A.id_valuta, D.id_tipo_titolo, id_tipo_movimento; ";
+        public static readonly string GetProfitLoss1 = "SELECT YEAR(data_movimento) AS Anno, D.desc_tipo_soldi, " +
+            "ROUND(SUM(CASE WHEN C.id_tipo_titolo = 1 THEN ammontare ELSE 0 END), 2) AS Azioni, " +
+            "round(sum(case when C.id_tipo_titolo = 2 then ammontare else 0 end), 2) as Obbligazioni, " +
+            "round(sum(case when C.id_tipo_titolo = 5 then ammontare else 0 end), 2) as ETF, " +
+            "round(sum(case when C.id_tipo_titolo = 7 then ammontare else 0 end), 2) as Fondo, " +
+            "round(sum(case when C.id_tipo_titolo = 13 then ammontare else 0 end), 2) as Volatili, " +
+            "round(sum(case when C.id_tipo_titolo >= 1 then ammontare else 0 end), 2) as Totale " +
+            "from conto_corrente A, gestioni B, titoli C, tipo_soldi D " +
+            "where A.id_gestione = B.id_gestione and A.id_titolo = C.id_titolo and A.id_tipo_soldi = D.id_tipo_soldi AND " +
+            "A.id_tipo_soldi > 1 AND {0} group by Anno, A.id_tipo_soldi";
     }
 }
