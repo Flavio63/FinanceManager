@@ -44,7 +44,7 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                OwnerList = _services.GetRegistryOwners();
+                OwnerList = _services.GetGestioneList();
                 _selectedOwners = new List<int>();
                 CurrencyList = _services.GetRegistryCurrencyList();
                 _selectedCurrency = new List<int>();

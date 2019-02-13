@@ -60,7 +60,7 @@ namespace FinanceManager.ViewModels
                                 e.Cancel = true;
                                 throw new Exception("Inserire tutti i valori prima di confermare cambiando riga.");
                             }
-                            else if (pi.Name != "Id_titolo" && pi.GetValue(Share).ToString() == "0")
+                            else if (pi.Name != "IdShare" && pi.GetValue(Share).ToString() == "0")
                             {
                                 e.Cancel = true;
                                 throw new Exception("Inserire tutti i valori prima di confermare cambiando riga.");
