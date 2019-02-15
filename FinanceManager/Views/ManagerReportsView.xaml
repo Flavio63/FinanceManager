@@ -7,75 +7,90 @@
              xmlns:iy="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" Name="_ManagerReportsView"
              xmlns:local="clr-namespace:FinanceManager.Views"
-             d:DesignHeight="650" d:DesignWidth="800">
-    <Grid Background="LightSeaGreen" Margin="5">
+             d:DesignHeight="650" >
+    <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="60"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.ColumnSpan="2" Text="Gestione dei Report" FontWeight="Bold" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Grid.ColumnSpan="3" Text="Gestione dei Report" FontWeight="Bold" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <Button Content="X" Command="{Binding CloseMeCommand}" 
                 CommandParameter="{Binding ElementName=_ManagerReportsView}" 
                 HorizontalContentAlignment="Center" Grid.Column="2" HorizontalAlignment="Right"
                     VerticalContentAlignment="Center" Width="25" Height="25" Background="LightGray" 
                 Margin="0,0, 15, 0"></Button>
-        <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2"  Margin="5"  CornerRadius="18"
-                BorderBrush="#CC403E40" BorderThickness="0,0,4,4">
-            <Border BorderBrush="#FFCB04F7" Background="#FFFDF17C"
-                BorderThickness="2" CornerRadius="15">
-                <ScrollViewer Margin="15" VerticalScrollBarVisibility="Auto">
-                    <Grid  Name="BackgroundReport" Margin="5"></Grid>
-                </ScrollViewer>
-            </Border>
-        </Border>
-        <Grid Grid.Column="0" Grid.Row="1" MaxWidth="450" VerticalAlignment="Top" Background="AliceBlue" Margin="15,0,15,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="25"/>
-                <RowDefinition Height="75"/>
-                <RowDefinition Height="75"/>
-                <RowDefinition Height="35"/>
-                <RowDefinition Height="120"/>
-                <RowDefinition Height="65"/>
-                <RowDefinition Height="25"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120"/>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="120"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="1" Text="Portafoglio di:" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" Margin="5,5,0,5" FontSize="14"/>
-            <ListBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding OwnerList}" SelectionMode="Multiple" Margin="5, 5, 25, 5" 
-                     DisplayMemberPath="OwnerName" SelectedValuePath="IdOwner" Name="ListOwners">
-                <iy:Interaction.Triggers>
-                    <iy:EventTrigger EventName="SelectionChanged">
-                        <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                    </iy:EventTrigger>
-                </iy:Interaction.Triggers>
-            </ListBox>
-            <TextBlock Grid.Row="2" Text="Anni:" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" Margin="5,5,0,5" FontSize="14"/>
-            <ListBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Name="ListYears" ItemsSource="{Binding AvailableYears}" VerticalContentAlignment="Center" MinWidth="100"
-                           FontSize="14" Margin="5, 5, 25, 5" SelectionMode="Multiple">
-                <iy:Interaction.Triggers>
-                    <iy:EventTrigger EventName="SelectionChanged">
-                        <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                    </iy:EventTrigger>
-                </iy:Interaction.Triggers>
-            </ListBox>
-            <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.ColumnSpan="3" Margin="5" HorizontalAlignment="Center">
-                <Button Name="btnViewReport" Content="Visualizza" Margin="15,10, 5, 10" Width="90" FontSize="14" FontWeight="Bold"
+        
+        <!-- Parametri comuni da selezionare -->
+        <Border Grid.Row="1" Grid.Column="0" BorderBrush="LightGray" BorderThickness="0.8" Margin="5">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.ColumnSpan="2" Grid.Row="0" Text="Parametri Comuni da Selezionare" FontSize="22" FontWeight="Bold" 
+                       HorizontalAlignment="Center" Margin="3, 2, 3, 7"/>
+                <TextBlock Grid.Row="1" Text="Le Gestioni" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
+                <ListBox Name="Conto" Grid.Row="1" Grid.Column="1" ItemsSource="{Binding OwnerList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                          SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione" Margin="5, 2" MinWidth="100" Height="75" SelectionMode="Multiple">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="SelectionChanged">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </ListBox>
+                <TextBlock Grid.Row="2" Text="Anni disponibili" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
+                <ListBox Name="Anni" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding AvailableYears}"
+                          Margin="5, 2" MinWidth="100" Height="75">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="SelectionChanged">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </ListBox>
+                <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.ColumnSpan="2" Margin="5" HorizontalAlignment="Center">
+                    <Button Name="btnViewReport" Content="Visualizza" Margin="15,10, 5, 10" Width="90" FontSize="14" FontWeight="Bold"
                              Command="{Binding ViewCommand}" CommandParameter="{Binding ElementName=BackgroundReport}"/>
 
-                <Button Name="btnExportReport" Content="Esporta" Margin="5, 10, 5, 10" Width="90" FontSize="14" FontWeight="Bold"
+                    <Button Name="btnExportReport" Content="Esporta" Margin="5, 10, 5, 10" Width="90" FontSize="14" FontWeight="Bold"
                              />
 
-                <Button Name="btnClearReport" Content="Pulisci" Margin="5, 10, 15, 10" Width="90" FontSize="14" FontWeight="Bold"
+                    <Button Name="btnClearReport" Content="Pulisci" Margin="5, 10, 15, 10" Width="90" FontSize="14" FontWeight="Bold"
                              Command="{Binding ClearCommand}" CommandParameter="{Binding ElementName=BackgroundReport}"/>
-            </StackPanel>
-        </Grid>
+                </StackPanel>
+            </Grid>
+        </Border>
+        <!-- Parametri scelta report -->
+        <Border Grid.Row="1" Grid.Column="1" BorderBrush="LightGray" BorderThickness="0.8" Margin="5">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="Scelta Report" FontSize="22" FontWeight="Bold" 
+                       HorizontalAlignment="Center" Margin="3, 2, 3, 7"/>
+                <StackPanel Grid.Row="1" Orientation="Vertical" Margin="5" VerticalAlignment="Top">
+                    <CheckBox Content="Profit Loss" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                              FontSize="20" Margin="5" VerticalContentAlignment="Center"/>
+                    <CheckBox Content="Delta per Anno" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                              FontSize="20" Margin="5" VerticalContentAlignment="Center"/>
+                    <CheckBox Content="Conto Scalare" HorizontalAlignment="Left" VerticalAlignment="Top"
+                              FontSize="20" Margin="5" VerticalContentAlignment="Center"/>
+
+                </StackPanel>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>

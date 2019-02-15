@@ -8,7 +8,7 @@ namespace FinanceManager.Services.SQL
 {
     public class ReportScripts
     {
-        public static readonly string GetAvailableYears = "SELECT YEAR(data_movimento) AS anni FROM portafoglio_titoli GROUP BY anni ORDER BY anni DESC";
+        public static readonly string GetAvailableYears = "SELECT YEAR(data_movimento) AS anni FROM conto_corrente WHERE (id_tipo_movimento = 4 or id_tipo_movimento = 6) GROUP BY anni ORDER BY anni DESC";
 
         public static readonly string GetProfitLoss1 = "SELECT YEAR(data_movimento) AS Anno, D.desc_tipo_soldi, " +
             "ROUND(SUM(CASE WHEN C.id_tipo_titolo = 1 THEN ammontare ELSE 0 END), 2) AS Azioni, " +

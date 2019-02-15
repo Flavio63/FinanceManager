@@ -25,8 +25,6 @@ namespace FinanceManager.ViewModels
         public ICommand ClearCommand { get; set; }
 
         private IList<int> _selectedOwners;
-        private IList<int> _selectedCurrency;
-        private IList<string> _descCurrency;
         private double[] exchangeValue;
         private bool AllSetted = false;
 
@@ -46,9 +44,6 @@ namespace FinanceManager.ViewModels
             {
                 OwnerList = _services.GetGestioneList();
                 _selectedOwners = new List<int>();
-                CurrencyList = _services.GetRegistryCurrencyList();
-                _selectedCurrency = new List<int>();
-                _descCurrency = new List<string>();
                 AvailableYears = _reportServices.GetAvailableYears();
                 SelectedYears = new List<int>();
             }
@@ -75,15 +70,6 @@ namespace FinanceManager.ViewModels
                         foreach (int y in LB.SelectedItems)
                             SelectedYears.Add(y);
                         break;
-                    case "listCurrency":
-                        _selectedCurrency.Clear();
-                        _descCurrency.Clear();
-                        foreach (RegistryCurrency item in LB.SelectedItems)
-                        {
-                            _selectedCurrency.Add(item.IdCurrency);
-                            _descCurrency.Add(item.CodeCurrency);
-                        }
-                        break;
                 }
             }
         }
@@ -98,17 +84,11 @@ namespace FinanceManager.ViewModels
                     EnableControl.VisibleControlInGrid(((StackPanel)radioButton.Parent).Parent as Grid, "stackpanelCurrency", Visibility.Collapsed);
                     exchangeValue = null;
                     AllSetted = false;
-                    ExchangeDollar = 0;
-                    ExchangePound = 0;
-                    ExchangeFranchi = 0;
                     break;
                 case "Tutto in Euro":
-                    _descCurrency = new List<string>();
                     exchangeValue = new double[3] { 0, 0, 0};
-                    _descCurrency.Add("EUR"); _descCurrency.Add("USD"); _descCurrency.Add("GBP"); _descCurrency.Add("CHF");
                     EnableControl.VisibleControlInGrid(((StackPanel)radioButton.Parent).Parent as Grid, "listCurrency", Visibility.Collapsed);
                     EnableControl.VisibleControlInGrid(((StackPanel)radioButton.Parent).Parent as Grid, "stackpanelCurrency", Visibility.Visible);
-                    _selectedCurrency = new List<int>();
                     break;
                 default:
                     break;
@@ -124,16 +104,10 @@ namespace FinanceManager.ViewModels
                 switch (TB.Name)
                 {
                     case "exchangeDollar":
-                        ExchangeDollar = Convert.ToDouble(TB.Text);
-                        exchangeValue[0] = ExchangeDollar;
                         break;
                     case "exchangePound":
-                        ExchangePound = Convert.ToDouble(TB.Text);
-                        exchangeValue[1] = ExchangePound;
                         break;
                     case "exchangeFranchi":
-                        ExchangeFranchi = Convert.ToDouble(TB.Text);
-                        exchangeValue[2] = ExchangeFranchi;
                         break;
                 }
             }
@@ -151,33 +125,10 @@ namespace FinanceManager.ViewModels
 
         #region collection
 
-        public double ExchangeDollar
-        {
-            get { return GetValue(() => ExchangeDollar); }
-            set { SetValue(() => ExchangeDollar, value); }
-        }
-
-        public double ExchangePound
-        {
-            get { return GetValue(() => ExchangePound); }
-            set { SetValue(() => ExchangePound, value); }
-        }
-
-        public double ExchangeFranchi
-        {
-            get { return GetValue(() => ExchangeFranchi); }
-            set { SetValue(() => ExchangeFranchi, value); }
-        }
-
         public RegistryOwnersList OwnerList
         {
             get { return GetValue(() => OwnerList); }
             set { SetValue(() => OwnerList, value); }
-        }
-        public RegistryCurrencyList CurrencyList
-        {
-            get { return GetValue(() => CurrencyList); }
-            set { SetValue(() => CurrencyList, value); }
         }
         public RegistryOwnersList SelectedOwner
         {
@@ -215,16 +166,16 @@ namespace FinanceManager.ViewModels
         public bool CanDoReport(object param)
         {
             Grid grid = param as Grid;
-            if (_selectedOwners.Count() > 0 && SelectedYears.Count() > 0 && (_selectedCurrency.Count() > 0 || AllSetted) && grid.RowDefinitions.Count == 0)
+            if (_selectedOwners.Count() > 0 && SelectedYears.Count() > 0)
                 return true;
             return false;
         }
 
         public bool CanClearReport(object param)
         {
-            Grid grid = param as Grid;
-            if (grid.RowDefinitions.Count > 0)
-                return true;
+            //Grid grid = param as Grid;
+            //if (grid.RowDefinitions.Count > 0)
+            //    return true;
             return false;
         }
 
@@ -242,7 +193,7 @@ namespace FinanceManager.ViewModels
         public void ViewReport(object param)
         {
             Grid grid = param as Grid;
-            ReportProfitLosses = _reportServices.GetReport1(_selectedOwners, SelectedYears, _selectedCurrency, AllSetted == true ? exchangeValue : null);
+            //ReportProfitLosses = _reportServices.GetReport1(_selectedOwners, SelectedYears);
             ReportTrendAnno reportTrendAnno;
             ReportGuadagniView reportGuadagniView;
             foreach (int year in SelectedYears)

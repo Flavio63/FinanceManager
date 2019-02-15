@@ -42,7 +42,7 @@ namespace FinanceManager.Services
 
         #region Share
         RegistryShareList GetRegistryShareList();
-        RegistryShareList GetSharesByType(uint idShareType);
+        RegistryShareList GetSharesByType(int[] idShareType);
         void UpdateShare(RegistryShare registryShare);
         void AddShare(RegistryShare registryShare);
         void DeleteShare(uint id);

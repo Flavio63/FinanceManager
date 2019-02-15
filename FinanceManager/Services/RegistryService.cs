@@ -668,17 +668,23 @@ namespace FinanceManager.Services
             }
         }
 
-        public RegistryShareList GetSharesByType(uint idShareType)
+        public RegistryShareList GetSharesByType(int[] idShareType)
         {
             try
             {
+                string where = "";
+                foreach(int x in idShareType)
+                {
+                    where += string.Format(" id_tipo_titolo = {0} OR ", x);
+                }
+                where = where.Remove(where.Length - 3, 3);
+
                 using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
                 {
                     dbAdaptar.SelectCommand = new MySqlCommand();
                     dbAdaptar.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     dbAdaptar.SelectCommand.CommandType = CommandType.Text;
-                    dbAdaptar.SelectCommand.CommandText = SQL.RegistryScripts.GetSharesByType;
-                    dbAdaptar.SelectCommand.Parameters.AddWithValue("id_tipo", idShareType);
+                    dbAdaptar.SelectCommand.CommandText = string.Format(SQL.RegistryScripts.GetSharesByType, where);
                     DataTable dt = new DataTable();
                     dbAdaptar.Fill(dt);
                     RegistryShareList RSL = new RegistryShareList();

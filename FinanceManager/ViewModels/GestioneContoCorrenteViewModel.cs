@@ -22,6 +22,7 @@ namespace FinanceManager.ViewModels
         public ICommand ModifyCommand { get; set; }
         public ICommand EraseCommand { get; set; }
         public ICommand ClearCommand { get; set; }
+        private int[] typeOfShares = { 4, 13 };
         Predicate<object> _Filter;
 
         public GestioneContoCorrenteViewModel(IRegistryServices registryServices, IManagerLiquidAssetServices managerLiquidServices)
@@ -49,7 +50,9 @@ namespace FinanceManager.ViewModels
                 RegistryMovementTypeList listaOriginale = new RegistryMovementTypeList();
                 listaOriginale = _registryServices.GetRegistryMovementTypesList();
                 var RMTL = from movimento in listaOriginale
-                           where (movimento.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || movimento.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
+                           where (movimento.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ||
+                           movimento.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ||
+                           movimento.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
                            select movimento;
                 foreach (RegistryMovementType registry in RMTL)
                     ListMovimenti.Add(registry);
@@ -59,6 +62,8 @@ namespace FinanceManager.ViewModels
                 TipoSoldis = _registryServices.GetTipoSoldiList();
                 SharesList = new ObservableCollection<RegistryShare>(_registryServices.GetRegistryShareList());
                 _Filter = new Predicate<object>(Filter);
+
+                BirdsListView = _registryServices.GetSharesByType(typeOfShares);
             }
             catch (Exception err)
             {
@@ -79,6 +84,7 @@ namespace FinanceManager.ViewModels
             GirocontoFieldEnabled = true;
             CedoleEnabled = false;
             GirocontoEnabled = false;
+            VolatiliEnabled = false;
             CanUpdateDelete = false;
             CanInsert = false;
         }
@@ -186,7 +192,6 @@ namespace FinanceManager.ViewModels
                 SetValue(() => SrchShares, value);
                 SharesListView.Filter = _Filter;
                 SharesListView.Refresh();
-
             }
         }
 
@@ -210,6 +215,16 @@ namespace FinanceManager.ViewModels
         {
             get { return GetValue(() => SharesListView); }
             set { SetValue(() => SharesListView, value); }
+        }
+
+        /// <summary>
+        /// Elenco con i titoli disponibili filtrato per la tipologia 
+        /// certificati e futures
+        /// </summary>
+        public RegistryShareList BirdsListView
+        {
+            get { return GetValue(() => BirdsListView); }
+            set { SetValue(() => BirdsListView, value); }
         }
 
         /// <summary>
@@ -277,7 +292,15 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => GirocontoEnabled); }
             private set { SetValue(() => GirocontoEnabled, value); }
         }
-
+        
+        /// <summary>
+        /// Gestisce l'abilitazione a inserire i profit/loss delle azioni volatili
+        /// </summary>
+        public bool VolatiliEnabled
+        {
+            get { return GetValue(() => VolatiliEnabled); }
+            private set { SetValue(() => VolatiliEnabled, value); }
+        }
 
         #endregion
 
@@ -365,6 +388,7 @@ namespace FinanceManager.ViewModels
                     // abilito il blocco di input dati sulla base di questa scelta
                     CedoleEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ? true : false;
                     GirocontoEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ? true : false;
+                    VolatiliEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ? true : false;
                 }
                 else if (e.AddedItems[0] is RegistryShare RS)
                 {
@@ -388,11 +412,14 @@ namespace FinanceManager.ViewModels
             }
             else if (e.AddedItems[0] is ContoCorrente CC)
             {
-                if (CC.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
+                if (CC.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || 
+                    CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto || 
+                    CC.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili)
                 {
                     RecordContoCorrente = CC;
                     GirocontoFieldEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ? true : false;
                     CedoleEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ? true : false;
+                    VolatiliEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ? true : false;
                     CanUpdateDelete = true;
                 }
                 else
@@ -464,7 +491,7 @@ namespace FinanceManager.ViewModels
                     _liquidAssetServices.InsertAccountMovement(RecordContoCorrente);
                     _liquidAssetServices.InsertAccountMovement(Record2ContoCorrente);
                 }
-                else if(RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola)
+                else if(RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili)
                 {
                     _liquidAssetServices.InsertAccountMovement(RecordContoCorrente);
                 }
@@ -484,7 +511,7 @@ namespace FinanceManager.ViewModels
             try
             {
                 // se è una registrazione cedola modifico direttamente il record 1
-                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola)
+                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili)
                 {
                     _liquidAssetServices.UpdateContoCorrenteByIdCC(RecordContoCorrente);    //registro la modifica in conto corrente
                 }
@@ -526,7 +553,7 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola)
+                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili)
                 {
                     _liquidAssetServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);  // registro l'eliminazione in conto corrente
                 }

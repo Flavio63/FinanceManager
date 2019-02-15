@@ -54,7 +54,7 @@ namespace FinanceManager.Services.SQL
         public readonly static string AddShare = "INSERT INTO titoli (id_titolo, desc_titolo, isin, id_tipo_titolo, id_azienda) " +
             "VALUE (null, @desc, @isin, @tipo, @azienda);";
 
-        public readonly static string GetSharesByType = "SELECT id_titolo, desc_titolo, isin, id_tipo_titolo, id_azienda FROM daf_titoli WHERE id_tipo_titolo = @id_tipo ORDER BY id_titolo";
+        public readonly static string GetSharesByType = "SELECT id_titolo, desc_titolo, isin, id_tipo_titolo, id_azienda FROM titoli WHERE {0} ORDER BY id_titolo";
         #endregion
 
         #region tipo movimento

@@ -10,6 +10,7 @@ namespace FinanceManager.Models.Enum
         Cedola = 4,
         AcquistoTitoli = 5,
         VenditaTitoli = 6,
+        InsertVolatili = 7,
         Costi = 8,
         AumentoCapitale = 10,
         PerditaCapitale = 11,
