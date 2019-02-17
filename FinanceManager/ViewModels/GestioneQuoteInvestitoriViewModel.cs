@@ -60,6 +60,7 @@ namespace FinanceManager.ViewModels
             ListInvestitore = _managerLiquidServices.GetInvestitori();
             SintesiSoldiR = _managerLiquidServices.GetCurrencyAvailable(1);
             SintesiSoldiDF = _managerLiquidServices.GetCurrencyAvailable(2);
+            SintesiSoldiDFV = _managerLiquidServices.GetCurrencyAvailable(7);
             ListContoCorrente = _managerLiquidServices.GetContoCorrenteByMovement(12);
         }
 
@@ -203,6 +204,15 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => SintesiSoldiR); }
             private set { SetValue(() => SintesiSoldiR, value); }
         }
+        /// <summary>
+        /// il riepilogo dei soldi per la gestione Dany&Fla_Volatili
+        /// </summary>
+        public SintesiSoldiList SintesiSoldiDFV
+        {
+            get { return GetValue(() => SintesiSoldiDFV); }
+            private set { SetValue(() => SintesiSoldiDFV, value); }
+        }
+
         #endregion
 
         /// <summary>

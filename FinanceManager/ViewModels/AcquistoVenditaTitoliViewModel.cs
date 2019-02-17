@@ -83,6 +83,7 @@ namespace FinanceManager.ViewModels
             {
                 SintesiSoldiR = _liquidAssetServices.GetCurrencyAvailable(1);
                 SintesiSoldiDF = _liquidAssetServices.GetCurrencyAvailable(2);
+                SintesiSoldiDFV = _liquidAssetServices.GetCurrencyAvailable(7);
                 RecordPortafoglioTitoli = new PortafoglioTitoli();
                 ListPortafoglioTitoli = _liquidAssetServices.GetManagerLiquidAssetListByOwnerAndLocation();
             }
@@ -375,6 +376,15 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => SintesiSoldiR); }
             private set { SetValue(() => SintesiSoldiR, value); }
         }
+        /// <summary>
+        /// il riepilogo dei soldi per la gestione Dany&Fla_Volatili
+        /// </summary>
+        public SintesiSoldiList SintesiSoldiDFV
+        {
+            get { return GetValue(() => SintesiSoldiDFV); }
+            private set { SetValue(() => SintesiSoldiDFV, value); }
+        }
+
         #endregion
 
         #region Parametri comuni
