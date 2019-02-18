@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace FinanceManager.ViewModels
@@ -23,10 +24,11 @@ namespace FinanceManager.ViewModels
         public ICommand ViewCommand { get; set; }
         public ICommand DownloadCommand { get; set; }
         public ICommand ClearCommand { get; set; }
+        private ObservableCollection<RegistryShare> _SharesList;
+        Predicate<object> _Filter;
 
         private IList<int> _selectedOwners;
         private double[] exchangeValue;
-        private bool AllSetted = false;
 
         public ManagerReportsViewModel(IRegistryServices registryServices, IManagerReportServices managerReportServices)
         {
@@ -46,12 +48,16 @@ namespace FinanceManager.ViewModels
                 _selectedOwners = new List<int>();
                 AvailableYears = _reportServices.GetAvailableYears();
                 SelectedYears = new List<int>();
+                SharesList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
+                _Filter = new Predicate<object>(Filter);
+                ReportSelezionato = "";
             }
             catch (Exception err)
             {
                 MessageBox.Show(err.Message, "ManagerReportsView", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+        
         #region events
         public void CbSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -60,12 +66,12 @@ namespace FinanceManager.ViewModels
             {
                 switch (LB.Name)
                 {
-                    case "ListOwners":
+                    case "Conto":
                         _selectedOwners.Clear();
                         foreach (RegistryOwner item in LB.SelectedItems)
                             _selectedOwners.Add(item.Id_gestione);
                         break;
-                    case "ListYears":
+                    case "Anni":
                         SelectedYears.Clear();
                         foreach (int y in LB.SelectedItems)
                             SelectedYears.Add(y);
@@ -76,54 +82,64 @@ namespace FinanceManager.ViewModels
 
         public void IsChecked(object sender, RoutedEventArgs e)
         {
-            RadioButton radioButton = sender as RadioButton;
-            switch (radioButton.Content)
+            ReportSelezionato = ((RadioButton)sender).Name;
+        }
+        /// <summary>
+        /// E' il filtro da applicare all'elenco delle azioni
+        /// e contestualmente al datagrid sottostante
+        /// </summary>
+        public bool Filter(object obj)
+        {
+            if (obj != null)
             {
-                case "Singole Valute":
-                    EnableControl.VisibleControlInGrid(((StackPanel)radioButton.Parent).Parent as Grid, "listCurrency", Visibility.Visible);
-                    EnableControl.VisibleControlInGrid(((StackPanel)radioButton.Parent).Parent as Grid, "stackpanelCurrency", Visibility.Collapsed);
-                    exchangeValue = null;
-                    AllSetted = false;
-                    break;
-                case "Tutto in Euro":
-                    exchangeValue = new double[3] { 0, 0, 0};
-                    EnableControl.VisibleControlInGrid(((StackPanel)radioButton.Parent).Parent as Grid, "listCurrency", Visibility.Collapsed);
-                    EnableControl.VisibleControlInGrid(((StackPanel)radioButton.Parent).Parent as Grid, "stackpanelCurrency", Visibility.Visible);
-                    break;
-                default:
-                    break;
+                if (obj.GetType() == typeof(RegistryShare))
+                {
+                    var data = obj as RegistryShare;
+                    if (!string.IsNullOrEmpty(SrchShares))
+                        return data.Isin.ToUpper().Contains(SrchShares.ToUpper());
+                }
             }
+            return true;
         }
 
-        public void LostFocus(object sender, EventArgs e)
-        {
-            TextBox TB = sender as TextBox;
-            double converted;
-            if (!string.IsNullOrEmpty(TB.Text) && double.TryParse(TB.Text, out converted))
-            {
-                switch (TB.Name)
-                {
-                    case "exchangeDollar":
-                        break;
-                    case "exchangePound":
-                        break;
-                    case "exchangeFranchi":
-                        break;
-                }
-            }
-            for (int i = 0; i < exchangeValue.Count(); i++)
-            {
-                if (exchangeValue[i] == 0)
-                {
-                    AllSetted = false;
-                    break;
-                }
-                AllSetted = true;
-            }
-        }
         #endregion events
 
-        #region collection
+        #region Getter&Setter
+        /// <summary>
+        /// La ricerca degli isin dei titoli per l'acquisto / vendita
+        /// </summary>
+        public string SrchShares
+        {
+            get { return GetValue(() => SrchShares); }
+            set
+            {
+                SetValue(() => SrchShares, value);
+                SharesListView.Filter = _Filter;
+                SharesListView.Refresh();
+            }
+        }
+        
+        /// <summary>
+        /// Elenco con i titoli disponibili
+        /// </summary>
+        private ObservableCollection<RegistryShare> SharesList
+        {
+            get { return _SharesList; }
+            set
+            {
+                _SharesList = value;
+                SharesListView = new ListCollectionView(value);
+            }
+        }
+
+        /// <summary>
+        /// Combo box con i titoli da selezionare filtrato da SrchShares
+        /// </summary>
+        public ListCollectionView SharesListView
+        {
+            get { return GetValue(() => SharesListView); }
+            set { SetValue(() => SharesListView, value); }
+        }
 
         public RegistryOwnersList OwnerList
         {
@@ -153,7 +169,12 @@ namespace FinanceManager.ViewModels
             set { SetValue(() => SelectedYears, value); }
         }
 
-        #endregion collection
+        public string ReportSelezionato
+        {
+            get { return GetValue(() => ReportSelezionato); }
+            set { SetValue(() => ReportSelezionato, value); }
+        }
+        #endregion Getter&Setter
 
         #region command
         public void CloseMe(object param)
@@ -166,7 +187,7 @@ namespace FinanceManager.ViewModels
         public bool CanDoReport(object param)
         {
             Grid grid = param as Grid;
-            if (_selectedOwners.Count() > 0 && SelectedYears.Count() > 0)
+            if (_selectedOwners.Count() > 0 && SelectedYears.Count() > 0 && !string.IsNullOrEmpty(ReportSelezionato))
                 return true;
             return false;
         }
@@ -192,28 +213,20 @@ namespace FinanceManager.ViewModels
 
         public void ViewReport(object param)
         {
-            Grid grid = param as Grid;
-            //ReportProfitLosses = _reportServices.GetReport1(_selectedOwners, SelectedYears);
-            ReportTrendAnno reportTrendAnno;
-            ReportGuadagniView reportGuadagniView;
-            foreach (int year in SelectedYears)
+            Border border = param as Border;
+
+            switch (ReportSelezionato)
             {
-                grid.RowDefinitions.Add(new RowDefinition());
-                reportTrendAnno = new ReportTrendAnno();
-                reportTrendAnno.Desc_Anno = year.ToString();
-                foreach (ReportProfitLoss item in ReportProfitLosses)
-                {
-                    if (year == item.Anno)
-                    {
-                        reportGuadagniView = new ReportGuadagniView(item);
-                        reportTrendAnno.yearGrid.RowDefinitions.Add(new RowDefinition());
-                        Grid.SetRow(reportGuadagniView, reportTrendAnno.yearGrid.RowDefinitions.Count - 1);
-                        Grid.SetColumn(reportGuadagniView, 1);
-                        reportTrendAnno.yearGrid.Children.Add(reportGuadagniView);
-                    }
-                }
-                Grid.SetRow(reportTrendAnno, grid.RowDefinitions.Count - 1);
-                grid.Children.Add(reportTrendAnno);
+                case "PL":
+                    ReportPorfitLossAnnoGestioniViewModel DataReport = new ReportPorfitLossAnnoGestioniViewModel(_reportServices.GetReport1(_selectedOwners, SelectedYears));
+                    ReportProfitLossAnnoGestioneView report1 = new ReportProfitLossAnnoGestioneView(DataReport);
+                    border.Child = report1;
+                    break;
+                case "Delta":
+                case "Scalare":
+                case "Titolo":
+                default:
+                    break;
             }
         }
 

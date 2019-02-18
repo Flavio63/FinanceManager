@@ -16,16 +16,17 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="60"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.ColumnSpan="3" Text="Gestione dei Report" FontWeight="Bold" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Grid.ColumnSpan="4" Text="Gestione dei Report" FontWeight="Bold" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <Button Content="X" Command="{Binding CloseMeCommand}" 
                 CommandParameter="{Binding ElementName=_ManagerReportsView}" 
-                HorizontalContentAlignment="Center" Grid.Column="2" HorizontalAlignment="Right"
+                HorizontalContentAlignment="Center" Grid.Column="3" HorizontalAlignment="Right"
                     VerticalContentAlignment="Center" Width="25" Height="25" Background="LightGray" 
                 Margin="0,0, 15, 0"></Button>
-        
+
         <!-- Parametri comuni da selezionare -->
         <Border Grid.Row="1" Grid.Column="0" BorderBrush="LightGray" BorderThickness="0.8" Margin="5">
             <Grid Margin="5">
@@ -42,34 +43,54 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.ColumnSpan="2" Grid.Row="0" Text="Parametri Comuni da Selezionare" FontSize="22" FontWeight="Bold" 
                        HorizontalAlignment="Center" Margin="3, 2, 3, 7"/>
-                <TextBlock Grid.Row="1" Text="Le Gestioni" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
-                <ListBox Name="Conto" Grid.Row="1" Grid.Column="1" ItemsSource="{Binding OwnerList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                <!-- La selezione delle gestioni -->
+                <StackPanel Margin="5" Grid.Row="1">
+                    <TextBlock Grid.Row="1" Text="Le Gestioni" FontSize="16" FontWeight="Bold" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
+                    <ListBox Name="Conto" Grid.Row="1" Grid.Column="1" ItemsSource="{Binding OwnerList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                           SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione" Margin="5, 2" MinWidth="100" Height="75" SelectionMode="Multiple">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="SelectionChanged">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
-                </ListBox>
-                <TextBlock Grid.Row="2" Text="Anni disponibili" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
-                <ListBox Name="Anni" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding AvailableYears}"
-                          Margin="5, 2" MinWidth="100" Height="75">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="SelectionChanged">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
-                </ListBox>
-                <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.ColumnSpan="2" Margin="5" HorizontalAlignment="Center">
-                    <Button Name="btnViewReport" Content="Visualizza" Margin="15,10, 5, 10" Width="90" FontSize="14" FontWeight="Bold"
-                             Command="{Binding ViewCommand}" CommandParameter="{Binding ElementName=BackgroundReport}"/>
-
-                    <Button Name="btnExportReport" Content="Esporta" Margin="5, 10, 5, 10" Width="90" FontSize="14" FontWeight="Bold"
-                             />
-
-                    <Button Name="btnClearReport" Content="Pulisci" Margin="5, 10, 15, 10" Width="90" FontSize="14" FontWeight="Bold"
-                             Command="{Binding ClearCommand}" CommandParameter="{Binding ElementName=BackgroundReport}"/>
+                        <iy:Interaction.Triggers>
+                            <iy:EventTrigger EventName="SelectionChanged">
+                                <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                            </iy:EventTrigger>
+                        </iy:Interaction.Triggers>
+                    </ListBox>
                 </StackPanel>
+                <!-- la selezione degli anni -->
+                <StackPanel Grid.Row="1" Grid.Column="1" Margin="5">
+                    <TextBlock Grid.Row="2" Text="Anni disponibili" FontWeight="Bold" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
+                    <ListBox Name="Anni" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding AvailableYears}"
+                          Margin="5, 2" MinWidth="100" Height="75">
+                        <iy:Interaction.Triggers>
+                            <iy:EventTrigger EventName="SelectionChanged">
+                                <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                            </iy:EventTrigger>
+                        </iy:Interaction.Triggers>
+                    </ListBox>
+                </StackPanel>
+                <!-- La selezione di un titolo -->
+                <StackPanel Grid.Row="3">
+                    <TextBlock Text="Seleziona un Titolo" FontWeight="Bold" FontSize="16" Margin="10, 2, 5, 2" HorizontalAlignment="Center"/>
+                    <TextBox Text="{Binding SrchShares, UpdateSourceTrigger=PropertyChanged}"  Margin="10, 2, 5, 2"
+                         Style="{StaticResource FormCenterTextBoxStyle}"/>
+                </StackPanel>
+                <ComboBox Grid.Row="3" Grid.Column="1" Name="cbShares" ItemsSource="{Binding SharesListView}" 
+                          IsEnabled="{Binding CanModifyBaseParameters, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                          SelectedValuePath="IdShare" Margin="10, 2, 5, 2" SelectedValue="{Binding RecordPortafoglioTitoli.Id_titolo}">
+                    <TextSearch.TextPath>DescShare</TextSearch.TextPath>
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="{Binding Isin}" FontWeight="Bold" />
+                                <TextBlock Text="{Binding DescShare}" FontFamily="Arial Narrow" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="SelectionChanged">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </ComboBox>
             </Grid>
         </Border>
         <!-- Parametri scelta report -->
@@ -82,15 +103,58 @@
                 <TextBlock Grid.Row="0" Text="Scelta Report" FontSize="22" FontWeight="Bold" 
                        HorizontalAlignment="Center" Margin="3, 2, 3, 7"/>
                 <StackPanel Grid.Row="1" Orientation="Vertical" Margin="5" VerticalAlignment="Top">
-                    <CheckBox Content="Profit Loss" HorizontalAlignment="Left" VerticalAlignment="Top" 
-                              FontSize="20" Margin="5" VerticalContentAlignment="Center"/>
-                    <CheckBox Content="Delta per Anno" HorizontalAlignment="Left" VerticalAlignment="Top" 
-                              FontSize="20" Margin="5" VerticalContentAlignment="Center"/>
-                    <CheckBox Content="Conto Scalare" HorizontalAlignment="Left" VerticalAlignment="Top"
-                              FontSize="20" Margin="5" VerticalContentAlignment="Center"/>
-
+                    <RadioButton GroupName="report" Name="PL" Content="Profit Loss" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                              FontSize="20" Margin="5" VerticalContentAlignment="Center">
+                        <iy:Interaction.Triggers>
+                            <iy:EventTrigger EventName="Checked">
+                                <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
+                            </iy:EventTrigger>
+                        </iy:Interaction.Triggers>
+                    </RadioButton>
+                    <RadioButton GroupName="report" Name="Delta" Content="Delta per Anno" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                              FontSize="20" Margin="5" VerticalContentAlignment="Center">
+                        <iy:Interaction.Triggers>
+                            <iy:EventTrigger EventName="Checked">
+                                <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
+                            </iy:EventTrigger>
+                        </iy:Interaction.Triggers>
+                    </RadioButton>
+                    <RadioButton GroupName="report" Name="Scalare" Content="Conto Scalare" HorizontalAlignment="Left" VerticalAlignment="Top"
+                              FontSize="20" Margin="5" VerticalContentAlignment="Center">
+                        <iy:Interaction.Triggers>
+                            <iy:EventTrigger EventName="Checked">
+                                <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
+                            </iy:EventTrigger>
+                        </iy:Interaction.Triggers>
+                    </RadioButton>
+                    <RadioButton GroupName="report" Name="Titolo" Content="Dettaglio Titolo" HorizontalAlignment="Left" VerticalAlignment="Top"
+                              FontSize="20" Margin="5" VerticalContentAlignment="Center">
+                        <iy:Interaction.Triggers>
+                            <iy:EventTrigger EventName="Checked">
+                                <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
+                            </iy:EventTrigger>
+                        </iy:Interaction.Triggers>
+                    </RadioButton>
                 </StackPanel>
             </Grid>
+        </Border>
+        <!-- Bottoniera -->
+        <Border Grid.Row="1" Grid.Column="2" BorderBrush="LightGray" BorderThickness="0.8" Margin="5">
+            <StackPanel Orientation="Vertical" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Button Name="btnViewReport" Content="Visualizza" Margin="5,10, 5, 10" Width="90" FontSize="14" FontWeight="Bold"
+                             Command="{Binding ViewCommand}" CommandParameter="{Binding ElementName=BorderReport}"/>
+
+                <Button Name="btnExportReport" Content="Esporta" Margin="5, 10, 5, 10" Width="90" FontSize="14" FontWeight="Bold"
+                             />
+
+                <Button Name="btnClearReport" Content="Pulisci" Margin="5, 10, 5, 10" Width="90" FontSize="14" FontWeight="Bold"
+                             Command="{Binding ClearCommand}" CommandParameter="{Binding ElementName=BorderReport}"/>
+            </StackPanel>
+
+        </Border>
+        <!-- reports -->
+        <Border Name="BorderReport" Grid.Row="2" Grid.ColumnSpan="3" BorderBrush="Coral" BorderThickness="0.8" Margin="5">
+            
         </Border>
     </Grid>
 </UserControl>

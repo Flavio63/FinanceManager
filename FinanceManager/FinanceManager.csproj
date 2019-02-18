@@ -208,7 +208,7 @@
     <Compile Include="ViewModels\RegistryOwnerViewModel.cs" />
     <Compile Include="ViewModels\RegistryShareTypeViewModel.cs" />
     <Compile Include="ViewModels\RegistryShareViewModel.cs" />
-    <Compile Include="ViewModels\ReportGuadagniAnnoViewModel.cs" />
+    <Compile Include="ViewModels\ReportPorfitLossAnnoGestioniViewModel.cs" />
     <Compile Include="Views\AcquistoVenditaTitoliView.xaml.cs">
       <DependentUpon>AcquistoVenditaTitoliView.xaml</DependentUpon>
     </Compile>
@@ -242,14 +242,8 @@
     <Compile Include="Views\RegistryShareView.xaml.cs">
       <DependentUpon>RegistryShareView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ReportGuadagniView.xaml.cs">
-      <DependentUpon>ReportGuadagniView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ReportGuadagniAnnoView.xaml.cs">
-      <DependentUpon>ReportGuadagniAnnoView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ReportTrendAnno.xaml.cs">
-      <DependentUpon>ReportTrendAnno.xaml</DependentUpon>
+    <Compile Include="Views\ReportProfitLossAnnoGestioneView.xaml.cs">
+      <DependentUpon>ReportProfitLossAnnoGestioneView.xaml</DependentUpon>
     </Compile>
     <Page Include="Dialogs\Dialog3Combos\Dialog3CombosView.xaml">
       <SubType>Designer</SubType>
@@ -320,15 +314,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ReportGuadagniView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ReportGuadagniAnnoView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ReportTrendAnno.xaml">
+    <Page Include="Views\ReportProfitLossAnnoGestioneView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
