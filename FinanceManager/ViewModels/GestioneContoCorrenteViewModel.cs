@@ -302,7 +302,7 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => GirocontoEnabled); }
             private set { SetValue(() => GirocontoEnabled, value); }
         }
-        
+
         /// <summary>
         /// Gestisce l'abilitazione a inserire i profit/loss delle azioni volatili
         /// </summary>
@@ -404,7 +404,7 @@ namespace FinanceManager.ViewModels
                 {
                     RecordContoCorrente.Id_Titolo = (int)RS.IdShare;
                     RecordContoCorrente.Desc_Titolo = RS.DescShare;
-                    CanInsert = RecordContoCorrente.Id_RowConto > 0 ? false : true ;
+                    CanInsert = RecordContoCorrente.Id_RowConto > 0 ? false : true;
                 }
             }
         }
@@ -422,8 +422,8 @@ namespace FinanceManager.ViewModels
             }
             else if (e.AddedItems[0] is ContoCorrente CC)
             {
-                if (CC.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || 
-                    CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto || 
+                if (CC.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ||
+                    CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ||
                     CC.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili)
                 {
                     RecordContoCorrente = CC;
@@ -475,6 +475,24 @@ namespace FinanceManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Controlla che il punto del tastierino numerico venga trasformato in virgola
+        /// </summary>
+        /// <param name="sender">Tastiera</param>
+        /// <param name="e">Pressione del tasto</param>
+        public void PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (sender is TextBox textBox && textBox.Name == "Ammontare")
+                if (e.Key == Key.Decimal || e.Key == Key.OemPeriod)
+                {
+                    var pos = textBox.SelectionStart;
+                    textBox.Text = textBox.Text.Insert(pos, ",");
+                    textBox.SelectionStart = pos + 1;
+                    e.Handled = true;
+                }
+        }
+
+
         #endregion
 
         #region command
@@ -488,8 +506,8 @@ namespace FinanceManager.ViewModels
                     CurrencyAvailable = _liquidAssetServices.GetCurrencyAvailable(IdGestione: RecordContoCorrente.Id_Gestione,
                         IdConto: RecordContoCorrente.Id_Conto, IdValuta: RecordContoCorrente.Id_Valuta)[0];
 
-                    if ( RecordContoCorrente.Ammontare > CurrencyAvailable.Disponibili && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Capitale || 
-                        RecordContoCorrente.Ammontare > CurrencyAvailable.Cedole && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Cedole || 
+                    if (RecordContoCorrente.Ammontare > CurrencyAvailable.Disponibili && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Capitale ||
+                        RecordContoCorrente.Ammontare > CurrencyAvailable.Cedole && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Cedole ||
                         RecordContoCorrente.Ammontare > CurrencyAvailable.Utili && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Utili)
                     {
                         MessageBox.Show(String.Format("Non hai abbastanza soldi in {0} per effettuare un {1} di {2}.{3}" +
@@ -501,12 +519,12 @@ namespace FinanceManager.ViewModels
                     _liquidAssetServices.InsertAccountMovement(RecordContoCorrente);
                     _liquidAssetServices.InsertAccountMovement(Record2ContoCorrente);
                 }
-                else if(RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili)
+                else if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili)
                 {
                     _liquidAssetServices.InsertAccountMovement(RecordContoCorrente);
                 }
 
-                MessageBox.Show(string.Format("Ho effettuato l'operazione {0} correttamente.", RecordContoCorrente.Desc_tipo_movimento), 
+                MessageBox.Show(string.Format("Ho effettuato l'operazione {0} correttamente.", RecordContoCorrente.Desc_tipo_movimento),
                     Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
                 Init();
             }

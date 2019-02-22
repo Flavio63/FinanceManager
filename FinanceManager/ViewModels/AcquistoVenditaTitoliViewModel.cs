@@ -168,13 +168,14 @@ namespace FinanceManager.ViewModels
         /// <param name="e">Pressione del tasto</param>
         public void PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            TextBox textBox = sender as TextBox;
-            if (e.Key == Key.Decimal)
-            {
-                textBox.AppendText(",");
-                textBox.SelectionStart = textBox.Text.Length;
-                e.Handled = true;
-            }
+            if (sender is TextBox textBox && textBox.Name.Contains("double"))
+                if (e.Key == Key.Decimal || e.Key == Key.OemPeriod)
+                {
+                    int pos = textBox.SelectionStart;
+                    textBox.Text = textBox.Text.Insert(pos, ",");
+                    textBox.SelectionStart = pos + 1;
+                    e.Handled = true;
+                }
         }
 
         /// <summary>
@@ -190,10 +191,10 @@ namespace FinanceManager.ViewModels
             {
                 switch (TB.Name)
                 {
-                    case "unityLocalAmount":
+                    case "doubleUnityLocalAmount":
                         RecordPortafoglioTitoli.Costo_unitario_in_valuta = Convert.ToDouble(TB.Text);
                         break;
-                    case "NShares":
+                    case "doubleNShares":
                         if (RecordPortafoglioTitoli.Id_tipo_movimento == 5 && Convert.ToDouble(TB.Text) > 0)
                         {
                             RecordPortafoglioTitoli.N_titoli = Convert.ToDouble(TB.Text);
@@ -207,19 +208,19 @@ namespace FinanceManager.ViewModels
                             MessageBox.Show("Inserire un importo positivo se si compra o negativo se si vende.", "DAF-C registrazione movimenti titoli", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                         break;
-                    case "CommissionValue":
+                    case "doubleCommissionValue":
                         RecordPortafoglioTitoli.Commissioni_totale = Convert.ToDouble(TB.Text);
                         break;
-                    case "Valore_di_cambio":
+                    case "doubleValore_di_cambio":
                         RecordPortafoglioTitoli.Valore_di_cambio = Convert.ToDouble(TB.Text);
                         break;
-                    case "TobinTaxValue":
+                    case "doubleTobinTaxValue":
                         RecordPortafoglioTitoli.TobinTax = Convert.ToDouble(TB.Text);
                         break;
-                    case "RitenutaFiscale":
+                    case "doubleRitenutaFiscale":
                         RecordPortafoglioTitoli.RitenutaFiscale = Convert.ToDouble(TB.Text);
                         break;
-                    case "DisaggioValue":
+                    case "doubleDisaggioValue":
                         RecordPortafoglioTitoli.Disaggio_anticipo_cedole = Convert.ToDouble(TB.Text);
                         break;
                     case "Note":
