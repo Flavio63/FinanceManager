@@ -9,5 +9,7 @@ namespace FinanceManager.Services
         IList<int> GetAvailableYears();
         ReportProfitLossList GetReport1(IList<int> _selectedOwners, 
             IList<int> _selectedYears);
+
+        ReportMovementDetailedList GetMovementDetailed(int IdGestione, int IdTitolo);
     }
 }

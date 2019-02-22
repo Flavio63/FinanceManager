@@ -31,7 +31,7 @@
     <MinimumRequiredVersion>1.2.1.1</MinimumRequiredVersion>
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>6</ApplicationRevision>
+    <ApplicationRevision>8</ApplicationRevision>
     <ApplicationVersion>1.2.1.%2a</ApplicationVersion>
     <UseApplicationTrust>true</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -155,6 +155,8 @@
     <Compile Include="Models\Enum\TipologiaMovimento.cs" />
     <Compile Include="Models\Ptf_CC.cs" />
     <Compile Include="Models\Ptf_CCList.cs" />
+    <Compile Include="Models\ReportMovementDetailed.cs" />
+    <Compile Include="Models\ReportMovementDetailedList.cs" />
     <Compile Include="Models\SintesiSoldi.cs" />
     <Compile Include="Models\SintesiSoldiList.cs" />
     <Compile Include="Models\TipoSoldi.cs" />
@@ -208,6 +210,7 @@
     <Compile Include="ViewModels\RegistryOwnerViewModel.cs" />
     <Compile Include="ViewModels\RegistryShareTypeViewModel.cs" />
     <Compile Include="ViewModels\RegistryShareViewModel.cs" />
+    <Compile Include="ViewModels\ReportMovementDetailedViewModel.cs" />
     <Compile Include="ViewModels\ReportPorfitLossAnnoGestioniViewModel.cs" />
     <Compile Include="Views\AcquistoVenditaTitoliView.xaml.cs">
       <DependentUpon>AcquistoVenditaTitoliView.xaml</DependentUpon>
@@ -241,6 +244,9 @@
     </Compile>
     <Compile Include="Views\RegistryShareView.xaml.cs">
       <DependentUpon>RegistryShareView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ReportMovementDetailedView.xaml.cs">
+      <DependentUpon>ReportMovementDetailedView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ReportProfitLossAnnoGestioneView.xaml.cs">
       <DependentUpon>ReportProfitLossAnnoGestioneView.xaml</DependentUpon>
@@ -311,6 +317,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RegistryShareView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ReportMovementDetailedView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

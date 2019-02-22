@@ -43,6 +43,50 @@ namespace FinanceManager.Services
             }
         }
 
+        public ReportMovementDetailedList GetMovementDetailed(int IdGestione, int IdTitolo)
+        {
+            try
+            {
+                ReportMovementDetailedList RMDL = new ReportMovementDetailedList();
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.ReportScripts.GetMovementDetailed;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", IdGestione);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", IdTitolo);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    DataTable dataTable = new DataTable();
+                    dbAdapter.Fill(dataTable);
+                    foreach(DataRow dr in dataTable.Rows)
+                    {
+                        ReportMovementDetailed RMD = new ReportMovementDetailed();
+                        RMD.Gestione = dr.Field<string>("nome_gestione");
+                        RMD.Conto = dr.Field<string>("desc_conto");
+                        RMD.Movimento = dr.Field<string>("desc_movimento");
+                        RMD.Tipo_Titolo = dr.Field<string>("desc_tipo_titolo");
+                        RMD.Nome_Titolo = dr.Field<string>("desc_titolo");
+                        RMD.Isin = dr.Field<string>("isin");
+                        RMD.Tipo_Soldi = dr.Field<string>("desc_tipo_soldi");
+                        RMD.DataMovimento = dr.Field<DateTime>("data_movimento");
+                        RMD.Uscite = dr.Field<double>("uscite");
+                        RMD.Entrate = dr.Field<double>("entrate");
+                        RMD.Causale = dr.Field<string>("causale");
+                        RMDL.Add(RMD);
+                    }
+                }
+                return RMDL;
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
         public ReportProfitLossList GetReport1(IList<int> _selectedOwners,
             IList<int> _selectedYears)
         {

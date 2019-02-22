@@ -28,7 +28,6 @@ namespace FinanceManager.ViewModels
         Predicate<object> _Filter;
 
         private IList<int> _selectedOwners;
-        private double[] exchangeValue;
 
         public ManagerReportsViewModel(IRegistryServices registryServices, IManagerReportServices managerReportServices)
         {
@@ -51,6 +50,7 @@ namespace FinanceManager.ViewModels
                 SharesList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
                 _Filter = new Predicate<object>(Filter);
                 ReportSelezionato = "";
+                TitoloSelezionato = 0;
             }
             catch (Exception err)
             {
@@ -61,8 +61,7 @@ namespace FinanceManager.ViewModels
         #region events
         public void CbSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ListBox LB = sender as ListBox;
-            if (LB != null)
+            if (sender is ListBox LB)
             {
                 switch (LB.Name)
                 {
@@ -74,16 +73,21 @@ namespace FinanceManager.ViewModels
                     case "Anni":
                         SelectedYears.Clear();
                         foreach (int y in LB.SelectedItems)
+                        {
                             SelectedYears.Add(y);
+                        }
                         break;
                 }
             }
+            if (sender is ComboBox CB)
+                TitoloSelezionato =(int)(((RegistryShare)CB.SelectedItem).IdShare);
         }
 
         public void IsChecked(object sender, RoutedEventArgs e)
         {
             ReportSelezionato = ((RadioButton)sender).Name;
         }
+
         /// <summary>
         /// E' il filtro da applicare all'elenco delle azioni
         /// e contestualmente al datagrid sottostante
@@ -174,6 +178,14 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => ReportSelezionato); }
             set { SetValue(() => ReportSelezionato, value); }
         }
+        
+        public bool CanClear { get; set; }
+
+        public int TitoloSelezionato
+        {
+            get { return GetValue(() => TitoloSelezionato); }
+            private set { SetValue(() => TitoloSelezionato, value); }
+        }
         #endregion Getter&Setter
 
         #region command
@@ -186,45 +198,52 @@ namespace FinanceManager.ViewModels
 
         public bool CanDoReport(object param)
         {
-            Grid grid = param as Grid;
             if (_selectedOwners.Count() > 0 && SelectedYears.Count() > 0 && !string.IsNullOrEmpty(ReportSelezionato))
+            {
+                if (ReportSelezionato == "Titolo" && TitoloSelezionato == 0)
+                    return false;
                 return true;
+            }
             return false;
         }
 
         public bool CanClearReport(object param)
         {
-            //Grid grid = param as Grid;
-            //if (grid.RowDefinitions.Count > 0)
-            //    return true;
+            if (CanClear)
+                return true;
             return false;
         }
 
         public void ClearReport(object param)
         {
-            Grid grid = param as Grid;
-            grid.Children.Clear();
-            for (int r = grid.RowDefinitions.Count - 1; r >= 0; r--)
-            {
-                grid.RowDefinitions.RemoveAt(r);
-            }
+            UserControl userControl = param as UserControl;
+            ((Border)userControl.FindName("BorderReport")).Child = null;
+            ((ListBox)userControl.FindName("Anni")).SelectedIndex = -1;
             SetUpViewModel();
         }
 
         public void ViewReport(object param)
         {
-            Border border = param as Border;
-
+            UserControl userControl = param as UserControl;
+            Border border = ((Border)userControl.FindName("BorderReport"));
             switch (ReportSelezionato)
             {
                 case "PL":
-                    ReportPorfitLossAnnoGestioniViewModel DataReport = new ReportPorfitLossAnnoGestioniViewModel(_reportServices.GetReport1(_selectedOwners, SelectedYears));
-                    ReportProfitLossAnnoGestioneView report1 = new ReportProfitLossAnnoGestioneView(DataReport);
+                    ReportPorfitLossAnnoGestioniViewModel ProfitLossData = new ReportPorfitLossAnnoGestioniViewModel(_reportServices.GetReport1(_selectedOwners, SelectedYears));
+                    ReportProfitLossAnnoGestioneView report1 = new ReportProfitLossAnnoGestioneView(ProfitLossData);
                     border.Child = report1;
+                    ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
+                    CanClear = true;
                     break;
                 case "Delta":
                 case "Scalare":
                 case "Titolo":
+                    ReportMovementDetailedViewModel TitoloData = new ReportMovementDetailedViewModel(_reportServices.GetMovementDetailed(_selectedOwners[0], TitoloSelezionato));
+                    ReportMovementDetailedView report2 = new ReportMovementDetailedView(TitoloData);
+                    border.Child = report2;
+                    ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
+                    CanClear = true;
+                    break;
                 default:
                     break;
             }
