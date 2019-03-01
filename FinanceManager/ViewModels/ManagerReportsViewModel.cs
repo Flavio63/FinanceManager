@@ -28,6 +28,7 @@ namespace FinanceManager.ViewModels
         Predicate<object> _Filter;
 
         private IList<int> _selectedOwners;
+        private IList<int> _selectedAccount;
 
         public ManagerReportsViewModel(IRegistryServices registryServices, IManagerReportServices managerReportServices)
         {
@@ -44,7 +45,9 @@ namespace FinanceManager.ViewModels
             try
             {
                 OwnerList = _services.GetGestioneList();
+                AccountList = _services.GetRegistryLocationList();
                 _selectedOwners = new List<int>();
+                _selectedAccount = new List<int>();
                 AvailableYears = _reportServices.GetAvailableYears();
                 SelectedYears = new List<int>();
                 SharesList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
@@ -65,10 +68,15 @@ namespace FinanceManager.ViewModels
             {
                 switch (LB.Name)
                 {
-                    case "Conto":
+                    case "Gestione":
                         _selectedOwners.Clear();
                         foreach (RegistryOwner item in LB.SelectedItems)
                             _selectedOwners.Add(item.Id_gestione);
+                        break;
+                    case "Conto":
+                        _selectedAccount.Clear();
+                        foreach (RegistryLocation registryLocation in LB.SelectedItems)
+                            _selectedAccount.Add(registryLocation.Id_conto);
                         break;
                     case "Anni":
                         SelectedYears.Clear();
@@ -150,6 +158,11 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => OwnerList); }
             set { SetValue(() => OwnerList, value); }
         }
+        public RegistryLocationList AccountList
+        {
+            get { return GetValue(() => AccountList); }
+            private set { SetValue(() => AccountList, value); }
+        }
         public RegistryOwnersList SelectedOwner
         {
             get { return GetValue(() => SelectedOwner); }
@@ -198,13 +211,23 @@ namespace FinanceManager.ViewModels
 
         public bool CanDoReport(object param)
         {
-            if (_selectedOwners.Count() > 0 && SelectedYears.Count() > 0 && !string.IsNullOrEmpty(ReportSelezionato))
+            switch (ReportSelezionato)
             {
-                if (ReportSelezionato == "Titolo" && TitoloSelezionato == 0)
+                case "PL":
+                    if (_selectedOwners.Count() > 0 && SelectedYears.Count() > 0)
+                        return true;
                     return false;
-                return true;
+                case "Titolo":
+                    if (_selectedOwners.Count() > 0 && TitoloSelezionato != 0)
+                        return true;
+                    return false;
+                case "ElencoTitoliAttivi":
+                    if (_selectedOwners.Count() > 0 && _selectedAccount.Count > 0)
+                        return true;
+                    return false;
+                default:
+                    return false;
             }
-            return false;
         }
 
         public bool CanClearReport(object param)
@@ -241,6 +264,13 @@ namespace FinanceManager.ViewModels
                     ReportMovementDetailedViewModel TitoloData = new ReportMovementDetailedViewModel(_reportServices.GetMovementDetailed(_selectedOwners[0], TitoloSelezionato));
                     ReportMovementDetailedView report2 = new ReportMovementDetailedView(TitoloData);
                     border.Child = report2;
+                    ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
+                    CanClear = true;
+                    break;
+                case "ElencoTitoliAttivi":
+                    ReportTitoliAttiviViewModel AssetsData = new ReportTitoliAttiviViewModel(_reportServices.GetActiveAssets(_selectedOwners, _selectedAccount));
+                    ReportTitoliAttiviView report3 = new ReportTitoliAttiviView(AssetsData);
+                    border.Child = report3;
                     ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
                     CanClear = true;
                     break;

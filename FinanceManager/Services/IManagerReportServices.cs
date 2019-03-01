@@ -11,5 +11,7 @@ namespace FinanceManager.Services
             IList<int> _selectedYears);
 
         ReportMovementDetailedList GetMovementDetailed(int IdGestione, int IdTitolo);
+
+        ReportTitoliAttiviList GetActiveAssets(IList<int> _selectedOwners, IList<int> _selectedAccount);
     }
 }

@@ -31,7 +31,7 @@
     <MinimumRequiredVersion>1.2.1.1</MinimumRequiredVersion>
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationRevision>2</ApplicationRevision>
     <ApplicationVersion>1.2.2.%2a</ApplicationVersion>
     <UseApplicationTrust>true</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -157,6 +157,8 @@
     <Compile Include="Models\Ptf_CCList.cs" />
     <Compile Include="Models\ReportMovementDetailed.cs" />
     <Compile Include="Models\ReportMovementDetailedList.cs" />
+    <Compile Include="Models\ReportTitoliAttivi.cs" />
+    <Compile Include="Models\ReportTitoliAttiviList.cs" />
     <Compile Include="Models\SintesiSoldi.cs" />
     <Compile Include="Models\SintesiSoldiList.cs" />
     <Compile Include="Models\TipoSoldi.cs" />
@@ -212,6 +214,7 @@
     <Compile Include="ViewModels\RegistryShareViewModel.cs" />
     <Compile Include="ViewModels\ReportMovementDetailedViewModel.cs" />
     <Compile Include="ViewModels\ReportPorfitLossAnnoGestioniViewModel.cs" />
+    <Compile Include="ViewModels\ReportTitoliAttiviViewModel.cs" />
     <Compile Include="Views\AcquistoVenditaTitoliView.xaml.cs">
       <DependentUpon>AcquistoVenditaTitoliView.xaml</DependentUpon>
     </Compile>
@@ -250,6 +253,9 @@
     </Compile>
     <Compile Include="Views\ReportProfitLossAnnoGestioneView.xaml.cs">
       <DependentUpon>ReportProfitLossAnnoGestioneView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ReportTitoliAttiviView.xaml.cs">
+      <DependentUpon>ReportTitoliAttiviView.xaml</DependentUpon>
     </Compile>
     <Page Include="Dialogs\Dialog3Combos\Dialog3CombosView.xaml">
       <SubType>Designer</SubType>
@@ -325,6 +331,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ReportProfitLossAnnoGestioneView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ReportTitoliAttiviView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

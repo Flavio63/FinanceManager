@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="FinanceManager.Views.ReportMovementDetailedView"
+﻿<UserControl x:Class="FinanceManager.Views.ReportTitoliAttiviView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <DataGrid Margin="5" CanUserAddRows="False" CanUserDeleteRows="False"  AutoGenerateColumns="False" RowHeaderWidth="16"
-              FontSize="14" AlternatingRowBackground="LightGreen" ItemsSource="{Binding MovementShareData, UpdateSourceTrigger=PropertyChanged}">
+              FontSize="14" AlternatingRowBackground="LightGreen" ItemsSource="{Binding ActiveAssets, UpdateSourceTrigger=PropertyChanged}">
         <DataGrid.Resources>
             <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="LightBlue"/>
         </DataGrid.Resources>
@@ -21,14 +21,6 @@
                 </DataGridTextColumn.ElementStyle>
             </DataGridTextColumn>
             <DataGridTextColumn Header="CONTO CORRENTE" IsReadOnly="True" Binding="{Binding Conto, UpdateSourceTrigger=PropertyChanged}">
-                <DataGridTextColumn.ElementStyle>
-                    <Style TargetType="{x:Type TextBlock}">
-                        <Setter Property="HorizontalAlignment" Value="Left"/>
-                        <Setter Property="Margin" Value="5,0,5,0"/>
-                    </Style>
-                </DataGridTextColumn.ElementStyle>
-            </DataGridTextColumn>
-            <DataGridTextColumn Header="MOVIMENTO" IsReadOnly="True" Binding="{Binding Movimento, UpdateSourceTrigger=PropertyChanged}">
                 <DataGridTextColumn.ElementStyle>
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -55,12 +47,12 @@
             <DataGridTextColumn Header="ISIN" IsReadOnly="True" Binding="{Binding Isin, UpdateSourceTrigger=PropertyChanged}">
                 <DataGridTextColumn.ElementStyle>
                     <Style TargetType="{x:Type TextBlock}">
-                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                        <Setter Property="HorizontalAlignment" Value="Left"/>
                         <Setter Property="Margin" Value="5,0,10,0"/>
                     </Style>
                 </DataGridTextColumn.ElementStyle>
             </DataGridTextColumn>
-            <DataGridTextColumn Header="TIPO SOLDI" IsReadOnly="True" Binding="{Binding Tipo_Soldi, UpdateSourceTrigger=PropertyChanged}">
+            <DataGridTextColumn Header="N. TITOLI" IsReadOnly="True" Binding="{Binding N_Titoli, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged}">
                 <DataGridTextColumn.ElementStyle>
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -68,7 +60,7 @@
                     </Style>
                 </DataGridTextColumn.ElementStyle>
             </DataGridTextColumn>
-            <DataGridTextColumn Header="DATA MOVIMENTO" IsReadOnly="True" Binding="{Binding DataMovimento, StringFormat=d, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged}">
+            <DataGridTextColumn Header="VALORE ACQUISTO" IsReadOnly="True" Binding="{Binding ValoreAcquisto, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged}">
                 <DataGridTextColumn.ElementStyle>
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -76,7 +68,7 @@
                     </Style>
                 </DataGridTextColumn.ElementStyle>
             </DataGridTextColumn>
-            <DataGridTextColumn Header="USCITE" IsReadOnly="True" Binding="{Binding Uscite, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged}">
+            <DataGridTextColumn Header="CMC" IsReadOnly="True" Binding="{Binding CMC, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged}">
                 <DataGridTextColumn.ElementStyle>
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -84,18 +76,10 @@
                     </Style>
                 </DataGridTextColumn.ElementStyle>
             </DataGridTextColumn>
-            <DataGridTextColumn Header="ENTRATE" IsReadOnly="True" Binding="{Binding Entrate, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged}">
+            <DataGridTextColumn Header="CAUSALE" IsReadOnly="True" Binding="{Binding Note, UpdateSourceTrigger=PropertyChanged}">
                 <DataGridTextColumn.ElementStyle>
                     <Style TargetType="{x:Type TextBlock}">
-                        <Setter Property="HorizontalAlignment" Value="Right"/>
-                        <Setter Property="Margin" Value="5,0,10,0"/>
-                    </Style>
-                </DataGridTextColumn.ElementStyle>
-            </DataGridTextColumn>
-            <DataGridTextColumn Header="CAUSALE" IsReadOnly="True" Binding="{Binding Causale, UpdateSourceTrigger=PropertyChanged}">
-                <DataGridTextColumn.ElementStyle>
-                    <Style TargetType="{x:Type TextBlock}">
-                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                        <Setter Property="HorizontalAlignment" Value="Left"/>
                         <Setter Property="Margin" Value="5,0,10,0"/>
                     </Style>
                 </DataGridTextColumn.ElementStyle>

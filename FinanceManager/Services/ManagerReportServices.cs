@@ -11,6 +11,57 @@ namespace FinanceManager.Services
 {
     public class ManagerReportServices : SQL.DAFconnection, IManagerReportServices
     {
+        public ReportTitoliAttiviList GetActiveAssets(IList<int> _selectedOwners, IList<int> _selectedAccount)
+        {
+            try
+            {
+                string owners = " (";
+                foreach (int o in _selectedOwners)
+                    owners += " A.id_gestione = " + o + " or ";
+                owners = owners.Substring(0, owners.Length - 4);
+                owners += ") ";
+                string accounts = " (";
+                foreach (int a in _selectedAccount)
+                    accounts += " A.id_conto = " + a + " or ";
+                accounts = accounts.Substring(0, accounts.Length - 4);
+                accounts += ") ";
+
+                ReportTitoliAttiviList RTAL = new ReportTitoliAttiviList();
+                DataTable table = new DataTable();
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = string.Format(SQL.ReportScripts.GetActiveAsset, owners, accounts);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.Fill(table);
+                    foreach (DataRow dataRow in table.Rows)
+                    {
+                        ReportTitoliAttivi RTA = new ReportTitoliAttivi();
+                        RTA.Gestione = dataRow.Field<string>("nome_gestione");
+                        RTA.Conto = dataRow.Field<string>("desc_conto");
+                        RTA.Tipo_Titolo = dataRow.Field<string>("desc_tipo_titolo");
+                        RTA.Nome_Titolo = dataRow.Field<string>("desc_titolo");
+                        RTA.Isin = dataRow.Field<string>("isin");
+                        RTA.N_Titoli = dataRow.Field<double>("n_titoli");
+                        RTA.ValoreAcquisto = dataRow.Field<double>("costoTotale");
+                        RTA.CMC = dataRow.Field<double>("CMC");
+                        RTA.Note = dataRow.Field<string>("note");
+                        RTAL.Add(RTA);
+                    }
+                    return RTAL;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
         public IList<int> GetAvailableYears()
         {
             try
