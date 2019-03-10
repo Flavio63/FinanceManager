@@ -1,4 +1,5 @@
 ﻿using NPOI.XSSF.UserModel;
+using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using System.IO;
 using FinanceManager.Models;
@@ -71,6 +72,38 @@ namespace FinanceManager.Exports
                     IDataFormat format = workbook.CreateDataFormat();
                     int EndCol = SearchEndColumn(report2[0]);
                     MakeTopTableRow(report2[0], workbook, sheet, EndCol, report2.Count);
+                    int ExcelRow = 1;
+                    foreach (ReportMovementDetailed RMD in report2)
+                    {
+                        IRow row;
+                        int iCol = 0;
+                        row = sheet.CreateRow(ExcelRow);
+                        // dati
+                        foreach (var prop in RMD.GetType().GetProperties())
+                        {
+                            string fieldValue = prop.GetValue(RMD) == null ? "" : prop.GetValue(RMD).ToString();
+                            bool isDbl = double.TryParse(fieldValue, out double dbl);
+                            bool isDate = DateTime.TryParse(fieldValue, out DateTime dt);
+                            ICell cell = row.CreateCell(iCol);
+                            SetStyle(workbook, cell, iCol, ExcelRow, EndCol, report2.Count);
+                            if (isDbl)
+                            {
+                                cell.SetCellValue(dbl);
+                                cell.CellStyle.DataFormat = 8;
+                            }
+                            else if (isDate)
+                            {
+                                cell.SetCellValue(dt);
+                                cell.CellStyle.DataFormat = 14;
+                            }
+                            else
+                            {
+                                cell.SetCellValue(fieldValue);
+                            }
+                            iCol++;
+                        }
+                        ExcelRow++;
+                    }
                 }
                 else if (param is ReportTitoliAttiviList report3)
                 {
@@ -78,6 +111,37 @@ namespace FinanceManager.Exports
                     IDataFormat format = workbook.CreateDataFormat();
                     int EndCol = SearchEndColumn(report3[0]);
                     MakeTopTableRow(report3[0], workbook, sheet, EndCol, report3.Count);
+                    int ExcelRow = 1;
+                    foreach (ReportTitoliAttivi RTA in report3)
+                    {
+                        IRow row;
+                        int iCol = 0;
+                        row = sheet.CreateRow(ExcelRow);
+                        // dati
+                        foreach (var prop in RTA.GetType().GetProperties())
+                        {
+                            string fieldValue = prop.GetValue(RTA) == null ? "" : prop.GetValue(RTA).ToString();
+                            bool isDbl = double.TryParse(fieldValue, out double dbl);
+                            ICell cell = row.CreateCell(iCol);
+                            SetStyle(workbook, cell, iCol, ExcelRow, EndCol, report3.Count);
+                            if (isDbl && prop.Name != "N_Titoli")
+                            {
+                                cell.SetCellValue(dbl);
+                                cell.CellStyle.DataFormat = 8;
+                            }
+                            else if (isDbl && prop.Name == "N_Titoli")
+                            {
+                                cell.SetCellValue(dbl);
+                                cell.CellStyle.DataFormat = 4;
+                            }
+                            else
+                            {
+                                cell.SetCellValue(fieldValue);
+                            }
+                            iCol++;
+                        }
+                        ExcelRow++;
+                    }
                 }
                 FileStream file = new FileStream(saveFileDialog.FileName, FileMode.Create);
                 workbook.Write(file);
