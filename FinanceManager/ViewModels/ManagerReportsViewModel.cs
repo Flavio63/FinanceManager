@@ -37,6 +37,7 @@ namespace FinanceManager.ViewModels
             CloseMeCommand = new CommandHandler(CloseMe);
             ViewCommand = new CommandHandler(ViewReport, CanDoReport);
             ClearCommand = new CommandHandler(ClearReport, CanClearReport);
+            DownloadCommand = new CommandHandler(ExportReport, CanClearReport);
             SetUpViewModel();
         }
 
@@ -54,6 +55,7 @@ namespace FinanceManager.ViewModels
                 _Filter = new Predicate<object>(Filter);
                 ReportSelezionato = "";
                 TitoloSelezionato = 0;
+                CanClear = false;
             }
             catch (Exception err)
             {
@@ -177,7 +179,19 @@ namespace FinanceManager.ViewModels
         public ReportProfitLossList ReportProfitLosses
         {
             get { return GetValue(() => ReportProfitLosses); }
-            set { SetValue(() => ReportProfitLosses, value); }
+            private set { SetValue(() => ReportProfitLosses, value); }
+        }
+
+        public ReportMovementDetailedList ReportMovementDetaileds
+        {
+            get { return GetValue(() => ReportMovementDetaileds); }
+            private set { SetValue(() => ReportMovementDetaileds, value); }
+        }
+
+        public ReportTitoliAttiviList ReportTitoliAttivis
+        {
+            get { return GetValue(() => ReportTitoliAttivis); }
+            private set { SetValue(() => ReportTitoliAttivis, value); }
         }
 
         public IList<int> SelectedYears
@@ -252,7 +266,8 @@ namespace FinanceManager.ViewModels
             switch (ReportSelezionato)
             {
                 case "PL":
-                    ReportPorfitLossAnnoGestioniViewModel ProfitLossData = new ReportPorfitLossAnnoGestioniViewModel(_reportServices.GetReport1(_selectedOwners, SelectedYears));
+                    ReportProfitLosses = _reportServices.GetReport1(_selectedOwners, SelectedYears);
+                    ReportPorfitLossAnnoGestioniViewModel ProfitLossData = new ReportPorfitLossAnnoGestioniViewModel(ReportProfitLosses);
                     ReportProfitLossAnnoGestioneView report1 = new ReportProfitLossAnnoGestioneView(ProfitLossData);
                     border.Child = report1;
                     ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
@@ -261,14 +276,16 @@ namespace FinanceManager.ViewModels
                 case "Delta":
                 case "Scalare":
                 case "Titolo":
-                    ReportMovementDetailedViewModel TitoloData = new ReportMovementDetailedViewModel(_reportServices.GetMovementDetailed(_selectedOwners[0], TitoloSelezionato));
+                    ReportMovementDetaileds = _reportServices.GetMovementDetailed(_selectedOwners[0], TitoloSelezionato);
+                    ReportMovementDetailedViewModel TitoloData = new ReportMovementDetailedViewModel(ReportMovementDetaileds);
                     ReportMovementDetailedView report2 = new ReportMovementDetailedView(TitoloData);
                     border.Child = report2;
                     ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
                     CanClear = true;
                     break;
                 case "ElencoTitoliAttivi":
-                    ReportTitoliAttiviViewModel AssetsData = new ReportTitoliAttiviViewModel(_reportServices.GetActiveAssets(_selectedOwners, _selectedAccount));
+                    ReportTitoliAttivis = _reportServices.GetActiveAssets(_selectedOwners, _selectedAccount);
+                    ReportTitoliAttiviViewModel AssetsData = new ReportTitoliAttiviViewModel(ReportTitoliAttivis);
                     ReportTitoliAttiviView report3 = new ReportTitoliAttiviView(AssetsData);
                     border.Child = report3;
                     ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
@@ -276,6 +293,42 @@ namespace FinanceManager.ViewModels
                     break;
                 default:
                     break;
+            }
+        }
+
+        public void ExportReport(object param)
+        {
+            try
+            {
+
+            switch (ReportSelezionato)
+            {
+                case "PL":
+                    if (((Button)param).Name == "btnExportReport")
+                        Exports.ManagerWorkbooks.ExportDataInXlsx(ReportProfitLosses);
+                    else
+                        Exports.ManagerWorkbooks.ExportDataToXlsx(ReportProfitLosses);
+                    break;
+                case "Titolo":
+                        if (((Button)param).Name == "btnExportReport")
+                            Exports.ManagerWorkbooks.ExportDataInXlsx(ReportMovementDetaileds);
+                        else
+                            Exports.ManagerWorkbooks.ExportDataToXlsx(ReportMovementDetaileds);
+                        break;
+                    case "ElencoTitoliAttivi":
+                        if (((Button)param).Name == "btnExportReport")
+                            Exports.ManagerWorkbooks.ExportDataInXlsx(ReportTitoliAttivis);
+                        else
+                            Exports.ManagerWorkbooks.ExportDataToXlsx(ReportTitoliAttivis);
+                        break;
+                default:
+                    break;
+            }
+            MessageBox.Show("Il file di excel è stato prodotto correttamente.", "Finance Manager - Export Report", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show("Problemi con l'esportazione del report: " + Environment.NewLine + err, "Finance Manager - Export Report", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

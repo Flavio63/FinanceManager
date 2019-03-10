@@ -19,7 +19,6 @@ namespace FinanceManager.ViewModels
 
         private void AddTotals(ReportProfitLossList RPLL)
         {
-            ReportProfitLoss TotalProfitLoss = new ReportProfitLoss();
             for (int row = 0; row < RPLL.Count; row++)
             {
                 int Rrow = row;
@@ -44,6 +43,7 @@ namespace FinanceManager.ViewModels
                 } while (RPLL[Rrow].Gestione == gestione && RPLL[Rrow].Anno == Anno);
                 if (Rrow - 1 > row)
                 {
+                    ReportProfitLoss TotalProfitLoss = new ReportProfitLoss();
                     TotalProfitLoss.Anno = Anno;
                     TotalProfitLoss.Gestione = gestione;
                     TotalProfitLoss.TipoSoldi = "Totale";
