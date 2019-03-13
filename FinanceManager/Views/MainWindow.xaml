@@ -27,6 +27,8 @@
                           Command="{Binding OnClickOpenValute}"  CommandParameter="{Binding ElementName=mainGrid}"/>
                 <MenuItem Header="Tipologia Movimenti" Margin="2,0" FontSize="14" FontWeight="Normal" 
                           Command="{Binding OnClickOpenMovimenti}"  CommandParameter="{Binding ElementName=mainGrid}"/>
+                <MenuItem Header="Scheda Titoli" Margin="2,0" FontSize="14" FontWeight="Normal" 
+                          Command="{Binding OnClickOpenSchedaTitoli}"  CommandParameter="{Binding ElementName=mainGrid}"/>
             </MenuItem>
             <MenuItem Header="Gestionali" Margin="2,5" FontSize="16" FontWeight="Bold">
                 <MenuItem Header="Quote Investitori" Margin="2,0" FontSize="14" FontWeight="Normal" 

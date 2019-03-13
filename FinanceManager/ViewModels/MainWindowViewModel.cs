@@ -27,6 +27,8 @@ namespace FinanceManager.ViewModels
         public ICommand OnClickPortafoglioTitoli { get; set; }
         public ICommand OnClickManagerReports { get; set; }
 
+        public ICommand OnClickOpenSchedaTitoli { get; set; }
+
         RegistryOwnerViewModel ownerViewModel;
         RegistryOwnerView ownerView;
         RegistryShareTypeViewModel registryShareTypeViewModel;
@@ -41,6 +43,8 @@ namespace FinanceManager.ViewModels
         RegistryShareView shareView;
         RegistryMovementTypeViewModel registryMovementTypeViewModel;
         RegistryMovementTypeView registryMovementTypeView;
+
+        SchedeTitoliView SchedeTitoli;
 
         GestioneContoCorrenteView gestioneContoCorrenteView;
         GestioneContoCorrenteViewModel gestioneContoCorrenteViewModel;
@@ -76,6 +80,7 @@ namespace FinanceManager.ViewModels
             OnClickOpenTitoli = new CommandHandler(OpenTitoli);
             OnClickOpenTipologiaTitoli = new CommandHandler(OpenTipologiaTitoli);
             OnClickOpenValute = new CommandHandler(OpenValute);
+            OnClickOpenSchedaTitoli = new CommandHandler(OpenSchedaTitoli);
             OnClickOpenMovimenti = new CommandHandler(OpenMovimenti);
             OnClickOpenQuoteInvestitori = new CommandHandler(OpenQuoteInvestitori);
             OnClickPortafoglioTitoli = new CommandHandler(PortafoglioTitoli);
@@ -199,6 +204,21 @@ namespace FinanceManager.ViewModels
                 mainGrid.Children.Remove(registryMovementTypeView);
                 registryMovementTypeView = null;
                 registryMovementTypeViewModel = null;
+            }
+        }
+
+        private void OpenSchedaTitoli(object param)
+        {
+            DockPanel mainGrid = param as DockPanel;
+            if (SchedeTitoli == null || !mainGrid.Children.Contains(SchedeTitoli))
+            {
+                SchedeTitoli = new SchedeTitoliView();
+                mainGrid.Children.Add(SchedeTitoli);
+            }
+            else
+            {
+                mainGrid.Children.Remove(SchedeTitoli);
+                SchedeTitoli = null;
             }
         }
 
