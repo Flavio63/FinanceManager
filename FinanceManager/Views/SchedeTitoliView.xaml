@@ -5,10 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:is="http://schemas.microsoft.com/expression/2010/interactions"
              xmlns:iy="http://schemas.microsoft.com/expression/2010/interactivity"
+             x:Name="_SchedeTitoliView"
              xmlns:local="clr-namespace:FinanceManager.Views"
              mc:Ignorable="d" >
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="50"/>
@@ -16,17 +19,36 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <TextBlock Grid.ColumnSpan="4" Text="Caricamento Scheda Titolo" FontWeight="Bold" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <Button Content="X" Command="{Binding CloseMeCommand}" 
-                CommandParameter="{Binding ElementName=_ManagerReportsView}" 
+                CommandParameter="{Binding ElementName=_SchedeTitoliView}" 
                 HorizontalContentAlignment="Center" Grid.Column="3" HorizontalAlignment="Right"
                     VerticalContentAlignment="Center" Width="25" Height="25" Background="LightGray" 
                 Margin="0,0, 15, 0"/>
 
+        <!-- pulsantiera di ingresso -->
+        <Border Grid.Row="1" Grid.Column="0" BorderBrush="ForestGreen" BorderThickness="0.8" Margin="5">
+            <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Vertical" Margin="5"  VerticalAlignment="Center">
+                    <ToggleButton IsThreeState="False" Margin="5, 10, 5, 10" Content="Nuovo Titolo"/>
+                    <Button Name="btnNewRecord" Content="Nuovo Titolo" Margin="5,10, 5, 10" Width="110" FontSize="14" FontWeight="Bold"
+                            Command="{Binding NuovoRecord}" CommandParameter="{Binding ElementName=_SchedeTitoliView}"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="5" >
+                    <Button Name="btnViewReport" Content="Inserisci" Margin="5,10, 5, 10" Width="110" FontSize="14" FontWeight="Bold"
+                             Command="{Binding InsertCommand}" CommandParameter="{Binding ElementName=_SchedeTitoliView}"/>
+                    <Button Name="btnClearReport" Content="Pulisci" Margin="5, 10, 5, 10" Width="110" FontSize="14" FontWeight="Bold"
+                             Command="{Binding ClearCommand}" CommandParameter="{Binding ElementName=_SchedeTitoliView}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
         <!-- La selezione di un titolo -->
-        <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness="0.8" Margin="5">
+        <Border Grid.Row="1" Grid.Column="1" BorderBrush="LightPink" BorderThickness="0.8" 
+                Margin="5" IsEnabled="{Binding }">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -38,79 +60,108 @@
                     <RowDefinition />
                 </Grid.RowDefinitions>
                 <TextBlock Grid.ColumnSpan="2" Text="Seleziona un Titolo" FontWeight="Bold" FontSize="16" Margin="10, 2" HorizontalAlignment="Center"/>
-                    <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding SrchShares, UpdateSourceTrigger=PropertyChanged}"  Margin="10, 2"
+                <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding SrchShares, UpdateSourceTrigger=PropertyChanged}"  Margin="10, 2"
                          Style="{StaticResource FormCenterTextBoxStyle}"/>
-                    <ComboBox Grid.Row="1" Grid.Column="1" Name="cbShares" ItemsSource="{Binding SharesListView}" 
+                <ComboBox Grid.Row="1" Grid.Column="1" Name="cbShares" ItemsSource="{Binding SharesListView}" 
                           SelectedValuePath="IdShare" Margin="10, 2" >
-                        <TextSearch.TextPath>DescShare</TextSearch.TextPath>
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Vertical">
-                                    <TextBlock Text="{Binding Isin}" FontWeight="Bold" />
-                                    <TextBlock Text="{Binding DescShare}" FontFamily="Arial Narrow" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                        <iy:Interaction.Triggers>
-                            <iy:EventTrigger EventName="SelectionChanged">
-                                <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                            </iy:EventTrigger>
-                        </iy:Interaction.Triggers>
-                    </ComboBox>
-                <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Vertical" Margin="5" >
-                    <Button Name="btnViewReport" Content="Inserisci" Margin="5,10, 5, 10" Width="110" FontSize="14" FontWeight="Bold"
-                             Command="{Binding ViewCommand}" CommandParameter="{Binding ElementName=_ManagerReportsView}"/>
-
-                    <Button Name="btnExportReport" Content="Modifica" Margin="5, 10, 5, 10" Width="110" FontSize="14" FontWeight="Bold"
-                             Command="{Binding DownloadCommand}" CommandParameter="{Binding ElementName=btnExportReport}"/>
-                </StackPanel>
-                <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Vertical" Margin="5" >
-
-                    <Button Name="btnOpenReport" Content="Elimina" Margin="5, 10, 5, 10" Width="110" FontSize="14" FontWeight="Bold"
-                             Command="{Binding DownloadCommand}" CommandParameter="{Binding ElementName=btnOpenReport}"/>
-
-                    <Button Name="btnClearReport" Content="Pulisci" Margin="5, 10, 5, 10" Width="110" FontSize="14" FontWeight="Bold"
-                             Command="{Binding ClearCommand}" CommandParameter="{Binding ElementName=_ManagerReportsView}"/>
-                </StackPanel>
-
+                    <TextSearch.TextPath>DescShare</TextSearch.TextPath>
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="{Binding Isin}" FontWeight="Bold" />
+                                <TextBlock Text="{Binding DescShare}" FontFamily="Arial Narrow" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="SelectionChanged">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </ComboBox>
+                <Button Grid.Row="2" Name="btnExportReport" Content="Modifica" Margin="5, 10, 5, 10" Width="110" FontSize="14" FontWeight="Bold"
+                             Command="{Binding ModifyCommand}" CommandParameter="{Binding ElementName=_SchedeTitoliView}"/>
+                <Button Grid.Row="2" Grid.Column="1" Name="btnOpenReport" Content="Elimina" Margin="5, 10, 5, 10" Width="110" FontSize="14" FontWeight="Bold"
+                             Command="{Binding DeleteCommand}" CommandParameter="{Binding ElementName=_SchedeTitoliView}"/>
             </Grid>
         </Border>
+
+        <!-- Anagrafica di Base-->
+        <Border Grid.Row="2" Grid.Column="0" BorderBrush="LightPink" BorderThickness="0.8" Margin="5"
+                IsEnabled="{Binding CanCompileNewRecord, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.ColumnSpan="2" Text="Anagrafica Base" FontWeight="Bold" FontSize="16" Margin="10, 2" HorizontalAlignment="Center"/>
+                <TextBlock Grid.Row="1" Text="Seleziona l'Azienda" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
+                <ComboBox Name="CBAziende" Grid.Row="1" Grid.Column="1" ItemsSource="{Binding ListaAziende, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                          SelectedValuePath="IdFirm" DisplayMemberPath="DescFirm" Margin="5" VerticalAlignment="Center" >
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="SelectionChanged">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </ComboBox>
+                <TextBlock Grid.Row="2" Text="... il tipo Titolo" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
+                <ComboBox Name="CBTipologia" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding ListaTipoTitoli, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                          SelectedValuePath="IdShareType" DisplayMemberPath="TypeName" Margin="5" VerticalAlignment="Center" >
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="SelectionChanged">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </ComboBox>
+                <TextBlock Grid.Row="3" Text="... la descrizione" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
+                <TextBox Grid.Row="3" Grid.Column="1" Margin="5" MinWidth="120" Padding="5" HorizontalAlignment="Left"/>
+                <TextBlock Grid.Row="4" Text="... e l' ISIN" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
+                <TextBox Grid.Row="4" Grid.Column="1" Margin="5" Width="90" Padding="5" HorizontalAlignment="Left"/>
+            </Grid>
+        </Border>
+
         <!-- asset allocation -->
-        <Border Grid.Row="1" Grid.Column="1" BorderBrush="LightGray" BorderThickness="0.8" Margin="5">
-            <StackPanel>
-                <TextBlock Text="Asset Allocation" FontWeight="Bold" FontSize="16" Margin="10, 2" HorizontalAlignment="Center"/>
-                <TextBlock Text="(inserire il valore percentuale senza simbolo)" FontWeight="Bold" FontSize="10" Margin="10, 2" HorizontalAlignment="Center"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <StackPanel Orientation="Vertical" Margin="5">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <TextBlock Text="% Azioni" FontWeight="Bold" Margin="10" Padding="8"/>
-                            <TextBox Text="{Binding quotaAzioni, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
-                             Margin="0, 10" Width="75" Padding="5"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <TextBlock Text="% Obbligazioni" FontWeight="Bold" Margin="10" Padding="8"/>
-                            <TextBox Text="{Binding quotaAzioni, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
-                             Margin="0, 10" Width="75" Padding="5"/>
-                        </StackPanel>
-                    </StackPanel>
-                    <StackPanel Orientation="Vertical" Margin="5">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                            <TextBox Text="{Binding quotaAzioni, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
-                             Margin="10" Width="75" Padding="5"/>
-                            <TextBlock Text="% Liquidità" FontWeight="Bold" Margin="0, 10" Padding="8"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                            <TextBox Text="{Binding quotaAzioni, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
-                             Margin="10" Width="75" Padding="5"/>
-                            <TextBlock Text="% Altro" FontWeight="Bold" Margin="0, 10" Padding="8"/>
-                        </StackPanel>
-                    </StackPanel>
+        <Border Grid.Row="2" Grid.Column="1" BorderBrush="LightGray" BorderThickness="0.8" Margin="5">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Vertical" Margin="5" Grid.ColumnSpan="2">
+                    <TextBlock Text="Asset Allocation" FontWeight="Bold" FontSize="16" Margin="10, 2" HorizontalAlignment="Center"/>
+                    <TextBlock Text="(inserire il valore percentuale senza simbolo)" FontWeight="Bold" FontSize="10" Margin="10, 2" HorizontalAlignment="Center"/>
                 </StackPanel>
-            </StackPanel>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="% Azioni" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding quotaAzioni, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                             Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBlock Grid.Row="2" Text="% Obbligazioni" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding quotaAzioni, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                             Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBlock Grid.Row="3" Text="% Liquidità" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding quotaAzioni, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                             Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBlock Grid.Row="4" Text="% Altro" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
+                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding quotaAzioni, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                             Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+            </Grid>
         </Border>
 
         <!-- regioni -->
-        <Border Grid.Row="2" Grid.Column="0" BorderBrush="LightGray" BorderThickness="0.8" Margin="5">
+        <Border Grid.Row="1" Grid.Column="2" Grid.RowSpan="3" BorderBrush="LightGray" BorderThickness="0.8" Margin="5">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50" />
@@ -169,7 +220,7 @@
         </Border>
 
         <!-- settori -->
-        <Border Grid.Row="2" Grid.Column="1" BorderBrush="LightGray" BorderThickness="0.8" Margin="5">
+        <Border Grid.Row="1" Grid.Column="3" Grid.RowSpan="3" BorderBrush="LightGray" BorderThickness="0.8" Margin="5">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50" />

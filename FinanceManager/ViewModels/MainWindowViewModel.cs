@@ -44,6 +44,7 @@ namespace FinanceManager.ViewModels
         RegistryMovementTypeViewModel registryMovementTypeViewModel;
         RegistryMovementTypeView registryMovementTypeView;
 
+        SchedeTitoliViewModel SchedeTitoliModel;
         SchedeTitoliView SchedeTitoli;
 
         GestioneContoCorrenteView gestioneContoCorrenteView;
@@ -212,13 +213,15 @@ namespace FinanceManager.ViewModels
             DockPanel mainGrid = param as DockPanel;
             if (SchedeTitoli == null || !mainGrid.Children.Contains(SchedeTitoli))
             {
-                SchedeTitoli = new SchedeTitoliView();
+                SchedeTitoliModel = new SchedeTitoliViewModel(_registryServices);
+                SchedeTitoli = new SchedeTitoliView(SchedeTitoliModel);
                 mainGrid.Children.Add(SchedeTitoli);
             }
             else
             {
                 mainGrid.Children.Remove(SchedeTitoli);
                 SchedeTitoli = null;
+                SchedeTitoliModel = null;
             }
         }
 
