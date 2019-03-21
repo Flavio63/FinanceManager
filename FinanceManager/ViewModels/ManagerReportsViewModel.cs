@@ -90,7 +90,7 @@ namespace FinanceManager.ViewModels
                 }
             }
             if (sender is ComboBox CB)
-                TitoloSelezionato =(int)(((RegistryShare)CB.SelectedItem).IdShare);
+                TitoloSelezionato =(int)(((RegistryShare)CB.SelectedItem).id_titolo);
         }
 
         public void IsChecked(object sender, RoutedEventArgs e)

@@ -15,8 +15,8 @@ namespace FinanceManager.Services
         PortafoglioTitoli GetPortafoglioTitoliById(int IdPortafoglioTitoli);
         Ptf_CCList GetShareActiveAndAccountMovement(int id_gestione, int id_conto, int id_titolo);
         SintesiSoldiList GetCurrencyAvailable(int IdGestione = 0, int IdConto = 0, int IdValuta = 0);
-        PortafoglioTitoliList GetShareMovements(int IdOwner, int IdLocation, uint IdShare);
-        double GetSharesQuantity(int IdOwner, int IdLocation, uint idShare);
+        PortafoglioTitoliList GetShareMovements(int IdOwner, int IdLocation, uint id_titolo);
+        double GetSharesQuantity(int IdOwner, int IdLocation, uint id_titolo);
         double GetProfitLossByCurrency(int IdOwner, int IdLocation, int IdCurrency);
         void AddManagerLiquidAsset(PortafoglioTitoli managerLiquidAsset);
         void UpdateManagerLiquidAsset(PortafoglioTitoli managerLiquidAsset);

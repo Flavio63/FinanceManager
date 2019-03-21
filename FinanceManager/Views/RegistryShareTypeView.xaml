@@ -38,10 +38,10 @@
                 </iy:EventTrigger>
             </iy:Interaction.Triggers>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" IsReadOnly="True" Binding="{Binding IdShareType, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                <DataGridTextColumn Header="ID" IsReadOnly="True" Binding="{Binding id_tipo_titolo, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                                     Width="40"/>
                 <DataGridTextColumn Header="Tipologia del Titolo" IsReadOnly="False" 
-                                    Binding="{Binding TypeName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="190"/>
+                                    Binding="{Binding desc_tipo_titolo, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="190"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

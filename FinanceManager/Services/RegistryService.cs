@@ -219,8 +219,8 @@ namespace FinanceManager.Services
                     foreach (DataRow dr in dt.Rows)
                     {
                         RegistryShareType RST = new RegistryShareType();
-                        RST.IdShareType = dr.Field<uint>("id_tipo_titolo");
-                        RST.TypeName = dr.Field<string>("desc_tipo_titolo");
+                        RST.id_tipo_titolo = dr.Field<uint>("id_tipo_titolo");
+                        RST.desc_tipo_titolo = dr.Field<string>("desc_tipo_titolo");
                         RSTL.Add(RST);
                     }
                     return RSTL;
@@ -245,8 +245,8 @@ namespace FinanceManager.Services
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.UpdateShareType;
-                    dbComm.Parameters.AddWithValue("id", registryShareType.IdShareType);
-                    dbComm.Parameters.AddWithValue("desc", registryShareType.TypeName);
+                    dbComm.Parameters.AddWithValue("id", registryShareType.id_tipo_titolo);
+                    dbComm.Parameters.AddWithValue("desc", registryShareType.desc_tipo_titolo);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -536,8 +536,8 @@ namespace FinanceManager.Services
                     foreach (DataRow dr in dt.Rows)
                     {
                         RegistryFirm RF = new RegistryFirm();
-                        RF.IdFirm = dr.Field<uint>("id_azienda");
-                        RF.DescFirm = dr.Field<string>("desc_azienda");
+                        RF.id_azienda = dr.Field<uint>("id_azienda");
+                        RF.desc_azienda = dr.Field<string>("desc_azienda");
                         RFL.Add(RF);
                     }
                     return RFL;
@@ -561,8 +561,8 @@ namespace FinanceManager.Services
                 {
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.UpdateFirm;
-                    dbComm.Parameters.AddWithValue("desc", registryFirm.DescFirm);
-                    dbComm.Parameters.AddWithValue("id", registryFirm.IdFirm);
+                    dbComm.Parameters.AddWithValue("desc", registryFirm.desc_azienda);
+                    dbComm.Parameters.AddWithValue("id", registryFirm.id_azienda);
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -648,11 +648,10 @@ namespace FinanceManager.Services
                     foreach (DataRow dr in dt.Rows)
                     {
                         RegistryShare RS = new RegistryShare();
-                        RS.IdShare = dr.Field<uint>("id_titolo");
-                        RS.DescShare = dr.Field<string>("desc_titolo");
-                        RS.Isin = dr.Field<string>("isin");
-                        RS.IdShareType = dr.Field<uint>("id_tipo_titolo");
-                        RS.IdFirm = dr.Field<uint>("id_azienda");
+                        foreach (var property in RS.GetType().GetProperties())
+                        {
+                            property.SetValue(RS, dr.Field<object>(property.Name));
+                        }
                         RSL.Add(RS);
                     }
                     return RSL;
@@ -668,12 +667,43 @@ namespace FinanceManager.Services
             }
         }
 
-        public RegistryShareList GetSharesByType(int[] idShareType)
+        public RegistryShare GetShareById(uint id)
+        {
+            try
+            {
+                using(MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetShareById;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", id);
+                    DataTable dt = new DataTable();
+                    dbAdapter.Fill(dt);
+                    RegistryShare registryShare = new RegistryShare();
+                    foreach (var property in registryShare.GetType().GetProperties())
+                    {
+                        property.SetValue(registryShare, dt.Rows[0].Field<object>(property.Name));
+                    }
+                    return registryShare;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        public RegistryShareList GetSharesByType(int[] id_tipo_titolo)
         {
             try
             {
                 string where = "";
-                foreach(int x in idShareType)
+                foreach(int x in id_tipo_titolo)
                 {
                     where += string.Format(" id_tipo_titolo = {0} OR ", x);
                 }
@@ -691,11 +721,10 @@ namespace FinanceManager.Services
                     foreach (DataRow dr in dt.Rows)
                     {
                         RegistryShare RS = new RegistryShare();
-                        RS.IdShare = dr.Field<uint>("id_titolo");
-                        RS.DescShare = dr.Field<string>("desc_titolo");
-                        RS.Isin = dr.Field<string>("isin");
-                        RS.IdShareType = dr.Field<uint>("id_tipo_titolo");
-                        RS.IdFirm = dr.Field<uint>("id_azienda");
+                        foreach (var property in RS.GetType().GetProperties())
+                        {
+                            property.SetValue(RS, dr.Field<object>(property.Name));
+                        }
                         RSL.Add(RS);
                     }
                     return RSL;
@@ -710,7 +739,6 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
-
         public void UpdateShare(RegistryShare registryShare)
         {
             try
@@ -720,11 +748,10 @@ namespace FinanceManager.Services
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.UpdateShare;
-                    dbComm.Parameters.AddWithValue("desc", registryShare.DescShare);
-                    dbComm.Parameters.AddWithValue("isin", registryShare.Isin);
-                    dbComm.Parameters.AddWithValue("tipo", registryShare.IdShareType);
-                    dbComm.Parameters.AddWithValue("azienda", registryShare.IdFirm);
-                    dbComm.Parameters.AddWithValue("id", registryShare.IdShare);
+                    foreach (var property in registryShare.GetType().GetProperties())
+                    {
+                        dbComm.Parameters.AddWithValue(property.Name, property.GetValue(registryShare));
+                    }
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -749,11 +776,14 @@ namespace FinanceManager.Services
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.AddShare;
-                    dbComm.Parameters.AddWithValue("desc", registryShare.DescShare);
-                    dbComm.Parameters.AddWithValue("isin", registryShare.Isin);
-                    dbComm.Parameters.AddWithValue("tipo", registryShare.IdShareType);
-                    dbComm.Parameters.AddWithValue("azienda", registryShare.IdFirm);
-                    dbComm.Parameters.AddWithValue("id", registryShare.IdShare);
+                    foreach (var property in registryShare.GetType().GetProperties())
+                    {
+                        if (property.Name == "id_titolo")
+                            dbComm.Parameters.AddWithValue("id_titolo", null);
+                        else
+                            dbComm.Parameters.AddWithValue(property.Name, property.GetValue(registryShare));
+                    }
+
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();

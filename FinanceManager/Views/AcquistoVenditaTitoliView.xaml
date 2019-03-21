@@ -265,13 +265,13 @@
                 <TextBlock Grid.Row="2" Grid.Column="2" Text="Il titolo" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
                 <ComboBox Grid.Row="2" Grid.Column="3" Name="cbShares" ItemsSource="{Binding SharesListView}" 
                           IsEnabled="{Binding CanModifyBaseParameters, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                          SelectedValuePath="IdShare" Margin="10, 2, 5, 2" SelectedValue="{Binding RecordPortafoglioTitoli.Id_titolo}">
-                    <TextSearch.TextPath>DescShare</TextSearch.TextPath>
+                          SelectedValuePath="id_titolo" Margin="10, 2, 5, 2" SelectedValue="{Binding RecordPortafoglioTitoli.Id_titolo}">
+                    <TextSearch.TextPath>desc_titolo</TextSearch.TextPath>
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Text="{Binding Isin}" FontWeight="Bold" />
-                                <TextBlock Text="{Binding DescShare}" FontFamily="Arial Narrow" />
+                                <TextBlock Text="{Binding desc_titolo}" FontFamily="Arial Narrow" />
                             </StackPanel>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>

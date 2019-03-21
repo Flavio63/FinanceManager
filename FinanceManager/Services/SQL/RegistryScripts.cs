@@ -46,15 +46,41 @@ namespace FinanceManager.Services.SQL
         #endregion
         
         #region titoli
-        public readonly static string GetRegistryShareList = "SELECT id_titolo, desc_titolo, isin, id_tipo_titolo, id_azienda " +
+        public readonly static string GetRegistryShareList = "SELECT id_titolo, desc_titolo, isin, id_tipo_titolo, id_azienda, azioni, obbligazioni, liquidita, altro, " +
+            "USA, Canada, AmericaLatinaCentrale, RegnoUnito, EuropaOccEuro, EuropaOccNoEuro, EuropaEst, Africa, MedioOriente, Giappone, Australasia, AsiaSviluppati, " +
+            "AsiaEmergenti, RegioniND, MateriePrime, BeniConsCiclici, Finanza, Immobiliare, BeniConsDifensivi, Salute, ServiziPubbUtility, ServiziComunic, Energia, " +
+            "BeniIndustriali, Tecnologia, SettoriND, data_modifica " +
             "FROM titoli WHERE id_titolo > 0 ORDER BY isin, desc_titolo;";
-        public readonly static string UpdateShare = "UPDATE titoli SET desc_titolo = @desc, isin = @isin, id_tipo_titolo = @tipo, id_azienda = @azienda " +
-            "WHERE id_titolo = @id;";
-        public readonly static string DeleteShare = "DELETE FROM titoli WHERE id_titolo = @id";
-        public readonly static string AddShare = "INSERT INTO titoli (id_titolo, desc_titolo, isin, id_tipo_titolo, id_azienda) " +
-            "VALUE (null, @desc, @isin, @tipo, @azienda);";
 
-        public readonly static string GetSharesByType = "SELECT id_titolo, desc_titolo, isin, id_tipo_titolo, id_azienda FROM titoli WHERE {0} ORDER BY id_titolo";
+        public readonly static string UpdateShare = "UPDATE titoli SET desc_titolo = @desc_titolo, isin = @isin, id_tipo_titolo = @id_tipo_titolo, id_azienda = @id_azienda, azioni = @azioni, " +
+            "obbligazioni = @obbligazioni, liquidita = @liquidita, altro = @altro, USA = @USA, Canada = @Canada, AmericaLatinaCentrale = @AmericaLatinaCentrale, RegnoUnito = @RegnoUnito, " +
+            "EuropaOccEuro = @EuropaOccEuro, EuropaOccNoEuro = @EuropaOccNoEuro, EuropaEst = @EuropaEst, Africa = @Africa, MedioOriente = @MedioOriente, Giappone = @Giappone, " +
+            "Australasia = @Australasia, AsiaSviluppati = @AsiaSviluppati, AsiaEmergenti = @AsiaEmergenti, RegioniND = @RegioniND, MateriePrime = @MateriePrime, BeniConsCiclici = @BeniConsCiclici, " +
+            "Finanza = @Finanza, Immobiliare = @Immobiliare, BeniConsDifensivi = @BeniConsDifensivi, Salute = @Salute, ServiziPubbUtility = @ServiziPubbUtility, ServiziComunic = " +
+            "@ServiziComunic, Energia = @Energia, BeniIndustriali = @BeniIndustriali, Tecnologia = @Tecnologia, SettoriND = @SettoriND " +
+            "WHERE id_titolo = @id_titolo;";
+
+        public readonly static string DeleteShare = "DELETE FROM titoli WHERE id_titolo = @id";
+
+        public readonly static string AddShare = "INSERT INTO titoli (id_titolo, desc_titolo, isin, id_tipo_titolo, id_azienda, azioni, obbligazioni, liquidita, altro, " +
+            "USA, Canada, AmericaLatinaCentrale, RegnoUnito, EuropaOccEuro, EuropaOccNoEuro, EuropaEst, Africa, MedioOriente, Giappone, Australasia, AsiaSviluppati, " +
+            "AsiaEmergenti, RegioniND, MateriePrime, BeniConsCiclici, Finanza, Immobiliare, BeniConsDifensivi, Salute, ServiziPubbUtility, ServiziComunic, Energia, " +
+            "BeniIndustriali, Tecnologia, SettoriND) " +
+            "VALUE (@id_titolo, @desc_titolo, @isin, @id_tipo_titolo, @id_azienda, @azioni, @obbligazioni, @liquidita, @altro, @USA, @Canada, @AmericaLatinaCentrale, @RegnoUnito, @EuropaOccEuro, " +
+            "@EuropaOccNoEuro, @EuropaEst, @Africa, @MedioOriente, @Giappone, @Australasia, @AsiaSviluppati, @AsiaEmergenti, @RegioniND, @MateriePrime, @BeniConsCiclici, " +
+            "@Finanza, @Immobiliare, @BeniConsDifensivi, @Salute, @ServiziPubbUtility, @ServiziComunic, @Energia, @BeniIndustriali, @Tecnologia, @SettoriND );";
+
+        public readonly static string GetSharesByType = "SELECT id_titolo, desc_titolo, isin, id_tipo_titolo, id_azienda, azioni, obbligazioni, liquidita, altro, " +
+            "USA, Canada, AmericaLatinaCentrale, RegnoUnito, EuropaOccEuro, EuropaOccNoEuro, EuropaEst, Africa, MedioOriente, Giappone, Australasia, AsiaSviluppati, " +
+            "AsiaEmergenti, RegioniND, MateriePrime, BeniConsCiclici, Finanza, Immobiliare, BeniConsDifensivi, Salute, ServiziPubbUtility, ServiziComunic, Energia, " +
+            "BeniIndustriali, Tecnologia, SettoriND, data_modifica " +
+            "FROM titoli WHERE {0} ORDER BY id_titolo";
+
+        public readonly static string GetShareById = "SELECT id_titolo, desc_titolo, isin, id_tipo_titolo, id_azienda, azioni, obbligazioni, liquidita, altro, " +
+            "USA, Canada, AmericaLatinaCentrale, RegnoUnito, EuropaOccEuro, EuropaOccNoEuro, EuropaEst, Africa, MedioOriente, Giappone, Australasia, AsiaSviluppati, " +
+            "AsiaEmergenti, RegioniND, MateriePrime, BeniConsCiclici, Finanza, Immobiliare, BeniConsDifensivi, Salute, ServiziPubbUtility, ServiziComunic, Energia, " +
+            "BeniIndustriali, Tecnologia, SettoriND, data_modifica " +
+            "FROM titoli WHERE id_titolo = @id_titolo";
         #endregion
 
         #region tipo movimento

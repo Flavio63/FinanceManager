@@ -18,7 +18,6 @@ namespace FinanceManager.ViewModels
         public ICommand OnClickOpenGestioni { get; set; }
         public ICommand OnClickOpenConti { get; set; }
         public ICommand OnClickOpenAziende { get; set; }
-        public ICommand OnClickOpenTitoli { get; set; }
         public ICommand OnClickOpenTipologiaTitoli { get; set; }
         public ICommand OnClickOpenValute { get; set; }
         public ICommand OnClickOpenMovimenti { get; set; }
@@ -39,8 +38,6 @@ namespace FinanceManager.ViewModels
         RegistryLocationView locationView;
         RegistryFirmViewModel registryFirmViewModel;
         RegistryFirmView firmView;
-        RegistryShareViewModel registryShareViewModel;
-        RegistryShareView shareView;
         RegistryMovementTypeViewModel registryMovementTypeViewModel;
         RegistryMovementTypeView registryMovementTypeView;
 
@@ -78,7 +75,6 @@ namespace FinanceManager.ViewModels
             OnClickOpenGestioni = new CommandHandler(OpenGestioni);
             OnClickOpenConti = new CommandHandler(OpenConti);
             OnClickOpenAziende = new CommandHandler(OpenAziende);
-            OnClickOpenTitoli = new CommandHandler(OpenTitoli);
             OnClickOpenTipologiaTitoli = new CommandHandler(OpenTipologiaTitoli);
             OnClickOpenValute = new CommandHandler(OpenValute);
             OnClickOpenSchedaTitoli = new CommandHandler(OpenSchedaTitoli);
@@ -171,23 +167,6 @@ namespace FinanceManager.ViewModels
                 mainGrid.Children.Remove(firmView);
                 firmView = null;
                 registryFirmViewModel = null;
-            }
-        }
-
-        private void OpenTitoli(object param)
-        {
-            DockPanel mainGrid = param as DockPanel;
-            if (shareView == null || !mainGrid.Children.Contains(shareView))
-            {
-                registryShareViewModel = new RegistryShareViewModel(_registryServices);
-                shareView = new RegistryShareView(registryShareViewModel);
-                mainGrid.Children.Add(shareView);
-            }
-            else
-            {
-                mainGrid.Children.Remove(shareView);
-                shareView = null;
-                registryShareViewModel = null;
             }
         }
 

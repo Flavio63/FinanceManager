@@ -44,10 +44,10 @@
                 </iy:EventTrigger>
             </iy:Interaction.Triggers>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" IsReadOnly="True" Binding="{Binding IdFirm, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                <DataGridTextColumn Header="ID" IsReadOnly="True" Binding="{Binding id_azienda, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                                     Width="40"/>
                 <DataGridTextColumn Header="Nome Azienda" IsReadOnly="False" 
-                                    Binding="{Binding DescFirm, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="230"/>
+                                    Binding="{Binding desc_azienda, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="230"/>
             </DataGrid.Columns>
         </DataGrid>
 

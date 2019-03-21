@@ -402,8 +402,8 @@ namespace FinanceManager.ViewModels
                 }
                 else if (e.AddedItems[0] is RegistryShare RS)
                 {
-                    RecordContoCorrente.Id_Titolo = (int)RS.IdShare;
-                    RecordContoCorrente.Desc_Titolo = RS.DescShare;
+                    RecordContoCorrente.Id_Titolo = (int)RS.id_titolo;
+                    RecordContoCorrente.Desc_Titolo = RS.desc_titolo;
                     CanInsert = RecordContoCorrente.Id_RowConto > 0 ? false : true;
                 }
             }

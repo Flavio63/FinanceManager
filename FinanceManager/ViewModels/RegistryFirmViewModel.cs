@@ -42,13 +42,13 @@ namespace FinanceManager.ViewModels
                 if (e.EditAction == DataGridEditAction.Commit)
                 {
                     Firm = ((RegistryFirm)e.Row.Item);
-                    if (Firm.IdFirm > 0)
+                    if (Firm.id_azienda > 0)
                     {
                         _services.UpdateFirm(Firm);
                     }
                     else
                     {
-                        _services.AddFirm(Firm.DescFirm);
+                        _services.AddFirm(Firm.desc_azienda);
                     }
                     FirmList = new ObservableCollection<RegistryFirm>(_services.GetRegistryFirmList());
                 }
@@ -75,12 +75,12 @@ namespace FinanceManager.ViewModels
                 if (dg.SelectedIndex > 0)
                 {
                     MessageBoxResult result = MessageBox.Show("Attenzione verrà elemininata la seguente azienda: " +
-                        ((RegistryFirm)dg.SelectedItem).DescFirm, "DAF-C Gestione Mercato", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        ((RegistryFirm)dg.SelectedItem).desc_azienda, "DAF-C Gestione Mercato", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {
                         try
                         {
-                            _services.DeleteFirm(((RegistryFirm)dg.SelectedItem).IdFirm);
+                            _services.DeleteFirm(((RegistryFirm)dg.SelectedItem).id_azienda);
                             FirmList = new ObservableCollection<RegistryFirm>(_services.GetRegistryFirmList());
                         }
                         catch (Exception err)
@@ -115,7 +115,7 @@ namespace FinanceManager.ViewModels
                 {
                     var data = obj as RegistryFirm;
                     if (!string.IsNullOrEmpty(SearchName))
-                        return data.DescFirm.ToUpper().Contains(SearchName.ToUpper());
+                        return data.desc_azienda.ToUpper().Contains(SearchName.ToUpper());
                 }
             }
             return true;

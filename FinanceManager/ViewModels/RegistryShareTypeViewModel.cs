@@ -48,13 +48,13 @@ namespace FinanceManager.ViewModels
                 if (e.EditAction == DataGridEditAction.Commit)
                 {
                     registryShareType = ((RegistryShareType)e.Row.Item);
-                    if (registryShareType.IdShareType > 0)
+                    if (registryShareType.id_tipo_titolo > 0)
                     {
                         _services.UpdateShareType(registryShareType);
                     }
                     else
                     {
-                        _services.AddShareType(registryShareType.TypeName);
+                        _services.AddShareType(registryShareType.desc_tipo_titolo);
                         _ShareTypeList = new ObservableCollection<RegistryShareType>(_services.GetRegistryShareTypeList());
 
                     }
@@ -80,12 +80,12 @@ namespace FinanceManager.ViewModels
                 if (dg.SelectedIndex > 0)
                 {
                     MessageBoxResult result = MessageBox.Show("Attenzione verrà elemininata la seguente tipologia: " +
-                        ((RegistryShareType)dg.SelectedItem).TypeName, "DAF-C Gestione Gestioni", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        ((RegistryShareType)dg.SelectedItem).desc_tipo_titolo, "DAF-C Gestione Gestioni", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {
                         try
                         {
-                            _services.DeleteShareType(((RegistryShareType)dg.SelectedItem).IdShareType);
+                            _services.DeleteShareType(((RegistryShareType)dg.SelectedItem).id_tipo_titolo);
                             ShareTypeList = new ObservableCollection<RegistryShareType>(_services.GetRegistryShareTypeList());
                         }
                         catch (Exception err)

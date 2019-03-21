@@ -19,8 +19,6 @@
                           Command="{Binding OnClickOpenConti}" CommandParameter="{Binding ElementName=mainGrid}"/>
                 <MenuItem Header="Aziende" Margin="2,0" FontSize="14" FontWeight="Normal" 
                           Command="{Binding OnClickOpenAziende}"  CommandParameter="{Binding ElementName=mainGrid}"/>
-                <MenuItem Header="Titoli" Margin="2,0" FontSize="14" FontWeight="Normal" 
-                          Command="{Binding OnClickOpenTitoli}"  CommandParameter="{Binding ElementName=mainGrid}"/>
                 <MenuItem Header="Tipologia Titoli" Margin="2,0" FontSize="14" FontWeight="Normal" 
                           Command="{Binding OnClickOpenTipologiaTitoli}"  CommandParameter="{Binding ElementName=mainGrid}"/>
                 <MenuItem Header="Valute" Margin="2,0" FontSize="14" FontWeight="Normal" 

@@ -228,7 +228,6 @@
     <Compile Include="ViewModels\RegistryMovementTypeViewModel.cs" />
     <Compile Include="ViewModels\RegistryOwnerViewModel.cs" />
     <Compile Include="ViewModels\RegistryShareTypeViewModel.cs" />
-    <Compile Include="ViewModels\RegistryShareViewModel.cs" />
     <Compile Include="ViewModels\ReportMovementDetailedViewModel.cs" />
     <Compile Include="ViewModels\ReportPorfitLossAnnoGestioniViewModel.cs" />
     <Compile Include="ViewModels\ReportTitoliAttiviViewModel.cs" />
@@ -262,9 +261,6 @@
     </Compile>
     <Compile Include="Views\RegistryShareTypeView.xaml.cs">
       <DependentUpon>RegistryShareTypeView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\RegistryShareView.xaml.cs">
-      <DependentUpon>RegistryShareView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ReportMovementDetailedView.xaml.cs">
       <DependentUpon>ReportMovementDetailedView.xaml</DependentUpon>
@@ -340,10 +336,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RegistryShareTypeView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\RegistryShareView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

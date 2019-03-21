@@ -8,6 +8,38 @@
              x:Name="_SchedeTitoliView"
              xmlns:local="clr-namespace:FinanceManager.Views"
              mc:Ignorable="d" >
+    <UserControl.Resources>
+        <Style x:Key="ON" TargetType="ToggleButton">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid>
+                            <Ellipse Fill="{TemplateBinding Background}"/>
+                            <Ellipse Stroke="{TemplateBinding BorderBrush}"/>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ElementName=switchBTN, Path=IsChecked}" Value="true">
+                    <Setter Property="Background" Value="#FF29F109"/>
+                    <Setter Property="BorderBrush" Value="DarkGreen"/>
+                    <Setter Property="Content" Value="ON"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontSize" Value="14"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=switchBTN, Path=IsChecked}" Value="false">
+                    <Setter Property="Background" Value="#FFE80000"/>
+                    <Setter Property="BorderBrush" Value="DarkRed"/>
+                    <Setter Property="Content" Value="OFF"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontSize" Value="14"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
@@ -33,9 +65,9 @@
         <Border Grid.Row="1" Grid.Column="0" BorderBrush="ForestGreen" BorderThickness="0.8" Margin="5">
             <StackPanel Orientation="Horizontal">
                 <StackPanel Orientation="Vertical" Margin="5"  VerticalAlignment="Center">
-                    <ToggleButton IsThreeState="False" Margin="5, 10, 5, 10" Content="Nuovo Titolo"/>
-                    <Button Name="btnNewRecord" Content="Nuovo Titolo" Margin="5,10, 5, 10" Width="110" FontSize="14" FontWeight="Bold"
-                            Command="{Binding NuovoRecord}" CommandParameter="{Binding ElementName=_SchedeTitoliView}"/>
+                    <TextBlock Text="Attivare Ricerca Titolo" FontSize="12" FontWeight="Bold" Margin="5"/>
+                    <ToggleButton Name="switchBTN" IsThreeState="False" Margin="5, 10, 5, 10"
+                                  Width="90" Height="30" Style="{StaticResource ON}"/>
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Margin="5" >
                     <Button Name="btnViewReport" Content="Inserisci" Margin="5,10, 5, 10" Width="110" FontSize="14" FontWeight="Bold"
@@ -48,7 +80,7 @@
 
         <!-- La selezione di un titolo -->
         <Border Grid.Row="1" Grid.Column="1" BorderBrush="LightPink" BorderThickness="0.8" 
-                Margin="5" IsEnabled="{Binding }">
+                Margin="5" IsEnabled="{Binding ElementName=switchBTN, Path=IsChecked}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -63,13 +95,13 @@
                 <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding SrchShares, UpdateSourceTrigger=PropertyChanged}"  Margin="10, 2"
                          Style="{StaticResource FormCenterTextBoxStyle}"/>
                 <ComboBox Grid.Row="1" Grid.Column="1" Name="cbShares" ItemsSource="{Binding SharesListView}" 
-                          SelectedValuePath="IdShare" Margin="10, 2" >
-                    <TextSearch.TextPath>DescShare</TextSearch.TextPath>
+                          SelectedValuePath="id_titolo" Margin="10, 2" >
+                    <TextSearch.TextPath>desc_titolo</TextSearch.TextPath>
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Text="{Binding Isin}" FontWeight="Bold" />
-                                <TextBlock Text="{Binding DescShare}" FontFamily="Arial Narrow" />
+                                <TextBlock Text="{Binding desc_titolo}" FontFamily="Arial Narrow" />
                             </StackPanel>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
@@ -85,7 +117,21 @@
                              Command="{Binding DeleteCommand}" CommandParameter="{Binding ElementName=_SchedeTitoliView}"/>
             </Grid>
         </Border>
-
+        <!-- Note al report -->
+        <StackPanel Orientation="Vertical" Grid.Row="3" Margin="5" IsEnabled="False">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Record modificato il:" Margin="20,5,5,5" VerticalAlignment="Top"/>
+                <TextBlock Text="{Binding ActualRecord.data_modifica, UpdateSourceTrigger=PropertyChanged, 
+                Mode=OneWay, StringFormat=d, ConverterCulture=it-IT}" HorizontalAlignment="Left"
+                Margin="5" VerticalAlignment="Top"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Identificativo Record:" Margin="20,5,5,5" VerticalAlignment="Top"/>
+                <TextBox Text="{Binding ActualRecord.id_titolo, UpdateSourceTrigger=PropertyChanged, 
+                Mode=OneWay, StringFormat=n0, ConverterCulture=it-IT}" HorizontalAlignment="Left"
+                Margin="5" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
+            </StackPanel>
+        </StackPanel>
         <!-- Anagrafica di Base-->
         <Border Grid.Row="2" Grid.Column="0" BorderBrush="LightPink" BorderThickness="0.8" Margin="5"
                 IsEnabled="{Binding CanCompileNewRecord, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
@@ -103,8 +149,9 @@
                 </Grid.RowDefinitions>
                 <TextBlock Grid.ColumnSpan="2" Text="Anagrafica Base" FontWeight="Bold" FontSize="16" Margin="10, 2" HorizontalAlignment="Center"/>
                 <TextBlock Grid.Row="1" Text="Seleziona l'Azienda" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <ComboBox Name="CBAziende" Grid.Row="1" Grid.Column="1" ItemsSource="{Binding ListaAziende, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                          SelectedValuePath="IdFirm" DisplayMemberPath="DescFirm" Margin="5" VerticalAlignment="Center" >
+                <ComboBox Name="CBAziende" Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Firms}"
+                          SelectedValuePath="id_azienda" DisplayMemberPath="desc_azienda" Margin="5" VerticalAlignment="Center" 
+                          SelectedValue="{Binding ActualRecord.id_azienda}">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="SelectionChanged">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
@@ -112,8 +159,9 @@
                     </iy:Interaction.Triggers>
                 </ComboBox>
                 <TextBlock Grid.Row="2" Text="... il tipo Titolo" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <ComboBox Name="CBTipologia" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding ListaTipoTitoli, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                          SelectedValuePath="IdShareType" DisplayMemberPath="TypeName" Margin="5" VerticalAlignment="Center" >
+                <ComboBox Name="CBTipologia" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding TipoTitoli}"
+                          SelectedValuePath="id_tipo_titolo" DisplayMemberPath="desc_tipo_titolo" Margin="5" VerticalAlignment="Center"
+                          SelectedValue="{Binding ActualRecord.id_tipo_titolo}">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="SelectionChanged">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
@@ -121,9 +169,9 @@
                     </iy:Interaction.Triggers>
                 </ComboBox>
                 <TextBlock Grid.Row="3" Text="... la descrizione" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="3" Grid.Column="1" Margin="5" MinWidth="120" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Text="{Binding ActualRecord.desc_titolo, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Row="3" Grid.Column="1" Margin="5" MinWidth="120" Padding="5" HorizontalAlignment="Left"/>
                 <TextBlock Grid.Row="4" Text="... e l' ISIN" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="4" Grid.Column="1" Margin="5" Width="90" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Text="{Binding ActualRecord.Isin, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Row="4" Grid.Column="1" Margin="5" Width="100" Padding="5" HorizontalAlignment="Left"/>
             </Grid>
         </Border>
 
@@ -146,17 +194,41 @@
                     <TextBlock Text="(inserire il valore percentuale senza simbolo)" FontWeight="Bold" FontSize="10" Margin="10, 2" HorizontalAlignment="Center"/>
                 </StackPanel>
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="% Azioni" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding quotaAzioni, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
-                             Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblAzi" Grid.Row="1" Grid.Column="1" Text="{Binding ActualRecord.Azioni, ConverterCulture=it-IT}" 
+                         HorizontalContentAlignment="Right" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="2" Text="% Obbligazioni" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding quotaAzioni, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
-                             Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblObb" Grid.Row="2" Grid.Column="1" Text="{Binding ActualRecord.Obbligazioni, ConverterCulture=it-IT}" 
+                         HorizontalContentAlignment="Right" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="3" Text="% Liquidità" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding quotaAzioni, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
-                             Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblLiq" Grid.Row="3" Grid.Column="1" Text="{Binding ActualRecord.Liquidita, ConverterCulture=it-IT}" 
+                    HorizontalContentAlignment="Right" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="4" Text="% Altro" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding quotaAzioni, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
-                             Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblAlt" Grid.Row="4" Grid.Column="1" Text="{Binding ActualRecord.Altro, ConverterCulture=it-IT}" 
+                    HorizontalContentAlignment="Right" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
             </Grid>
         </Border>
 
@@ -189,33 +261,145 @@
                     <TextBlock Text="(inserire il valore percentuale senza simbolo)" FontWeight="Bold" FontSize="10" Margin="10, 2" HorizontalAlignment="Center"/>
                 </StackPanel>
                 <TextBlock Grid.Row="1" Text="% USA" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblUsa" Grid.Row="1" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.USA, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="2" Text="% Canada" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="2" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblCan" Grid.Row="2" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.Canada, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="3" Text="% America Latina e Centrale" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="3" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblALat" Grid.Row="3" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.AmericaLatinaCentrale, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="4" Text="% Regno Unito" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="4" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblUK" Grid.Row="4" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.RegnoUnito, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="5" Text="% Europa Occidentale - Euro" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="5" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblEuro" Grid.Row="5" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.EuropaOccEuro, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="6" Text="% Europa Occidentale - No Euro" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="6" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblEOc" Grid.Row="6" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.EuropaOccNoEuro, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="7" Text="% Europa dell'Est" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="7" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblEEs" Grid.Row="7" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.EuropaEst, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="8" Text="% Africa" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="8" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblAfr" Grid.Row="8" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.Africa, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="9" Text="% Medio Oriente" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="9" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblMOr" Grid.Row="9" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.MedioOriente, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="10" Text="% Giappone" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="10" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblGia" Grid.Row="10" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.Giappone, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="11" Text="% Australasia" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="11" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblAus" Grid.Row="11" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.Australasia, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="12" Text="% Asia Sviluppati" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="12" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblASv" Grid.Row="12" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.AsiaSviluppati, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="13" Text="% Asia Emergenti" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="13" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblAEm" Grid.Row="13" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.AsiaEmergenti, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="14" Text="% Globale" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="14" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblReg" Grid.Row="14" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.RegioniND, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
             </Grid>
         </Border>
 
@@ -246,29 +430,125 @@
                     <TextBlock Text="(inserire il valore percentuale senza simbolo)" FontWeight="Bold" FontSize="10" Margin="10, 2" HorizontalAlignment="Center"/>
                 </StackPanel>
                 <TextBlock Grid.Row="1" Text="% Materie Prime" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblMaPr" Grid.Row="1" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.MateriePrime, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="2" Text="% Beni di Consumo Ciclici" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="2" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblBCC" Grid.Row="2" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.BeniConsCiclici, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="3" Text="% Finanza" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="3" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblFina" Grid.Row="3" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.Finanza, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="4" Text="% Immobiliare" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="4" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblImm" Grid.Row="4" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.Immobiliare, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="5" Text="% Beni di Consumo Difensivi" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="5" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblBCD" Grid.Row="5" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.BeniConsDifensivi, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="6" Text="% Salute" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="6" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblSal" Grid.Row="6" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.Salute, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="7" Text="% Servizi Pubblica Utilità" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="7" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblSPU" Grid.Row="7" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.ServiziPubbUtility, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="8" Text="% Servizi di Comunicazione" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="8" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblServ" Grid.Row="8" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.ServiziComunic, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="9" Text="% Energia" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="9" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblEner" Grid.Row="9" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.Energia, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="10" Text="% Beni Industriali" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="10" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblBInd" Grid.Row="10" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.BeniIndustriali, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="11" Text="% Tecnologia" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="11" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblTec" Grid.Row="11" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.Tecnologia, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
                 <TextBlock Grid.Row="12" Text="% Globale" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
-                <TextBox Grid.Row="12" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"/>
+                <TextBox Name="dblSett" Grid.Row="12" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
+                         Text="{Binding ActualRecord.SettoriND, ConverterCulture=id-IT}"
+                         HorizontalContentAlignment="Right">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
             </Grid>
         </Border>
     </Grid>

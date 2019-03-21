@@ -125,10 +125,10 @@ namespace FinanceManager.ViewModels
                 }
                 if (e.AddedItems[0] is RegistryShare RS)
                 {
-                    RecordPortafoglioTitoli.Id_titolo = RS.IdShare;
-                    RecordPortafoglioTitoli.Id_tipo_titolo = RS.IdShareType;
+                    RecordPortafoglioTitoli.Id_titolo = RS.id_titolo;
+                    RecordPortafoglioTitoli.Id_tipo_titolo = RS.id_tipo_titolo;
                     RecordPortafoglioTitoli.Isin = RS.Isin;
-                    RecordPortafoglioTitoli.Id_azienda = RS.IdFirm;
+                    RecordPortafoglioTitoli.Id_azienda = RS.id_azienda;
                     ISIN = RS.Isin;
                 }
                 if (e.AddedItems[0] is DateTime DT)

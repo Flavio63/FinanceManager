@@ -383,9 +383,9 @@ namespace FinanceManager.Services
         /// </summary>
         /// <param name="IdOwner">La gestione</param>
         /// <param name="IdLocation">Il conto</param>
-        /// <param name="idShare">Il titolo</param>
+        /// <param name="id_titolo">Il titolo</param>
         /// <returns>ritorna il numero di titoli</returns>
-        public double GetSharesQuantity(int IdOwner, int IdLocation, uint idShare)
+        public double GetSharesQuantity(int IdOwner, int IdLocation, uint id_titolo)
         {
             try
             {
@@ -396,7 +396,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetSharesQuantity;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", IdOwner);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdLocation);
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", idShare);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", id_titolo);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     DataTable dataTable = new DataTable();
                     dbAdapter.Fill(dataTable);
@@ -461,7 +461,7 @@ namespace FinanceManager.Services
             }
         }
 
-        public PortafoglioTitoliList GetShareMovements(int IdOwner, int IdLocation, uint IdShare)
+        public PortafoglioTitoliList GetShareMovements(int IdOwner, int IdLocation, uint id_titolo)
         {
             try
             {
@@ -473,7 +473,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetShareMovements;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("owner", IdOwner);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdLocation);
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", IdShare);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", id_titolo);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     dbAdapter.Fill(DT);
                     return MLAL(DT);
