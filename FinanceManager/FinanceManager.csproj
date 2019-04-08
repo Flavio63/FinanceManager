@@ -170,6 +170,8 @@
     <Compile Include="Exports\CellsTableBorderStyle.cs" />
     <Compile Include="Exports\ManagerWorkbooks.cs" />
     <Compile Include="Models\AnalisiPortafoglio.cs" />
+    <Compile Include="Models\RegistryShareList.cs" />
+    <Compile Include="Models\ShareAssetAllocation.cs" />
     <Compile Include="Models\Enum\TipologiaMovimento.cs" />
     <Compile Include="Models\Ptf_CC.cs" />
     <Compile Include="Models\Ptf_CCList.cs" />
@@ -177,6 +179,8 @@
     <Compile Include="Models\ReportMovementDetailedList.cs" />
     <Compile Include="Models\ReportTitoliAttivi.cs" />
     <Compile Include="Models\ReportTitoliAttiviList.cs" />
+    <Compile Include="Models\ShareAreeGeografiche.cs" />
+    <Compile Include="Models\ShareSettori.cs" />
     <Compile Include="Models\SintesiSoldi.cs" />
     <Compile Include="Models\SintesiSoldiList.cs" />
     <Compile Include="Models\TipoSoldi.cs" />
@@ -206,7 +210,6 @@
     <Compile Include="Models\RegistryOwner.cs" />
     <Compile Include="Models\RegistryOwnersList.cs" />
     <Compile Include="Models\RegistryShare.cs" />
-    <Compile Include="Models\RegistryShareList.cs" />
     <Compile Include="Models\RegistryShareType.cs" />
     <Compile Include="Models\RegistryShareTypeList.cs" />
     <Compile Include="Models\ReportProfitLoss.cs" />

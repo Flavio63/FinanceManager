@@ -45,7 +45,7 @@ namespace FinanceManager.ViewModels
             Firms = _registryServices.GetRegistryFirmList();
             TipoTitoli = _registryServices.GetRegistryShareTypeList();
             _Filter = new Predicate<object>(Filter);
-            ActualRecord = new RegistryShare();
+            ActualRecord = new ShareSettori();
             SrchShares = "";
         }
 
@@ -56,7 +56,7 @@ namespace FinanceManager.ViewModels
             {
                 if (e.AddedItems[0] is RegistryShare RS)
                 {
-                    ActualRecord = _registryServices.GetShareById(RS.id_titolo);
+                    ActualRecord = _registryServices.GetTitoloCompletoById(RS.id_titolo);
                 }
                 else if (e.AddedItems[0] is RegistryFirm RF)
                 {
@@ -93,7 +93,7 @@ namespace FinanceManager.ViewModels
         /// <summary>
         /// E' il record nella maschera con id_titolo = 0 se nuovo
         /// </summary>
-        public RegistryShare ActualRecord
+        public ShareSettori ActualRecord
         {
             get { return GetValue(() => ActualRecord); }
             set { SetValue(() => ActualRecord, value); }
@@ -195,11 +195,7 @@ namespace FinanceManager.ViewModels
 
         public void ClearReport(object param)
         {
-            //UserControl userControl = param as UserControl;
             SetUpViewModel();
-            //((ComboBox)userControl.FindName("cbShares")).SelectedIndex = -1;
-            //((ComboBox)userControl.FindName("CBAziende")).SelectedIndex = -1;
-            //((ComboBox)userControl.FindName("CBTipologia")).SelectedIndex = -1;
         }
 
         public void InsertData(object param)

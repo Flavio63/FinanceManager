@@ -154,7 +154,7 @@ namespace FinanceManager.Exports
 
                     }
                     
-                    MakeLeftIntestation(report4, workbook, sheet, EndCol);
+                    MakeLeftIntestation(report4, workbook, sheet, TotalRow);
                     //MakeTopTableRow(report4, workbook, sheet, EndCol, 1);
                     int ExcelRow = 1;
                     foreach(var prop in report4.GetType().GetProperties())

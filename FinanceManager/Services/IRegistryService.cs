@@ -43,10 +43,11 @@ namespace FinanceManager.Services
         #region Share
         RegistryShareList GetRegistryShareList();
         RegistryShareList GetSharesByType(int[] id_tipo_titolo);
-        void UpdateShare(RegistryShare registryShare);
-        void AddShare(RegistryShare registryShare);
+        void UpdateShare(ShareSettori registryShare);
+        void AddShare(ShareSettori registryShare);
         void DeleteShare(uint id);
         RegistryShare GetShareById(uint id);
+        ShareSettori GetTitoloCompletoById(uint id);
         #endregion
 
         #region MovementType

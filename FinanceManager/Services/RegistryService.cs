@@ -631,7 +631,48 @@ namespace FinanceManager.Services
         #endregion
 
         #region Share
+        /// <summary>
+        /// Ottiene un titolo in base al suo id
+        /// completo con i dettagli di Assett, Aree e Settori
+        /// </summary>
+        /// <param name="id">id del titolo</param>
+        /// <returns></returns>
+        public ShareSettori GetTitoloCompletoById(uint id)
+        {
+            try
+            {
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetShareById;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", id);
+                    DataTable dt = new DataTable();
+                    dbAdapter.Fill(dt);
+                    ShareSettori registryShare = new ShareSettori();
+                    foreach (var property in registryShare.GetType().GetProperties())
+                    {
+                        property.SetValue(registryShare, dt.Rows[0].Field<object>(property.Name));
+                    }
+                    return registryShare;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
 
+        /// <summary>
+        /// Ottiene una lista di tutti i titoli caricati
+        /// senza i dettagli di Asset, Aree e Settori
+        /// </summary>
+        /// <returns></returns>
         public RegistryShareList GetRegistryShareList()
         {
             try
@@ -666,7 +707,13 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
-
+        
+        /// <summary>
+        /// Ottiene un titolo in base al suo id
+        /// senza i dettagli di Assett, Aree e Settori
+        /// </summary>
+        /// <param name="id">id del titolo</param>
+        /// <returns></returns>
         public RegistryShare GetShareById(uint id)
         {
             try
@@ -697,7 +744,12 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
-
+        
+        /// <summary>
+        /// Ottiene un elenco di titoli in base alla tipologia
+        /// </summary>
+        /// <param name="id_tipo_titolo">Array di numeri</param>
+        /// <returns>Lista di titoli</returns>
         public RegistryShareList GetSharesByType(int[] id_tipo_titolo)
         {
             try
@@ -739,7 +791,13 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
-        public void UpdateShare(RegistryShare registryShare)
+        
+        /// <summary>
+        /// Aggiorna il db con tutti i parametri legati al titolo
+        /// incluso asset, aree e settori.
+        /// </summary>
+        /// <param name="globalDetailShare"></param>
+        public void UpdateShare(ShareSettori globalDetailShare)
         {
             try
             {
@@ -748,9 +806,9 @@ namespace FinanceManager.Services
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.UpdateShare;
-                    foreach (var property in registryShare.GetType().GetProperties())
+                    foreach (var property in globalDetailShare.GetType().GetProperties())
                     {
-                        dbComm.Parameters.AddWithValue(property.Name, property.GetValue(registryShare));
+                        dbComm.Parameters.AddWithValue(property.Name, property.GetValue(globalDetailShare));
                     }
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -766,8 +824,12 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
-
-        public void AddShare(RegistryShare registryShare)
+        /// <summary>
+        /// Inserisce nel db un nuovo titolo con tutti
+        /// i parametri di asset, aree e settori
+        /// </summary>
+        /// <param name="globalDetailShare"></param>
+        public void AddShare(ShareSettori globalDetailShare)
         {
             try
             {
@@ -776,12 +838,12 @@ namespace FinanceManager.Services
                     dbComm.Connection = new MySqlConnection(DafConnection);
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.AddShare;
-                    foreach (var property in registryShare.GetType().GetProperties())
+                    foreach (var property in globalDetailShare.GetType().GetProperties())
                     {
                         if (property.Name == "id_titolo")
                             dbComm.Parameters.AddWithValue("id_titolo", null);
                         else
-                            dbComm.Parameters.AddWithValue(property.Name, property.GetValue(registryShare));
+                            dbComm.Parameters.AddWithValue(property.Name, property.GetValue(globalDetailShare));
                     }
 
                     dbComm.Connection.Open();
@@ -798,7 +860,10 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
-
+        /// <summary>
+        /// Elimina un titolo azionario
+        /// </summary>
+        /// <param name="id">Id del titolo da eliminare</param>
         public void DeleteShare(uint id)
         {
             try
