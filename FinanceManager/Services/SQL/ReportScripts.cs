@@ -37,5 +37,37 @@ namespace FinanceManager.Services.SQL
             "{0} AND {1} GROUP BY G.nome_gestione, B.desc_conto, E.desc_tipo_titolo, D.isin " +
             "ORDER BY A.id_gestione, A.id_conto, E.id_tipo_titolo, D.desc_titolo) AS AA WHERE n_titoli > 0";
 
+        public static readonly string QuoteInvGeoSettori = "SELECT Totale, Azione/Totale AS Azioni, Obbligazioni/Totale AS Obbligazioni, Liquidita/Totale AS Liquidita, Altro/Totale AS Altro, " +
+            "Usa/Totale AS USA, Canada/Totale AS Canada, AmericaLatinaCentrale/Totale AS AmericaLatinaCentrale, RegnoUnito/Totale AS RegnoUnito, EuropaOccEuro/Totale AS EuropaOccEuro, " +
+            "EuropaOccNoEuro/Totale AS EuropaOccNoEuro, EuropaEst/Totale AS EuropaEst, Africa/Totale AS Africa, MedioOriente/Totale AS MedioOriente, Giappone/Totale AS Giappone, " +
+            "Australasia/Totale AS Australasia, AsiaSviluppati/Totale AS AsiaSviluppati, AsiaEmergenti/Totale AS AsiaEmergenti, GlobaleRegioni/Totale AS RegioniND, " +
+            "MateriePrime/Totale AS MateriePrime, BeniConsCiclici/Totale AS BeniConsCiclici, Finanza/Totale AS Finanza, Immobiliare/Totale AS Immobiliare, " +
+            "BeniConsDifensivi/Totale AS BeniConsDifensivi, Salute/Totale AS Salute, ServiziPubbUtility/Totale AS ServiziPubbUtility, ServiziComunic/Totale AS ServiziComunic, " +
+            "Energia/Totale AS Energia, BeniIndustriali/Totale AS BeniIndustriali, Tecnologia/Totale AS Tecnologia, GlobaleSettori/Totale AS SettoriND " +
+            "FROM (" +
+            "SELECT nome_gestione, SUM(investimento) AS Totale, SUM(azioni) AS Azione, SUM(obbligazioni) AS Obbligazioni, SUM(liquidita) AS Liquidita, SUM(altro) AS Altro, " +
+            "SUM(USA) AS Usa, SUM(Canada) AS Canada, SUM(AmericaLatinaCentrale) AS AmericaLatinaCentrale,	SUM(RegnoUnito) AS RegnoUnito, SUM(EuropaOccEuro) AS EuropaOccEuro, " +
+            "SUM(EuropaOccNoEuro) AS EuropaOccNoEuro, SUM(EuropaEst) AS EuropaEst, SUM(Africa) AS Africa, SUM(MedioOriente) AS MedioOriente, SUM(Giappone) AS Giappone, " +
+            "SUM(Australasia) AS Australasia, SUM(AsiaSviluppati) AS AsiaSviluppati, SUM(AsiaEmergenti) AS AsiaEmergenti, SUM(GlobaleRegioni) AS GlobaleRegioni, " +
+            "SUM(MateriePrime) AS MateriePrime, SUM(BeniConsCiclici) AS BeniConsCiclici, SUM(Finanza) AS Finanza, SUM(Immobiliare) AS Immobiliare, " +
+            "SUM(BeniConsDifensivi) AS BeniConsDifensivi, SUM(Salute) AS Salute, SUM(ServiziPubbUtility) AS ServiziPubbUtility, SUM(ServiziComunic) AS ServiziComunic, " +
+            "SUM(energia) AS Energia, SUM(BeniIndustriali) AS BeniIndustriali, SUM(Tecnologia) AS Tecnologia, SUM(GlobaleSettori) AS GlobaleSettori " +
+            "FROM (" +
+            "SELECT F.nome_gestione, E.desc_tipo_titolo, B.desc_titolo, B.isin, ammontare * -1 AS investimento, " +
+            "azioni * ammontare / 100 * -1 AS azioni, obbligazioni * ammontare / 100 * -1 AS obbligazioni, liquidita * ammontare / 100 * -1 AS liquidita, " +
+            "altro * ammontare / 100 * -1 AS altro, USA * ammontare / 100 * -1 AS USA, Canada * ammontare / 100 * -1 AS Canada, " +
+            "AmericaLatinaCentrale * ammontare / 100 * -1 AS AmericaLatinaCentrale, RegnoUnito * ammontare / 100 * -1 AS RegnoUnito, " +
+            "EuropaOccEuro * ammontare / 100 * -1 AS EuropaOccEuro, EuropaOccNoEuro * ammontare / 100 * -1 AS EuropaOccNoEuro, EuropaEst * ammontare / 100 * -1 AS EuropaEst, " +
+            "Africa * ammontare / 100 * -1 AS Africa, MedioOriente * ammontare / 100 * -1 AS MedioOriente, Giappone * ammontare / 100 * -1 AS Giappone, " +
+            "Australasia * ammontare / 100 * -1 AS Australasia, AsiaSviluppati * ammontare / 100 * -1 AS AsiaSviluppati, AsiaEmergenti * ammontare / 100 * -1 AS AsiaEmergenti, " +
+            "RegioniND * ammontare / 100 * -1 AS GlobaleRegioni, MateriePrime * ammontare / 100 * -1 AS MateriePrime, BeniConsCiclici * ammontare / 100 * -1 AS BeniConsCiclici, " +
+            "Finanza * ammontare / 100 * -1 AS Finanza, Immobiliare * ammontare / 100 * -1 AS Immobiliare, BeniConsDifensivi * ammontare / 100 * -1 AS BeniConsDifensivi, " +
+            "Salute * ammontare / 100 * -1 AS Salute, ServiziPubbUtility * ammontare / 100 * -1 AS ServiziPubbUtility, ServiziComunic * ammontare / 100 * -1 AS ServiziComunic, " +
+            "Energia * ammontare / 100 * -1 AS Energia, BeniIndustriali * ammontare / 100 * -1 AS BeniIndustriali, Tecnologia * ammontare / 100 * -1 AS Tecnologia, " +
+            "SettoriND * ammontare / 100 * -1 AS GlobaleSettori " +
+            "FROM portafoglio_titoli A, titoli B, tipo_titoli E, gestioni F " +
+            "WHERE A.id_titolo = B.id_titolo AND B.id_tipo_titolo = E.id_tipo_titolo AND A.id_gestione = F.id_gestione AND ({0}) ) AS XYZ " +
+            " ) AS ABC";
+
     }
 }

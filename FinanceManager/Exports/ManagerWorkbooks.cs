@@ -5,6 +5,7 @@ using System.IO;
 using FinanceManager.Models;
 using Microsoft.Win32;
 using System;
+using System.Collections.ObjectModel;
 
 namespace FinanceManager.Exports
 {
@@ -143,6 +144,24 @@ namespace FinanceManager.Exports
                         ExcelRow++;
                     }
                 }
+                else if (param is ObservableCollection<AnalisiPortafoglio> report4)
+                {
+                    ISheet sheet = workbook.CreateSheet("AnalisiPortafoglio");
+                    IDataFormat format = workbook.CreateDataFormat();
+                    int TotalRow = SearchEndColumn(report4[0]);
+                    foreach (AnalisiPortafoglio analisiPortafoglio in report4)
+                    {
+
+                    }
+                    
+                    MakeLeftIntestation(report4, workbook, sheet, EndCol);
+                    //MakeTopTableRow(report4, workbook, sheet, EndCol, 1);
+                    int ExcelRow = 1;
+                    foreach(var prop in report4.GetType().GetProperties())
+                    {
+
+                    }
+                }
                 FileStream file = new FileStream(saveFileDialog.FileName, FileMode.Create);
                 workbook.Write(file);
                 file.Close();
@@ -255,6 +274,15 @@ namespace FinanceManager.Exports
             return EndCol;
         }
 
+        /// <summary>
+        /// Scrive le intestazioni di colonna in excel, la riga e la
+        /// colonna finale servono per gestire i grassetti e gli stili
+        /// </summary>
+        /// <param name="param">I dati</param>
+        /// <param name="workbook">Il file</param>
+        /// <param name="sheet">Il foglio</param>
+        /// <param name="EndCol">La colonna finale</param>
+        /// <param name="EndRow">La riga finale</param>
         private static void MakeTopTableRow(object param, IWorkbook workbook, ISheet sheet, int EndCol, int EndRow)
         {
             IRow row = sheet.CreateRow(0);
@@ -267,6 +295,11 @@ namespace FinanceManager.Exports
                 iCol++;
             }
             MakeRowBold(workbook, row);
+        }
+
+        private static void MakeLeftIntestation(object param, IWorkbook workbook, ISheet sheet, int EndRow)
+        {
+
         }
     }
 }

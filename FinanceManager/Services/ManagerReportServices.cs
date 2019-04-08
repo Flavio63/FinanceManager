@@ -11,13 +11,13 @@ namespace FinanceManager.Services
 {
     public class ManagerReportServices : SQL.DAFconnection, IManagerReportServices
     {
-        public ReportTitoliAttiviList GetActiveAssets(IList<int> _selectedOwners, IList<int> _selectedAccount)
+        public ReportTitoliAttiviList GetActiveAssets(IList<RegistryOwner> _selectedOwners, IList<int> _selectedAccount)
         {
             try
             {
                 string owners = " (";
-                foreach (int o in _selectedOwners)
-                    owners += " A.id_gestione = " + o + " or ";
+                foreach (RegistryOwner o in _selectedOwners)
+                    owners += " A.id_gestione = " + o.Id_gestione + " or ";
                 owners = owners.Substring(0, owners.Length - 4);
                 owners += ") ";
                 string accounts = " (";
@@ -109,7 +109,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     DataTable dataTable = new DataTable();
                     dbAdapter.Fill(dataTable);
-                    foreach(DataRow dr in dataTable.Rows)
+                    foreach (DataRow dr in dataTable.Rows)
                     {
                         ReportMovementDetailed RMD = new ReportMovementDetailed();
                         RMD.Gestione = dr.Field<string>("nome_gestione");
@@ -138,12 +138,12 @@ namespace FinanceManager.Services
             }
         }
 
-        public ReportProfitLossList GetReport1(IList<int> _selectedOwners,
+        public ReportProfitLossList GetReport1(IList<RegistryOwner> _selectedOwners,
             IList<int> _selectedYears)
         {
             string owners = " (";
-            foreach (int i in _selectedOwners)
-                owners += " A.id_gestione = " + i + " or ";
+            foreach (RegistryOwner i in _selectedOwners)
+                owners += " A.id_gestione = " + i.Id_gestione + " or ";
             owners = owners.Substring(0, owners.Length - 4);
             owners += ") ";
             string anni = " (";
@@ -163,7 +163,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.CommandText = string.Format(SQL.ReportScripts.GetProfitLoss, query);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
                     dbAdapter.Fill(data);
-                    foreach(DataRow dr in data.Rows)
+                    foreach (DataRow dr in data.Rows)
                     {
                         ReportProfitLoss RPL = new ReportProfitLoss();
                         RPL.Anno = dr.Field<int>("Anno");
@@ -180,6 +180,61 @@ namespace FinanceManager.Services
                     }
                 }
                 return reportProfitLossList;
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        public AnalisiPortafoglio QuoteInvGeoSettori(IList<RegistryOwner> _selectedOwners)
+        {
+            string gestioni = "A.id_gestione = ";
+            if (_selectedOwners.Count >= 1)
+            {
+                foreach (RegistryOwner item in _selectedOwners)
+                    gestioni += item.Id_gestione + " OR A.id_gestione = ";
+            }
+            else
+            {
+                throw new Exception("ManagerReportService - Errore nel passaggio dei dati");
+            }
+            gestioni = gestioni.Substring(0, gestioni.Length - 20);
+            try
+            {
+                using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
+                {
+                    dbAdaptar.SelectCommand = new MySqlCommand();
+                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdaptar.SelectCommand.CommandType = CommandType.Text;
+                    dbAdaptar.SelectCommand.CommandText = string.Format(SQL.ReportScripts.QuoteInvGeoSettori, gestioni);
+                    DataTable dt = new DataTable();
+                    dbAdaptar.Fill(dt);
+                    gestioni = "";
+                    AnalisiPortafoglio RS = new AnalisiPortafoglio();
+                    foreach (var property in RS.GetType().GetProperties())
+                    {
+                        if (property.Name != "id_titolo" && property.Name != "desc_titolo"
+                            && property.Name != "Isin" && property.Name != "data_modifica"
+                            && property.Name != "id_tipo_titolo" && property.Name != "id_azienda" 
+                            && property.Name != "Nome")
+                        {
+                            property.SetValue(RS, dt.Rows[0].Field<object>(property.Name));
+                        }
+                        else if (property.Name == "Nome")
+                        {
+                            foreach (RegistryOwner item in _selectedOwners)
+                                gestioni += item.Nome_Gestione + " + ";
+                            gestioni = gestioni.Substring(0, gestioni.Length - 3);
+                            property.SetValue(RS, gestioni);
+                        }
+                    }
+                    return RS;
+                }
             }
             catch (MySqlException err)
             {
