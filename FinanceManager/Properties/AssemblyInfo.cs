@@ -52,4 +52,4 @@ using System.Windows;
 // usando l'asterisco '*' come illustrato di seguito:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.4.*")]
-[assembly: AssemblyFileVersion("1.4.1.1")]
+[assembly: AssemblyFileVersion("1.5.1.2")]
