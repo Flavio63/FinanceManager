@@ -18,37 +18,6 @@
             <dialog3Combos:Dialog3CombosView></dialog3Combos:Dialog3CombosView>
         </DataTemplate>
         <sys:String x:Key="DAF_Caption">DAF-C Program</sys:String>
-        <Style x:Key="ON" TargetType="ToggleButton">
-            <Setter Property="OverridesDefaultStyle" Value="True"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ToggleButton">
-                        <Grid>
-                            <Ellipse Fill="{TemplateBinding Background}"/>
-                            <Ellipse Stroke="{TemplateBinding BorderBrush}"/>
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding ElementName=switchBTN, Path=IsChecked}" Value="true">
-                    <Setter Property="Background" Value="#FF29F109"/>
-                    <Setter Property="BorderBrush" Value="DarkGreen"/>
-                    <Setter Property="Content" Value="ON"/>
-                    <Setter Property="FontWeight" Value="Bold"/>
-                    <Setter Property="FontSize" Value="14"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding ElementName=switchBTN, Path=IsChecked}" Value="false">
-                    <Setter Property="Background" Value="#FFE80000"/>
-                    <Setter Property="BorderBrush" Value="DarkRed"/>
-                    <Setter Property="Content" Value="OFF"/>
-                    <Setter Property="FontWeight" Value="Bold"/>
-                    <Setter Property="FontSize" Value="14"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
         <Style x:Key="LabelBlockStyle" TargetType="{x:Type TextBlock}">
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Margin" Value="5,5,0,5"/>

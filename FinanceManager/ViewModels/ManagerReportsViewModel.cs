@@ -10,7 +10,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -28,7 +27,7 @@ namespace FinanceManager.ViewModels
         private ObservableCollection<RegistryShare> _SharesList;
         Predicate<object> _Filter;
 
-        private IList<RegistryOwner> _selectedOwners;
+        private IList<int> _selectedOwners;
         private IList<int> _selectedAccount;
 
         public ManagerReportsViewModel(IRegistryServices registryServices, IManagerReportServices managerReportServices)
@@ -48,7 +47,7 @@ namespace FinanceManager.ViewModels
             {
                 OwnerList = _services.GetGestioneList();
                 AccountList = _services.GetRegistryLocationList();
-                _selectedOwners = new List<RegistryOwner>();
+                _selectedOwners = new List<int>();
                 _selectedAccount = new List<int>();
                 AvailableYears = _reportServices.GetAvailableYears();
                 SelectedYears = new List<int>();
@@ -63,7 +62,7 @@ namespace FinanceManager.ViewModels
                 MessageBox.Show(err.Message, "ManagerReportsView", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
+        
         #region events
         public void CbSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -74,7 +73,7 @@ namespace FinanceManager.ViewModels
                     case "Gestione":
                         _selectedOwners.Clear();
                         foreach (RegistryOwner item in LB.SelectedItems)
-                            _selectedOwners.Add(item);
+                            _selectedOwners.Add(item.Id_gestione);
                         break;
                     case "Conto":
                         _selectedAccount.Clear();
@@ -91,7 +90,7 @@ namespace FinanceManager.ViewModels
                 }
             }
             if (sender is ComboBox CB)
-                TitoloSelezionato = (int)(((RegistryShare)CB.SelectedItem).id_titolo);
+                TitoloSelezionato =(int)(((RegistryShare)CB.SelectedItem).id_titolo);
         }
 
         public void IsChecked(object sender, RoutedEventArgs e)
@@ -133,7 +132,7 @@ namespace FinanceManager.ViewModels
                 SharesListView.Refresh();
             }
         }
-
+        
         /// <summary>
         /// Elenco con i titoli disponibili
         /// </summary>
@@ -195,11 +194,6 @@ namespace FinanceManager.ViewModels
             private set { SetValue(() => ReportTitoliAttivis, value); }
         }
 
-        public ObservableCollection<AnalisiPortafoglio> GetAnalisiPortafoglio
-        {
-            get { return GetValue(() => GetAnalisiPortafoglio); }
-            private set { SetValue(() => GetAnalisiPortafoglio, value); }
-        }
         public IList<int> SelectedYears
         {
             get { return GetValue(() => SelectedYears); }
@@ -211,7 +205,7 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => ReportSelezionato); }
             set { SetValue(() => ReportSelezionato, value); }
         }
-
+        
         public bool CanClear { get; set; }
 
         public int TitoloSelezionato
@@ -245,10 +239,6 @@ namespace FinanceManager.ViewModels
                     if (_selectedOwners.Count() > 0 && _selectedAccount.Count > 0)
                         return true;
                     return false;
-                case "AnalisiPortafoglio":
-                    if (_selectedOwners.Count() > 0)
-                        return true;
-                    return false;
                 default:
                     return false;
             }
@@ -266,7 +256,6 @@ namespace FinanceManager.ViewModels
             UserControl userControl = param as UserControl;
             ((Border)userControl.FindName("BorderReport")).Child = null;
             ((ListBox)userControl.FindName("Anni")).SelectedIndex = -1;
-            ((ListBox)userControl.FindName("Gestione")).SelectedIndex = -1;
             SetUpViewModel();
         }
 
@@ -287,7 +276,7 @@ namespace FinanceManager.ViewModels
                 case "Delta":
                 case "Scalare":
                 case "Titolo":
-                    ReportMovementDetaileds = _reportServices.GetMovementDetailed(_selectedOwners[0].Id_gestione, TitoloSelezionato);
+                    ReportMovementDetaileds = _reportServices.GetMovementDetailed(_selectedOwners[0], TitoloSelezionato);
                     ReportMovementDetailedViewModel TitoloData = new ReportMovementDetailedViewModel(ReportMovementDetaileds);
                     ReportMovementDetailedView report2 = new ReportMovementDetailedView(TitoloData);
                     border.Child = report2;
@@ -302,33 +291,6 @@ namespace FinanceManager.ViewModels
                     ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
                     CanClear = true;
                     break;
-                case "AnalisiPortafoglio":
-                    GetAnalisiPortafoglio = new ObservableCollection<AnalisiPortafoglio>();
-                    if ((bool)((ToggleButton)userControl.FindName("switchBTN")).IsChecked)
-                    {
-                        GetAnalisiPortafoglio.Add (_reportServices.QuoteInvGeoSettori(_selectedOwners));
-                        AnalisiPortafoglioViewModel analisiPortafoglioViewModel = new AnalisiPortafoglioViewModel(_reportServices.QuoteInvGeoSettori(_selectedOwners));
-                        AnalisiPortafoglioView report4 = new AnalisiPortafoglioView(analisiPortafoglioViewModel);
-                        border.Child = report4;
-                    }
-                    else
-                    {
-                        DockPanel dockPanel = new DockPanel();
-                        foreach (RegistryOwner I in _selectedOwners)
-                        {
-                            List<RegistryOwner> temp = new List<RegistryOwner>();
-                            temp.Add(I);
-                            GetAnalisiPortafoglio.Add(_reportServices.QuoteInvGeoSettori(temp));
-                            AnalisiPortafoglioViewModel analisiPortafoglioViewModel = new AnalisiPortafoglioViewModel(_reportServices.QuoteInvGeoSettori(temp));
-                            AnalisiPortafoglioView report4 = new AnalisiPortafoglioView(analisiPortafoglioViewModel);
-                            DockPanel.SetDock(report4, Dock.Left);
-                            dockPanel.Children.Add(report4);
-                        }
-                        border.Child = dockPanel;
-                    }
-                    ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
-                    CanClear = true;
-                    break;
                 default:
                     break;
             }
@@ -339,24 +301,30 @@ namespace FinanceManager.ViewModels
             try
             {
 
-                switch (ReportSelezionato)
-                {
-                    case "PL":
+            switch (ReportSelezionato)
+            {
+                case "PL":
+                    if (((Button)param).Name == "btnExportReport")
                         Exports.ManagerWorkbooks.ExportDataInXlsx(ReportProfitLosses);
-                        break;
-                    case "Titolo":
-                        Exports.ManagerWorkbooks.ExportDataInXlsx(ReportMovementDetaileds);
+                    else
+                        Exports.ManagerWorkbooks.ExportDataToXlsx(ReportProfitLosses);
+                    break;
+                case "Titolo":
+                        if (((Button)param).Name == "btnExportReport")
+                            Exports.ManagerWorkbooks.ExportDataInXlsx(ReportMovementDetaileds);
+                        else
+                            Exports.ManagerWorkbooks.ExportDataToXlsx(ReportMovementDetaileds);
                         break;
                     case "ElencoTitoliAttivi":
-                        Exports.ManagerWorkbooks.ExportDataInXlsx(ReportTitoliAttivis);
+                        if (((Button)param).Name == "btnExportReport")
+                            Exports.ManagerWorkbooks.ExportDataInXlsx(ReportTitoliAttivis);
+                        else
+                            Exports.ManagerWorkbooks.ExportDataToXlsx(ReportTitoliAttivis);
                         break;
-                    case "AnalisiPortafoglio":
-                            Exports.ManagerWorkbooks.ExportDataInXlsx(GetAnalisiPortafoglio);
-                        break;
-                    default:
-                        break;
-                }
-                MessageBox.Show("Il file di excel è stato prodotto correttamente.", "Finance Manager - Export Report", MessageBoxButton.OK, MessageBoxImage.Information);
+                default:
+                    break;
+            }
+            MessageBox.Show("Il file di excel è stato prodotto correttamente.", "Finance Manager - Export Report", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception err)
             {
