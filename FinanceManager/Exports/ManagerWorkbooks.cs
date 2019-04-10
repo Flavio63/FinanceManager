@@ -148,55 +148,58 @@ namespace FinanceManager.Exports
                 {
                     ISheet sheet = workbook.CreateSheet("AnalisiPortafoglio");
                     IDataFormat format = workbook.CreateDataFormat();
-                    int TotalRow = SearchEndColumn(report4[0]);
+                    int TotalRow = SearchEndColumn(report4[0]) - 6;
+                    int iColText = 0;
+                    int iCol = 1;
+                    IRow row;
+                    ICell cell;
                     foreach (AnalisiPortafoglio analisiPortafoglio in report4)
                     {
+                        int iRow = 0;
+                        foreach (var prop in analisiPortafoglio.GetType().GetProperties())
+                        {
+                            if (prop.Name != "id_titolo" && prop.Name != "desc_titolo" && prop.Name != "Isin"
+                                && prop.Name != "id_tipo_titolo" && prop.Name != "id_azienda" && prop.Name != "data_modifica")
+                            {
+                                string fieldValue = prop.GetValue(analisiPortafoglio) == null ? "" : prop.GetValue(analisiPortafoglio).ToString();
+                                bool isDbl = double.TryParse(fieldValue, out double dbl);
 
-                    }
-                    
-                    MakeLeftIntestation(report4, workbook, sheet, EndCol);
-                    //MakeTopTableRow(report4, workbook, sheet, EndCol, 1);
-                    int ExcelRow = 1;
-                    foreach(var prop in report4.GetType().GetProperties())
-                    {
+                                if (iCol == 1)
+                                {
+                                    row = sheet.CreateRow(iRow);
+                                    cell = row.CreateCell(iColText);
+                                    cell.SetCellValue(prop.Name);
+                                    SetStyle(workbook, cell, iColText, iRow, iCol, TotalRow);
+                                    if (iRow < 2) MakeCellBold(workbook, cell);
+                                }
+                                else
+                                    row = sheet.GetRow(iRow);
 
+                                cell = row.CreateCell(iCol);
+                                SetStyle(workbook, cell, iCol, iRow, iCol, TotalRow);
+                                if (isDbl)
+                                {
+                                    cell.SetCellValue(dbl);
+                                    if (iRow < 2)
+                                        cell.CellStyle.DataFormat =  8;
+                                    else
+                                        cell.CellStyle.DataFormat = format.GetFormat("0.00%");
+                                }
+                                else
+                                    cell.SetCellValue(fieldValue);
+                                if (iRow < 2)
+                                {
+                                    MakeCellBold(workbook, cell);
+                                }
+                                iRow++;
+                            }
+                        }
+                        iCol++;
                     }
                 }
                 FileStream file = new FileStream(saveFileDialog.FileName, FileMode.Create);
                 workbook.Write(file);
                 file.Close();
-            }
-        }
-
-        /// <summary>
-        /// Esporta i dati di una tabella in un nuovo foglio di 
-        /// un file di excel esistente
-        /// </summary>
-        /// <param name="param">i dati della tabella</param>
-        public static void ExportDataToXlsx(object param)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Excel files (*.xlsx)|*xlsx";
-            openFileDialog.Multiselect = false;
-            openFileDialog.CheckFileExists = true;
-            openFileDialog.CheckPathExists = true;
-            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-            if (openFileDialog.ShowDialog() == true)
-            {
-                IWorkbook workbook;
-                FileStream file = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.ReadWrite);
-                workbook = new XSSFWorkbook(file);
-                foreach (ISheet sheet in workbook)
-                {
-                    foreach(IRow row in sheet)
-                    {
-                        foreach(ICell cell in row)
-                        {
-
-                        }
-                    }
-                }
             }
         }
 
@@ -297,9 +300,5 @@ namespace FinanceManager.Exports
             MakeRowBold(workbook, row);
         }
 
-        private static void MakeLeftIntestation(object param, IWorkbook workbook, ISheet sheet, int EndRow)
-        {
-
-        }
     }
 }
