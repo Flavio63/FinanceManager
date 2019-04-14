@@ -28,6 +28,7 @@ namespace FinanceManager.ViewModels
                 double Etf = 0;
                 double Fondo = 0;
                 double Volatili = 0;
+                double Costi = 0;
                 double Totali = 0;
                 string gestione = RPLL[Rrow].Gestione;
                 do
@@ -37,6 +38,7 @@ namespace FinanceManager.ViewModels
                     Etf += RPLL[Rrow].ETF;
                     Fondo += RPLL[Rrow].Fondo;
                     Volatili += RPLL[Rrow].Volatili;
+                    Costi += RPLL[Rrow].Costi;
                     Totali += RPLL[Rrow].Totale;
                     Rrow++;
                     if (Rrow >= RPLL.Count) break;
@@ -52,6 +54,7 @@ namespace FinanceManager.ViewModels
                     TotalProfitLoss.ETF = Etf;
                     TotalProfitLoss.Fondo = Fondo;
                     TotalProfitLoss.Volatili = Volatili;
+                    TotalProfitLoss.Costi = Costi;
                     TotalProfitLoss.Totale = Totali;
                     RPLL.Insert(Rrow, TotalProfitLoss);
                     row = Rrow; // - 1;

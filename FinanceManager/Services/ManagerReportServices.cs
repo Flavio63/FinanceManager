@@ -175,6 +175,7 @@ namespace FinanceManager.Services
                         RPL.ETF = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("ETF") * -1 : dr.Field<double>("ETF");
                         RPL.Fondo = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("Fondo") * -1 : dr.Field<double>("Fondo");
                         RPL.Volatili = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("Volatili") * -1 : dr.Field<double>("Volatili");
+                        RPL.Costi = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("Costi") * -1 : dr.Field<double>("Costi");
                         RPL.Totale = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("Totale") * -1 : dr.Field<double>("Totale");
                         reportProfitLossList.Add(RPL);
                     }

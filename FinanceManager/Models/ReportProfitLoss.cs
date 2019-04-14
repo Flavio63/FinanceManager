@@ -17,6 +17,7 @@ namespace FinanceManager.Models
         public double ETF { get; set; }
         public double Fondo { get; set; }
         public double Volatili { get; set; }
+        public double Costi { get; set; }
         public double Totale { get; set; }
     }
 }

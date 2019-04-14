@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FinanceManager.Services.SQL
+﻿namespace FinanceManager.Services.SQL
 {
     public class ReportScripts
     {
@@ -16,7 +10,8 @@ namespace FinanceManager.Services.SQL
             "round(sum(case when C.id_tipo_titolo = 5 THEN ammontare else 0 end), 2) AS ETF, " +
             "round(sum(case when C.id_tipo_titolo = 7 THEN ammontare else 0 end), 2) AS Fondo, " +
             "round(sum(case when C.id_tipo_titolo = 13 or C.id_tipo_titolo = 4 THEN ammontare else 0 end), 2) AS Volatili, " +
-            "round(sum(case when C.id_tipo_titolo >= 1 THEN ammontare else 0 end), 2) AS Totale " +
+            "round(sum(case when A.id_tipo_movimento = 8 THEN ammontare else 0 end), 2) AS Costi, " +
+            "round(sum(case when (C.id_tipo_titolo >= 1 OR A.id_tipo_movimento = 8) THEN ammontare else 0 end), 2) AS Totale " +
             "FROM conto_corrente A, gestioni B, titoli C, tipo_soldi D " +
             "WHERE A.id_gestione = B.id_gestione AND A.id_titolo = C.id_titolo AND A.id_tipo_soldi = D.id_tipo_soldi AND " +
             "A.id_tipo_soldi > 1 AND {0} " +
