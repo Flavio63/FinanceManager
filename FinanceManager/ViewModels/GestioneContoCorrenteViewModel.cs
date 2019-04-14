@@ -52,7 +52,8 @@ namespace FinanceManager.ViewModels
                 var RMTL = from movimento in listaOriginale
                            where (movimento.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ||
                            movimento.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ||
-                           movimento.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
+                           movimento.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto) ||
+                           movimento.Id_tipo_movimento == (int)TipologiaMovimento.Costi
                            select movimento;
                 foreach (RegistryMovementType registry in RMTL)
                     ListMovimenti.Add(registry);
@@ -399,6 +400,7 @@ namespace FinanceManager.ViewModels
                     CedoleEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ? true : false;
                     GirocontoEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ? true : false;
                     VolatiliEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ? true : false;
+                    CanInsert = RMT.Id_tipo_movimento == (int)TipologiaMovimento.Costi ? true : false;
                 }
                 else if (e.AddedItems[0] is RegistryShare RS)
                 {
@@ -424,10 +426,11 @@ namespace FinanceManager.ViewModels
             {
                 if (CC.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ||
                     CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ||
-                    CC.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili)
+                    CC.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ||
+                    CC.Id_tipo_movimento == (int)TipologiaMovimento.Costi)
                 {
                     RecordContoCorrente = CC;
-                    GirocontoFieldEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ? true : false;
+                    GirocontoFieldEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ? true : false;
                     CedoleEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ? true : false;
                     VolatiliEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ? true : false;
                     CanUpdateDelete = true;
@@ -519,7 +522,9 @@ namespace FinanceManager.ViewModels
                     _liquidAssetServices.InsertAccountMovement(RecordContoCorrente);
                     _liquidAssetServices.InsertAccountMovement(Record2ContoCorrente);
                 }
-                else if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili)
+                else if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || 
+                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili || 
+                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Costi)
                 {
                     _liquidAssetServices.InsertAccountMovement(RecordContoCorrente);
                 }
