@@ -33,12 +33,20 @@ namespace FinanceManager.ViewModels
             _registryServices = services ?? throw new ArgumentNullException("Services in Manager Portfolio Movement View Model");
             _liquidAssetServices = liquidAssetServices ?? throw new ArgumentNullException("Liquid Asset Services in Manager Portfolio Movement View Model");
             CloseMeCommand = new CommandHandler(CloseMe);
-            SetUpData();
-            Init();
             InsertCommand = new CommandHandler(SaveCommand, CanSave);
             ModifyCommand = new CommandHandler(UpdateCommand, CanModify);
             EraseCommand = new CommandHandler(DeleteCommand, CanModify);
             ClearCommand = new CommandHandler(CleanCommand);
+            try
+            {
+                SetUpData();
+                Init();
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Quote Investitori");
+            }
+
         }
 
         private void SetUpData()
@@ -65,7 +73,7 @@ namespace FinanceManager.ViewModels
             }
             catch (Exception err)
             {
-                MessageBox.Show(err.Message, "Set up Acquisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new Exception("Errore nel setup." + Environment.NewLine + err.Message);
             }
         }
 
@@ -89,7 +97,7 @@ namespace FinanceManager.ViewModels
             }
             catch (Exception err)
             {
-                MessageBox.Show(err.Message, "Init Acquisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new Exception("Errore in init." + Environment.NewLine + err.Message);
             }
             SrchShares = "";
             Conto = "";

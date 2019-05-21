@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Deployment.Application;
 using System.Windows.Controls;
 using System.Windows.Input;
+using FinanceManager.Services.SQL;
 
 namespace FinanceManager.ViewModels
 {
@@ -14,6 +15,7 @@ namespace FinanceManager.ViewModels
         private readonly IRegistryServices _registryServices;
         private readonly IManagerLiquidAssetServices _managerLiquidServices;
         private readonly IManagerReportServices _managerReportServices;
+        private readonly IDAFconnection _DafConnection;
 
         public ICommand OnClickOpenGestioni { get; set; }
         public ICommand OnClickOpenConti { get; set; }
@@ -68,9 +70,10 @@ namespace FinanceManager.ViewModels
                 versione = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             }
             Titolo = string.Format("DAF-C Gestione Finanza ({0})", versione);
-            _registryServices = new RegistryService();
-            _managerLiquidServices = new ManagerLiquidAssetServices();
-            _managerReportServices = new ManagerReportServices();
+            _DafConnection = new DAFconnection();
+            _registryServices = new RegistryService(_DafConnection);
+            _managerLiquidServices = new ManagerLiquidAssetServices(_DafConnection);
+            _managerReportServices = new ManagerReportServices(_DafConnection);
 
             OnClickOpenGestioni = new CommandHandler(OpenGestioni);
             OnClickOpenConti = new CommandHandler(OpenConti);
@@ -289,5 +292,9 @@ namespace FinanceManager.ViewModels
         }
         #endregion
 
+        public void IsChecked(object sender, System.Windows.RoutedEventArgs e)
+        {
+            _DafConnection.SetConnectionType(((RadioButton)sender).Name);
+        }
     }
 }

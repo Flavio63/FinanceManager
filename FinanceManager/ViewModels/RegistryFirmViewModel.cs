@@ -22,9 +22,16 @@ namespace FinanceManager.ViewModels
         public RegistryFirmViewModel(IRegistryServices services)
         {
             _services = services ?? throw new ArgumentNullException("RegistryFirmViewModel With No Services");
-            FirmList = new ObservableCollection<RegistryFirm>(services.GetRegistryFirmList());
+            try
+            {
+                FirmList = new ObservableCollection<RegistryFirm>(services.GetRegistryFirmList());
+                _Filter = new Predicate<object>(Filter);
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Lista Aziende");
+            }
             CloseMeCommand = new CommandHandler(CloseMe);
-            _Filter = new Predicate<object>(Filter);
         }
 
         /// <summary>

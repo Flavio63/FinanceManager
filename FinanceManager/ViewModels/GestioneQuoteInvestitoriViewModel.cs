@@ -37,20 +37,28 @@ namespace FinanceManager.ViewModels
             ActualQuote = new QuoteTab();
 
             RegistryMovementTypeList listaOriginale = new RegistryMovementTypeList();
-            listaOriginale = _registryServices.GetRegistryMovementTypesList();
-            var RMTL = from movimento in listaOriginale
-                       where (movimento.Id_tipo_movimento == 1 ||
-                       movimento.Id_tipo_movimento == 2 ||
-                       movimento.Id_tipo_movimento == 12 ||
-                       movimento.Id_tipo_movimento == 4 ||
-                       movimento.Id_tipo_movimento == 15)
-                       select movimento;
-            foreach (RegistryMovementType registry in RMTL)
-                ListMovementType.Add(registry);
+            try
+            {
+                listaOriginale = _registryServices.GetRegistryMovementTypesList();
+                var RMTL = from movimento in listaOriginale
+                           where (movimento.Id_tipo_movimento == 1 ||
+                           movimento.Id_tipo_movimento == 2 ||
+                           movimento.Id_tipo_movimento == 12 ||
+                           movimento.Id_tipo_movimento == 4 ||
+                           movimento.Id_tipo_movimento == 15)
+                           select movimento;
+                foreach (RegistryMovementType registry in RMTL)
+                    ListMovementType.Add(registry);
 
-            DataMovimento = DateTime.Now.Date;
+                DataMovimento = DateTime.Now.Date;
 
-            UpdateCollection();
+                UpdateCollection();
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Quote Investitori");
+            }
+
         }
 
         private void UpdateCollection()

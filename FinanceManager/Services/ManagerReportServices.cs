@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.ObjectModel;
 using FinanceManager.Models;
 using System.Data;
+using FinanceManager.Services.SQL;
 
 namespace FinanceManager.Services
 {
-    public class ManagerReportServices : SQL.DAFconnection, IManagerReportServices
+    public class ManagerReportServices : IManagerReportServices
     {
+        IDAFconnection DAFconnection;
+        public ManagerReportServices(IDAFconnection iDAFconnection)
+        {
+            DAFconnection = iDAFconnection ?? throw new ArgumentNullException("Manca la stringa di connessione al db");
+        }
+
         public ReportTitoliAttiviList GetActiveAssets(IList<RegistryOwner> _selectedOwners, IList<int> _selectedAccount)
         {
             try
@@ -33,7 +37,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = string.Format(SQL.ReportScripts.GetActiveAsset, owners, accounts);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(table);
                     foreach (DataRow dataRow in table.Rows)
                     {
@@ -70,7 +74,7 @@ namespace FinanceManager.Services
                 {
                     dbComm.CommandType = System.Data.CommandType.Text;
                     dbComm.CommandText = SQL.ReportScripts.GetAvailableYears;
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     IList<int> anni = new List<int>();
                     using (MySqlDataReader dbReader = dbComm.ExecuteReader())
@@ -106,7 +110,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.CommandText = SQL.ReportScripts.GetMovementDetailed;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", IdGestione);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", IdTitolo);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     DataTable dataTable = new DataTable();
                     dbAdapter.Fill(dataTable);
                     foreach (DataRow dr in dataTable.Rows)
@@ -161,7 +165,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = System.Data.CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = string.Format(SQL.ReportScripts.GetProfitLoss, query);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(data);
                     foreach (DataRow dr in data.Rows)
                     {
@@ -210,7 +214,7 @@ namespace FinanceManager.Services
                 using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
                 {
                     dbAdaptar.SelectCommand = new MySqlCommand();
-                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdaptar.SelectCommand.CommandType = CommandType.Text;
                     dbAdaptar.SelectCommand.CommandText = string.Format(SQL.ReportScripts.QuoteInvGeoSettori, gestioni);
                     DataTable dt = new DataTable();

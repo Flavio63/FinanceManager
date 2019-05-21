@@ -10,8 +10,15 @@ using MySql.Data.MySqlClient;
 
 namespace FinanceManager.Services
 {
-    class ManagerLiquidAssetServices : DAFconnection, IManagerLiquidAssetServices
+    class ManagerLiquidAssetServices : IManagerLiquidAssetServices
     {
+        IDAFconnection DAFconnection;
+
+        public ManagerLiquidAssetServices(IDAFconnection iDAFconnection)
+        {
+            DAFconnection = iDAFconnection ?? throw new ArgumentNullException("Manca la stringa di connessione al db");
+        }
+
         /// <summary>
         /// Aggiunge un movimento
         /// </summary>
@@ -41,7 +48,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("note", managerLiquidAsset.Note);
                     dbComm.Parameters.AddWithValue("attivo", managerLiquidAsset.Attivo);
                     dbComm.Parameters.AddWithValue("link_movimenti", managerLiquidAsset.Link_Movimenti.ToString("yyyy-MM-dd HH:mm:ss"));
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -70,7 +77,7 @@ namespace FinanceManager.Services
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.ManagerScripts.DeleteManagerLiquidAsset;
                     dbComm.Parameters.AddWithValue("id_portafoglio_titoli", id);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -110,7 +117,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", IdGestione);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdConto);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_valuta", IdValuta);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
                     SintesiSoldiList sintesiSoldis = new SintesiSoldiList();
                     foreach (DataRow dataRow in DT.Rows)
@@ -159,7 +166,7 @@ namespace FinanceManager.Services
                         dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetManagerLiquidAssetListByOwnerAndLocation;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", idOwner);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", idLocation);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     DataTable dt = new DataTable();
                     dbAdapter.Fill(dt);
                     return MLAL(dt);
@@ -193,7 +200,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", idGestione);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", idConto);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", idTitolo);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     DataTable dt = new DataTable();
                     dbAdapter.Fill(dt);
                     return MLAL(dt);
@@ -226,7 +233,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.CommandType = System.Data.CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = ManagerScripts.GetManagerLiquidAssetListByLinkMovimenti;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("link_movimenti", link_movimenti);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     DataTable dt = new DataTable();
                     dbAdapter.Fill(dt);
                     return MLAL(dt);
@@ -271,7 +278,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.CommandText = string.Format(SQL.ManagerScripts.GetManagerLiquidAssetByOwnerLocationAndMovementType, query);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", IdOwner);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdLocation);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     DataTable dt = new DataTable();
                     dbAdapter.Fill(dt);
                     return MLAL(dt);
@@ -298,7 +305,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetLastSharesMovementByOwnerAndLocation;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", IdOwner);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdLocation);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     DataTable dt = new DataTable();
                     dbAdapter.Fill(dt);
                     return MLA(dt.Rows[0]);
@@ -332,7 +339,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetManagerSharesMovementByOwnerAndLocation;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", IdOwner);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdLocation);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     DataTable dt = new DataTable();
                     dbAdapter.Fill(dt);
                     return MLAL(dt);
@@ -361,7 +368,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", IdOwner);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdLocation);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_valuta", IdCurrency);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     DataTable dataTable = new DataTable();
                     dbAdapter.Fill(dataTable);
                     return ((DataRow)dataTable.Rows[0]).Field<double?>("TotalProfitLoss") == null ? 0 : (double)((DataRow)dataTable.Rows[0]).Field<double?>("TotalProfitLoss");
@@ -397,7 +404,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", IdOwner);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdLocation);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", id_titolo);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     DataTable dataTable = new DataTable();
                     dbAdapter.Fill(dataTable);
                     return ((DataRow)dataTable.Rows[0]).Field<double?>("TotalShares") == null ? 0 : (double)((DataRow)dataTable.Rows[0]).Field<double?>("TotalShares");
@@ -445,7 +452,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("attivo", managerLiquidAsset.Attivo);
                     dbComm.Parameters.AddWithValue("id_portafoglio_titoli", managerLiquidAsset.Id_portafoglio);
                     dbComm.Parameters.AddWithValue("link_movimenti", managerLiquidAsset.Link_Movimenti.ToString("yyyy-MM-dd HH:mm:ss"));
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -474,7 +481,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.Parameters.AddWithValue("owner", IdOwner);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdLocation);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", id_titolo);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
                     return MLAL(DT);
                 }
@@ -590,7 +597,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("cambio", contoCorrente.Valore_Cambio);
                     dbComm.Parameters.AddWithValue("causale", contoCorrente.Causale);
                     dbComm.Parameters.AddWithValue("id_tipo_soldi", contoCorrente.Id_Tipo_Soldi);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -620,7 +627,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetQuote;
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
                     QuoteList quotes = new QuoteList();
                     foreach (DataRow dataRow in DT.Rows)
@@ -666,7 +673,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetInvestitori;
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
                     InvestitoreList investitori = new InvestitoreList();
                     foreach (DataRow dataRow in DT.Rows)
@@ -703,7 +710,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetQuoteTab;
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
                     QuoteTabList quotes = new QuoteTabList();
                     foreach (DataRow dataRow in DT.Rows)
@@ -755,7 +762,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("data_movimento", ActualQuote.DataMovimento.ToString("yyyy-MM-dd"));
                     dbComm.Parameters.AddWithValue("ammontare", ActualQuote.Ammontare);
                     dbComm.Parameters.AddWithValue("note", ActualQuote.Note);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -780,7 +787,7 @@ namespace FinanceManager.Services
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.ManagerScripts.DeleteRecordQuoteTab;
                     dbComm.Parameters.AddWithValue("id_quote_inv", idQuote);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -818,7 +825,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("data_movimento", ActualQuote.DataMovimento.ToString("yyyy-MM-dd"));
                     dbComm.Parameters.AddWithValue("ammontare", ActualQuote.Ammontare);
                     dbComm.Parameters.AddWithValue("note", ActualQuote.Note);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -845,7 +852,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetLastQuoteTab;
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
                     quote.IdQuote = (int)DT.Rows[0].Field<uint>("id_quote_inv");
                     quote.IdInvestitore = (int)DT.Rows[0].Field<uint>("id_investitore");
@@ -881,7 +888,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetContoCorrente;
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
                     return contoCorrentes(DT);
                 }
@@ -911,7 +918,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetContoCorrenteByMovement;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_tipo_movimento", idMovimento);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
                     return contoCorrentes(DT);
                 }
@@ -937,7 +944,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetContoCorrenteByIdQuote;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_quote_investimenti", idQuote);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
                     return contoCorrentes(DT);
                 }
@@ -963,7 +970,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetContoCorrenteByIdPortafoglio;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_portafoglio_titoli", idPortafoglioTitoli);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
                     return contoCorrentes(DT);
                 }
@@ -998,7 +1005,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("cambio", contoCorrente.Valore_Cambio);
                     dbComm.Parameters.AddWithValue("causale", contoCorrente.Causale);
                     dbComm.Parameters.AddWithValue("id_tipo_soldi", contoCorrente.Id_Tipo_Soldi);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -1027,7 +1034,7 @@ namespace FinanceManager.Services
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.ManagerScripts.DeleteAccount;
                     dbComm.Parameters.AddWithValue("id_fineco_euro", idCC);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -1052,7 +1059,7 @@ namespace FinanceManager.Services
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = ManagerScripts.DeleteContoCorrenteByIdPortafoglioTitoli;
                     dbComm.Parameters.AddWithValue("id_portafoglio_titoli", idContoTitoli);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -1089,7 +1096,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("cambio", contoCorrente.Valore_Cambio);
                     dbComm.Parameters.AddWithValue("causale", contoCorrente.Causale);
                     dbComm.Parameters.AddWithValue("id_tipo_soldi", contoCorrente.Id_Tipo_Soldi);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -1126,7 +1133,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("cambio", contoCorrente.Valore_Cambio);
                     dbComm.Parameters.AddWithValue("causale", contoCorrente.Causale);
                     dbComm.Parameters.AddWithValue("id_tipo_soldi", contoCorrente.Id_Tipo_Soldi);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -1155,7 +1162,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", id_gestione);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_conto", id_conto);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", id_titolo);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
                     Ptf_CCList _CCs = new Ptf_CCList();
                     foreach (DataRow row in DT.Rows)
@@ -1205,7 +1212,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.CommandType = System.Data.CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetPortafoglioTitoliById;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_portafoglio_titoli", IdPortafoglioTitoli);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     DataTable dt = new DataTable();
                     dbAdapter.Fill(dt);
                     return MLA(dt.Rows[0]);
@@ -1232,7 +1239,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetContoCorrenteByIdCC;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_fineco_euro", idRecord);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
                     return contoCorrente(DT.Rows[0]);
                 }

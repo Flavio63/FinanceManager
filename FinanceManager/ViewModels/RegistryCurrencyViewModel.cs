@@ -26,8 +26,15 @@ namespace FinanceManager.ViewModels
         public RegistryCurrencyViewModel(IRegistryServices service)
         {
             _services = service ?? throw new ArgumentNullException("RegistryCurrencyModel With No Services");
-            CurrencyList = new ObservableCollection<RegistryCurrency>(service.GetRegistryCurrencyList());
-            CurrencyList.CollectionChanged += CollectionHasChanged;
+            try
+            {
+                CurrencyList = new ObservableCollection<RegistryCurrency>(service.GetRegistryCurrencyList());
+                CurrencyList.CollectionChanged += CollectionHasChanged;
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Lista Valute");
+            }
             CloseMeCommand = new CommandHandler(CloseMe);
         }
 

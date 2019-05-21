@@ -20,7 +20,14 @@ namespace FinanceManager.ViewModels
         public RegistryMovementTypeViewModel(IRegistryServices services)
         {
             _services = services ?? throw new ArgumentNullException("RegistryMovementTypeViewModel With No Services");
-            MovementTypeList = new ObservableCollection<RegistryMovementType>(services.GetRegistryMovementTypesList());
+            try
+            {
+                MovementTypeList = new ObservableCollection<RegistryMovementType>(services.GetRegistryMovementTypesList());
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Lista Tipologia Movimenti");
+            }
             CloseMeCommand = new CommandHandler(CloseMe);
         }
 

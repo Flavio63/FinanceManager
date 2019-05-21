@@ -3,6 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:is="http://schemas.microsoft.com/expression/2010/interactions"
+             xmlns:iy="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:local="clr-namespace:FinanceManager" WindowStartupLocation="CenterScreen"
         mc:Ignorable="d" x:Name="FinestraPrincipale" DataContext="{StaticResource ResourceKey=MainWindowViewModel}"
         Title="{Binding Titolo, UpdateSourceTrigger=PropertyChanged}">
@@ -38,6 +40,29 @@
             </MenuItem>
             <MenuItem Header="Reports" Margin="2,5" FontSize="16" FontWeight="Bold" 
                       Command="{Binding OnClickManagerReports}" CommandParameter="{Binding ElementName=mainGrid}"/>
+            <MenuItem Header="Connessione DB" Margin="2,5" FontSize="16" FontWeight="Bold">
+                <RadioButton GroupName="db" IsChecked="True" IsThreeState="False" Name="default" Content="Connessione da casa">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="Checked">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </RadioButton>
+                <RadioButton GroupName="db" IsChecked="False" IsThreeState="False" Name="outdoor" Content="Connessione da fuori casa">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="Checked">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </RadioButton>
+                <RadioButton GroupName="db" IsChecked="False" IsThreeState="False" Name="local" Content="Connessione per i test">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="Checked">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </RadioButton>
+            </MenuItem>
         </Menu>
         <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
             <DockPanel Grid.Row="1" MinHeight="250" MinWidth="250" Name="mainGrid"></DockPanel>

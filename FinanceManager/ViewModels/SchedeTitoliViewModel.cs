@@ -41,12 +41,19 @@ namespace FinanceManager.ViewModels
         private void SetUpViewModel()
         {
             CanCompileNewRecord = true;
-            SharesListView = new ListCollectionView(_registryServices.GetRegistryShareList());
-            Firms = _registryServices.GetRegistryFirmList();
-            TipoTitoli = _registryServices.GetRegistryShareTypeList();
-            _Filter = new Predicate<object>(Filter);
-            ActualRecord = new RegistryShare();
-            SrchShares = "";
+            try
+            {
+                SharesListView = new ListCollectionView(_registryServices.GetRegistryShareList());
+                Firms = _registryServices.GetRegistryFirmList();
+                TipoTitoli = _registryServices.GetRegistryShareTypeList();
+                _Filter = new Predicate<object>(Filter);
+                ActualRecord = new RegistryShare();
+                SrchShares = "";
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Lista Titoli");
+            }
         }
 
         #region events

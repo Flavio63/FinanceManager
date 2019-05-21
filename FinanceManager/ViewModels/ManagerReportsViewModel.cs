@@ -60,7 +60,7 @@ namespace FinanceManager.ViewModels
             }
             catch (Exception err)
             {
-                MessageBox.Show(err.Message, "ManagerReportsView", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Gestione Report");
             }
         }
 

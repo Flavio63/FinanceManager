@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Data;
 using MySql.Data.MySqlClient;
-using System.Text;
-using System.Threading.Tasks;
 using FinanceManager.Models;
+using FinanceManager.Services.SQL;
 
 namespace FinanceManager.Services
 {
-    public class RegistryService : SQL.DAFconnection, IRegistryServices
+    public class RegistryService : IRegistryServices
     {
+        IDAFconnection DAFconnection;
+
+        public RegistryService(IDAFconnection iDAFconnection)
+        {
+            DAFconnection = iDAFconnection ?? throw new ArgumentNullException("Manca la stringa di connessione al db");
+        }
+
         #region Owner
         public void AddGestione(string name)
         {
@@ -16,7 +22,7 @@ namespace FinanceManager.Services
             {
                 using (MySqlCommand dbComm = new MySqlCommand())
                 {
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.AddGestione;
                     dbComm.Parameters.AddWithValue("nome", name);
@@ -41,7 +47,7 @@ namespace FinanceManager.Services
             {
                 using (MySqlCommand dbComm = new MySqlCommand())
                 {
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.DeleteGestione;
                     dbComm.Parameters.AddWithValue("id", id);
@@ -67,7 +73,7 @@ namespace FinanceManager.Services
                 using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
                 {
                     dbAdapter.SelectCommand = new MySqlCommand();
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetGestione;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", id);
@@ -98,7 +104,7 @@ namespace FinanceManager.Services
                 using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
                 {
                     dbAdapter.SelectCommand = new MySqlCommand();
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetGestioneList;
                     DataTable dataTable = new DataTable();
@@ -130,7 +136,7 @@ namespace FinanceManager.Services
             {
                 using (MySqlCommand dbComm = new MySqlCommand())
                 {
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.UpdateGestioneName;
                     dbComm.Parameters.AddWithValue("nome", owner.Nome_Gestione);
@@ -159,7 +165,7 @@ namespace FinanceManager.Services
             {
                 using (MySqlCommand dbComm = new MySqlCommand())
                 {
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.AddShareType;
                     dbComm.Parameters.AddWithValue("desc", description);
@@ -184,7 +190,7 @@ namespace FinanceManager.Services
             {
                 using (MySqlCommand dbComm = new MySqlCommand())
                 {
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.DeleteShareType;
                     dbComm.Parameters.AddWithValue("id", id);
@@ -210,7 +216,7 @@ namespace FinanceManager.Services
                 using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
                 {
                     dbAdaptar.SelectCommand = new MySqlCommand();
-                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdaptar.SelectCommand.CommandType = CommandType.Text;
                     dbAdaptar.SelectCommand.CommandText = SQL.RegistryScripts.GetRegistryShareTypeList;
                     DataTable dt = new DataTable();
@@ -242,7 +248,7 @@ namespace FinanceManager.Services
             {
                 using (MySqlCommand dbComm = new MySqlCommand())
                 {
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.UpdateShareType;
                     dbComm.Parameters.AddWithValue("id", registryShareType.id_tipo_titolo);
@@ -273,7 +279,7 @@ namespace FinanceManager.Services
                 using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
                 {
                     dbAdaptar.SelectCommand = new MySqlCommand();
-                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdaptar.SelectCommand.CommandType = CommandType.Text;
                     dbAdaptar.SelectCommand.CommandText = SQL.RegistryScripts.GetRegistryCurrencyList;
                     DataTable dt = new DataTable();
@@ -311,7 +317,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("desc", registryCurrency.DescCurrency);
                     dbComm.Parameters.AddWithValue("code", registryCurrency.CodeCurrency);
                     dbComm.Parameters.AddWithValue("id", registryCurrency.IdCurrency);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -337,7 +343,7 @@ namespace FinanceManager.Services
                     dbComm.CommandText = SQL.RegistryScripts.AddCurrency;
                     dbComm.Parameters.AddWithValue("desc", registryCurrency.DescCurrency);
                     dbComm.Parameters.AddWithValue("code", registryCurrency.CodeCurrency);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -362,7 +368,7 @@ namespace FinanceManager.Services
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.DeleteCurrency;
                     dbComm.Parameters.AddWithValue("id", id);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -387,7 +393,7 @@ namespace FinanceManager.Services
                 using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
                 {
                     dbAdaptar.SelectCommand = new MySqlCommand();
-                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdaptar.SelectCommand.CommandType = CommandType.Text;
                     dbAdaptar.SelectCommand.CommandText = SQL.RegistryScripts.GetRegistryLocationList;
                     DataTable dt = new DataTable();
@@ -423,7 +429,7 @@ namespace FinanceManager.Services
                     dbComm.CommandText = SQL.RegistryScripts.UpdateLocation;
                     dbComm.Parameters.AddWithValue("desc", registryLocation.Desc_conto);
                     dbComm.Parameters.AddWithValue("id", registryLocation.Id_conto);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -448,7 +454,7 @@ namespace FinanceManager.Services
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.AddLocation;
                     dbComm.Parameters.AddWithValue("desc", description);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -473,7 +479,7 @@ namespace FinanceManager.Services
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.DeleteLocation;
                     dbComm.Parameters.AddWithValue("id", id);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -496,7 +502,7 @@ namespace FinanceManager.Services
                 using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
                 {
                     dbAdapter.SelectCommand = new MySqlCommand();
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetLocation;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id", id);
@@ -527,7 +533,7 @@ namespace FinanceManager.Services
                 using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
                 {
                     dbAdaptar.SelectCommand = new MySqlCommand();
-                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdaptar.SelectCommand.CommandType = CommandType.Text;
                     dbAdaptar.SelectCommand.CommandText = SQL.RegistryScripts.GetRegistryFirmList;
                     DataTable dt = new DataTable();
@@ -563,7 +569,7 @@ namespace FinanceManager.Services
                     dbComm.CommandText = SQL.RegistryScripts.UpdateFirm;
                     dbComm.Parameters.AddWithValue("desc", registryFirm.desc_azienda);
                     dbComm.Parameters.AddWithValue("id", registryFirm.id_azienda);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -588,7 +594,7 @@ namespace FinanceManager.Services
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.AddFirm;
                     dbComm.Parameters.AddWithValue("desc", description);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -613,7 +619,7 @@ namespace FinanceManager.Services
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.DeleteFirm;
                     dbComm.Parameters.AddWithValue("id", id);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -639,7 +645,7 @@ namespace FinanceManager.Services
                 using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
                 {
                     dbAdaptar.SelectCommand = new MySqlCommand();
-                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdaptar.SelectCommand.CommandType = CommandType.Text;
                     dbAdaptar.SelectCommand.CommandText = SQL.RegistryScripts.GetRegistryShareList;
                     DataTable dt = new DataTable();
@@ -674,7 +680,7 @@ namespace FinanceManager.Services
                 using(MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
                 {
                     dbAdapter.SelectCommand = new MySqlCommand();
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetShareById;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", id);
@@ -712,7 +718,7 @@ namespace FinanceManager.Services
                 using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
                 {
                     dbAdaptar.SelectCommand = new MySqlCommand();
-                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdaptar.SelectCommand.CommandType = CommandType.Text;
                     dbAdaptar.SelectCommand.CommandText = string.Format(SQL.RegistryScripts.GetSharesByType, where);
                     DataTable dt = new DataTable();
@@ -745,7 +751,7 @@ namespace FinanceManager.Services
             {
                 using(MySqlCommand dbComm = new MySqlCommand())
                 {
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.UpdateShare;
                     foreach (var property in registryShare.GetType().GetProperties())
@@ -773,7 +779,7 @@ namespace FinanceManager.Services
             {
                 using (MySqlCommand dbComm = new MySqlCommand())
                 {
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.AddShare;
                     foreach (var property in registryShare.GetType().GetProperties())
@@ -805,7 +811,7 @@ namespace FinanceManager.Services
             {
                 using (MySqlCommand dbComm = new MySqlCommand())
                 {
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.DeleteShare;
                     dbComm.Parameters.AddWithValue("id", id);
@@ -837,7 +843,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetRegistryMovementTypeList;
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     DataTable dt = new DataTable();
                     dbAdapter.Fill(dt);
                     RegistryMovementTypeList RMTL = new RegistryMovementTypeList();
@@ -871,7 +877,7 @@ namespace FinanceManager.Services
                     dbComm.CommandText = SQL.RegistryScripts.UpdateMovementType;
                     dbComm.Parameters.AddWithValue("desc", registryMovementType.Desc_tipo_movimento);
                     dbComm.Parameters.AddWithValue("id", registryMovementType.Id_tipo_movimento);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -896,7 +902,7 @@ namespace FinanceManager.Services
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.AddMovementType;
                     dbComm.Parameters.AddWithValue("desc", name);
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -924,7 +930,7 @@ namespace FinanceManager.Services
                 {
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.DeleteMovementType;
-                    dbComm.Connection = new MySqlConnection(DafConnection);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Parameters.AddWithValue("id", id);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -948,7 +954,7 @@ namespace FinanceManager.Services
                 using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
                 {
                     dbAdapter.SelectCommand = new MySqlCommand();
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetMovementType;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id", id);
@@ -981,7 +987,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetTipoSoldiList;
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     DataTable dt = new DataTable();
                     dbAdapter.Fill(dt);
                     TipoSoldiList TSL = new TipoSoldiList();
@@ -1012,7 +1018,7 @@ namespace FinanceManager.Services
                 using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
                 {
                     dbAdapter.SelectCommand = new MySqlCommand();
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DafConnection);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetTipoSoldiById;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_tipo_soldi", id);

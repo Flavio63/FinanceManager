@@ -27,8 +27,15 @@ namespace FinanceManager.ViewModels
         public RegistryOwnerViewModel(IRegistryServices services)
         {
             _services = services ?? throw new ArgumentNullException("RegistryOwnerViewModel With No Services");
-            OwnerList = new ObservableCollection<RegistryOwner>(services.GetGestioneList());
-            OwnerList.CollectionChanged += CollectionHasChanged;
+            try
+            {
+                OwnerList = new ObservableCollection<RegistryOwner>(services.GetGestioneList());
+                OwnerList.CollectionChanged += CollectionHasChanged;
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Lista Gestioni");
+            }
             CloseMeCommand = new CommandHandler(CloseMe);
         }
 

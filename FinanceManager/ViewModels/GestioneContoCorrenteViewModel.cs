@@ -34,8 +34,15 @@ namespace FinanceManager.ViewModels
             ModifyCommand = new CommandHandler(UpdateCommand, CanModify);
             EraseCommand = new CommandHandler(DeleteCommand, CanModify);
             ClearCommand = new CommandHandler(CleanCommand);
-            SetUpData();
-            Init();
+            try
+            {
+                SetUpData();
+                Init();
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Quote Investitori");
+            }
         }
 
         private void SetUpData()
@@ -68,27 +75,34 @@ namespace FinanceManager.ViewModels
             }
             catch (Exception err)
             {
-                MessageBox.Show(err.Message, "Set up Acquisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new Exception("Errore nel setup." + Environment.NewLine + err.Message);
             }
         }
 
 
         private void Init()
         {
-            Record2ContoCorrente = new ContoCorrente();
-            RecordContoCorrente = new ContoCorrente();
-            AmountChangedValue = 0;
-            SintesiSoldiR = _liquidAssetServices.GetCurrencyAvailable(1);
-            SintesiSoldiDF = _liquidAssetServices.GetCurrencyAvailable(2);
-            SintesiSoldiDFV = _liquidAssetServices.GetCurrencyAvailable(7);
-            SrchShares = "";
-            ListContoCorrente = _liquidAssetServices.GetContoCorrenteList();
-            GirocontoFieldEnabled = true;
-            CedoleEnabled = false;
-            GirocontoEnabled = false;
-            VolatiliEnabled = false;
-            CanUpdateDelete = false;
-            CanInsert = false;
+            try
+            {
+                Record2ContoCorrente = new ContoCorrente();
+                RecordContoCorrente = new ContoCorrente();
+                AmountChangedValue = 0;
+                SintesiSoldiR = _liquidAssetServices.GetCurrencyAvailable(1);
+                SintesiSoldiDF = _liquidAssetServices.GetCurrencyAvailable(2);
+                SintesiSoldiDFV = _liquidAssetServices.GetCurrencyAvailable(7);
+                SrchShares = "";
+                ListContoCorrente = _liquidAssetServices.GetContoCorrenteList();
+                GirocontoFieldEnabled = true;
+                CedoleEnabled = false;
+                GirocontoEnabled = false;
+                VolatiliEnabled = false;
+                CanUpdateDelete = false;
+                CanInsert = false;
+            }
+            catch (Exception err)
+            {
+                throw new Exception("Errore in init." + Environment.NewLine + err.Message);
+            }
         }
 
         #region Getter&Setter

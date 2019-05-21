@@ -23,8 +23,15 @@ namespace FinanceManager.ViewModels
         public RegistryLocationViewModel(IRegistryServices services)
         {
             _services = services ?? throw new ArgumentNullException("RegistryLocationViewModel With No Services");
-            LocationList = new ObservableCollection<RegistryLocation>(services.GetRegistryLocationList());
-            LocationList.CollectionChanged += CollectionHasChanged;
+            try
+            {
+                LocationList = new ObservableCollection<RegistryLocation>(services.GetRegistryLocationList());
+                LocationList.CollectionChanged += CollectionHasChanged;
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Lista Conti Deposito");
+            }
             CloseMeCommand = new CommandHandler(CloseMe);
         }
 

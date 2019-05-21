@@ -23,8 +23,15 @@ namespace FinanceManager.ViewModels
         public RegistryShareTypeViewModel(IRegistryServices services)
         {
             _services = services ?? throw new ArgumentNullException("RegistryShareTypeViewModel With No Services");
-            ShareTypeList = new ObservableCollection<RegistryShareType>(_services.GetRegistryShareTypeList());
-            ShareTypeList.CollectionChanged += CollectionHasChanged;
+            try
+            {
+                ShareTypeList = new ObservableCollection<RegistryShareType>(_services.GetRegistryShareTypeList());
+                ShareTypeList.CollectionChanged += CollectionHasChanged;
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Lista Tipologia Titoli");
+            }
             CloseMeCommand = new CommandHandler(CloseMe);
         }
 
