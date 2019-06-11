@@ -431,7 +431,7 @@
         </Grid>
         <!-- La griglia da utilizzare per selezionare un movimento da modificare -->
         <DataGrid Grid.Row="3" Grid.ColumnSpan="3" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="True"
-                  ItemsSource="{Binding ListContoCorrente, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" SelectionMode="Single"
+                  ItemsSource="{Binding AccountCollectionView, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" SelectionMode="Single"
                   AlternatingRowBackground="LightGreen" Margin="5" FontSize="16" FontWeight="Bold" >
             <DataGrid.Resources>
                 <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="LightBlue"/>

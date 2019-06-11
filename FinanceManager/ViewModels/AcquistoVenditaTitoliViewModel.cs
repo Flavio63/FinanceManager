@@ -102,6 +102,7 @@ namespace FinanceManager.ViewModels
             SrchShares = "";
             Conto = "";
             Gestione = "";
+            ISIN = "";
         }
 
         #region events

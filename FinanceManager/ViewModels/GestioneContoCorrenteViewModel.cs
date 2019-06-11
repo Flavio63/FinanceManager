@@ -98,6 +98,9 @@ namespace FinanceManager.ViewModels
                 VolatiliEnabled = false;
                 CanUpdateDelete = false;
                 CanInsert = false;
+                FiltroConto = "";
+                FiltroGestione = "";
+                FiltroTipoSoldi = "";
             }
             catch (Exception err)
             {
@@ -175,7 +178,13 @@ namespace FinanceManager.ViewModels
         public ContoCorrenteList ListContoCorrente
         {
             get { return GetValue(() => ListContoCorrente); }
-            set { SetValue(() => ListContoCorrente, value); }
+            set { SetValue(() => ListContoCorrente, value); AccountCollectionView = CollectionViewSource.GetDefaultView(value); }
+        }
+
+        public System.ComponentModel.ICollectionView AccountCollectionView
+        {
+            get { return GetValue(() => AccountCollectionView); }
+            set { SetValue(() => AccountCollectionView, value); }
         }
 
         /// <summary>
@@ -273,25 +282,6 @@ namespace FinanceManager.ViewModels
         }
 
         /// <summary>
-        /// Il filtro per i titoli
-        /// </summary>
-        /// <param name="obj"> Il tipo di voce nell'elenco da filtrare </param>
-        /// <returns> La voce filtrata </returns>
-        public bool Filter(object obj)
-        {
-            if (obj != null)
-            {
-                if (obj.GetType() == typeof(RegistryShare))
-                {
-                    var data = obj as RegistryShare;
-                    if (!string.IsNullOrEmpty(SrchShares))
-                        return data.Isin.ToUpper().Contains(SrchShares.ToUpper());
-                }
-            }
-            return true;
-        }
-
-        /// <summary>
         /// Gestisce l'abilitazione del blocco dedicato alla registrazione delle cedole
         /// </summary>
         public bool CedoleEnabled
@@ -329,6 +319,79 @@ namespace FinanceManager.ViewModels
 
         #endregion
 
+        #region Filtri per DataGrid
+        /// <summary>
+        /// Il filtro per i titoli
+        /// </summary>
+        /// <param name="obj"> Il tipo di voce nell'elenco da filtrare </param>
+        /// <returns> La voce filtrata </returns>
+        public bool Filter(object obj)
+        {
+            if (obj != null)
+            {
+                if (obj.GetType() == typeof(RegistryShare))
+                {
+                    var data = obj as RegistryShare;
+                    if (!string.IsNullOrEmpty(SrchShares))
+                        return data.Isin.ToUpper().Contains(SrchShares.ToUpper());
+                }
+                else if (obj is ContoCorrente CConto)
+                {
+                    if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi))    // tutte e 3 i filtri
+                    {
+                        return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower()) && CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower()) && CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower());
+                    }
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi)) // 2 filtri su 3
+                    {
+                        return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower()) && CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower());
+                    }
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi)) // 2 filtri su 3
+                    {
+                        return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower()) && CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower());
+                    }
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi)) // 2 filtri su 3
+                    {
+                        return CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower()) && CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower());
+                    }
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi)) // 1 filtri su 3
+                    {
+                        return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower());
+                    }
+                    if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi)) // 1 filtri su 3
+                    {
+                        return CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower());
+                    }
+                    if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi)) // 1 filtri su 3
+                    {
+                        return CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower());
+                    }
+                }
+
+            }
+            return true;
+        }
+
+        private string _FiltroConto;
+        private string FiltroConto
+        {
+            get { return _FiltroConto; }
+            set { _FiltroConto = value; AccountCollectionView.Filter = _Filter; AccountCollectionView.Refresh(); }
+        }
+        private string _FiltroGestione;
+        private string FiltroGestione
+        {
+            get { return _FiltroGestione; }
+            set { _FiltroGestione = value; AccountCollectionView.Filter = _Filter; AccountCollectionView.Refresh(); }
+        }
+        private string _FiltroTipoSoldi;
+        private string FiltroTipoSoldi
+        {
+            get { return _FiltroTipoSoldi; }
+            set { _FiltroTipoSoldi = value; AccountCollectionView.Filter = _Filter; AccountCollectionView.Refresh(); }
+        }
+        #endregion
+
+
         #region Events
 
         /// <summary>
@@ -359,6 +422,7 @@ namespace FinanceManager.ViewModels
                         Record2ContoCorrente.Id_Conto = RL.Id_conto;
                         Record2ContoCorrente.Desc_Conto = RL.Desc_conto;
                     }
+                    FiltroConto = RL.Desc_conto;
                 }
                 else if (e.AddedItems[0] is RegistryOwner RO)
                 {
@@ -375,6 +439,7 @@ namespace FinanceManager.ViewModels
                         Record2ContoCorrente.Id_Gestione = RO.Id_gestione;
                         Record2ContoCorrente.NomeGestione = RO.Nome_Gestione;
                     }
+                    FiltroGestione = RO.Nome_Gestione;
                 }
                 else if (e.AddedItems[0] is RegistryCurrency RC)
                 {
@@ -403,6 +468,7 @@ namespace FinanceManager.ViewModels
                     RecordContoCorrente.Desc_Tipo_Soldi = TS.Desc_Tipo_Soldi;
                     Record2ContoCorrente.Id_Tipo_Soldi = TS.Id_Tipo_Soldi;
                     Record2ContoCorrente.Desc_Tipo_Soldi = TS.Desc_Tipo_Soldi;
+                    FiltroTipoSoldi = TS.Desc_Tipo_Soldi;
                 }
                 else if (e.AddedItems[0] is RegistryMovementType RMT)
                 {
