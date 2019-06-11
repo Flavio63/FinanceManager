@@ -465,6 +465,7 @@
                 <DataGridTextColumn Header="Gestione" IsReadOnly="True" Binding="{Binding Nome_Gestione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                 <DataGridTextColumn Header="Conto" IsReadOnly="True" Binding="{Binding Desc_conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                 <DataGridTextColumn Header="Tipo Movimento" IsReadOnly="True" Binding="{Binding Desc_tipo_movimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                <DataGridTextColumn Header="Tipo Titolo" IsReadOnly="True" Binding="{Binding Desc_tipo_titolo, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                 <DataGridTemplateColumn Header="Titolo" IsReadOnly="True" MaxWidth="100">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
