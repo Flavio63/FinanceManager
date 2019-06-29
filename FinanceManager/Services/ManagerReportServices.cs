@@ -143,7 +143,7 @@ namespace FinanceManager.Services
         }
 
         public ReportProfitLossList GetReport1(IList<RegistryOwner> _selectedOwners,
-            IList<int> _selectedYears)
+            IList<int> _selectedYears, bool isSynthetic)
         {
             string owners = " (";
             foreach (RegistryOwner i in _selectedOwners)
@@ -164,7 +164,8 @@ namespace FinanceManager.Services
                 {
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = System.Data.CommandType.Text;
-                    dbAdapter.SelectCommand.CommandText = string.Format(SQL.ReportScripts.GetProfitLoss, query);
+                    dbAdapter.SelectCommand.CommandText = isSynthetic == true ? string.Format(SQL.ReportScripts.GetProfitLoss, query) :
+                         string.Format(SQL.ReportScripts.GetDetailedProfitLoss, query);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(data);
                     foreach (DataRow dr in data.Rows)
@@ -173,7 +174,11 @@ namespace FinanceManager.Services
                         RPL.Anno = dr.Field<int>("Anno");
                         RPL.Gestione = dr.Field<string>("nome_gestione");
                         RPL.TipoSoldi = dr.Field<string>("desc_tipo_soldi");
-
+                        if (!isSynthetic)
+                        {
+                            RPL.NomeTitolo = dr.Field<string>("desc_titolo");
+                            RPL.ISIN = dr.Field<string>("isin");
+                        }
                         RPL.Azioni = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("Azioni") * -1 : dr.Field<double>("Azioni");
                         RPL.Obbligazioni = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("Obbligazioni") * -1 : dr.Field<double>("Obbligazioni");
                         RPL.ETF = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("ETF") * -1 : dr.Field<double>("ETF");

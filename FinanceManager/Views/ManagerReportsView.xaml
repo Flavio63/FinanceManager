@@ -74,7 +74,7 @@
                     </ListBox>
                 </StackPanel>
                 <!-- la selezione degli anni -->
-                <StackPanel Grid.Row="2" Grid.Column="0" Margin="5" IsEnabled="{Binding ElementName=PL, Path=IsChecked}">
+                <StackPanel Grid.Row="2" Grid.Column="0" Margin="5" IsEnabled="{Binding YearsIsEnable, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
                     <TextBlock Grid.Row="2" Text="Anni disponibili" FontWeight="Bold" FontSize="16" Margin="10, 2" HorizontalAlignment="Center"/>
                     <ListBox x:Name="Anni" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding AvailableYears}" 
                           Margin="10, 2" MinWidth="100" Height="75">
@@ -124,7 +124,15 @@
                 <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Scelta Report" FontSize="22" FontWeight="Bold" 
                        HorizontalAlignment="Center" Margin="3, 2, 3, 7"/>
                 <StackPanel Grid.Row="1" Orientation="Vertical" Margin="5" VerticalAlignment="Top">
-                    <RadioButton GroupName="report" Name="PL" Content="Profit Loss" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                    <RadioButton GroupName="report" Name="PL" Content="Profit Loss Sintetico" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                              FontSize="20" Margin="5" VerticalContentAlignment="Center">
+                        <iy:Interaction.Triggers>
+                            <iy:EventTrigger EventName="Checked">
+                                <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
+                            </iy:EventTrigger>
+                        </iy:Interaction.Triggers>
+                    </RadioButton>
+                    <RadioButton GroupName="report" Name="DPL" Content="Dettagli Profit Loss" HorizontalAlignment="Left" VerticalAlignment="Top" 
                               FontSize="20" Margin="5" VerticalContentAlignment="Center">
                         <iy:Interaction.Triggers>
                             <iy:EventTrigger EventName="Checked">

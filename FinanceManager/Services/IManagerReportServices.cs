@@ -8,7 +8,7 @@ namespace FinanceManager.Services
     {
         IList<int> GetAvailableYears();
         ReportProfitLossList GetReport1(IList<RegistryOwner> _selectedOwners, 
-            IList<int> _selectedYears);
+            IList<int> _selectedYears, bool isSynthetic = true);
 
         ReportMovementDetailedList GetMovementDetailed(int IdGestione, int IdTitolo);
 

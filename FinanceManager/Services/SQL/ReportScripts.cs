@@ -18,6 +18,20 @@
             "GROUP BY Anno, A.id_gestione, A.id_tipo_soldi " +
             "ORDER BY  A.id_gestione, A.id_tipo_soldi DESC;";
 
+        public static readonly string GetDetailedProfitLoss = "SELECT YEAR(data_movimento) AS Anno, B.nome_gestione, D.desc_tipo_soldi, C.desc_titolo, C.isin, " +
+            "ROUND(SUM(CASE WHEN C.id_tipo_titolo = 1 THEN ammontare ELSE 0 END), 2) AS Azioni, " +
+            "round(sum(case when C.id_tipo_titolo = 2 THEN ammontare else 0 end), 2) AS Obbligazioni, " +
+            "round(sum(case when C.id_tipo_titolo = 5 THEN ammontare else 0 end), 2) AS ETF, " +
+            "round(sum(case when C.id_tipo_titolo = 7 THEN ammontare else 0 end), 2) AS Fondo, " +
+            "round(sum(case when C.id_tipo_titolo = 13 or C.id_tipo_titolo = 4 THEN ammontare else 0 end), 2) AS Volatili, " +
+            "round(sum(case when A.id_tipo_movimento = 8 THEN ammontare else 0 end), 2) AS Costi, " +
+            "round(sum(case when (C.id_tipo_titolo >= 1 OR A.id_tipo_movimento = 8) THEN ammontare else 0 end), 2) AS Totale " +
+            "FROM conto_corrente A, gestioni B, titoli C, tipo_soldi D " +
+            "WHERE A.id_gestione = B.id_gestione AND A.id_titolo = C.id_titolo AND A.id_tipo_soldi = D.id_tipo_soldi AND " +
+            "A.id_tipo_soldi > 1 AND {0} " +
+            "GROUP BY Anno, A.id_gestione, A.id_tipo_soldi, C.desc_titolo, C.isin " +
+            "ORDER BY Anno, A.id_gestione, A.id_tipo_soldi DESC;";
+
         public static readonly string GetMovementDetailed = "SELECT G.nome_gestione, B.desc_conto, C.desc_movimento, E.desc_tipo_titolo, D.desc_titolo, D.isin, F.desc_tipo_soldi, " +
             "data_movimento, ROUND(case when ammontare < 0 then ammontare ELSE 0 END , 2) AS uscite, ROUND (case when ammontare > 0 then ammontare ELSE 0 END, 2) AS entrate, causale " +
             "FROM conto_corrente A, conti B, tipo_movimento C, titoli D, tipo_titoli E, tipo_soldi F, gestioni G WHERE A.id_conto = B.id_conto AND A.id_tipo_movimento = C.id_tipo_movimento AND " +

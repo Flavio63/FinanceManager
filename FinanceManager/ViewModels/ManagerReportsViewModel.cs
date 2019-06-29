@@ -219,6 +219,12 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => TitoloSelezionato); }
             private set { SetValue(() => TitoloSelezionato, value); }
         }
+
+        public bool YearsIsEnable
+        {
+            get { return GetValue(() => YearsIsEnable); }
+            private set { SetValue(() => YearsIsEnable, value); }
+        }
         #endregion Getter&Setter
 
         #region command
@@ -231,11 +237,14 @@ namespace FinanceManager.ViewModels
 
         public bool CanDoReport(object param)
         {
+            YearsIsEnable = false;
             switch (ReportSelezionato)
             {
                 case "PL":
+                case "DPL":
                     if (_selectedOwners.Count() > 0 && SelectedYears.Count() > 0)
                         return true;
+                    YearsIsEnable = true;
                     return false;
                 case "Titolo":
                     if (_selectedOwners.Count() > 0 && TitoloSelezionato != 0)
@@ -281,6 +290,14 @@ namespace FinanceManager.ViewModels
                     ReportPorfitLossAnnoGestioniViewModel ProfitLossData = new ReportPorfitLossAnnoGestioniViewModel(ReportProfitLosses);
                     ReportProfitLossAnnoGestioneView report1 = new ReportProfitLossAnnoGestioneView(ProfitLossData);
                     border.Child = report1;
+                    ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
+                    CanClear = true;
+                    break;
+                case "DPL":
+                    ReportProfitLosses = _reportServices.GetReport1(_selectedOwners, SelectedYears, false);
+                    ReportPorfitLossAnnoGestioniViewModel ProfitLossDetailedData = new ReportPorfitLossAnnoGestioniViewModel(ReportProfitLosses);
+                    ReportProfitLossAnnoGestioneView report1_1 = new ReportProfitLossAnnoGestioneView(ProfitLossDetailedData);
+                    border.Child = report1_1;
                     ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
                     CanClear = true;
                     break;

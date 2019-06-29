@@ -12,6 +12,8 @@ namespace FinanceManager.Models
         public int Anno { get; set; }
         public string Gestione { get; set; }
         public string TipoSoldi { get; set; }
+        public string NomeTitolo { get; set; }
+        public string ISIN { get; set; }
         public double Azioni { get; set; }
         public double Obbligazioni { get; set; }
         public double ETF { get; set; }
