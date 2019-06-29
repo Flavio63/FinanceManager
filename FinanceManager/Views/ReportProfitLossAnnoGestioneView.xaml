@@ -36,6 +36,26 @@
                     </Style>
                 </DataGridTextColumn.ElementStyle>
             </DataGridTextColumn>
+            <DataGridTextColumn Header="Titolo" IsReadOnly="True" Binding="{Binding NomeTitolo, UpdateSourceTrigger=PropertyChanged}"
+                                Visibility="{Binding IsDetailed, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
+                <DataGridTextColumn.ElementStyle>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                        <Setter Property="Margin" Value="5,0,5,0"/>
+                        <Setter Property="Visibility" Value="{Binding IsDetailed, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                    </Style>
+                </DataGridTextColumn.ElementStyle>
+            </DataGridTextColumn>
+            <DataGridTextColumn Header="ISIN" IsReadOnly="True" Binding="{Binding ISIN, UpdateSourceTrigger=PropertyChanged}"
+                                Visibility="{Binding IsDetailed, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
+                <DataGridTextColumn.ElementStyle>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                        <Setter Property="Margin" Value="5,0,5,0"/>
+                        <Setter Property="Visibility" Value="{Binding IsDetailed, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                    </Style>
+                </DataGridTextColumn.ElementStyle>
+            </DataGridTextColumn>
             <DataGridTextColumn Header="AZIONI" IsReadOnly="True" Binding="{Binding Azioni, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged}">
                 <DataGridTextColumn.ElementStyle>
                     <Style TargetType="{x:Type TextBlock}">

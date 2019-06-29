@@ -42,6 +42,8 @@ namespace FinanceManager.ViewModels
             SetUpViewModel();
         }
 
+        #region private
+
         private void SetUpViewModel()
         {
             try
@@ -63,6 +65,155 @@ namespace FinanceManager.ViewModels
                 MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Gestione Report");
             }
         }
+
+        private void DoTotals()
+        {
+            double Azioni;
+            double Obbligazione;
+            double Etf;
+            double Fondo;
+            double Volatili;
+            double Costi;
+            double Totali;
+            double TAzioni;
+            double TObbligazione;
+            double TEtf;
+            double TFondo;
+            double TVolatili;
+            double TCosti;
+            double TTotali;
+
+            switch (ReportSelezionato)
+            {
+                case "PL":
+                    for (int row = 0; row < ReportProfitLosses.Count; row++)
+                    {
+                        int Rrow = row;
+                        int Anno = ReportProfitLosses[Rrow].Anno;
+                        Azioni = 0;
+                        Obbligazione = 0;
+                        Etf = 0;
+                        Fondo = 0;
+                        Volatili = 0;
+                        Costi = 0;
+                        Totali = 0;
+                        string gestione = ReportProfitLosses[Rrow].Gestione;
+                        do
+                        {
+                            Azioni += ReportProfitLosses[Rrow].Azioni;
+                            Obbligazione += ReportProfitLosses[Rrow].Obbligazioni;
+                            Etf += ReportProfitLosses[Rrow].ETF;
+                            Fondo += ReportProfitLosses[Rrow].Fondo;
+                            Volatili += ReportProfitLosses[Rrow].Volatili;
+                            Costi += ReportProfitLosses[Rrow].Costi;
+                            Totali += ReportProfitLosses[Rrow].Totale;
+                            Rrow++;
+                            if (Rrow >= ReportProfitLosses.Count) break;
+                        } while (ReportProfitLosses[Rrow].Gestione == gestione && ReportProfitLosses[Rrow].Anno == Anno);
+                        if (Rrow - 1 > row)
+                        {
+                            ReportProfitLoss TotalProfitLoss = new ReportProfitLoss();
+                            TotalProfitLoss.Anno = Anno;
+                            TotalProfitLoss.Gestione = gestione;
+                            TotalProfitLoss.TipoSoldi = "Totale";
+                            TotalProfitLoss.Azioni = Azioni;
+                            TotalProfitLoss.Obbligazioni = Obbligazione;
+                            TotalProfitLoss.ETF = Etf;
+                            TotalProfitLoss.Fondo = Fondo;
+                            TotalProfitLoss.Volatili = Volatili;
+                            TotalProfitLoss.Costi = Costi;
+                            TotalProfitLoss.Totale = Totali;
+                            ReportProfitLosses.Insert(Rrow, TotalProfitLoss);
+                            row = Rrow; // - 1;
+                        }
+                    }
+                    break;
+                case "DPL":
+                    for (int row = 0; row < ReportProfitLosses.Count; row++)
+                    {
+                        int Rrow = row;
+                        int Anno = ReportProfitLosses[Rrow].Anno;
+                        TAzioni = 0;
+                        TObbligazione = 0;
+                        TEtf = 0;
+                        TFondo = 0;
+                        TVolatili = 0;
+                        TCosti = 0;
+                        TTotali = 0;
+                        string gestione = ReportProfitLosses[Rrow].Gestione;
+                        ReportProfitLoss TotalTotalProfitLoss = new ReportProfitLoss();
+                        do
+                        {
+                            Azioni = 0;
+                            Obbligazione = 0;
+                            Etf = 0;
+                            Fondo = 0;
+                            Volatili = 0;
+                            Costi = 0;
+                            Totali = 0;
+                            string tipoSoldi = ReportProfitLosses[Rrow].TipoSoldi;
+                            do
+                            {
+                                Azioni += ReportProfitLosses[Rrow].Azioni;
+                                Obbligazione += ReportProfitLosses[Rrow].Obbligazioni;
+                                Etf += ReportProfitLosses[Rrow].ETF;
+                                Fondo += ReportProfitLosses[Rrow].Fondo;
+                                Volatili += ReportProfitLosses[Rrow].Volatili;
+                                Costi += ReportProfitLosses[Rrow].Costi;
+                                Totali += ReportProfitLosses[Rrow].Totale;
+                                TAzioni += ReportProfitLosses[Rrow].Azioni;
+                                TObbligazione += ReportProfitLosses[Rrow].Obbligazioni;
+                                TEtf += ReportProfitLosses[Rrow].ETF;
+                                TFondo += ReportProfitLosses[Rrow].Fondo;
+                                TVolatili += ReportProfitLosses[Rrow].Volatili;
+                                TCosti += ReportProfitLosses[Rrow].Costi;
+                                TTotali += ReportProfitLosses[Rrow].Totale;
+                                Rrow++;
+                                if (Rrow >= ReportProfitLosses.Count) break;
+                            } while (ReportProfitLosses[Rrow].TipoSoldi == tipoSoldi && ReportProfitLosses[Rrow].Gestione == gestione && ReportProfitLosses[Rrow].Anno == Anno);
+                            if (Rrow - 1 > row)
+                            {
+                                ReportProfitLoss TotalProfitLoss = new ReportProfitLoss();
+                                TotalProfitLoss.Anno = Anno;
+                                TotalProfitLoss.Gestione = gestione;
+                                TotalProfitLoss.TipoSoldi = tipoSoldi;
+                                TotalProfitLoss.NomeTitolo = string.Format("Totale di {0} per {1} nel {2}", gestione, tipoSoldi, Anno);
+                                TotalProfitLoss.ISIN = "";
+                                TotalProfitLoss.Azioni = Azioni;
+                                TotalProfitLoss.Obbligazioni = Obbligazione;
+                                TotalProfitLoss.ETF = Etf;
+                                TotalProfitLoss.Fondo = Fondo;
+                                TotalProfitLoss.Volatili = Volatili;
+                                TotalProfitLoss.Costi = Costi;
+                                TotalProfitLoss.Totale = Totali;
+                                ReportProfitLosses.Insert(Rrow, TotalProfitLoss);
+                                Rrow++;
+                            }
+                            if (Rrow >= ReportProfitLosses.Count) break;
+                        } while (ReportProfitLosses[Rrow].Gestione == gestione && ReportProfitLosses[Rrow].Anno == Anno);
+                        if (Rrow - 1 > row)
+                        {
+                            TotalTotalProfitLoss.Anno = Anno;
+                            TotalTotalProfitLoss.Gestione = gestione;
+                            TotalTotalProfitLoss.TipoSoldi = "";
+                            TotalTotalProfitLoss.NomeTitolo = string.Format("Totale {0} nel {1}.", gestione, Anno);
+                            TotalTotalProfitLoss.Azioni = TAzioni;
+                            TotalTotalProfitLoss.Obbligazioni = TObbligazione;
+                            TotalTotalProfitLoss.ETF = TEtf;
+                            TotalTotalProfitLoss.Fondo = TFondo;
+                            TotalTotalProfitLoss.Volatili = TVolatili;
+                            TotalTotalProfitLoss.Costi = TCosti;
+                            TotalTotalProfitLoss.Totale = TTotali;
+                            ReportProfitLosses.Insert(Rrow, TotalTotalProfitLoss);
+                            row = Rrow; // - 1;
+                        }
+                    }
+                    break;
+            }
+
+        }
+
+        #endregion private
 
         #region events
         public void CbSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -287,7 +438,8 @@ namespace FinanceManager.ViewModels
             {
                 case "PL":
                     ReportProfitLosses = _reportServices.GetReport1(_selectedOwners, SelectedYears);
-                    ReportPorfitLossAnnoGestioniViewModel ProfitLossData = new ReportPorfitLossAnnoGestioniViewModel(ReportProfitLosses);
+                    DoTotals();
+                    ReportPorfitLossAnnoGestioniViewModel ProfitLossData = new ReportPorfitLossAnnoGestioniViewModel(ReportProfitLosses, false);
                     ReportProfitLossAnnoGestioneView report1 = new ReportProfitLossAnnoGestioneView(ProfitLossData);
                     border.Child = report1;
                     ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
@@ -295,7 +447,8 @@ namespace FinanceManager.ViewModels
                     break;
                 case "DPL":
                     ReportProfitLosses = _reportServices.GetReport1(_selectedOwners, SelectedYears, false);
-                    ReportPorfitLossAnnoGestioniViewModel ProfitLossDetailedData = new ReportPorfitLossAnnoGestioniViewModel(ReportProfitLosses);
+                    DoTotals();
+                    ReportPorfitLossAnnoGestioniViewModel ProfitLossDetailedData = new ReportPorfitLossAnnoGestioniViewModel(ReportProfitLosses, true);
                     ReportProfitLossAnnoGestioneView report1_1 = new ReportProfitLossAnnoGestioneView(ProfitLossDetailedData);
                     border.Child = report1_1;
                     ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
@@ -359,6 +512,7 @@ namespace FinanceManager.ViewModels
                 switch (ReportSelezionato)
                 {
                     case "PL":
+                    case "DPL":
                         Exports.ManagerWorkbooks.ExportDataInXlsx(ReportProfitLosses);
                         break;
                     case "Titolo":

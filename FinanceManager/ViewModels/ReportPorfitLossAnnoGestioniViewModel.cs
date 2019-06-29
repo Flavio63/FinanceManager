@@ -11,10 +11,12 @@ namespace FinanceManager.ViewModels
     public class ReportPorfitLossAnnoGestioniViewModel : ViewModelBase
     {
         ReportProfitLossList reportProfitLosses;
-        public ReportPorfitLossAnnoGestioniViewModel(ReportProfitLossList reportProfitLossList)
+        public ReportPorfitLossAnnoGestioniViewModel(ReportProfitLossList reportProfitLossList, bool isDetailed)
         {
             reportProfitLosses = reportProfitLossList ?? throw new ArgumentNullException("Mancano i dati per la costruzione del report.");
-            AddTotals(reportProfitLosses);
+            //AddTotals(reportProfitLosses);
+            ProfitLossData = reportProfitLossList;
+            IsDetailed = isDetailed == true ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
         }
 
         private void AddTotals(ReportProfitLossList RPLL)
@@ -67,6 +69,12 @@ namespace FinanceManager.ViewModels
         {
             get { return GetValue(() => ProfitLossData); }
             private set { SetValue(() => ProfitLossData, value); }
+        }
+
+        public System.Windows.Visibility IsDetailed
+        {
+            get { return GetValue(() => IsDetailed); }
+            private set { SetValue(() => IsDetailed, value); }
         }
     }
 }
