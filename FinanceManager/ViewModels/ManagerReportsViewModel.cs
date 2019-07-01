@@ -115,7 +115,9 @@ namespace FinanceManager.ViewModels
                             ReportProfitLoss TotalProfitLoss = new ReportProfitLoss();
                             TotalProfitLoss.Anno = Anno;
                             TotalProfitLoss.Gestione = gestione;
-                            TotalProfitLoss.TipoSoldi = "Totale";
+                            TotalProfitLoss.TipoSoldi = "";
+                            TotalProfitLoss.NomeTitolo = string.Format("Totale {0} nel {1}.", gestione, Anno); ;
+                            TotalProfitLoss.ISIN = "";
                             TotalProfitLoss.Azioni = Azioni;
                             TotalProfitLoss.Obbligazioni = Obbligazione;
                             TotalProfitLoss.ETF = Etf;
@@ -197,6 +199,7 @@ namespace FinanceManager.ViewModels
                             TotalTotalProfitLoss.Gestione = gestione;
                             TotalTotalProfitLoss.TipoSoldi = "";
                             TotalTotalProfitLoss.NomeTitolo = string.Format("Totale {0} nel {1}.", gestione, Anno);
+                            TotalTotalProfitLoss.ISIN = "";
                             TotalTotalProfitLoss.Azioni = TAzioni;
                             TotalTotalProfitLoss.Obbligazioni = TObbligazione;
                             TotalTotalProfitLoss.ETF = TEtf;

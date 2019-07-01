@@ -57,7 +57,7 @@ namespace FinanceManager.Exports
                             }
                             else
                             {
-                                if (prop.GetValue(report1[xRow]).ToString() == "Totale")
+                                if ( prop.GetValue(report1[xRow]).ToString().Contains("Totale") )
                                     total = true;
                                 cell.SetCellValue(prop.GetValue(report1[xRow]).ToString());
                             }

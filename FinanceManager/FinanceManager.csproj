@@ -165,6 +165,7 @@
     <Compile Include="Events\CommandHandler.cs" />
     <Compile Include="Events\EnableControl.cs" />
     <Compile Include="Events\ExcludeChar.cs" />
+    <Compile Include="Events\RowTotalStyleConverter.cs" />
     <Compile Include="Events\VerifyNumber.cs" />
     <Compile Include="Events\ViewModelBase.cs" />
     <Compile Include="Exports\CellsTableBorderStyle.cs" />

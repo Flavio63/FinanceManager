@@ -179,6 +179,11 @@ namespace FinanceManager.Services
                             RPL.NomeTitolo = dr.Field<string>("desc_titolo");
                             RPL.ISIN = dr.Field<string>("isin");
                         }
+                        else
+                        {
+                            RPL.NomeTitolo = "";
+                            RPL.ISIN = "";
+                        }
                         RPL.Azioni = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("Azioni") * -1 : dr.Field<double>("Azioni");
                         RPL.Obbligazioni = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("Obbligazioni") * -1 : dr.Field<double>("Obbligazioni");
                         RPL.ETF = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("ETF") * -1 : dr.Field<double>("ETF");
