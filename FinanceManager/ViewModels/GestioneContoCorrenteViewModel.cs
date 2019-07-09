@@ -624,7 +624,9 @@ namespace FinanceManager.ViewModels
             try
             {
                 // se è una registrazione cedola modifico direttamente il record 1
-                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili)
+                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || 
+                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ||
+                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Costi)
                 {
                     _liquidAssetServices.UpdateContoCorrenteByIdCC(RecordContoCorrente);    //registro la modifica in conto corrente
                 }
