@@ -200,10 +200,10 @@
 
         </Border>
         <!-- reports -->
-        <ScrollViewer Grid.Row="2" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <!--<ScrollViewer Grid.Row="2" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">-->
             <Border Name="BorderReport" Grid.Row="2" Grid.ColumnSpan="3" BorderBrush="Coral" BorderThickness="0.8" Margin="5,7,5,3">
 
             </Border>
-        </ScrollViewer>
+        <!--</ScrollViewer>-->
     </Grid>
 </UserControl>
