@@ -403,10 +403,10 @@ namespace FinanceManager.ViewModels
         {
             if (e.AddedItems.Count > 0)
             {
-                if (e.AddedItems[0].GetType().Name == "DateTime")
+                if (e.AddedItems[0] is DateTime DT)
                 {
-                    RecordContoCorrente.DataMovimento = (DateTime)e.AddedItems[0];
-                    Record2ContoCorrente.DataMovimento = (DateTime)e.AddedItems[0];
+                    RecordContoCorrente.DataMovimento = DT.Date;
+                    Record2ContoCorrente.DataMovimento = DT.Date;
                 }
                 else if (e.AddedItems[0] is RegistryLocation RL)
                 {

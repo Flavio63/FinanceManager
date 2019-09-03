@@ -55,7 +55,21 @@
                         </iy:EventTrigger>
                     </iy:Interaction.Triggers>
                 </RadioButton>
-                <RadioButton GroupName="db" IsChecked="False" IsThreeState="False" Name="local" Content="Connessione per i test">
+                <RadioButton GroupName="db" IsChecked="False" IsThreeState="False" Name="testServer" Content="Connessione DB-test su server">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="Checked">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </RadioButton>
+                <RadioButton GroupName="db" IsChecked="False" IsThreeState="False" Name="outdoorTestServer" Content="Connessione DB-test da fuori casa">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="Checked">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </RadioButton>
+                <RadioButton GroupName="db" IsChecked="False" IsThreeState="False" Name="localhost" Content="Connessione localhost">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="Checked">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>

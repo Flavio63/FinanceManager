@@ -32,8 +32,8 @@ namespace FinanceManager.Models
             }
             set
             {
-                if (value.Date.ToShortDateString() == "01/01/0001" || _MovementDate.Date.ToShortDateString() == "01/01/01")
-                    _MovementDate = DateTime.Now.Date;
+                //if (value.Date.ToShortDateString() == "01/01/0001" || value.Date.ToShortDateString() == "01/01/01")
+                //    _MovementDate = DateTime.Now.Date;
                 _MovementDate = value;
             }
         }
@@ -47,7 +47,7 @@ namespace FinanceManager.Models
         /// Inizializza un record vuoto di ContoCorrente
         /// </summary>
         public ContoCorrente() { }
-        
+
         /// <summary>
         /// Inizializza un record di ContoCorrente prendendo
         /// i campi principali dal record di PortafoglioTitoli
