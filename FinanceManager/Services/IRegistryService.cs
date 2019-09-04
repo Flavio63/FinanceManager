@@ -21,7 +21,7 @@ namespace FinanceManager.Services
         #region Location
         RegistryLocationList GetRegistryLocationList();
         void UpdateLocation(RegistryLocation registryLocation);
-        void AddLocation(string description);
+        void AddLocation(string description, string note);
         void DeleteLocation(int id);
         RegistryLocation GetLocation(int id);
         #endregion

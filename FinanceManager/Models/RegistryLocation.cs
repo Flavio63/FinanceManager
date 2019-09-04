@@ -10,5 +10,6 @@ namespace FinanceManager.Models
     {
         public int Id_conto { get; set; }
         public string Desc_conto { get; set; }
+        public string Note { get; set; }
     }
 }

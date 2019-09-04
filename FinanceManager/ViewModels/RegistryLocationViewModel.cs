@@ -61,7 +61,7 @@ namespace FinanceManager.ViewModels
                     }
                     else
                     {
-                        _services.AddLocation(Location.Desc_conto);
+                        _services.AddLocation(Location.Desc_conto, Location.Note);
                         LocationList = new ObservableCollection<RegistryLocation>(_services.GetRegistryLocationList());
 
                     }

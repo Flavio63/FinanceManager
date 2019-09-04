@@ -404,6 +404,7 @@ namespace FinanceManager.Services
                         RegistryLocation RL = new RegistryLocation();
                         RL.Id_conto = (int)dr.Field<uint>("id_conto");
                         RL.Desc_conto = dr.Field<string>("desc_conto");
+                        RL.Note = dr.Field<string>("note");
                         RLL.Add(RL);
                     }
                     return RLL;
@@ -428,6 +429,7 @@ namespace FinanceManager.Services
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.UpdateLocation;
                     dbComm.Parameters.AddWithValue("desc", registryLocation.Desc_conto);
+                    dbComm.Parameters.AddWithValue("note", registryLocation.Note);
                     dbComm.Parameters.AddWithValue("id", registryLocation.Id_conto);
                     dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
@@ -445,7 +447,7 @@ namespace FinanceManager.Services
             }
         }
 
-        public void AddLocation(string description)
+        public void AddLocation(string description, string note)
         {
             try
             {
@@ -454,6 +456,7 @@ namespace FinanceManager.Services
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.AddLocation;
                     dbComm.Parameters.AddWithValue("desc", description);
+                    dbComm.Parameters.AddWithValue("note", note);
                     dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -510,7 +513,8 @@ namespace FinanceManager.Services
                     dbAdapter.Fill(dataTable);
                     return new RegistryLocation() {
                         Id_conto = Convert.ToInt16(dataTable.Rows[0].ItemArray[0]),
-                        Desc_conto = dataTable.Rows[0].ItemArray[1].ToString()
+                        Desc_conto = dataTable.Rows[0].ItemArray[1].ToString(),
+                        Note = dataTable.Rows[0].ItemArray[2].ToString()
                     };
                 }
             }

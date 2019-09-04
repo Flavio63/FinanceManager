@@ -31,11 +31,11 @@ namespace FinanceManager.Services.SQL
         #endregion
         
         #region conti
-        public readonly static string GetRegistryLocationList = "SELECT id_conto, desc_conto FROM conti WHERE id_conto > 0 ORDER BY id_conto;";
-        public readonly static string UpdateLocation = "UPDATE conti SET desc_conto = @desc WHERE id_conto = @id;";
+        public readonly static string GetRegistryLocationList = "SELECT id_conto, desc_conto, note FROM conti WHERE id_conto > 0 ORDER BY id_conto;";
+        public readonly static string UpdateLocation = "UPDATE conti SET desc_conto = @desc, note = @note WHERE id_conto = @id;";
         public readonly static string DeleteLocation = "DELETE FROM conti WHERE id_conto = @id";
-        public readonly static string AddLocation = "INSERT INTO conti (id_conto, desc_conto) VALUE (null, @desc);";
-        public readonly static string GetLocation = "SELECT id_conto, desc_conto FROM conti WHERE id_conto = @id";
+        public readonly static string AddLocation = "INSERT INTO conti (id_conto, desc_conto, note) VALUE (null, @desc, @note);";
+        public readonly static string GetLocation = "SELECT id_conto, desc_conto, note FROM conti WHERE id_conto = @id";
         #endregion
 
         #region Azienda
