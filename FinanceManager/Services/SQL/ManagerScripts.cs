@@ -29,8 +29,8 @@ namespace FinanceManager.Services.SQL
         private static readonly string ADataMovimento = " A.data_movimento ";
         private static readonly string AId_fineco_euro = " A.id_fineco_euro";
 
-        private static readonly string GetTableQuote = "SELECT id_quote_inv, A.id_investitore, B.Nome, A.id_tipo_movimento, C.desc_movimento, data_movimento, ammontare, note " +
-            "FROM quote_investimenti A, Investitori B, tipo_movimento C WHERE A.id_investitore = B.id_investitore AND A.id_tipo_movimento = C.id_tipo_movimento AND id_quote_inv > 0 ";
+        private static readonly string GetTableQuote = "SELECT id_quote_inv, A.id_gestione, B.nome_gestione, A.id_tipo_movimento, C.desc_movimento, data_movimento, ammontare, note " +
+            "FROM quote_investimenti A, gestioni B, tipo_movimento C WHERE A.id_gestione = B.id_gestione AND A.id_tipo_movimento = C.id_tipo_movimento AND id_quote_inv > 0 ";
 
         private static readonly string GetManagerLiquidAssetList = "SELECT id_portafoglio_titoli, B.id_gestione, nome_gestione, C.id_conto, desc_conto, D.id_valuta, cod_valuta, " +
             "E.id_tipo_movimento, desc_Movimento, G.id_tipo_titolo, G.desc_tipo_titolo, H.id_azienda, H.desc_azienda, A.id_titolo, F.desc_titolo, F.isin, data_movimento, " +
@@ -182,16 +182,34 @@ namespace FinanceManager.Services.SQL
         /// <summary>
         /// calcola le quote per investitore
         /// </summary>
-        public static readonly string GetQuote = "SELECT CC.Nome, ROUND(SUM(CASE WHEN id_tipo_movimento = 1 OR id_tipo_movimento = 2 THEN ammontare ELSE 0 END), 2) AS investito, " +
-            "round(sum(case when id_tipo_movimento = 1 or id_tipo_movimento = 2 then ammontare else 0 end) / totale * 100, 2) as quota, totale, " +
-            "round(sum(case when id_tipo_movimento <> 4 and id_tipo_movimento <> 15 then ammontare else 0 end), 2) as disponibili, tot_disponibile, " +
-            "round(sum(case when id_tipo_movimento = 4 or id_tipo_movimento = 15 then ammontare else 0 end), 2) as guadagno,  " +
-            "round(sum(case when id_tipo_movimento = 4 or id_tipo_movimento = 15 then ammontare else 0 end) / guadagno_totale * 100, 2) as quota_guadagno, guadagno_totale, cedole, utili " +
-            "from ( SELECT round(sum(case when id_tipo_movimento = 1 or id_tipo_movimento = 2 then ammontare else 0 end), 2) as totale, " +
-            "round(sum(case when id_tipo_movimento <> 4 and id_tipo_movimento <> 15 then ammontare else 0 end), 2) as tot_disponibile, " +
-            "round(sum(case when id_tipo_movimento = 4 then ammontare else 0 end), 2) as cedole, round(sum(case when id_tipo_movimento = 15 then ammontare else 0 end), 2) as utili, " +
-            "round(sum(case when id_tipo_movimento = 4 or id_tipo_movimento = 15 then ammontare else 0 end), 2) as guadagno_totale " +
-            "from quote_investimenti ) A, quote_investimenti BB, Investitori CC where BB.id_investitore = CC.id_investitore and id_tipo_movimento > 0 and BB.id_quote_inv > 0 group by BB.id_investitore ";
+        public static readonly string GetQuoteInv = "SELECT AA.nome_gestione, ROUND(SUM(CASE WHEN id_tipo_movimento = 1 THEN ammontare ELSE 0 END), 2) AS CapitaleImmesso, " +
+            "TotaleImmesso, ROUND(SUM(CASE WHEN id_tipo_movimento = 2 THEN ammontare ELSE 0 END), 2) AS CapitalePrelevato, TotalePrelevato, " +
+            "ROUND(SUM(CASE WHEN id_tipo_movimento = 1 OR id_tipo_movimento = 2 THEN ammontare ELSE 0 END), 2) AS CapitaleAttivo, TotaleAttivo, " +
+            "ROUND(SUM(CASE WHEN id_tipo_movimento = 1 OR id_tipo_movimento = 2 THEN ammontare ELSE 0 END) / TotaleAttivo, 6) AS QuotaInv, " +
+            "ROUND(SUM(CASE WHEN id_tipo_movimento = 12 THEN ammontare ELSE 0 END), 2) * -1 AS CapitaleAssegnato, TotaleAssegnato, " +
+            "ROUND(SUM(CASE WHEN id_tipo_movimento = 1 OR id_tipo_movimento = 2 THEN ammontare ELSE 0 END), 2) + ROUND(SUM(CASE WHEN id_tipo_movimento = 12 THEN ammontare ELSE 0 END), 2) AS CapitaleDisponibile, " +
+            "TotaleDisponibile FROM quote_investimenti BB, gestioni AA, (SELECT ROUND(SUM(CASE WHEN id_tipo_movimento = 1 THEN ammontare ELSE 0 END), 2) AS TotaleImmesso, " +
+            "ROUND(SUM(CASE WHEN id_tipo_movimento = 2 THEN ammontare ELSE 0 END), 2) AS TotalePrelevato, " +
+            "ROUND(SUM(CASE WHEN id_tipo_movimento = 1 OR id_tipo_movimento = 2 THEN ammontare ELSE 0 END), 2) AS TotaleAttivo, " +
+            "ROUND(SUM(CASE WHEN id_tipo_movimento = 12 THEN ammontare ELSE 0 END), 2) * -1 AS TotaleAssegnato, " +
+            "ROUND(SUM(CASE WHEN id_tipo_movimento = 1 OR id_tipo_movimento = 2 THEN ammontare ELSE 0 END), 2) + ROUND(SUM(CASE WHEN id_tipo_movimento = 12 THEN ammontare ELSE 0 END), 2) AS TotaleDisponibile " +
+            "FROM quote_investimenti) AS A WHERE BB.id_gestione = AA.id_gestione AND BB.id_gestione > 0 GROUP BY BB.id_gestione ORDER BY BB.id_gestione DESC";
+
+        /// <summary>
+        /// calcola le quote per investitore del guadagno
+        /// in base al periodo di validità delle quote di investimento
+        /// </summary>
+        public static readonly string GetQuoteDettaglioGuadagno = "SELECT D.nome_gestione, A.data_inizio, A.data_fine, B.quota, SUM(case when C.id_tipo_soldi = 4 then C.ammontare ELSE 0 END) * B.quota AS cedole, " +
+            "SUM(case when C.id_tipo_soldi = 15 AND C.id_gestione <> 7 then ammontare ELSE 0 END) * B.quota AS utili, SUM(case when C.id_tipo_soldi = 15 AND C.id_gestione = 7 then ammontare ELSE 0 END) * 0.5 AS volatili, " +
+            "SUM(case when (C.id_tipo_soldi = 4 OR C.id_tipo_soldi = 15) AND C.id_gestione <> 7 then ammontare ELSE 0 END) * B.quota + sum(case when C.id_tipo_soldi = 15 AND C.id_gestione = 7 then ammontare ELSE 0 END) * 0.5 AS totale " +
+            "FROM quote_periodi A, quote_guadagno B, conto_corrente C , gestioni D WHERE A.id_periodo_quote = B.id_quote_periodi AND B.id_quote_periodi = C.id_quote_periodi AND B.id_gestione = D.id_gestione " +
+            "GROUP BY B.id_gestione, B.id_quote_periodi ORDER BY A.data_inizio, D.nome_gestione;";
+
+        public static readonly string GetQuoteSintesiGuadagno = "SELECT D.nome_gestione, YEAR(A.data_inizio) AS anno, SUM(case when C.id_tipo_soldi = 4 then C.ammontare ELSE 0 END) * B.quota AS cedole, " +
+            "SUM(case when C.id_tipo_soldi = 15 AND C.id_gestione <> 7 then ammontare ELSE 0 END) * B.quota AS utili, SUM(case when C.id_tipo_soldi = 15 AND C.id_gestione = 7 then ammontare ELSE 0 END) * 0.5 AS volatili, " +
+            "SUM(case when (C.id_tipo_soldi = 4 OR C.id_tipo_soldi = 15) AND C.id_gestione <> 7 then ammontare ELSE 0 END) * B.quota + sum(case when C.id_tipo_soldi = 15 AND C.id_gestione = 7 then ammontare ELSE 0 END) * 0.5 AS totale " +
+            "FROM quote_periodi A, quote_guadagno B, conto_corrente C , gestioni D WHERE A.id_periodo_quote = B.id_quote_periodi AND B.id_quote_periodi = C.id_quote_periodi AND B.id_gestione = D.id_gestione " +
+            "GROUP BY B.id_gestione, anno ORDER BY anno, D.nome_gestione;";
 
         /// <summary>
         /// esporta tutti gli investitori

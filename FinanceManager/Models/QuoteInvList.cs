@@ -2,7 +2,7 @@
 
 namespace FinanceManager.Models
 {
-    public class QuoteList : ObservableCollection<Quote>
+    public class QuoteInvList : ObservableCollection<QuoteInv>
     {
     }
 }

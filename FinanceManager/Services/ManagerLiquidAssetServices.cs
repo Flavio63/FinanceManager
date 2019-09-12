@@ -617,7 +617,7 @@ namespace FinanceManager.Services
         /// Richiede le quote di investimento per investitore
         /// </summary>
         /// <returns>Una lista con le quote per investitore</returns>
-        public QuoteList GetQuote()
+        public QuoteInvList GetQuoteInv()
         {
             try
             {
@@ -626,24 +626,69 @@ namespace FinanceManager.Services
                 {
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
-                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetQuote;
+                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetQuoteInv;
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
-                    QuoteList quotes = new QuoteList();
+                    QuoteInvList quotes = new QuoteInvList();
                     foreach (DataRow dataRow in DT.Rows)
                     {
-                        Quote quote = new Quote();
-                        quote.NomeInvestitore = dataRow.Field<string>("Nome");
-                        quote.Investito = dataRow.Field<double>("investito");
-                        quote.Quota = dataRow.Field<double>("quota");
-                        quote.Totale = dataRow.Field<double>("totale");
-                        quote.Disponibili = dataRow.Field<double>("disponibili");
-                        quote.TotDisponibile = dataRow.Field<double>("tot_disponibile");
-                        quote.Guadagno = dataRow.Field<double>("guadagno");
-                        quote.QuotaGuadagno = dataRow.ItemArray[7].GetType().Name == "DBNull" ? 0 : Convert.ToDouble(dataRow.ItemArray[7]);
-                        quote.GuadagnoTotale = dataRow.Field<double>("guadagno_totale");
-                        quote.Cedole = dataRow.Field<double>("cedole");
-                        quote.Utili = dataRow.Field<double>("utili");
+                        QuoteInv quote = new QuoteInv();
+                        quote.NomeInvestitore = dataRow.Field<string>("nome_gestione");
+                        quote.CapitaleImmesso = dataRow.Field<double>("CapitaleImmesso");
+                        quote.TotaleImmesso = dataRow.Field<double>("TotaleImmesso");
+                        quote.CapitalePrelevato = dataRow.Field<double>("CapitalePrelevato");
+                        quote.TotalePrelevato = dataRow.Field<double>("TotalePrelevato");
+                        quote.CapitaleAttivo = dataRow.Field<double>("CapitaleAttivo");
+                        quote.TotaleAttivo = dataRow.Field<double>("TotaleAttivo");
+                        quote.QuotaInv = dataRow.Field<double>("QuotaInv");
+                        quote.CapitaleAssegnato = dataRow.Field<double>("CapitaleAssegnato");
+                        quote.TotaleAssegnato = dataRow.Field<double>("TotaleAssegnato");
+                        quote.CapitaleDisponibile = dataRow.Field<double>("CapitaleDisponibile");
+                        quote.TotaleDisponibile = dataRow.Field<double>("TotaleDisponibile");
+                        quotes.Add(quote);
+                    }
+                    return quotes;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        public QuoteGuadagnoList GetQuoteGuadagno(bool sintetico)
+        {
+            try
+            {
+                DataTable DT = new DataTable();
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = !sintetico ? SQL.ManagerScripts.GetQuoteDettaglioGuadagno : SQL.ManagerScripts.GetQuoteSintesiGuadagno;
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.Fill(DT);
+                    QuoteGuadagnoList quotes = new QuoteGuadagnoList();
+                    foreach (DataRow dataRow in DT.Rows)
+                    {
+                        QuoteGuadagno quote = new QuoteGuadagno();
+                        quote.Nome = dataRow.Field<string>("nome_gestione");
+                        if (sintetico)
+                            quote.Anno = dataRow.Field<int>("anno");
+                        else
+                        {
+                            quote.DataInizio = dataRow.Field<DateTime>("data_inizio");
+                            quote.DataFine = dataRow.Field<DateTime>("data_fine");
+                            quote.QuotaInv = dataRow.Field<double>("quota");
+                        }
+                        quote.TotaleCedole = dataRow.Field<double>("cedole");
+                        quote.TotaleUtili = dataRow.Field<double>("utili");
+                        quote.TotaleVolatili = dataRow.Field<double>("volatili");
+                        quote.TotaleGuadagno = dataRow.Field<double>("totale");
                         quotes.Add(quote);
                     }
                     return quotes;
@@ -717,8 +762,8 @@ namespace FinanceManager.Services
                     {
                         QuoteTab quote = new QuoteTab();
                         quote.IdQuote = (int)dataRow.Field<uint>("id_quote_inv");
-                        quote.IdInvestitore = (int)dataRow.Field<uint>("id_investitore");
-                        quote.NomeInvestitore = dataRow.Field<string>("Nome");
+                        quote.IdInvestitore = (int)dataRow.Field<uint>("id_gestione");
+                        quote.NomeInvestitore = dataRow.Field<string>("nome_gestione");
                         quote.Id_tipo_movimento = (int)dataRow.Field<uint>("id_tipo_movimento");
                         quote.Desc_tipo_movimento = dataRow.Field<string>("desc_movimento");
                         quote.DataMovimento = dataRow.Field<DateTime>("data_movimento");
@@ -958,7 +1003,7 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
-        
+
         public ContoCorrenteList GetContoCorrenteByIdPortafoglio(int idPortafoglioTitoli)
         {
             try

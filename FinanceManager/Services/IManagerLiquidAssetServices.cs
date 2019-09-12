@@ -22,7 +22,15 @@ namespace FinanceManager.Services
         void UpdateManagerLiquidAsset(PortafoglioTitoli managerLiquidAsset);
         void DeleteManagerLiquidAsset(int id);
 
-        QuoteList GetQuote();   // Calcolo le quote per investitore
+        QuoteInvList GetQuoteInv();   // Calcolo le quote per investitore sulla base dell'investito attivo
+        /// <summary>
+        /// Calcola le quote del guadagno per investitore
+        /// suddividendola per ogni periodo di validà delle 
+        /// quote basate sugli investimenti versati / prelevati
+        /// </summary>
+        /// <param name="sintetico">True per sintesi e False per dettaglio</param>
+        /// <returns>Observable Collection</returns>
+        QuoteGuadagnoList GetQuoteGuadagno(bool sintetico);
         InvestitoreList GetInvestitori();
 
         QuoteTabList GetQuoteTab();                                     //Prendo tutti i record della tabella AndQuote

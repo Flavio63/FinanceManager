@@ -29,7 +29,9 @@ namespace FinanceManager.ViewModels
         private void Init()
         {
             CloseMeCommand = new CommandHandler(CloseMe);
-            //ListQuote = new QuoteList();
+            ListQuoteInv = new QuoteInvList();
+            ListQuoteDettaglioGuadagno = new QuoteGuadagnoList();
+            ListQuoteSintesiGuadagno = new QuoteGuadagnoList();
             ListTabQuote = new QuoteTabList();
             ListInvestitore = new InvestitoreList();
             ListMovementType = new RegistryMovementTypeList();
@@ -63,13 +65,22 @@ namespace FinanceManager.ViewModels
 
         private void UpdateCollection()
         {
-            ListQuote = _managerLiquidServices.GetQuote();
-            ListTabQuote = _managerLiquidServices.GetQuoteTab();
-            ListInvestitore = _managerLiquidServices.GetInvestitori();
-            SintesiSoldiR = _managerLiquidServices.GetCurrencyAvailable(1);
-            SintesiSoldiDF = _managerLiquidServices.GetCurrencyAvailable(2);
-            SintesiSoldiDFV = _managerLiquidServices.GetCurrencyAvailable(7);
-            ListContoCorrente = _managerLiquidServices.GetContoCorrenteByMovement(12);
+            try
+            {
+                ListQuoteInv = _managerLiquidServices.GetQuoteInv();
+                ListTabQuote = _managerLiquidServices.GetQuoteTab();
+                ListQuoteDettaglioGuadagno = _managerLiquidServices.GetQuoteGuadagno(false);
+                ListQuoteSintesiGuadagno = _managerLiquidServices.GetQuoteGuadagno(true);
+                ListInvestitore = _managerLiquidServices.GetInvestitori();
+                SintesiSoldiR = _managerLiquidServices.GetCurrencyAvailable(1);
+                SintesiSoldiDF = _managerLiquidServices.GetCurrencyAvailable(2);
+                SintesiSoldiDFV = _managerLiquidServices.GetCurrencyAvailable(7);
+                ListContoCorrente = _managerLiquidServices.GetContoCorrenteByMovement(12);
+            }
+            catch(Exception err)
+            {
+                MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Quote Investitori");
+            }
         }
 
         #region Getter&Setter
@@ -84,46 +95,47 @@ namespace FinanceManager.ViewModels
         /// <summary>
         /// Aggiorna la tabella con le quote degli investitori
         /// </summary>
-        public QuoteList ListQuote
+        public QuoteInvList ListQuoteInv
         {
-            get { return GetValue(() => ListQuote); }
+            get { return GetValue(() => ListQuoteInv); }
             set
             {
-                SetValue(() => ListQuote, value);
-                if (value.Count() == 0)
-                    return;
-                Totale = value[0].Totale;
-                TotDisponibile = value[0].TotDisponibile;
-                GuadagnoTotale = value[0].GuadagnoTotale;
-                Cedole = value[0].Cedole;
-                Utili = value[0].Utili;
+                SetValue(() => ListQuoteInv, value);
+                UpdateGrid();
             }
         }
-        public double Totale
+        #region getter&setter tabella investimenti
+        public double ImmDany { get; private set; }
+        public double ImmFla { get; private set; }
+        public double ImmTot { get; private set; }
+        public double PreDany { get; private set; }
+        public double PreFla { get; private set; }
+        public double PreTot { get; private set; }
+        public double AttDany { get; private set; }
+        public double AttFla { get; private set; }
+        public double AttTot { get; private set; }
+        public double QuotaDany { get; private set; }
+        public double QuotaFla { get; private set; }
+        public double AssDany { get; private set; }
+        public double AssFla { get; private set; }
+        public double AssTot { get; private set; }
+        public double DisDany { get; private set; }
+        public double DisFla { get; private set; }
+        public double DisTot { get; private set; }
+        #endregion
+
+        public QuoteGuadagnoList ListQuoteDettaglioGuadagno
         {
-            get { return GetValue(() => Totale); }
-            set { SetValue(() => Totale, value); }
+            get { return GetValue(() => ListQuoteDettaglioGuadagno); }
+            private set { SetValue(() => ListQuoteDettaglioGuadagno, value); }
         }
-        public double TotDisponibile
+
+        public QuoteGuadagnoList ListQuoteSintesiGuadagno
         {
-            get { return GetValue(() => TotDisponibile); }
-            set { SetValue(() => TotDisponibile, value); }
+            get { return GetValue(() => ListQuoteSintesiGuadagno); }
+            private set { SetValue(() => ListQuoteSintesiGuadagno, value); }
         }
-        public double GuadagnoTotale
-        {
-            get { return GetValue(() => GuadagnoTotale); }
-            set { SetValue(() => GuadagnoTotale, value); }
-        }
-        public double Cedole
-        {
-            get { return GetValue(() => Cedole); }
-            set { SetValue(() => Cedole, value); }
-        }
-        public double Utili
-        {
-            get { return GetValue(() => Utili); }
-            set { SetValue(() => Utili, value); }
-        }
+
         /// <summary>
         /// Aggiorna la tabella degli investitori
         /// </summary>
@@ -332,7 +344,7 @@ namespace FinanceManager.ViewModels
                         {
                             _managerLiquidServices.InsertInvestment(ActualQuote);
                         }
-                        ListQuote = _managerLiquidServices.GetQuote();
+                        ListQuoteInv = _managerLiquidServices.GetQuoteInv();
                         ListTabQuote = _managerLiquidServices.GetQuoteTab();
                         SintesiSoldiR = _managerLiquidServices.GetCurrencyAvailable(1);
                         SintesiSoldiDF = _managerLiquidServices.GetCurrencyAvailable(2);
@@ -365,7 +377,7 @@ namespace FinanceManager.ViewModels
                             cc.Valore_Cambio = 1;
                             cc.Id_Tipo_Soldi = (int)Tipo_Soldi.Id_Tipo_Soldi;
                             _managerLiquidServices.InsertAccountMovement(cc);                               // aggiungo il record al db
-                            ListQuote = _managerLiquidServices.GetQuote();
+                            ListQuoteInv = _managerLiquidServices.GetQuoteInv();
                             ListTabQuote = _managerLiquidServices.GetQuoteTab();
                             SintesiSoldiR = _managerLiquidServices.GetCurrencyAvailable(1);
                             SintesiSoldiDF = _managerLiquidServices.GetCurrencyAvailable(2);
@@ -397,7 +409,7 @@ namespace FinanceManager.ViewModels
                                 cc.Id_Tipo_Soldi = (int)Tipo_Soldi.Id_Tipo_Soldi;
                                 cc.Desc_Tipo_Soldi = Tipo_Soldi.Desc_Tipo_Soldi;
                                 _managerLiquidServices.UpdateContoCorrenteByIdQuote(cc);         // aggiorno i dati nel db
-                                ListQuote = _managerLiquidServices.GetQuote();
+                                ListQuoteInv = _managerLiquidServices.GetQuoteInv();
                                 ListTabQuote = _managerLiquidServices.GetQuoteTab();
                                 SintesiSoldiR = _managerLiquidServices.GetCurrencyAvailable(1);
                                 SintesiSoldiDF = _managerLiquidServices.GetCurrencyAvailable(2);
@@ -511,5 +523,36 @@ namespace FinanceManager.ViewModels
         }
 
         #endregion
+
+        private void UpdateGrid()
+        {
+            foreach(QuoteInv quoteInv in ListQuoteInv)
+            {
+                switch (quoteInv.NomeInvestitore)
+                {
+                    case "Daniela":
+                        ImmDany = quoteInv.CapitaleImmesso;
+                        PreDany = quoteInv.CapitalePrelevato;
+                        AttDany = quoteInv.CapitaleAttivo;
+                        QuotaDany = quoteInv.QuotaInv;
+                        AssDany = quoteInv.CapitaleAssegnato;
+                        DisDany = quoteInv.CapitaleDisponibile;
+                        break;
+                    case "Flavio":
+                        ImmFla = quoteInv.CapitaleImmesso;
+                        PreFla = quoteInv.CapitalePrelevato;
+                        AttFla = quoteInv.CapitaleAttivo;
+                        QuotaFla = quoteInv.QuotaInv;
+                        AssFla = quoteInv.CapitaleAssegnato;
+                        DisFla = quoteInv.CapitaleDisponibile;
+                        ImmTot = quoteInv.TotaleImmesso;
+                        PreTot = quoteInv.TotalePrelevato;
+                        AttTot = quoteInv.TotaleAttivo;
+                        AssTot = quoteInv.TotaleAssegnato;
+                        DisTot = quoteInv.TotaleDisponibile;
+                        break;
+                }
+            }
+        }
     }
 }
