@@ -40,7 +40,7 @@
             </MenuItem>
             <MenuItem Header="Reports" Margin="2,5" FontSize="16" FontWeight="Bold" 
                       Command="{Binding OnClickManagerReports}" CommandParameter="{Binding ElementName=mainGrid}"/>
-            <MenuItem Header="Connessione DB" Margin="2,5" FontSize="16" FontWeight="Bold">
+            <MenuItem Header="Connessione DB" Margin="2,5" FontSize="16" FontWeight="Bold" IsSubmenuOpen="True">
                 <RadioButton GroupName="db" IsChecked="True" IsThreeState="False" Name="default" Content="Connessione da casa">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="Checked">

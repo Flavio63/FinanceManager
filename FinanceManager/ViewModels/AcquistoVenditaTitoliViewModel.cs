@@ -627,7 +627,7 @@ namespace FinanceManager.ViewModels
                 {
                     // il record in modifica è l'unico
                     _liquidAssetServices.UpdateManagerLiquidAsset(RecordPortafoglioTitoli);
-                    _liquidAssetServices.UpdateContoCorrenteByIdPortafoglioTitoli(new ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale));
+                    _liquidAssetServices.UpdateRecordContoCorrente(new ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale), TipologiaIDContoCorrente.IdContoTitoli);
                 }
                 else
                 {
@@ -648,7 +648,8 @@ namespace FinanceManager.ViewModels
                             numeroAzioni += portafoglio.N_titoli;
                             if (pt.Id_portafoglio == RecordPortafoglioTitoli.Id_portafoglio)
                             {
-                                _liquidAssetServices.UpdateContoCorrenteByIdPortafoglioTitoli(new ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale));
+                                _liquidAssetServices.UpdateRecordContoCorrente(
+                                    new ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale), TipologiaIDContoCorrente.IdContoTitoli);
                             }
                         }
                         else if (portafoglio.Id_tipo_movimento == 6)
@@ -674,9 +675,9 @@ namespace FinanceManager.ViewModels
                                 if (CCs[0].Id_Tipo_Soldi == (int)TipologiaSoldi.Capitale)
                                 {
                                     CCcapitale.Id_RowConto = CCs[0].Id_RowConto;
-                                    _liquidAssetServices.UpdateContoCorrenteByIdCC(CCcapitale);
+                                    _liquidAssetServices.UpdateRecordContoCorrente(CCcapitale, TipologiaIDContoCorrente.IdContoCorrente);
                                     CCprofitloss.Id_RowConto = CCs[1].Id_RowConto;
-                                    _liquidAssetServices.UpdateContoCorrenteByIdCC(CCprofitloss);
+                                    _liquidAssetServices.UpdateRecordContoCorrente(CCprofitloss, TipologiaIDContoCorrente.IdContoCorrente);
                                 }
                             }
                             else if (_valoreAcquisto + _valoreVendita < 0)
@@ -686,9 +687,9 @@ namespace FinanceManager.ViewModels
                                 if (CCs[0].Id_Tipo_Soldi == (int)TipologiaSoldi.Capitale)
                                 {
                                     CCcapitale.Id_RowConto = CCs[0].Id_RowConto;
-                                    _liquidAssetServices.UpdateContoCorrenteByIdCC(CCcapitale);
+                                    _liquidAssetServices.UpdateRecordContoCorrente(CCprofitloss, TipologiaIDContoCorrente.IdContoCorrente);
                                     CCprofitloss.Id_RowConto = CCs[1].Id_RowConto;
-                                    _liquidAssetServices.UpdateContoCorrenteByIdCC(CCprofitloss);
+                                    _liquidAssetServices.UpdateRecordContoCorrente(CCprofitloss, TipologiaIDContoCorrente.IdContoCorrente);
                                 }
                             }
                         }

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FinanceManager.Models;
+using FinanceManager.Models.Enum;
 using FinanceManager.Services.SQL;
 using MySql.Data.MySqlClient;
 
@@ -614,7 +611,8 @@ namespace FinanceManager.Services
         }
 
         /// <summary>
-        /// Richiede le quote di investimento per investitore
+        /// Calcola la quota ultima base investimento attivo
+        /// restituendo il totale immesso, prelevato, assegnato e disponibile
         /// </summary>
         /// <returns>Una lista con le quote per investitore</returns>
         public QuoteInvList GetQuoteInv()
@@ -660,6 +658,12 @@ namespace FinanceManager.Services
             }
         }
 
+        /// <summary>
+        /// Calcola le quote di guadagno per investitore applicando
+        /// le quote di investimento per periodo.
+        /// </summary>
+        /// <param name="sintetico">se vero genera la sintesi altrimenti il dettaglio</param>
+        /// <returns>Una lista con i dati per investitore</returns>
         public QuoteGuadagnoList GetQuoteGuadagno(bool sintetico)
         {
             try
@@ -705,43 +709,6 @@ namespace FinanceManager.Services
         }
 
         /// <summary>
-        /// Richiede una lista degli investitori
-        /// </summary>
-        /// <returns>Una lista di investitori</returns>
-        public InvestitoreList GetInvestitori()
-        {
-            try
-            {
-                DataTable DT = new DataTable();
-                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
-                {
-                    dbAdapter.SelectCommand = new MySqlCommand();
-                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
-                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetInvestitori;
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbAdapter.Fill(DT);
-                    InvestitoreList investitori = new InvestitoreList();
-                    foreach (DataRow dataRow in DT.Rows)
-                    {
-                        Investitore investitore = new Investitore();
-                        investitore.IdInvestitore = (int)dataRow.Field<uint>("id_investitore");
-                        investitore.NomeInvestitore = dataRow.Field<string>("Nome");
-                        investitori.Add(investitore);
-                    }
-                    return investitori;
-                }
-            }
-            catch (MySqlException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-        }
-
-        /// <summary>
         /// Richiede una lista dei movimenti per data degli investimenti
         /// </summary>
         /// <returns>Una lista con i movimenti per data degli investimenti</returns>
@@ -762,7 +729,7 @@ namespace FinanceManager.Services
                     {
                         QuoteTab quote = new QuoteTab();
                         quote.IdQuote = (int)dataRow.Field<uint>("id_quote_inv");
-                        quote.IdInvestitore = (int)dataRow.Field<uint>("id_gestione");
+                        quote.IdGestione = (int)dataRow.Field<uint>("id_gestione");
                         quote.NomeInvestitore = dataRow.Field<string>("nome_gestione");
                         quote.Id_tipo_movimento = (int)dataRow.Field<uint>("id_tipo_movimento");
                         quote.Desc_tipo_movimento = dataRow.Field<string>("desc_movimento");
@@ -784,11 +751,6 @@ namespace FinanceManager.Services
             }
         }
 
-        public void AddGiroconto()
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Aggiorna la tabella con i movimenti degli investitori
         /// </summary>
@@ -802,7 +764,7 @@ namespace FinanceManager.Services
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.ManagerScripts.UpdateQuoteTab;
                     dbComm.Parameters.AddWithValue("id_quote_inv", ActualQuote.IdQuote);
-                    dbComm.Parameters.AddWithValue("id_investitore", ActualQuote.IdInvestitore);
+                    dbComm.Parameters.AddWithValue("id_gestione", ActualQuote.IdGestione);
                     dbComm.Parameters.AddWithValue("id_tipo_movimento", ActualQuote.Id_tipo_movimento);
                     dbComm.Parameters.AddWithValue("data_movimento", ActualQuote.DataMovimento.ToString("yyyy-MM-dd"));
                     dbComm.Parameters.AddWithValue("ammontare", ActualQuote.Ammontare);
@@ -823,6 +785,10 @@ namespace FinanceManager.Services
             }
         }
 
+        /// <summary>
+        /// Elimina un record dalla tabella di quote_investimenti
+        /// </summary>
+        /// <param name="idQuote">Il record da eliminare</param>
         public void DeleteRecordQuoteTab(int idQuote)
         {
             try
@@ -848,6 +814,11 @@ namespace FinanceManager.Services
             }
         }
 
+        public void AddGiroconto()
+        {
+            throw new NotImplementedException();
+        }
+
         public void UpdateGiroconto(int idQuote)
         {
             throw new NotImplementedException();
@@ -865,7 +836,7 @@ namespace FinanceManager.Services
                 {
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.ManagerScripts.InsertInvestment;
-                    dbComm.Parameters.AddWithValue("id_investitore", ActualQuote.IdInvestitore);
+                    dbComm.Parameters.AddWithValue("id_investitore", ActualQuote.IdGestione);
                     dbComm.Parameters.AddWithValue("id_tipo_movimento", ActualQuote.Id_tipo_movimento);
                     dbComm.Parameters.AddWithValue("data_movimento", ActualQuote.DataMovimento.ToString("yyyy-MM-dd"));
                     dbComm.Parameters.AddWithValue("ammontare", ActualQuote.Ammontare);
@@ -886,6 +857,10 @@ namespace FinanceManager.Services
             }
         }
 
+        /// <summary>
+        /// Ritorna i dati dell'ultimo movimento di capitali effettuato
+        /// </summary>
+        /// <returns>Record con i dati</returns>
         public QuoteTab GetLastQuoteTab()
         {
             try
@@ -900,7 +875,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
                     quote.IdQuote = (int)DT.Rows[0].Field<uint>("id_quote_inv");
-                    quote.IdInvestitore = (int)DT.Rows[0].Field<uint>("id_investitore");
+                    quote.IdGestione = (int)DT.Rows[0].Field<uint>("id_investitore");
                     quote.NomeInvestitore = DT.Rows[0].Field<string>("Nome");
                     quote.Id_tipo_movimento = (int)DT.Rows[0].Field<uint>("id_tipo_movimento");
                     quote.Desc_tipo_movimento = DT.Rows[0].Field<string>("desc_movimento");
@@ -919,10 +894,11 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
+        
         /// <summary>
-        /// Estrae tutti i movimenti in ordine di data
+        /// Estrae tutti i movimenti in ordine di data del conto corrente
         /// </summary>
-        /// <returns>ObservableCollection con tutti i movimenti</returns>
+        /// <returns>Lista con tutti i movimenti</returns>
         public ContoCorrenteList GetContoCorrenteList()
         {
             try
@@ -947,6 +923,7 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
+        
         /// <summary>
         /// Dato il codice di un movimento estrae tutti i record in ordine di data
         /// </summary>
@@ -978,6 +955,12 @@ namespace FinanceManager.Services
             }
         }
 
+        /// <summary>
+        /// Dato l'id del giroconto fra le 2 tabelle investimenti e cc
+        /// estrae i dati dalla tabella conto_corrente
+        /// </summary>
+        /// <param name="idQuote">id_quote_inv</param>
+        /// <returns>Record di tipo Conto Corrente</returns>
         public ContoCorrenteList GetContoCorrenteByIdQuote(int idQuote)
         {
             try
@@ -1004,6 +987,11 @@ namespace FinanceManager.Services
             }
         }
 
+        /// <summary>
+        /// Dato l'id del portafoglio titoli estrae i dati dalla tabella conto_corrente
+        /// </summary>
+        /// <param name="idPortafoglioTitoli">id_portafoglio_titoli</param>
+        /// <returns>Record di tipo Conto Corrente</returns>
         public ContoCorrenteList GetContoCorrenteByIdPortafoglio(int idPortafoglioTitoli)
         {
             try
@@ -1029,42 +1017,7 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
-        public void UpdateContoCorrenteByIdQuote(ContoCorrente contoCorrente)
-        {
-            try
-            {
-                using (MySqlCommand dbComm = new MySqlCommand())
-                {
-                    dbComm.CommandType = CommandType.Text;
-                    dbComm.CommandText = SQL.ManagerScripts.UpdateContoCorrenteByIdQuote;
-                    dbComm.Parameters.AddWithValue("id_fineco_euro", contoCorrente.Id_RowConto);
-                    dbComm.Parameters.AddWithValue("id_conto", contoCorrente.Id_Conto);
-                    dbComm.Parameters.AddWithValue("id_quote_investimenti", contoCorrente.Id_Quote_Investimenti);
-                    dbComm.Parameters.AddWithValue("id_valuta", contoCorrente.Id_Valuta);
-                    dbComm.Parameters.AddWithValue("id_portafoglio_titoli", contoCorrente.Id_Portafoglio_Titoli);
-                    dbComm.Parameters.AddWithValue("id_tipo_movimento", contoCorrente.Id_tipo_movimento);
-                    dbComm.Parameters.AddWithValue("id_gestione", contoCorrente.Id_Gestione);
-                    dbComm.Parameters.AddWithValue("id_titolo", contoCorrente.Id_Titolo);
-                    dbComm.Parameters.AddWithValue("data_movimento", contoCorrente.DataMovimento.ToString("yyyy-MM-dd"));
-                    dbComm.Parameters.AddWithValue("ammontare", contoCorrente.Ammontare);
-                    dbComm.Parameters.AddWithValue("cambio", contoCorrente.Valore_Cambio);
-                    dbComm.Parameters.AddWithValue("causale", contoCorrente.Causale);
-                    dbComm.Parameters.AddWithValue("id_tipo_soldi", contoCorrente.Id_Tipo_Soldi);
-                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
-                }
-            }
-            catch (MySqlException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-        }
+
         /// <summary>
         /// Elimina un record dalla tabella ContoCorrente
         /// sulla base di un id di riga
@@ -1095,6 +1048,11 @@ namespace FinanceManager.Services
             }
         }
 
+        /// <summary>
+        /// Elimina un record dalla tabella conto_corrente
+        /// sulla base del id_portafoglio_titoli
+        /// </summary>
+        /// <param name="idContoTitoli">id-portafoglio_titoli</param>
         public void DeleteContoCorrenteByIdPortafoglioTitoli(int idContoTitoli)
         {
             try
@@ -1120,51 +1078,19 @@ namespace FinanceManager.Services
             }
         }
 
-        public void UpdateContoCorrenteByIdPortafoglioTitoli(ContoCorrente contoCorrente)
+        public void UpdateRecordContoCorrente(ContoCorrente contoCorrente, TipologiaIDContoCorrente tipologiaID)
         {
             try
             {
                 using (MySqlCommand dbComm = new MySqlCommand())
                 {
                     dbComm.CommandType = CommandType.Text;
-                    dbComm.CommandText = SQL.ManagerScripts.UpdateContoCorrenteByIdPortafoglioTitoli;
-                    dbComm.Parameters.AddWithValue("id_fineco_euro", contoCorrente.Id_RowConto);
-                    dbComm.Parameters.AddWithValue("id_conto", contoCorrente.Id_Conto);
-                    dbComm.Parameters.AddWithValue("id_quote_investimenti", contoCorrente.Id_Quote_Investimenti);
-                    dbComm.Parameters.AddWithValue("id_valuta", contoCorrente.Id_Valuta);
-                    dbComm.Parameters.AddWithValue("id_portafoglio_titoli", contoCorrente.Id_Portafoglio_Titoli);
-                    dbComm.Parameters.AddWithValue("id_tipo_movimento", contoCorrente.Id_tipo_movimento);
-                    dbComm.Parameters.AddWithValue("id_gestione", contoCorrente.Id_Gestione);
-                    dbComm.Parameters.AddWithValue("id_titolo", contoCorrente.Id_Titolo);
-                    dbComm.Parameters.AddWithValue("data_movimento", contoCorrente.DataMovimento.ToString("yyyy-MM-dd"));
-                    dbComm.Parameters.AddWithValue("ammontare", contoCorrente.Ammontare);
-                    dbComm.Parameters.AddWithValue("cambio", contoCorrente.Valore_Cambio);
-                    dbComm.Parameters.AddWithValue("causale", contoCorrente.Causale);
-                    dbComm.Parameters.AddWithValue("id_tipo_soldi", contoCorrente.Id_Tipo_Soldi);
-                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
-                }
-            }
-            catch (MySqlException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-        }
-
-        public void UpdateContoCorrenteByIdCC(ContoCorrente contoCorrente)
-        {
-            try
-            {
-                using (MySqlCommand dbComm = new MySqlCommand())
-                {
-                    dbComm.CommandType = CommandType.Text;
-                    dbComm.CommandText = SQL.ManagerScripts.UpdateContoCorrenteByIdCC;
+                    if (tipologiaID == TipologiaIDContoCorrente.IdContoCorrente)
+                        dbComm.CommandText = ManagerScripts.UpdateContoCorrenteByIdCC;
+                    else if (tipologiaID == TipologiaIDContoCorrente.IdContoTitoli)
+                        dbComm.CommandText = SQL.ManagerScripts.UpdateContoCorrenteByIdPortafoglioTitoli;
+                    else if (tipologiaID == TipologiaIDContoCorrente.IdQuoteInvestimenti)
+                        dbComm.CommandText = SQL.ManagerScripts.UpdateContoCorrenteByIdQuote;
                     dbComm.Parameters.AddWithValue("id_fineco_euro", contoCorrente.Id_RowConto);
                     dbComm.Parameters.AddWithValue("id_conto", contoCorrente.Id_Conto);
                     dbComm.Parameters.AddWithValue("id_quote_investimenti", contoCorrente.Id_Quote_Investimenti);

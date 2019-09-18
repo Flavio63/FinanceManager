@@ -42,6 +42,7 @@ namespace FinanceManager.Models
         public string Causale { set; get; }
         public int Id_Tipo_Soldi { set; get; }
         public string Desc_Tipo_Soldi { set; get; }
+        public int Id_Quote_Periodi { set; get; }
 
         /// <summary>
         /// Inizializza un record vuoto di ContoCorrente

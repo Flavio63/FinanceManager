@@ -1,8 +1,8 @@
 ﻿using FinanceManager.Events;
 using FinanceManager.Models;
+using FinanceManager.Models.Enum;
 using FinanceManager.Services;
 using FinanceManager.Views;
-using FinanceManager.Models.Enum;
 using System;
 using System.Linq;
 using System.Collections.ObjectModel;
@@ -628,7 +628,7 @@ namespace FinanceManager.ViewModels
                     RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ||
                     RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Costi)
                 {
-                    _liquidAssetServices.UpdateContoCorrenteByIdCC(RecordContoCorrente);    //registro la modifica in conto corrente
+                    _liquidAssetServices.UpdateRecordContoCorrente(RecordContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);    //registro la modifica in conto corrente
                 }
                 else
                 {
@@ -652,8 +652,8 @@ namespace FinanceManager.ViewModels
                         Record2ContoCorrente.Ammontare = RecordContoCorrente.Ammontare * -1;
                         Record2ContoCorrente.Causale = RecordContoCorrente.Causale;
                     }
-                    _liquidAssetServices.UpdateContoCorrenteByIdCC(Record2ContoCorrente);    //registro la modifica in conto corrente
-                    _liquidAssetServices.UpdateContoCorrenteByIdCC(RecordContoCorrente);    //registro la modifica in conto corrente
+                    _liquidAssetServices.UpdateRecordContoCorrente(Record2ContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);    //registro la modifica in conto corrente
+                    _liquidAssetServices.UpdateRecordContoCorrente(RecordContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);    //registro la modifica in conto corrente
                 }
                 MessageBox.Show("Record modificato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
                 Init();

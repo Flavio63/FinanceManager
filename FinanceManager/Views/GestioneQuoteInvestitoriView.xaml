@@ -11,13 +11,13 @@
     <Grid Margin="20, 5">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="250"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="450"/>
         </Grid.ColumnDefinitions>
         <TextBlock Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="26" FontWeight="Bold">
                 DISPONIBILITA' E QUOTE PER INVESTITORE
@@ -123,10 +123,124 @@
                 <TextBlock x:Name="DispTot" Grid.Row="4" Grid.Column="6" Text="{Binding DisTot, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}" FontSize="18" FontWeight="Bold" Margin="5" Padding="0,0,2,0" HorizontalAlignment="Right" Foreground="DarkGray"/>
             </Grid>
         </Border>
+        <Border BorderBrush="DarkOrange" Background="LightGray" BorderThickness="4" Margin="5" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="75"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.ColumnSpan="4" Grid.Row="0" Text="Parametri Comuni da Selezionare" FontSize="20" FontWeight="Bold" 
+                       HorizontalAlignment="Center" Margin="3, 2, 3, 7"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="La data" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
+                <DatePicker Grid.Row="1" Grid.Column="1" Margin="5, 2, 5, 2" SelectedDate="{Binding ActualQuote.DataMovimento, 
+                    UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Center" FontSize="16"
+                        DisplayDate="{Binding ActualQuote.DataMovimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="SelectedDateChanged">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </DatePicker>
+                <TextBlock Grid.Row="1" Grid.Column="2" Text="Cifra" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
+                <TextBox Name="Ammontare" Grid.Row="1" Grid.Column="3" Margin="5, 2" Padding="0,0,5,0" HorizontalContentAlignment="Right"
+                         Text="{Binding ActualQuote.Ammontare, ConverterCulture=it-IT, StringFormat=C2}" FontSize="16">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="LostFocus">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                        </iy:EventTrigger>
+                        <iy:EventTrigger EventName="PreviewKeyDown">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Causale" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                <TextBox Name="Causale" Grid.Row="2" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="3" FontSize="16" Margin="5, 2, 5, 2" 
+                         VerticalAlignment="Stretch" AcceptsReturn="True" TextWrapping="Wrap"
+                         Text="{Binding ActualQuote.Note, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="LostFocus">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
+                </TextBox>
+
+                <Border Grid.Row="4" Grid.ColumnSpan="4" BorderThickness="2" BorderBrush="Magenta" Margin="5">
+                    <TabControl>
+                        <TabItem Header="Versamento / Prelievo" FontSize="16" FontWeight="Bold">
+                            <Grid Margin="5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Chi fa l'operazione?" Margin="0,5,0,0" FontSize="14" HorizontalAlignment="Center"/>
+                                <ComboBox Grid.Row="1" Margin="5" ItemsSource="{Binding}"></ComboBox>
+                                <TextBlock Text="Versamento o Prelievo?" Grid.Column="1" Margin="0,5,0,0" FontSize="14" HorizontalAlignment="Center"/>
+                                <ComboBox Grid.Row="1" Grid.Column="1" Margin="5"/>
+                            </Grid>
+                        </TabItem>
+                        <TabItem Header="Giroconto" FontSize="16" FontWeight="Bold">
+                            <Grid Margin="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="75"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="50"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.ColumnSpan="2" Text="Conto Investitori" HorizontalAlignment="Center" FontSize="18"/>
+                                <TextBlock Grid.Column="2" Grid.ColumnSpan="2" Text="Conti Deposito" HorizontalAlignment="Center" FontSize="18"/>
+                                <StackPanel Grid.Row="1" VerticalAlignment="top" HorizontalAlignment="Center">
+                                    <RadioButton x:Name="Da" GroupName="Direzione" Margin="5,5,1,5">Da:</RadioButton>
+                                    <RadioButton x:Name="A" GroupName="Direzione" Margin="5,5,1,5">A:</RadioButton>
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="1" Grid.Column="2" VerticalAlignment="top" HorizontalAlignment="Center">
+                                    <RadioButton Margin="5,5,1,5" Content="Da:" IsChecked="{Binding ElementName=A, Path=IsChecked}"/>
+                                    <RadioButton Margin="5,5,1,5" Content="A:" IsChecked="{Binding ElementName=Da, Path=IsChecked}"/>
+                                </StackPanel>
+                                <ComboBox Grid.Row="1" Grid.Column="1" Margin="1,5,5,5" ItemsSource="{Binding}" VerticalAlignment="Center"/>
+                                <ComboBox Grid.Row="1" Grid.Column="3" Margin="1,5,5,5" ItemsSource="{Binding}" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" Text="Gestione" 
+                                           Margin="5,5,1,5"/>
+                                <ComboBox Grid.Row="2" Grid.Column="3" ItemsSource="{Binding}" Margin="1,5,5,5"/>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+                </Border>
+                
+                <Border Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" Margin="5" BorderBrush="Brown" BorderThickness="1">
+                    <!-- Bottoniera -->
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Inserisci" Margin="10" Width="75" Height="25" Command="{Binding InsertCommand}"/>
+                            <Button Content="Modifica" Margin="10" Width="75" Height="25" Command="{Binding ModifyCommand}"/>
+                            <Button Content="Pulisci" Margin="10" Width="75" Height="25" Command="{Binding ClearCommand}"/>
+                            <Button Content="Elimina" Margin="10" Width="75" Height="25" Command="{Binding EraseCommand}"/>
+                        </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
         <!-- Informazioni sulle quote di guadagno per anno -->
-        <Border Grid.Row="2" BorderBrush="Blue" BorderThickness="1" Margin="5">
-            <TabControl TabStripPlacement="Top">
-                <TabItem Header="Sintesi Guadagno" IsSelected="True" FontSize="18" FontWeight="Bold">
+        <Border Grid.Row="3" BorderBrush="Blue" BorderThickness="1" Margin="5">
+            <TabControl TabStripPlacement="Left">
+                <TabItem Header="Sintesi Guadagno" IsSelected="True" FontSize="16" FontWeight="Bold">
                     <DataGrid ItemsSource="{Binding ListQuoteSintesiGuadagno, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" AlternatingRowBackground="LightGray"
                               Margin="5" AutoGenerateColumns="False" FontSize="16" FontWeight="Bold" CanUserAddRows="False" CanUserDeleteRows="False">
                         <DataGrid.Columns>
@@ -197,7 +311,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
                 </TabItem>
-                <TabItem Header="Dettagli Guadagno" FontSize="18" FontWeight="Bold">
+                <TabItem Header="Dettagli Guadagno" FontSize="16" FontWeight="Bold">
                     <DataGrid ItemsSource="{Binding ListQuoteDettaglioGuadagno, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" AlternatingRowBackground="LightGray"
                               Margin="5" AutoGenerateColumns="False" FontSize="16" FontWeight="Bold" CanUserAddRows="False" CanUserDeleteRows="False">
                         <DataGrid.Columns>
@@ -294,176 +408,178 @@
             </TabControl>
         </Border>
         <!-- Tab contenente la situazione di liquidità per conto corrente suddivisa per cedole, utili e disponibili -->
-        <TabControl Grid.Row="1" Margin="5" Grid.Column="1" HorizontalAlignment="Left">
-            <TabItem Header="C/C Dany&amp;Fla" FontSize="20" FontWeight="Bold">
-                <DataGrid ItemsSource="{Binding SintesiSoldiDF, UpdateSourceTrigger=PropertyChanged}"
+        <Border BorderBrush="Blue" BorderThickness="1" Margin="5" Grid.Row="3" Grid.Column="1">
+            <TabControl Margin="5" HorizontalAlignment="Left">
+                <TabItem Header="C/C Dany&amp;Fla" FontSize="20" FontWeight="Bold">
+                    <DataGrid ItemsSource="{Binding SintesiSoldiDF, UpdateSourceTrigger=PropertyChanged}"
                               AutoGenerateColumns="False" AlternatingRowBackground="LightGray" Margin="5"
                               FontSize="18" FontWeight="Bold" CanUserAddRows="False" CanUserDeleteRows="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Conto" Binding="{Binding DescCont, UpdateSourceTrigger=PropertyChanged}"
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Conto" Binding="{Binding DescCont, UpdateSourceTrigger=PropertyChanged}"
                                                 IsReadOnly="True" FontSize="16" FontWeight="Normal">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="Margin" Value="5,0,5,0"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="Valuta" Binding="{Binding CodValuta, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Margin" Value="5,0,5,0"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Valuta" Binding="{Binding CodValuta, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
                                                 IsReadOnly="True" FontSize="16" FontWeight="Normal">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="HorizontalAlignment" Value="Center"/>
-                                    <Setter Property="Margin" Value="5,0,5,0"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="Cedole" Binding="{Binding Cedole, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="Margin" Value="5,0,5,0"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Cedole" Binding="{Binding Cedole, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
                                                 IsReadOnly="True" FontSize="16" FontWeight="Normal">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                                    <Setter Property="Margin" Value="5,0,5,0"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="Utili" Binding="{Binding Utili, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                                        <Setter Property="Margin" Value="5,0,5,0"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Utili" Binding="{Binding Utili, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
                                                 IsReadOnly="True" FontSize="16" FontWeight="Normal">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                                    <Setter Property="Margin" Value="5,0,5,0"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="Disponibili" Binding="{Binding Disponibili, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                                        <Setter Property="Margin" Value="5,0,5,0"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Disponibili" Binding="{Binding Disponibili, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
                                                 IsReadOnly="True" FontSize="16" FontWeight="Normal">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                                    <Setter Property="Margin" Value="5,0,5,0"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-            <TabItem Header="C/C Rubiu" FontSize="20" FontWeight="Bold">
-                <DataGrid ItemsSource="{Binding SintesiSoldiR, UpdateSourceTrigger=PropertyChanged}"
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                                        <Setter Property="Margin" Value="5,0,5,0"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+                <TabItem Header="C/C Rubiu" FontSize="20" FontWeight="Bold">
+                    <DataGrid ItemsSource="{Binding SintesiSoldiR, UpdateSourceTrigger=PropertyChanged}"
                               AutoGenerateColumns="False" AlternatingRowBackground="LightGray" Margin="5"
                               FontSize="18" FontWeight="Bold" CanUserAddRows="False" CanUserDeleteRows="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Conto" Binding="{Binding DescCont, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Conto" Binding="{Binding DescCont, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
                                                 IsReadOnly="True" FontSize="16" FontWeight="Normal">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="Margin" Value="5,0,5,0"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="Valuta" Binding="{Binding CodValuta, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Margin" Value="5,0,5,0"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Valuta" Binding="{Binding CodValuta, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
                                                 IsReadOnly="True" FontSize="16" FontWeight="Normal">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="HorizontalAlignment" Value="Center"/>
-                                    <Setter Property="Margin" Value="5,0,5,0"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="Cedole" Binding="{Binding Cedole, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="Margin" Value="5,0,5,0"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Cedole" Binding="{Binding Cedole, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
                                                 IsReadOnly="True" FontSize="16" FontWeight="Normal">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                                    <Setter Property="Margin" Value="5,0,5,0"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="Utili" Binding="{Binding Utili, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                                        <Setter Property="Margin" Value="5,0,5,0"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Utili" Binding="{Binding Utili, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
                                                 IsReadOnly="True" FontSize="16" FontWeight="Normal">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                                    <Setter Property="Margin" Value="5,0,5,0"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="Disponibili" Binding="{Binding Disponibili, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                                        <Setter Property="Margin" Value="5,0,5,0"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Disponibili" Binding="{Binding Disponibili, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
                                                 IsReadOnly="True" FontSize="16" FontWeight="Normal">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                                    <Setter Property="Margin" Value="5,0,5,0"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-            <TabItem Header="D&amp;F-Volatili" FontSize="20" FontWeight="Bold">
-                <DataGrid ItemsSource="{Binding SintesiSoldiDFV, UpdateSourceTrigger=PropertyChanged}"
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                                        <Setter Property="Margin" Value="5,0,5,0"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+                <TabItem Header="D&amp;F-Volatili" FontSize="20" FontWeight="Bold">
+                    <DataGrid ItemsSource="{Binding SintesiSoldiDFV, UpdateSourceTrigger=PropertyChanged}"
                               AutoGenerateColumns="False" AlternatingRowBackground="LightGray" Margin="5"
                               FontSize="18" FontWeight="Bold" CanUserAddRows="False" CanUserDeleteRows="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Conto" Binding="{Binding DescCont, UpdateSourceTrigger=PropertyChanged}"
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Conto" Binding="{Binding DescCont, UpdateSourceTrigger=PropertyChanged}"
                                                 IsReadOnly="True" FontSize="16" FontWeight="Normal">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="Margin" Value="5,0,5,0"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="Valuta" Binding="{Binding CodValuta, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Margin" Value="5,0,5,0"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Valuta" Binding="{Binding CodValuta, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
                                                 IsReadOnly="True" FontSize="16" FontWeight="Normal">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="HorizontalAlignment" Value="Center"/>
-                                    <Setter Property="Margin" Value="5,0,5,0"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="Cedole" Binding="{Binding Cedole, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="Margin" Value="5,0,5,0"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Cedole" Binding="{Binding Cedole, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
                                                 IsReadOnly="True" FontSize="16" FontWeight="Normal">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                                    <Setter Property="Margin" Value="5,0,5,0"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="Utili" Binding="{Binding Utili, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                                        <Setter Property="Margin" Value="5,0,5,0"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Utili" Binding="{Binding Utili, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
                                                 IsReadOnly="True" FontSize="16" FontWeight="Normal">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                                    <Setter Property="Margin" Value="5,0,5,0"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="Disponibili" Binding="{Binding Disponibili, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                                        <Setter Property="Margin" Value="5,0,5,0"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Disponibili" Binding="{Binding Disponibili, UpdateSourceTrigger=PropertyChanged, StringFormat=N, ConverterCulture=it-IT}"
                                                 IsReadOnly="True" FontSize="16" FontWeight="Normal">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                                    <Setter Property="Margin" Value="5,0,5,0"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-        </TabControl>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                                        <Setter Property="Margin" Value="5,0,5,0"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+            </TabControl>
+        </Border>
         <!-- Informazione sulla movimentazione del capitale -->
-        <Border Grid.Row="2" Grid.Column="1" Margin="5" BorderBrush="Gray" BorderThickness="1">
+        <Border Grid.Row="2" Grid.Column="0" Margin="5" BorderBrush="Gray" BorderThickness="1">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition />
+                    <RowDefinition Height="40" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
                 <TextBlock Text="I Movimenti del Capitale" VerticalAlignment="Center" HorizontalAlignment="Center" 
                          FontSize="18" FontWeight="Bold"/>
                 <!-- Datagrid per la gestione degli investimenti -->
                 <DataGrid Grid.Row="1" Name="TabQuote" 
-                      ItemsSource="{Binding ListTabQuote, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                      ItemsSource="{Binding ListTabQuote, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                       AlternatingRowBackground="LightGray" Margin="5" AutoGenerateColumns="False"  
                       FontSize="16" FontWeight="Bold" CanUserAddRows="False" CanUserDeleteRows="False">
                     <DataGrid.Columns>
@@ -512,6 +628,11 @@
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
                     </DataGrid.Columns>
+                    <iy:Interaction.Triggers>
+                        <iy:EventTrigger EventName="SelectionChanged">
+                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </iy:EventTrigger>
+                    </iy:Interaction.Triggers>
                 </DataGrid>
             </Grid>
         </Border>

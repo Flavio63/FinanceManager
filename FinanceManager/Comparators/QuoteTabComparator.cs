@@ -17,7 +17,7 @@ namespace FinanceManager.Comparators
             }
             return
                 x.IdQuote == y.IdQuote &&
-                x.IdInvestitore == y.IdInvestitore &&
+                x.IdGestione == y.IdGestione &&
                 x.Id_tipo_movimento == y.Id_tipo_movimento &&
                 x.Ammontare == y.Ammontare &&
                 x.DataMovimento == y.DataMovimento &&
@@ -28,7 +28,7 @@ namespace FinanceManager.Comparators
         {
             return
                 obj.IdQuote.GetHashCode() ^
-                obj.IdInvestitore.GetHashCode() ^
+                obj.IdGestione.GetHashCode() ^
                 obj.Id_tipo_movimento.GetHashCode() ^
                 obj.Ammontare.GetHashCode() ^
                 obj.DataMovimento.GetHashCode() ^

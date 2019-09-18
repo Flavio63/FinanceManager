@@ -1,6 +1,6 @@
 ﻿using FinanceManager.Models;
+using FinanceManager.Models.Enum;
 using System;
-using System.Data;
 
 namespace FinanceManager.Services
 {
@@ -31,7 +31,6 @@ namespace FinanceManager.Services
         /// <param name="sintetico">True per sintesi e False per dettaglio</param>
         /// <returns>Observable Collection</returns>
         QuoteGuadagnoList GetQuoteGuadagno(bool sintetico);
-        InvestitoreList GetInvestitori();
 
         QuoteTabList GetQuoteTab();                                     //Prendo tutti i record della tabella AndQuote
         void InsertInvestment(QuoteTab ActualQuote);                    // Inserisce nuovo movimento nella tabella anche il movimento 12
@@ -46,9 +45,13 @@ namespace FinanceManager.Services
         ContoCorrenteList GetContoCorrenteByIdQuote(int idQuote);       // Il movimento del conto legato al giroconto selezionato
         ContoCorrenteList GetContoCorrenteByMovement(int idMovimento);  // Tutti i movimenti di giroconto
         ContoCorrenteList GetContoCorrenteByIdPortafoglio(int idPortafoglioTitoli); // I max 2 movimenti di ContoCorrente associati al trade
-        void UpdateContoCorrenteByIdCC(ContoCorrente contoCorrente);                // Aggiorno il movimento della tabella ContoCorrente sulla base dell'id del record
-        void UpdateContoCorrenteByIdQuote(ContoCorrente contoCorrente);             // Aggiorno il movimento della tabella ContoCorrente sulla base della tabella quote investimento
-        void UpdateContoCorrenteByIdPortafoglioTitoli(ContoCorrente contoCorrente); // Aggiorno il movimento della tabella ContoCorrente sulla base del conto titoli
+        /// <summary>
+        /// Aggiorno la tabella conto_corrente
+        /// </summary>
+        /// <param name="contoCorrente">Il record con i dati aggiornati</param>
+        /// <param name="idTipo">la scelta dell'identificativo</param>
+        void UpdateRecordContoCorrente(ContoCorrente contoCorrente, TipologiaIDContoCorrente idTipo);
+
         void DeleteContoCorrenteByIdPortafoglioTitoli(int idContoTitoli);           // Elimino il movimento dalla tabella ContoCorrente sulla base del conto titoli
         /// <summary>
         /// Elimina un record dalla tabella ContoCorrente
