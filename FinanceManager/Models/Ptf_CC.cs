@@ -12,7 +12,7 @@ namespace FinanceManager.Models
         // Campi derivati dal Portafoglio Titoli
         public int Id_portafoglio_titoli { get; set; }
         public int Id_gestione { get; set; }
-        public int Id_conto { get; set; }
+        public int Id_Conto { get; set; }
         public int Id_valuta { get; set; }
         public int Id_tipo_movimento { get; set; }
         public int Id_titolo { get; set; }

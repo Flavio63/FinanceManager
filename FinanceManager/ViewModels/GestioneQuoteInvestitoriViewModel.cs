@@ -32,30 +32,41 @@ namespace FinanceManager.ViewModels
 
         private void Init()
         {
+            #region start command
             CloseMeCommand = new CommandHandler(CloseMe);
             InsertCommand = new CommandHandler(SaveCommand, CanSave);
             ModifyCommand = new CommandHandler(UpdateCommand, CanModify);
             EraseCommand = new CommandHandler(DeleteCommand, CanModify);
             ClearCommand = new CommandHandler(CleanCommand);
+            #endregion
             ListQuoteInv = new QuoteInvList();
             ListQuoteDettaglioGuadagno = new QuoteGuadagnoList();
             ListQuoteSintesiGuadagno = new QuoteGuadagnoList();
             ListTabQuote = new QuoteTabList();
             ListMovementType = new RegistryMovementTypeList();
-            ListContoCorrente = new ContoCorrenteList();
+            ContoCorrenteSelected = new ContoCorrente();
             ActualQuote = new QuoteTab();
+            ListInvestitori = new RegistryOwnersList();
+            ListGestioni = new RegistryOwnersList();
+            ListLocation = new RegistryLocationList();
 
             RegistryMovementTypeList listaOriginale = new RegistryMovementTypeList();
+            RegistryOwnersList ListaInvestitoreOriginale = new RegistryOwnersList();
             try
             {
                 listaOriginale = _registryServices.GetRegistryMovementTypesList();
-                var RMTL = from movimento in listaOriginale
-                           where (movimento.Id_tipo_movimento == 1 ||
-                           movimento.Id_tipo_movimento == 2 ||
-                           movimento.Id_tipo_movimento == 12)
-                           select movimento;
-                foreach (RegistryMovementType registry in RMTL)
-                    ListMovementType.Add(registry);
+                foreach (RegistryMovementType registry in listaOriginale)
+                    if (registry.Id_tipo_movimento == 1 || registry.Id_tipo_movimento == 2)
+                        ListMovementType.Add(registry);
+
+                ListaInvestitoreOriginale = _registryServices.GetGestioneList();
+                foreach (RegistryOwner RO in ListaInvestitoreOriginale)
+                {
+                    if (RO.Tipologia == "Investitore")
+                        ListInvestitori.Add(RO);
+                    else if (RO.Tipologia == "Gestore")
+                        ListGestioni.Add(RO);
+                }
 
                 DataMovimento = DateTime.Now.Date;
 
@@ -80,17 +91,78 @@ namespace FinanceManager.ViewModels
 
                 ListQuoteDettaglioGuadagno = _managerLiquidServices.GetQuoteGuadagno(false);
                 ListQuoteSintesiGuadagno = _managerLiquidServices.GetQuoteGuadagno(true);
-
-                // La lista del cc in base al movimento di giroconto (da filtrare ulteriormente in base al id_investitore > 0)
-                ListContoCorrente = _managerLiquidServices.GetContoCorrenteByMovement(12);
+                ListLocation = _registryServices.GetRegistryLocationList();
+                
             }
-            catch(Exception err)
+            catch (Exception err)
             {
                 MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Quote Investitori");
             }
         }
 
         #region Getter&Setter
+        /// <summary>
+        /// Per gestire la direzione del giroconto
+        /// DA QuoteInvestimenti A ContoCorrente
+        /// </summary>
+        public bool CheckDa
+        {
+            get { return GetValue(() => CheckDa); }
+            set { SetValue(() => CheckDa, value); }
+        }
+        /// <summary>
+        /// Per gestire la direzione del giroconto
+        /// A QuoteInvestimenti DA ContoCorrente
+        /// </summary>
+        public bool CheckA
+        {
+            get { return GetValue(() => CheckA); }
+            set { SetValue(() => CheckA, value); }
+        }
+        /// <summary>
+        /// La lista di dove sono depositati i soldini
+        /// </summary>
+        public RegistryLocationList ListLocation
+        {
+            get { return GetValue(() => ListLocation); }
+            set { SetValue(() => ListLocation, value); }
+        }
+        /// <summary>
+        /// Gestisce l'attivazione automatica
+        /// del TabItem relativo al Versamento/Prelievo
+        /// </summary>
+        public bool TabVersPre
+        {
+            get { return GetValue(() => TabVersPre); }
+            set { SetValue(() => TabVersPre, value); }
+        }
+        /// <summary>
+        /// Gestisce l'attivazione automatica
+        /// del TabItem relativo al Giroconto
+        /// </summary>
+        public bool TabGiroconto
+        {
+            get { return GetValue(() => TabGiroconto); }
+            set { SetValue(() => TabGiroconto, value); }
+        }
+        /// <summary>
+        /// E' la lista con gli investitori
+        /// (filtro della tabella gestioni sul campo tipologia)
+        /// </summary>
+        public RegistryOwnersList ListInvestitori
+        {
+            get { return GetValue(() => ListInvestitori); }
+            set { SetValue(() => ListInvestitori, value); }
+        }
+        /// <summary>
+        /// E' la lista con i gestori degli investimenti
+        /// (filtro della tabella gestioni sul campo tipologia)
+        /// </summary>
+        public RegistryOwnersList ListGestioni
+        {
+            get { return GetValue(() => ListGestioni); }
+            set { SetValue(() => ListGestioni, value); }
+        }
         /// <summary>
         /// Gestisce l'elenco dei tipi di movimento
         /// </summary>
@@ -174,10 +246,10 @@ namespace FinanceManager.ViewModels
         /// <summary>
         /// Memorizzo i record dei conto corrente
         /// </summary>
-        public ContoCorrenteList ListContoCorrente
+        public ContoCorrente ContoCorrenteSelected
         {
-            get { return GetValue(() => ListContoCorrente); }
-            set { SetValue(() => ListContoCorrente, value); }
+            get { return GetValue(() => ContoCorrenteSelected); }
+            set { SetValue(() => ContoCorrenteSelected, value); }
         }
 
         /// <summary>
@@ -267,37 +339,34 @@ namespace FinanceManager.ViewModels
         /// <param name="e"></param>
         public void CbSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (e.AddedItems.Count > 0)
+            if (sender is DataGrid && e.AddedItems.Count > 0)
+            {
+                if (e.AddedItems[0] is QuoteTab quoteTab)
+                {
+                    ActualQuote = quoteTab;
+                    if (ActualQuote.Id_tipo_movimento == 12)
+                    {
+                        // estraggo solo il record corrispondente alla selezione nella griglia quote
+                        ContoCorrenteSelected = _managerLiquidServices.GetContoCorrenteByIdQuote(ActualQuote.IdQuote);
+                        CheckDa = ContoCorrenteSelected.Ammontare > 0 ? true : false;
+                        CheckA = !CheckDa;
+                        TabGiroconto = true;
+                        TabVersPre = !TabGiroconto;
+                    }
+                    else if (ActualQuote.Id_tipo_movimento != 12)
+                    {
+                        // Attivo il tabControl dei Ver
+                        TabVersPre = true;
+                        TabGiroconto = !TabVersPre;
+                    }
+                }
+            }
+            else if (e.AddedItems.Count > 0)
             {
                 if (e.AddedItems[0].GetType().Name == "DateTime")
                 {
                     DataMovimento = (DateTime)e.AddedItems[0];
                     return;
-                }
-                if (e.AddedItems[0] is Investitore investitore)
-                {
-                    ActualQuote.IdGestione = investitore.IdInvestitore;
-                    ActualQuote.NomeInvestitore = investitore.NomeInvestitore;
-                    return;
-                }
-                if (e.AddedItems[0].GetType().Name == "QuoteTab")
-                {
-                    ActualQuote = e.AddedItems[0] as QuoteTab;
-                    if (ActualQuote.Id_tipo_movimento != 1 && ActualQuote.Id_tipo_movimento != 2 && ActualQuote.IdQuote > 0)
-                    {
-                        // estraggo solo il record corrispondente alla selezione nella griglia quote
-                        ListContoCorrente = _managerLiquidServices.GetContoCorrenteByIdQuote(ActualQuote.IdQuote);
-                        //ListContoCorrente = _managerLiquidServices.GetContoCorrenteByMovement(12);
-                    }
-                    else if (ActualQuote.Id_tipo_movimento == 12 && ActualQuote.Id_tipo_movimento == 0)
-                    {
-                        // estraggo tutti i record con codice "giroconto"
-                        ListContoCorrente = _managerLiquidServices.GetContoCorrenteByMovement(12);
-                    }
-                    else
-                    {
-                        ListContoCorrente = _managerLiquidServices.GetContoCorrenteByMovement(12);
-                    }
                 }
             }
         }
@@ -313,6 +382,23 @@ namespace FinanceManager.ViewModels
             if (sender is TextBox TB && TB.Name == "txtAmmontare")
                 if (!VerifyQuoteTabOperation())
                     return;
+        }
+
+        /// <summary>
+        /// Controlla che il punto del tastierino numerico venga trasformato in virgola
+        /// </summary>
+        /// <param name="sender">Tastiera</param>
+        /// <param name="e">Pressione del tasto</param>
+        public void PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (sender is TextBox textBox && textBox.Name == "Ammontare")
+                if (e.Key == Key.Decimal || e.Key == Key.OemPeriod)
+                {
+                    var pos = textBox.SelectionStart;
+                    textBox.Text = textBox.Text.Insert(pos, ",");
+                    textBox.SelectionStart = pos + 1;
+                    e.Handled = true;
+                }
         }
 
         #endregion
@@ -332,7 +418,7 @@ namespace FinanceManager.ViewModels
                 // In base all'operazione scelta decido:
                 if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
                 {
-                    CurrencyAvailable = _liquidAssetServices.GetCurrencyAvailable(IdGestione: RecordContoCorrente.Id_Gestione,
+                    CurrencyAvailable = _liquidAssetServices.GetCurrencyAvailable(IdGestione: RecordContoCorrente.Id_gestione,
                         IdConto: RecordContoCorrente.Id_Conto, IdValuta: RecordContoCorrente.Id_Valuta)[0];
 
                     if (RecordContoCorrente.Ammontare > CurrencyAvailable.Disponibili && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Capitale ||
@@ -451,7 +537,8 @@ namespace FinanceManager.ViewModels
         }
         public void CleanCommand(object param)
         {
-            Init();
+            ActualQuote = new QuoteTab();
+            ContoCorrenteSelected = new ContoCorrente();
         }
 
         public bool CanInsert
@@ -482,7 +569,7 @@ namespace FinanceManager.ViewModels
 
         private void UpdateGrid()
         {
-            foreach(QuoteInv quoteInv in ListQuoteInv)
+            foreach (QuoteInv quoteInv in ListQuoteInv)
             {
                 switch (quoteInv.NomeInvestitore)
                 {

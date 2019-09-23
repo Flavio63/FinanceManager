@@ -193,8 +193,6 @@
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Models\ContoCorrente.cs" />
     <Compile Include="Models\ContoCorrenteList.cs" />
-    <Compile Include="Models\Investitore.cs" />
-    <Compile Include="Models\InvestitoreList.cs" />
     <Compile Include="Models\PortafoglioTitoli.cs" />
     <Compile Include="Models\PortafoglioTitoliList.cs" />
     <Compile Include="Models\QuoteInv.cs" />

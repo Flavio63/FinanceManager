@@ -7,8 +7,8 @@
              xmlns:iy="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:local="clr-namespace:FinanceManager.Views"
              mc:Ignorable="d" Name="_RegistryOwnerView"
-             d:DesignHeight="300" d:DesignWidth="300">
-    <Grid MaxWidth="350" Background="Beige" Margin="5,25">
+             d:DesignHeight="300" d:DesignWidth="550">
+    <Grid MaxWidth="550" Background="Beige" Margin="5,25">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="*"/>
@@ -29,7 +29,7 @@
         <DataGrid Grid.Row="1" Grid.ColumnSpan="2" Name="Owner" CanUserAddRows="True" 
                   CanUserDeleteRows="True" AutoGenerateColumns="False" RowHeaderWidth="16"
                   SelectionMode="Single" FontSize="14" ItemsSource="{Binding OwnerList, UpdateSourceTrigger=PropertyChanged}" 
-                  Width="265" HorizontalAlignment="Center" AlternatingRowBackground="#FFAEFF90">
+                   HorizontalAlignment="Center" AlternatingRowBackground="#FFAEFF90">
             <iy:Interaction.Triggers>
                 <iy:EventTrigger EventName="CellEditEnding">
                     <is:CallMethodAction TargetObject="{Binding}" MethodName="CellChanged"/>
@@ -43,6 +43,8 @@
                                     Width="40"/>
                 <DataGridTextColumn Header="Nome della gestione" IsReadOnly="False" 
                                     Binding="{Binding Nome_Gestione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="190"/>
+                <DataGridTextColumn Header="Tipologia del gestore" IsReadOnly="False" 
+                                    Binding="{Binding Tipologia, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="190"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

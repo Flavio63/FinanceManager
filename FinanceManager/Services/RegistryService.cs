@@ -16,7 +16,12 @@ namespace FinanceManager.Services
         }
 
         #region Owner
-        public void AddGestione(string name)
+        /// <summary>
+        /// Aggiunge una persona
+        /// </summary>
+        /// <param name="name">Il nome</param>
+        /// <param name="tipologia">La tipologia</param>
+        public void AddGestione(string name, string tipologia)
         {
             try
             {
@@ -26,6 +31,7 @@ namespace FinanceManager.Services
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.AddGestione;
                     dbComm.Parameters.AddWithValue("nome", name);
+                    dbComm.Parameters.AddWithValue("tipologia", tipologia);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -65,38 +71,10 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
-
-        public RegistryOwner GetGestione(int id)
-        {
-            try
-            {
-                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
-                {
-                    dbAdapter.SelectCommand = new MySqlCommand();
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
-                    dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetGestione;
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", id);
-                    DataTable dataTable = new DataTable();
-                    dbAdapter.Fill(dataTable);
-                    return new RegistryOwner(){
-                        Id_gestione = Convert.ToInt16(dataTable.Rows[0].ItemArray[0]),
-                        Nome_Gestione = dataTable.Rows[0].ItemArray[1].ToString()
-                    };
-
-
-                }
-            }
-            catch (MySqlException err)
-            {
-                throw new Exception("GetOwnersName " + err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception("GetOwnersName " + err.Message);
-            }
-        }
-
+        /// <summary>
+        /// Estrae la lista di tutti i gestori
+        /// </summary>
+        /// <returns>Observable Collection</returns>
         public RegistryOwnersList GetGestioneList()
         {
             try
@@ -115,6 +93,7 @@ namespace FinanceManager.Services
                         RegistryOwner RO = new RegistryOwner();
                         RO.Id_gestione = (int)dr.Field<uint>("id_gestione");
                         RO.Nome_Gestione = dr.Field<string>("nome_gestione");
+                        RO.Tipologia = dr.Field<string>("tipologia");
                         ROL.Add(RO);
                     }
                     return ROL;
@@ -129,7 +108,10 @@ namespace FinanceManager.Services
                 throw new Exception("GetGestioneList " + err.Message);
             }
         }
-
+        /// <summary>
+        /// Aggiorna i dati di una persona
+        /// </summary>
+        /// <param name="owner">Il record da aggiornare</param>
         public void UpdateGestioneName(RegistryOwner owner)
         {
             try
@@ -140,6 +122,7 @@ namespace FinanceManager.Services
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.UpdateGestioneName;
                     dbComm.Parameters.AddWithValue("nome", owner.Nome_Gestione);
+                    dbComm.Parameters.AddWithValue("tipologia", owner.Tipologia);
                     dbComm.Parameters.AddWithValue("id", owner.Id_gestione);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -402,8 +385,8 @@ namespace FinanceManager.Services
                     foreach (DataRow dr in dt.Rows)
                     {
                         RegistryLocation RL = new RegistryLocation();
-                        RL.Id_conto = (int)dr.Field<uint>("id_conto");
-                        RL.Desc_conto = dr.Field<string>("desc_conto");
+                        RL.Id_Conto = (int)dr.Field<uint>("id_conto");
+                        RL.Desc_Conto = dr.Field<string>("desc_conto");
                         RL.Note = dr.Field<string>("note");
                         RLL.Add(RL);
                     }
@@ -428,9 +411,9 @@ namespace FinanceManager.Services
                 {
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.RegistryScripts.UpdateLocation;
-                    dbComm.Parameters.AddWithValue("desc", registryLocation.Desc_conto);
+                    dbComm.Parameters.AddWithValue("desc", registryLocation.Desc_Conto);
                     dbComm.Parameters.AddWithValue("note", registryLocation.Note);
-                    dbComm.Parameters.AddWithValue("id", registryLocation.Id_conto);
+                    dbComm.Parameters.AddWithValue("id", registryLocation.Id_Conto);
                     dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -512,8 +495,8 @@ namespace FinanceManager.Services
                     DataTable dataTable = new DataTable();
                     dbAdapter.Fill(dataTable);
                     return new RegistryLocation() {
-                        Id_conto = Convert.ToInt16(dataTable.Rows[0].ItemArray[0]),
-                        Desc_conto = dataTable.Rows[0].ItemArray[1].ToString(),
+                        Id_Conto = Convert.ToInt16(dataTable.Rows[0].ItemArray[0]),
+                        Desc_Conto = dataTable.Rows[0].ItemArray[1].ToString(),
                         Note = dataTable.Rows[0].ItemArray[2].ToString()
                     };
                 }

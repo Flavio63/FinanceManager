@@ -217,7 +217,7 @@
                        HorizontalAlignment="Center" Margin="3, 2, 3, 7"/>
                 <TextBlock Grid.Row="1" Text="Il conto" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
                 <ComboBox Name="Conto" Grid.Row="1" Grid.Column="1" ItemsSource="{Binding ListConti, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                          SelectedValuePath="Id_conto" DisplayMemberPath="Desc_conto" Margin="5, 2" MinWidth="100" 
+                          SelectedValuePath="Id_Conto" DisplayMemberPath="Desc_Conto" Margin="5, 2" MinWidth="100" 
                           IsEnabled="{Binding GirocontoFieldEnabled, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValue="{Binding RecordContoCorrente.Id_Conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <iy:Interaction.Triggers>

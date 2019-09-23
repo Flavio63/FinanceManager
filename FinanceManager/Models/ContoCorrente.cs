@@ -59,7 +59,7 @@ namespace FinanceManager.Models
         /// <param name="idTipoSoldi">Destinazione d'uso dei soldi</param>
         public ContoCorrente(PortafoglioTitoli portafoglioTitoli, double valoreInCC, TipologiaSoldi idTipoSoldi)
         {
-            Id_Conto = portafoglioTitoli.Id_conto;
+            Id_Conto = portafoglioTitoli.Id_Conto;
             Id_Quote_Investimenti = 0;
             Id_Valuta = portafoglioTitoli.Id_valuta;
             Id_Portafoglio_Titoli = portafoglioTitoli.Id_portafoglio;

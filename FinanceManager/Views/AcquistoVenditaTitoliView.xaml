@@ -223,9 +223,9 @@
                        HorizontalAlignment="Center" Margin="3, 2, 3, 7"/>
                 <TextBlock Grid.Row="1" Text="Il conto" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
                 <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding ListConti, UpdateSourceTrigger=PropertyChanged}"
-                          SelectedValuePath="Id_conto" DisplayMemberPath="Desc_conto" Margin="5, 2" MinWidth="100" 
+                          SelectedValuePath="Id_Conto" DisplayMemberPath="Desc_Conto" Margin="5, 2" MinWidth="100" 
                           IsEnabled="{Binding CanModifyBaseParameters, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                          SelectedValue="{Binding RecordPortafoglioTitoli.Id_conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                          SelectedValue="{Binding RecordPortafoglioTitoli.Id_Conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="SelectionChanged">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
@@ -463,7 +463,7 @@
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
                 <DataGridTextColumn Header="Gestione" IsReadOnly="True" Binding="{Binding Nome_Gestione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                <DataGridTextColumn Header="Conto" IsReadOnly="True" Binding="{Binding Desc_conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                <DataGridTextColumn Header="Conto" IsReadOnly="True" Binding="{Binding Desc_Conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                 <DataGridTextColumn Header="Tipo Movimento" IsReadOnly="True" Binding="{Binding Desc_tipo_movimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                 <DataGridTextColumn Header="Tipo Titolo" IsReadOnly="True" Binding="{Binding Desc_tipo_titolo, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                 <DataGridTemplateColumn Header="Titolo" IsReadOnly="True" MaxWidth="100">

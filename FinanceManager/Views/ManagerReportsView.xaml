@@ -65,7 +65,7 @@
                 <StackPanel Margin="5" Grid.Row="1" Grid.Column="1" IsEnabled="{Binding ElementName=ElencoTitoliAttivi, Path=IsChecked}">
                     <TextBlock Grid.Row="1" Text="I Conti Corrente" FontSize="16" FontWeight="Bold" Margin="10, 2" HorizontalAlignment="Center"/>
                     <ListBox Name="Conto" Grid.Row="1" Grid.Column="1" ItemsSource="{Binding AccountList, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                          SelectedValuePath="Id_Conto" DisplayMemberPath="Desc_conto" Margin="10, 2" MinWidth="100" Height="75" SelectionMode="Multiple">
+                          SelectedValuePath="Id_Conto" DisplayMemberPath="Desc_Conto" Margin="10, 2" MinWidth="100" Height="75" SelectionMode="Multiple">
                         <iy:Interaction.Triggers>
                             <iy:EventTrigger EventName="SelectionChanged">
                                 <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>

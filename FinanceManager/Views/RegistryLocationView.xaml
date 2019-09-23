@@ -39,10 +39,10 @@
                 </iy:EventTrigger>
             </iy:Interaction.Triggers>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" IsReadOnly="True" Binding="{Binding Id_conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                <DataGridTextColumn Header="ID" IsReadOnly="True" Binding="{Binding Id_Conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                                     Width="40"/>
                 <DataGridTextColumn Header="Conto Deposito" IsReadOnly="False" 
-                                    Binding="{Binding Desc_conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="150"/>
+                                    Binding="{Binding Desc_Conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="150"/>
                 <DataGridTextColumn Header="Note" IsReadOnly="False" 
                                     Binding="{Binding Note, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="300"/>
             </DataGrid.Columns>

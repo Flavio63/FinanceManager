@@ -42,7 +42,7 @@ namespace FinanceManager.Services
         void InsertAccountMovement(ContoCorrente contoCorrente);        // inserisco il movimento nella tabella conto_corrente
         ContoCorrenteList GetContoCorrenteList();                       // Prendo tutti i record della tabella ContoCorrente
         ContoCorrente GetContoCorrenteByIdCC(int idRecord);             // Prendo un solo record dalla tabella ContoCorrente
-        ContoCorrenteList GetContoCorrenteByIdQuote(int idQuote);       // Il movimento del conto legato al giroconto selezionato
+        ContoCorrente GetContoCorrenteByIdQuote(int idQuote);       // Il movimento del conto legato al giroconto selezionato
         ContoCorrenteList GetContoCorrenteByMovement(int idMovimento);  // Tutti i movimenti di giroconto
         ContoCorrenteList GetContoCorrenteByIdPortafoglio(int idPortafoglioTitoli); // I max 2 movimenti di ContoCorrente associati al trade
         /// <summary>

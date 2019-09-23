@@ -48,7 +48,16 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                OwnerList = _services.GetGestioneList();
+                OwnerList = new RegistryOwnersList();
+                RegistryOwnersList ListaOriginale = new RegistryOwnersList();
+                ListaOriginale = _services.GetGestioneList();
+                var LO = from risultato in ListaOriginale
+                         where risultato.Tipologia == "Gestore"
+                         select risultato;
+                foreach (RegistryOwner registryOwner in LO)
+                    OwnerList.Add(registryOwner);
+
+                //OwnerList = _services.GetGestioneList();
                 AccountList = _services.GetRegistryLocationList();
                 _selectedOwners = new List<RegistryOwner>();
                 _selectedAccount = new List<int>();
@@ -233,7 +242,7 @@ namespace FinanceManager.ViewModels
                     case "Conto":
                         _selectedAccount.Clear();
                         foreach (RegistryLocation registryLocation in LB.SelectedItems)
-                            _selectedAccount.Add(registryLocation.Id_conto);
+                            _selectedAccount.Add(registryLocation.Id_Conto);
                         break;
                     case "Anni":
                         SelectedYears.Clear();

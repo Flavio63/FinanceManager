@@ -176,23 +176,41 @@
 
                 <Border Grid.Row="4" Grid.ColumnSpan="4" BorderThickness="2" BorderBrush="Magenta" Margin="5">
                     <TabControl>
-                        <TabItem Header="Versamento / Prelievo" FontSize="16" FontWeight="Bold">
+                        <TabItem Header="Versamento / Prelievo" FontSize="16" FontWeight="Bold"
+                                 IsSelected="{Binding TabVersPre, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                             <Grid Margin="5">
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="Chi fa l'operazione?" Margin="0,5,0,0" FontSize="14" HorizontalAlignment="Center"/>
-                                <ComboBox Grid.Row="1" Margin="5" ItemsSource="{Binding}"></ComboBox>
-                                <TextBlock Text="Versamento o Prelievo?" Grid.Column="1" Margin="0,5,0,0" FontSize="14" HorizontalAlignment="Center"/>
-                                <ComboBox Grid.Row="1" Grid.Column="1" Margin="5"/>
+                                <TextBlock Text="Chi fa l'operazione?" Margin="5" FontSize="14" HorizontalAlignment="Center"/>
+                                <ComboBox Grid.Row="1" Margin="5" ItemsSource="{Binding ListInvestitori, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                          SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione" FontWeight="Normal"
+                                          SelectedValue="{Binding ActualQuote.IdGestione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                    <iy:Interaction.Triggers>
+                                        <iy:EventTrigger EventName="SelectionChanged">
+                                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                        </iy:EventTrigger>
+                                    </iy:Interaction.Triggers>
+                                </ComboBox>
+                                <TextBlock Text="Versamento o Prelievo?" Grid.Column="1" Margin="5" FontSize="14" HorizontalAlignment="Center"/>
+                                <ComboBox Grid.Row="1" Grid.Column="1" Margin="5" ItemsSource="{Binding ListMovementType, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                          SelectedValuePath="Id_tipo_movimento" DisplayMemberPath="Desc_tipo_movimento" FontWeight="Normal"
+                                          SelectedValue="{Binding ActualQuote.Id_tipo_movimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                    <iy:Interaction.Triggers>
+                                        <iy:EventTrigger EventName="SelectionChanged">
+                                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                        </iy:EventTrigger>
+                                    </iy:Interaction.Triggers>
+                                </ComboBox>
                             </Grid>
                         </TabItem>
-                        <TabItem Header="Giroconto" FontSize="16" FontWeight="Bold">
+                        <TabItem Header="Giroconto" FontSize="16" FontWeight="Bold"
+                                 IsSelected="{Binding TabGiroconto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                             <Grid Margin="5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="75"/>
@@ -208,32 +226,56 @@
                                 <TextBlock Grid.ColumnSpan="2" Text="Conto Investitori" HorizontalAlignment="Center" FontSize="18"/>
                                 <TextBlock Grid.Column="2" Grid.ColumnSpan="2" Text="Conti Deposito" HorizontalAlignment="Center" FontSize="18"/>
                                 <StackPanel Grid.Row="1" VerticalAlignment="top" HorizontalAlignment="Center">
-                                    <RadioButton x:Name="Da" GroupName="Direzione" Margin="5,5,1,5">Da:</RadioButton>
-                                    <RadioButton x:Name="A" GroupName="Direzione" Margin="5,5,1,5">A:</RadioButton>
+                                    <RadioButton x:Name="Da" GroupName="Direzione" Margin="5,5,1,5" IsChecked="{Binding CheckDa, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">Da:</RadioButton>
+                                    <RadioButton x:Name="A" GroupName="Direzione" Margin="5,5,1,5" IsChecked="{Binding CheckA, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">A:</RadioButton>
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="1" Grid.Column="2" VerticalAlignment="top" HorizontalAlignment="Center">
                                     <RadioButton Margin="5,5,1,5" Content="Da:" IsChecked="{Binding ElementName=A, Path=IsChecked}"/>
                                     <RadioButton Margin="5,5,1,5" Content="A:" IsChecked="{Binding ElementName=Da, Path=IsChecked}"/>
                                 </StackPanel>
-                                <ComboBox Grid.Row="1" Grid.Column="1" Margin="1,5,5,5" ItemsSource="{Binding}" VerticalAlignment="Center"/>
-                                <ComboBox Grid.Row="1" Grid.Column="3" Margin="1,5,5,5" ItemsSource="{Binding}" VerticalAlignment="Center"/>
+                                <ComboBox Grid.Row="1" Grid.Column="1" Margin="1,5,5,5" ItemsSource="{Binding ListInvestitori, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                          SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione" FontWeight="Normal" VerticalAlignment="Center"
+                                          SelectedValue="{Binding ActualQuote.IdGestione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                    <iy:Interaction.Triggers>
+                                        <iy:EventTrigger EventName="SelectionChanged">
+                                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                        </iy:EventTrigger>
+                                    </iy:Interaction.Triggers>
+                                </ComboBox>
+                                <ComboBox Grid.Row="1" Grid.Column="3" Margin="1,5,5,5" ItemsSource="{Binding ListLocation, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                          SelectedValuePath="Id_Conto" DisplayMemberPath="Desc_Conto" FontWeight="Normal" VerticalAlignment="Center"
+                                          SelectedValue="{Binding ContoCorrenteSelected.Id_Conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                    <iy:Interaction.Triggers>
+                                        <iy:EventTrigger EventName="SelectionChanged">
+                                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                        </iy:EventTrigger>
+                                    </iy:Interaction.Triggers>
+                                </ComboBox>
                                 <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" Text="Gestione" 
                                            Margin="5,5,1,5"/>
-                                <ComboBox Grid.Row="2" Grid.Column="3" ItemsSource="{Binding}" Margin="1,5,5,5"/>
+                                <ComboBox Grid.Row="2" Grid.Column="3" Margin="1,5,5,5" ItemsSource="{Binding ListGestioni, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                          SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione" FontWeight="Normal" VerticalAlignment="Center"
+                                          SelectedValue="{Binding ContoCorrenteSelected.Id_Gestione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                    <iy:Interaction.Triggers>
+                                        <iy:EventTrigger EventName="SelectionChanged">
+                                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                        </iy:EventTrigger>
+                                    </iy:Interaction.Triggers>
+                                </ComboBox>
                             </Grid>
                         </TabItem>
                     </TabControl>
                 </Border>
-                
+
                 <Border Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" Margin="5" BorderBrush="Brown" BorderThickness="1">
                     <!-- Bottoniera -->
-                        <StackPanel Orientation="Horizontal">
-                            <Button Content="Inserisci" Margin="10" Width="75" Height="25" Command="{Binding InsertCommand}"/>
-                            <Button Content="Modifica" Margin="10" Width="75" Height="25" Command="{Binding ModifyCommand}"/>
-                            <Button Content="Pulisci" Margin="10" Width="75" Height="25" Command="{Binding ClearCommand}"/>
-                            <Button Content="Elimina" Margin="10" Width="75" Height="25" Command="{Binding EraseCommand}"/>
-                        </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Inserisci" Margin="10" Width="75" Height="25" Command="{Binding InsertCommand}"/>
+                        <Button Content="Modifica" Margin="10" Width="75" Height="25" Command="{Binding ModifyCommand}"/>
+                        <Button Content="Pulisci" Margin="10" Width="75" Height="25" Command="{Binding ClearCommand}"/>
+                        <Button Content="Elimina" Margin="10" Width="75" Height="25" Command="{Binding EraseCommand}"/>
+                    </StackPanel>
                 </Border>
             </Grid>
         </Border>

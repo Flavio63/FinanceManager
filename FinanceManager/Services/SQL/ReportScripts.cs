@@ -41,7 +41,7 @@
         public static readonly string GetActiveAsset = "SELECT nome_gestione, desc_conto, desc_tipo_titolo, desc_titolo, isin, n_titoli, rimanenze * -1 AS costoTotale, " +
             "ROUND(CASE WHEN id_tipo_titolo = 2 THEN (rimanenze* -1) / n_titoli* 100 ELSE(rimanenze* -1) / n_titoli END, 4) AS CMC, note FROM " +
             "( SELECT G.nome_gestione, B.desc_conto, E.id_tipo_titolo, E.desc_tipo_titolo, D.desc_titolo, D.isin, SUM(shares_quantity) AS n_titoli, " +
-            "ROUND(sum(ammontare + (total_commission + tobin_tax + disaggio_cedole) * -1 ) , 2) AS rimanenze, note FROM portafoglio_titoli A, conti B, titoli D, tipo_titoli E, gestioni G " +
+            "ROUND(sum(ammontare + (total_commission + tobin_tax + disaggio_cedole) * -1 ) , 2) AS rimanenze, A.note FROM portafoglio_titoli A, conti B, titoli D, tipo_titoli E, gestioni G " +
             "WHERE A.id_conto = B.id_conto AND A.id_titolo = D.id_titolo AND D.id_tipo_titolo = E.id_tipo_titolo AND  A.id_gestione = G.id_gestione AND " +
             "{0} AND {1} GROUP BY G.nome_gestione, B.desc_conto, E.desc_tipo_titolo, D.isin " +
             "ORDER BY A.id_gestione, A.id_conto, E.id_tipo_titolo, D.desc_titolo) AS AA WHERE n_titoli > 0";

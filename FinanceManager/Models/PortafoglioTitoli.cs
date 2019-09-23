@@ -14,8 +14,8 @@ namespace FinanceManager.Models
         public int Id_gestione { get; set; }
         public string Nome_Gestione { get; set; }
 
-        public int Id_conto { get; set; }
-        public string Desc_conto { get; set; }
+        public int Id_Conto { get; set; }
+        public string Desc_Conto { get; set; }
 
         public int Id_valuta { get; set; }
         public string Cod_valuta { get; set; }

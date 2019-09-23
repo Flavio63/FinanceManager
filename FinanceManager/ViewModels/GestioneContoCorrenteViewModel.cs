@@ -65,7 +65,13 @@ namespace FinanceManager.ViewModels
                 foreach (RegistryMovementType registry in RMTL)
                     ListMovimenti.Add(registry);
                 ListValute = _registryServices.GetRegistryCurrencyList();
-                ListGestioni = _registryServices.GetGestioneList();
+                RegistryOwnersList ListaInvestitoreOriginale = new RegistryOwnersList();
+                ListaInvestitoreOriginale = _registryServices.GetGestioneList();
+                var ROL = from gestione in ListaInvestitoreOriginale
+                          where (gestione.Tipologia == "Gestore")
+                          select gestione;
+                foreach (RegistryOwner registryOwner in ROL)
+                    ListGestioni.Add(registryOwner);
                 ListConti = _registryServices.GetRegistryLocationList();
                 TipoSoldis = _registryServices.GetTipoSoldiList();
                 SharesList = new ObservableCollection<RegistryShare>(_registryServices.GetRegistryShareList());
@@ -412,17 +418,17 @@ namespace FinanceManager.ViewModels
                 {
                     if (((ComboBox)e.OriginalSource).Name == "Conto2")
                     {
-                        Record2ContoCorrente.Id_Conto = RL.Id_conto;
-                        Record2ContoCorrente.Desc_Conto = RL.Desc_conto;
+                        Record2ContoCorrente.Id_Conto = RL.Id_Conto;
+                        Record2ContoCorrente.Desc_Conto = RL.Desc_Conto;
                     }
                     else
                     {
-                        RecordContoCorrente.Id_Conto = RL.Id_conto;
-                        RecordContoCorrente.Desc_Conto = RL.Desc_conto;
-                        Record2ContoCorrente.Id_Conto = RL.Id_conto;
-                        Record2ContoCorrente.Desc_Conto = RL.Desc_conto;
+                        RecordContoCorrente.Id_Conto = RL.Id_Conto;
+                        RecordContoCorrente.Desc_Conto = RL.Desc_Conto;
+                        Record2ContoCorrente.Id_Conto = RL.Id_Conto;
+                        Record2ContoCorrente.Desc_Conto = RL.Desc_Conto;
                     }
-                    FiltroConto = RL.Desc_conto;
+                    FiltroConto = RL.Desc_Conto;
                 }
                 else if (e.AddedItems[0] is RegistryOwner RO)
                 {

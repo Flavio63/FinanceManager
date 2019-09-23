@@ -29,7 +29,7 @@ namespace FinanceManager.Services
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.ManagerScripts.AddManagerLiquidAsset;
                     dbComm.Parameters.AddWithValue("id_gestione", managerLiquidAsset.Id_gestione);
-                    dbComm.Parameters.AddWithValue("id_conto", managerLiquidAsset.Id_conto);
+                    dbComm.Parameters.AddWithValue("id_conto", managerLiquidAsset.Id_Conto);
                     dbComm.Parameters.AddWithValue("id_valuta", managerLiquidAsset.Id_valuta);
                     dbComm.Parameters.AddWithValue("id_tipo_movimento", managerLiquidAsset.Id_tipo_movimento);
                     dbComm.Parameters.AddWithValue("id_titolo", managerLiquidAsset.Id_titolo);
@@ -430,7 +430,7 @@ namespace FinanceManager.Services
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.ManagerScripts.UpdateManagerLiquidAsset;
                     dbComm.Parameters.AddWithValue("id_gestione", managerLiquidAsset.Id_gestione);
-                    dbComm.Parameters.AddWithValue("id_conto", managerLiquidAsset.Id_conto);
+                    dbComm.Parameters.AddWithValue("id_conto", managerLiquidAsset.Id_Conto);
                     dbComm.Parameters.AddWithValue("id_valuta", managerLiquidAsset.Id_valuta);
                     dbComm.Parameters.AddWithValue("id_tipo_movimento", managerLiquidAsset.Id_tipo_movimento);
                     dbComm.Parameters.AddWithValue("id_titolo", managerLiquidAsset.Id_titolo);
@@ -509,8 +509,8 @@ namespace FinanceManager.Services
             MLA.Id_portafoglio = (int)dr.Field<uint>("id_portafoglio_titoli");
             MLA.Id_gestione = (int)dr.Field<uint>("id_gestione");
             MLA.Nome_Gestione = dr.Field<string>("nome_gestione");
-            MLA.Id_conto = (int)dr.Field<uint>("id_conto");
-            MLA.Desc_conto = dr.Field<string>("desc_conto");
+            MLA.Id_Conto = (int)dr.Field<uint>("id_conto");
+            MLA.Desc_Conto = dr.Field<string>("desc_conto");
             MLA.Id_valuta = (int)dr.Field<uint>("id_valuta");
             MLA.Cod_valuta = dr.Field<string>("cod_valuta");
             MLA.Id_tipo_movimento = (int)dr.Field<uint>("id_tipo_movimento");
@@ -961,7 +961,7 @@ namespace FinanceManager.Services
         /// </summary>
         /// <param name="idQuote">id_quote_inv</param>
         /// <returns>Record di tipo Conto Corrente</returns>
-        public ContoCorrenteList GetContoCorrenteByIdQuote(int idQuote)
+        public ContoCorrente GetContoCorrenteByIdQuote(int idQuote)
         {
             try
             {
@@ -974,7 +974,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_quote_investimenti", idQuote);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
-                    return contoCorrentes(DT);
+                    return contoCorrente(DT.Rows[0]);
                 }
             }
             catch (MySqlException err)
@@ -1141,7 +1141,7 @@ namespace FinanceManager.Services
                         Ptf_CC ptf_CC = new Ptf_CC();
                         ptf_CC.Id_portafoglio_titoli = (int)row.Field<uint>("id_portafoglio_titoli");
                         ptf_CC.Id_gestione = (int)row.Field<uint>("id_gestione");
-                        ptf_CC.Id_conto = (int)row.Field<uint>("id_conto");
+                        ptf_CC.Id_Conto = (int)row.Field<uint>("id_conto");
                         ptf_CC.Id_valuta = (int)row.Field<uint>("id_valuta");
                         ptf_CC.Id_tipo_movimento = (int)row.Field<uint>("id_tipo_movimento");
                         ptf_CC.Id_titolo = (int)row.Field<uint>("id_titolo");

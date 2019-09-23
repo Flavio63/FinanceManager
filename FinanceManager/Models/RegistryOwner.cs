@@ -10,5 +10,6 @@ namespace FinanceManager.Models
     {
         public int Id_gestione { get; set; }
         public string Nome_Gestione { get; set; }
+        public string Tipologia { get; set; }
     }
 }
