@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace FinanceManager.ViewModels
 {
@@ -20,6 +21,9 @@ namespace FinanceManager.ViewModels
         public ICommand InsertCommand { get; set; }
         public ICommand ModifyCommand { get; set; }
         public ICommand EraseCommand { get; set; }
+        public ICommand InsertQuotaCommand { get; set; }
+        public ICommand ModifyQuotaCommand { get; set; }
+        public ICommand EraseQuotaCommand { get; set; }
         public ICommand ClearCommand { get; set; }
 
         public GestioneQuoteInvestitoriViewModel(IRegistryServices registryServices, IManagerLiquidAssetServices managerLiquidServices)
@@ -37,38 +41,28 @@ namespace FinanceManager.ViewModels
             InsertCommand = new CommandHandler(SaveCommand, CanSave);
             ModifyCommand = new CommandHandler(UpdateCommand, CanModify);
             EraseCommand = new CommandHandler(DeleteCommand, CanModify);
+            InsertQuotaCommand = new CommandHandler(SaveCommand, CanSaveQuota);
+            ModifyQuotaCommand = new CommandHandler(UpdateCommand, CanModifyQuota);
+            EraseQuotaCommand = new CommandHandler(DeleteCommand, CanModifyQuota);
             ClearCommand = new CommandHandler(CleanCommand);
             #endregion
-            ListQuoteInv = new QuoteInvList();
-            ListQuoteDettaglioGuadagno = new QuoteGuadagnoList();
-            ListQuoteSintesiGuadagno = new QuoteGuadagnoList();
-            ListTabQuote = new QuoteTabList();
-            ListMovementType = new RegistryMovementTypeList();
-            ContoCorrenteSelected = new ContoCorrente();
-            ActualQuote = new QuoteTab();
-            ListInvestitori = new RegistryOwnersList();
-            ListGestioni = new RegistryOwnersList();
-            ListLocation = new RegistryLocationList();
 
-            RegistryMovementTypeList listaOriginale = new RegistryMovementTypeList();
-            RegistryOwnersList ListaInvestitoreOriginale = new RegistryOwnersList();
+            #region Inizializzazione Liste
             try
             {
-                listaOriginale = _registryServices.GetRegistryMovementTypesList();
-                foreach (RegistryMovementType registry in listaOriginale)
-                    if (registry.Id_tipo_movimento == 1 || registry.Id_tipo_movimento == 2)
-                        ListMovementType.Add(registry);
+                ListQuoteInv = new QuoteInvList();
+                ListQuoteDettaglioGuadagno = new GuadagnoPerQuoteList();
+                ListQuoteSintesiGuadagno = new GuadagnoPerQuoteList();
+                ListTabQuote = new QuoteTabList();
+                ListMovementType = new RegistryMovementTypeList();
+                ListInvestitori = new RegistryOwnersList();
+                ListGestioni = new RegistryOwnersList();
+                ListLocation = new RegistryLocationList();
+                ListQuoteGuadagno = new QuotePerPeriodoList();
+                ListTipoSoldi = new TipoSoldiList();
+                ListAnni = _managerLiquidServices.GetAnniFromGuadagni();
 
-                ListaInvestitoreOriginale = _registryServices.GetGestioneList();
-                foreach (RegistryOwner RO in ListaInvestitoreOriginale)
-                {
-                    if (RO.Tipologia == "Investitore")
-                        ListInvestitori.Add(RO);
-                    else if (RO.Tipologia == "Gestore")
-                        ListGestioni.Add(RO);
-                }
-
-                DataMovimento = DateTime.Now.Date;
+                #endregion
 
                 UpdateCollection();
             }
@@ -83,16 +77,37 @@ namespace FinanceManager.ViewModels
         {
             try
             {
+                RegistryMovementTypeList listaOriginale = new RegistryMovementTypeList();
+                listaOriginale = _registryServices.GetRegistryMovementTypesList();
+                foreach (RegistryMovementType registry in listaOriginale)
+                    if (registry.Id_tipo_movimento == 1 || registry.Id_tipo_movimento == 2)
+                        ListMovementType.Add(registry);
+
+                RegistryOwnersList ListaInvestitoreOriginale = new RegistryOwnersList();
+                ListaInvestitoreOriginale = _registryServices.GetGestioneList();
+                foreach (RegistryOwner RO in ListaInvestitoreOriginale)
+                {
+                    if (RO.Tipologia == "Investitore")
+                        ListInvestitori.Add(RO);
+                    else if (RO.Tipologia == "Gestore")
+                        ListGestioni.Add(RO);
+                }
+
+                QuotePerPeriodoList ListQuoteGuadagnoOriginale = _managerLiquidServices.GetAllRecordQuote_Guadagno();
+                foreach (QuotePerPeriodo quotePerPeriodo in ListQuoteGuadagnoOriginale)
+                    if (quotePerPeriodo.Id_Tipo_Soldi == 16)
+                        ListQuoteGuadagno.Add(quotePerPeriodo);
+
+                ContoCorrenteSelected = new ContoCorrente();
+                ActualQuote = new QuoteTab();
+                QuotaPerPeriodo = new QuotePerPeriodo();
+
                 ListQuoteInv = _managerLiquidServices.GetQuoteInv();
                 ListTabQuote = _managerLiquidServices.GetQuoteTab();
-                SintesiSoldiR = _managerLiquidServices.GetCurrencyAvailable(1);
-                SintesiSoldiDF = _managerLiquidServices.GetCurrencyAvailable(2);
-                SintesiSoldiDFV = _managerLiquidServices.GetCurrencyAvailable(7);
-
                 ListQuoteDettaglioGuadagno = _managerLiquidServices.GetQuoteGuadagno(false);
                 ListQuoteSintesiGuadagno = _managerLiquidServices.GetQuoteGuadagno(true);
                 ListLocation = _registryServices.GetRegistryLocationList();
-                
+                ListTipoSoldi = _registryServices.GetTipoSoldiList();
             }
             catch (Exception err)
             {
@@ -101,6 +116,33 @@ namespace FinanceManager.ViewModels
         }
 
         #region Getter&Setter
+        /// <summary>Estraggo gli anni dalla tabella guadagni_totale_anno</summary>
+        public List<int> ListAnni
+        {
+            get { return GetValue(() => ListAnni); }
+            private set { SetValue(() => ListAnni, value); }
+        }
+        /// <summary>
+        /// E' il record nuovo o selezionato dal datagrid
+        /// relativo alle quote per periodo
+        /// </summary>
+        public QuotePerPeriodo QuotaPerPeriodo
+        {
+            get { return GetValue(() => QuotaPerPeriodo); }
+            set { SetValue(() => QuotaPerPeriodo, value); }
+        }
+        /// <summary>La lista con i tipo soldi </summary>
+        public TipoSoldiList ListTipoSoldi
+        {
+            get { return GetValue(() => ListTipoSoldi); }
+            set { SetValue(() => ListTipoSoldi, value); }
+        }
+        /// <summary>Prelevo tutti i record della tabella quote_guadagno</summary>
+        public QuotePerPeriodoList ListQuoteGuadagno
+        {
+            get { return GetValue(() => ListQuoteGuadagno); }
+            private set { SetValue(() => ListQuoteGuadagno, value); }
+        }
         /// <summary>
         /// Per gestire la direzione del giroconto
         /// DA QuoteInvestimenti A ContoCorrente
@@ -179,37 +221,14 @@ namespace FinanceManager.ViewModels
         {
             get { return GetValue(() => ListQuoteInv); }
             set
-            {
-                SetValue(() => ListQuoteInv, value);
-                UpdateGrid();
-            }
+            { SetValue(() => ListQuoteInv, value); }
         }
-        #region getter&setter tabella investimenti
-        public double ImmDany { get; private set; }
-        public double ImmFla { get; private set; }
-        public double ImmTot { get; private set; }
-        public double PreDany { get; private set; }
-        public double PreFla { get; private set; }
-        public double PreTot { get; private set; }
-        public double AttDany { get; private set; }
-        public double AttFla { get; private set; }
-        public double AttTot { get; private set; }
-        public double QuotaDany { get; private set; }
-        public double QuotaFla { get; private set; }
-        public double AssDany { get; private set; }
-        public double AssFla { get; private set; }
-        public double AssTot { get; private set; }
-        public double DisDany { get; private set; }
-        public double DisFla { get; private set; }
-        public double DisTot { get; private set; }
-        #endregion
-
         /// <summary>
         /// Estrae i dati di guadagno dettagliati sulla base dei periodi
         /// di validità delle quote che si basano sugli investimenti
         /// attivi (tranne che per le volatili sempre al 50%)
         /// </summary>
-        public QuoteGuadagnoList ListQuoteDettaglioGuadagno
+        public GuadagnoPerQuoteList ListQuoteDettaglioGuadagno
         {
             get { return GetValue(() => ListQuoteDettaglioGuadagno); }
             private set { SetValue(() => ListQuoteDettaglioGuadagno, value); }
@@ -219,12 +238,11 @@ namespace FinanceManager.ViewModels
         /// di validità delle quote che si basagno sugli investimenti
         /// attivi (tranne che per le volatili sempre al 50%)
         /// </summary>
-        public QuoteGuadagnoList ListQuoteSintesiGuadagno
+        public GuadagnoPerQuoteList ListQuoteSintesiGuadagno
         {
             get { return GetValue(() => ListQuoteSintesiGuadagno); }
             private set { SetValue(() => ListQuoteSintesiGuadagno, value); }
         }
-
         /// <summary>
         /// E' la tabella degli investimenti con i movimenti dettagliati
         /// </summary>
@@ -242,7 +260,6 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => ActualQuote); }
             set { SetValue(() => ActualQuote, value); }
         }
-
         /// <summary>
         /// Memorizzo i record dei conto corrente
         /// </summary>
@@ -251,7 +268,6 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => ContoCorrenteSelected); }
             set { SetValue(() => ContoCorrenteSelected, value); }
         }
-
         /// <summary>
         /// Memorizzo la scelta del conto
         /// </summary>
@@ -260,7 +276,6 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => RegistryLocation); }
             private set { SetValue(() => RegistryLocation, value); }
         }
-
         /// <summary>
         /// Memorizzo la scelta della gestione
         /// </summary>
@@ -268,42 +283,6 @@ namespace FinanceManager.ViewModels
         {
             get { return GetValue(() => RegistryOwner); }
             private set { SetValue(() => RegistryOwner, value); }
-        }
-
-        public TipoSoldi Tipo_Soldi
-        {
-            get { return GetValue(() => Tipo_Soldi); }
-            private set { SetValue(() => Tipo_Soldi, value); }
-        }
-
-        public DateTime DataMovimento
-        {
-            get { return GetValue(() => DataMovimento); }
-            set
-            {
-                SetValue(() => DataMovimento, value);
-                ActualQuote.DataMovimento = value;
-            }
-        }
-
-        public SintesiSoldiList SintesiSoldiDF
-        {
-            get { return GetValue(() => SintesiSoldiDF); }
-            private set { SetValue(() => SintesiSoldiDF, value); }
-        }
-
-        public SintesiSoldiList SintesiSoldiR
-        {
-            get { return GetValue(() => SintesiSoldiR); }
-            private set { SetValue(() => SintesiSoldiR, value); }
-        }
-        /// <summary>
-        /// il riepilogo dei soldi per la gestione Dany&Fla_Volatili
-        /// </summary>
-        public SintesiSoldiList SintesiSoldiDFV
-        {
-            get { return GetValue(() => SintesiSoldiDFV); }
-            private set { SetValue(() => SintesiSoldiDFV, value); }
         }
 
         #endregion
@@ -360,14 +339,14 @@ namespace FinanceManager.ViewModels
                         TabGiroconto = !TabVersPre;
                     }
                 }
-            }
-            else if (e.AddedItems.Count > 0)
-            {
-                if (e.AddedItems[0].GetType().Name == "DateTime")
+                else if (e.AddedItems[0] is QuotePerPeriodo quotaPerPeriodo)
                 {
-                    DataMovimento = (DateTime)e.AddedItems[0];
-                    return;
+                    QuotaPerPeriodo = quotaPerPeriodo;
                 }
+            }
+            else if (e.AddedItems.Count > 0 && e.AddedItems[0] is DatePicker)
+            {
+                ActualQuote.DataMovimento = (DateTime)e.AddedItems[0];
             }
         }
 
@@ -412,190 +391,138 @@ namespace FinanceManager.ViewModels
         }
         public void SaveCommand(object param)
         {
-            /*
             try
             {
-                // In base all'operazione scelta decido:
-                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
+                if (((StackPanel)param).Name == "Bottoniera_1" && TabVersPre == true && ActualQuote.IdQuote == 0)
                 {
-                    CurrencyAvailable = _liquidAssetServices.GetCurrencyAvailable(IdGestione: RecordContoCorrente.Id_gestione,
-                        IdConto: RecordContoCorrente.Id_Conto, IdValuta: RecordContoCorrente.Id_Valuta)[0];
-
-                    if (RecordContoCorrente.Ammontare > CurrencyAvailable.Disponibili && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Capitale ||
-                        RecordContoCorrente.Ammontare > CurrencyAvailable.Cedole && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Cedole ||
-                        RecordContoCorrente.Ammontare > CurrencyAvailable.Utili && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Utili)
+                    DateTime DataDaModi = _managerLiquidServices.GetDataPrecedente(ActualQuote.DataMovimento); // scopro la coppia di date da modificare
+                    _managerLiquidServices.UpdateDataFine(DataDaModi, ActualQuote.DataMovimento.AddDays(-1));   // modifico la data di fine della coppia
+                    _managerLiquidServices.InsertPeriodoValiditaQuote(ActualQuote.DataMovimento);  // inserisco la nuova coppia di date
+                    _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il nuovo movimento di capitali
+                    if (ActualQuote.IdGestione != 4)
                     {
-                        MessageBox.Show(String.Format("Non hai abbastanza soldi in {0} per effettuare un {1} di {2}.{3}" +
-                            "Ricontrollare i parametri inseriti.", RecordContoCorrente.Cod_Valuta, RecordContoCorrente.Desc_tipo_movimento, RecordContoCorrente.Desc_Tipo_Soldi,
-                            Environment.NewLine), "Gestione Conto Corrente", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
+                        ActualQuote.IdGestione = ActualQuote.IdGestione == 3 ? 5 : 3;
+                        ActualQuote.Ammontare = 0;
+                        ActualQuote.Note = "Inserito per calcolo quote";
+                        _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco record vuoto per la gestione opposta
+                        // calcolo le nuove quote per gli investimenti stabili e le memorizzo
+                        _managerLiquidServices.ComputesAndInsertQuoteGuadagno();
                     }
-                    RecordContoCorrente.Ammontare = RecordContoCorrente.Ammontare * -1; //il segno dell'ammontare
-                    _liquidAssetServices.InsertAccountMovement(RecordContoCorrente);
-                    _liquidAssetServices.InsertAccountMovement(Record2ContoCorrente);
-                }
-                else if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ||
-                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ||
-                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Costi)
-                {
-                    _liquidAssetServices.InsertAccountMovement(RecordContoCorrente);
-                }
+                    else
+                    {
+                        // calcolo la nuova quota di aurora e modifico le nostre quote di conseguenza
+                        // baso il 100% sul 0,22% circa attuale che vuol dire considerare un 250000 di budget totale come 100%
+                        int lastID = _managerLiquidServices.GetLastPeriodoValiditaQuote();  // trovo l'id dell'ultima coppia di date
+                        double VolatiliDAFLA = 249495;
+                        double TotaleAury = _managerLiquidServices.GetInvestmentByIdGestione(ActualQuote.IdGestione);
+                        double NuovaQuota = TotaleAury / (VolatiliDAFLA + TotaleAury);
+                        QuotePerPeriodo QPP = new QuotePerPeriodo() { Id_Gestione = ActualQuote.IdGestione, Id_Quote_Periodi = lastID, Id_Tipo_Soldi = 16, Quota = NuovaQuota };
+                        _managerLiquidServices.InsertRecordQuote_Guadagno(QPP);
+                        QPP.Id_Gestione = 3; QPP.Quota = (1 - NuovaQuota) / 2; _managerLiquidServices.InsertRecordQuote_Guadagno(QPP); //nuova quota Flavio volatili
+                        QPP.Id_Gestione = 5; _managerLiquidServices.InsertRecordQuote_Guadagno(QPP); //nuova quota Dany volatili
 
-                MessageBox.Show(string.Format("Ho effettuato l'operazione {0} correttamente.", RecordContoCorrente.Desc_tipo_movimento),
+                    }
+                    MessageBox.Show(string.Format("Ho effettuato l'operazione {0} correttamente.", ActualQuote.Desc_tipo_movimento),
                     Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
-                Init();
+                }
             }
             catch (Exception err)
             {
                 MessageBox.Show("Problemi nel caricamento del record: " + Environment.NewLine +
                     err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            */
         }
         public void UpdateCommand(object param)
         {
-            /*
             try
             {
-                // se è una registrazione cedola modifico direttamente il record 1
-                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ||
-                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ||
-                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Costi)
-                {
-                    _liquidAssetServices.UpdateContoCorrenteByIdCC(RecordContoCorrente);    //registro la modifica in conto corrente
-                }
-                else
-                {
-                    // cerco il record corrispondente al giroconto
-                    Record2ContoCorrente = _liquidAssetServices.GetContoCorrenteByIdCC(RecordContoCorrente.Id_RowConto + 1);
-                    // verifico che il record abbia lo stesso tipo di movimento
-                    if (Record2ContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
-                    {
-                        // modifico il record 2 sulla base delle modifiche apportate al record 1
-                        Record2ContoCorrente.Id_Tipo_Soldi = RecordContoCorrente.Id_Tipo_Soldi;
-                        Record2ContoCorrente.DataMovimento = RecordContoCorrente.DataMovimento;
-                        Record2ContoCorrente.Ammontare = RecordContoCorrente.Ammontare * -1;
-                        Record2ContoCorrente.Causale = RecordContoCorrente.Causale;
-                    }
-                    else
-                    {
-                        Record2ContoCorrente = _liquidAssetServices.GetContoCorrenteByIdCC(RecordContoCorrente.Id_RowConto - 1);
-                        // modifico il record 2 sulla base delle modifiche apportate al record 1
-                        Record2ContoCorrente.Id_Tipo_Soldi = RecordContoCorrente.Id_Tipo_Soldi;
-                        Record2ContoCorrente.DataMovimento = RecordContoCorrente.DataMovimento;
-                        Record2ContoCorrente.Ammontare = RecordContoCorrente.Ammontare * -1;
-                        Record2ContoCorrente.Causale = RecordContoCorrente.Causale;
-                    }
-                    _liquidAssetServices.UpdateContoCorrenteByIdCC(Record2ContoCorrente);    //registro la modifica in conto corrente
-                    _liquidAssetServices.UpdateContoCorrenteByIdCC(RecordContoCorrente);    //registro la modifica in conto corrente
-                }
-                MessageBox.Show("Record modificato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
-                Init();
             }
             catch (Exception err)
             {
                 MessageBox.Show("Problemi nel modificare il record" + Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(),
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            */
         }
         public void DeleteCommand(object param)
         {
-            /*
-            try
+
+            if (((StackPanel)param).Name == "Bottoniera_1")
             {
-                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili)
+                try
                 {
-                    _liquidAssetServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);  // registro l'eliminazione in conto corrente
+
                 }
-                else
+                catch (Exception err)
                 {
-                    // cerco il record corrispondente al giroconto
-                    Record2ContoCorrente = _liquidAssetServices.GetContoCorrenteByIdCC(RecordContoCorrente.Id_RowConto + 1);
-                    // verifico che il record abbia lo stesso tipo di movimento
-                    if (Record2ContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
-                    {
-                        _liquidAssetServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);
-                        _liquidAssetServices.DeleteRecordContoCorrente(Record2ContoCorrente.Id_RowConto);
-                    }
-                    else
-                    {
-                        Record2ContoCorrente = _liquidAssetServices.GetContoCorrenteByIdCC(RecordContoCorrente.Id_RowConto - 1);
-                        _liquidAssetServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);
-                        _liquidAssetServices.DeleteRecordContoCorrente(Record2ContoCorrente.Id_RowConto);
-                    }
+                    MessageBox.Show("Problemi nell'eliminare il record" + Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(),
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-                MessageBox.Show("Record eliminato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
-                Init();
             }
-            catch (Exception err)
+            else if (((StackPanel)param).Name == "Bottoniera_2")
             {
-                MessageBox.Show("Problemi nell'eliminare il record" + Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(),
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                try
+                {
+                    _managerLiquidServices.DeleteRecordQuote_Guadagno(QuotaPerPeriodo.Id_Quota);
+                    ListQuoteGuadagno = _managerLiquidServices.GetAllRecordQuote_Guadagno();
+                }
+                catch (Exception err)
+                {
+                    MessageBox.Show("Problemi nell'eliminare il record \"Quote per Investitore\"!" + Environment.NewLine + err.Message,
+                        Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
-            */
+
+            MessageBox.Show("Eliminazione effettuata correttamente.", Application.Current.FindResource("DAF_Caption").ToString(),
+                MessageBoxButton.OK, MessageBoxImage.Information);
         }
         public void CleanCommand(object param)
         {
-            ActualQuote = new QuoteTab();
-            ContoCorrenteSelected = new ContoCorrente();
-        }
-
-        public bool CanInsert
-        {
-            get { return GetValue(() => CanInsert); }
-            set { SetValue(() => CanInsert, value); }
+            if (((StackPanel)param).Name == "Bottoniera_1")
+            {
+            }
+            else if (((StackPanel)param).Name == "Bottoniera_2")
+            {
+            }
+            UpdateCollection();
         }
 
         public bool CanSave(object param)
         {
-            return CanInsert;
+            if (ActualQuote.IdQuote == 0 && ActualQuote.Ammontare != 0)
+            {
+                return true;
+            }
+            return false;
         }
-
-        public bool CanUpdateDelete
+        /// <summary>
+        /// Verifica se si può attivare il bottone per salvare un
+        /// record nella tabella quote_guadagno
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns>true or false</returns>
+        public bool CanSaveQuota(object param)
         {
-            get { return GetValue(() => CanUpdateDelete); }
-            set { SetValue(() => CanUpdateDelete, value); }
+            if (QuotaPerPeriodo.Id_Quota == 0 &&
+                QuotaPerPeriodo.Data_Fine > QuotaPerPeriodo.Data_Inizio &&
+                QuotaPerPeriodo.Id_Quote_Periodi > 0)
+                return true;
+            return false;
         }
 
         public bool CanModify(object param)
         {
-            if (CanUpdateDelete)
+            if (ActualQuote.IdQuote > 0)
+                return true;
+            return false;
+        }
+
+        public bool CanModifyQuota(object param)
+        {
+            if (QuotaPerPeriodo.Id_Quota > 0)
                 return true;
             return false;
         }
 
         #endregion
-
-        private void UpdateGrid()
-        {
-            foreach (QuoteInv quoteInv in ListQuoteInv)
-            {
-                switch (quoteInv.NomeInvestitore)
-                {
-                    case "Daniela":
-                        ImmDany = quoteInv.CapitaleImmesso;
-                        PreDany = quoteInv.CapitalePrelevato;
-                        AttDany = quoteInv.CapitaleAttivo;
-                        QuotaDany = quoteInv.QuotaInv;
-                        AssDany = quoteInv.CapitaleAssegnato;
-                        DisDany = quoteInv.CapitaleDisponibile;
-                        break;
-                    case "Flavio":
-                        ImmFla = quoteInv.CapitaleImmesso;
-                        PreFla = quoteInv.CapitalePrelevato;
-                        AttFla = quoteInv.CapitaleAttivo;
-                        QuotaFla = quoteInv.QuotaInv;
-                        AssFla = quoteInv.CapitaleAssegnato;
-                        DisFla = quoteInv.CapitaleDisponibile;
-                        ImmTot = quoteInv.TotaleImmesso;
-                        PreTot = quoteInv.TotalePrelevato;
-                        AttTot = quoteInv.TotaleAttivo;
-                        AssTot = quoteInv.TotaleAssegnato;
-                        DisTot = quoteInv.TotaleDisponibile;
-                        break;
-                }
-            }
-        }
     }
 }

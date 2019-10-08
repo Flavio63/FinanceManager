@@ -4,8 +4,8 @@
     {
         Nothing = 0,
         Capitale = 1,
-        Cedole = 4,
         PerditaCapitale = 11,
-        Utili = 15
+        Utili = 15,
+        Utili_Volatili = 16
     }
 }

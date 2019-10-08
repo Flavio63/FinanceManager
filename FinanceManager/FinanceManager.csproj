@@ -177,8 +177,10 @@
     <Compile Include="Models\PeriodiDiValiditaList.cs" />
     <Compile Include="Models\Ptf_CC.cs" />
     <Compile Include="Models\Ptf_CCList.cs" />
-    <Compile Include="Models\QuoteGuadagnoList.cs" />
-    <Compile Include="Models\QuoteGuadagno.cs" />
+    <Compile Include="Models\GuadagnoPerQuoteList.cs" />
+    <Compile Include="Models\GuadagnoPerQuote.cs" />
+    <Compile Include="Models\QuotePerPeriodo.cs" />
+    <Compile Include="Models\QuotePerPeriodoList.cs" />
     <Compile Include="Models\ReportMovementDetailed.cs" />
     <Compile Include="Models\ReportMovementDetailedList.cs" />
     <Compile Include="Models\ReportTitoliAttivi.cs" />

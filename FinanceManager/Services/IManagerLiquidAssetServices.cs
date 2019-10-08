@@ -1,6 +1,7 @@
 ﻿using FinanceManager.Models;
 using FinanceManager.Models.Enum;
 using System;
+using System.Collections.Generic;
 
 namespace FinanceManager.Services
 {
@@ -30,10 +31,53 @@ namespace FinanceManager.Services
         /// </summary>
         /// <param name="sintetico">True per sintesi e False per dettaglio</param>
         /// <returns>Observable Collection</returns>
-        QuoteGuadagnoList GetQuoteGuadagno(bool sintetico);
+        GuadagnoPerQuoteList GetQuoteGuadagno(bool sintetico);
+
+        /// <summary>Estraggo gli anni dalla tabella guadagni_totale_anno</summary>
+        List<int> GetAnniFromGuadagni();
+
+        /// <summary>
+        /// Estraggo la data dalla tabella investimenti sulla base della
+        /// nuova data di movimento (versamento / prelevamento)
+        /// </summary>
+        /// <param name="NuovaData">DateTime</params>
+        /// <returns>DateTime</returns>
+        DateTime GetDataPrecedente(DateTime NuovaData);
+        /// <summary>
+        /// Modifico la tabella quote_periodi cercando la data di inizio
+        /// e modificando la data di fine
+        /// </summary>
+        /// <param name="DataDal">Data da cercare</param>
+        /// <param name="DataAL">Data da modificare</param>
+        void UpdateDataFine(DateTime DataDal, DateTime DataAL);
+        /// <summary>
+        /// Inserisco nella tabella quote_periodi la nuova coppia di date
+        /// </summary>
+        /// <param name="DataDal">La data di inizio periodo</param>
+        void InsertPeriodoValiditaQuote(DateTime DataDal);
+
+        /// <summary>
+        /// Calcolo le nuove quote e le inserisco nella tabella quote_guadagno
+        /// </summary>
+        void ComputesAndInsertQuoteGuadagno();
+
+        /// <summary>
+        /// Recupero l'ultimo id delle coppie di date inserite
+        /// </summary>
+        /// <returns>Identificativo</returns>
+        int GetLastPeriodoValiditaQuote();
 
         QuoteTabList GetQuoteTab();                                     //Prendo tutti i record della tabella AndQuote
         void InsertInvestment(QuoteTab ActualQuote);                    // Inserisce nuovo movimento nella tabella anche il movimento 12
+
+        /// <summary>
+        /// Calcola il totale degli investimenti di
+        /// un investitore (somma algebrica)
+        /// </summary>
+        /// <param name="IdGestione">Identificativo</param>
+        /// <returns>double</returns>
+        double GetInvestmentByIdGestione(int IdGestione);
+
         void UpdateQuoteTab(QuoteTab ActualQuote);                      // aggiorna i movimenti della tabella AndQuote
         void DeleteRecordQuoteTab(int idQuote);                         // elimina una scrittura dal database
 
@@ -59,5 +103,9 @@ namespace FinanceManager.Services
         /// </summary>
         /// <param name="idCC">id del record da eliminare</param>
         void DeleteRecordContoCorrente(int idCC);
+        QuotePerPeriodoList GetAllRecordQuote_Guadagno();
+        void InsertRecordQuote_Guadagno(QuotePerPeriodo record_quote_guadagno);
+        void UpdateRecordQuote_Guadagno(QuotePerPeriodo record_quote_guadagno);
+        void DeleteRecordQuote_Guadagno(int id_quota);
     }
 }

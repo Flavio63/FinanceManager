@@ -199,17 +199,65 @@ namespace FinanceManager.Services.SQL
         /// calcola le quote per investitore del guadagno
         /// in base al periodo di validità delle quote di investimento
         /// </summary>
-        public static readonly string GetQuoteDettaglioGuadagno = "SELECT D.nome_gestione, A.data_inizio, A.data_fine, B.quota, SUM(case when C.id_tipo_soldi = 4 then C.ammontare ELSE 0 END) * B.quota AS cedole, " +
-            "SUM(case when C.id_tipo_soldi = 15 AND C.id_gestione <> 7 then ammontare ELSE 0 END) * B.quota AS utili, SUM(case when C.id_tipo_soldi = 15 AND C.id_gestione = 7 then ammontare ELSE 0 END) * 0.5 AS volatili, " +
-            "SUM(case when (C.id_tipo_soldi = 4 OR C.id_tipo_soldi = 15) AND C.id_gestione <> 7 then ammontare ELSE 0 END) * B.quota + sum(case when C.id_tipo_soldi = 15 AND C.id_gestione = 7 then ammontare ELSE 0 END) * 0.5 AS totale " +
-            "FROM quote_periodi A, quote_guadagno B, conto_corrente C , gestioni D WHERE A.id_periodo_quote = B.id_quote_periodi AND B.id_quote_periodi = C.id_quote_periodi AND B.id_gestione = D.id_gestione " +
-            "GROUP BY B.id_gestione, B.id_quote_periodi ORDER BY A.data_inizio, D.nome_gestione;";
+        public static readonly string GetQuoteDettaglioGuadagno = "SELECT anno, B.nome_gestione, C.desc_tipo_soldi, A.data_operazione, A.quota, guadagnato AS Guadagno, prelevato AS Preso, " +
+            "guadagnato + prelevato AS In_Cassa FROM guadagni_totale_anno A, gestioni B, tipo_soldi C WHERE A.id_gestione = B.id_gestione AND A.id_tipo_soldi = C.id_tipo_soldi " +
+            "GROUP BY anno, A.data_operazione, A.id_gestione, A.id_tipo_soldi ORDER BY anno DESC, A.data_operazione, A.id_gestione DESC, A.id_tipo_soldi; ";
 
-        public static readonly string GetQuoteSintesiGuadagno = "SELECT D.nome_gestione, YEAR(A.data_inizio) AS anno, SUM(case when C.id_tipo_soldi = 4 then C.ammontare ELSE 0 END) * B.quota AS cedole, " +
-            "SUM(case when C.id_tipo_soldi = 15 AND C.id_gestione <> 7 then ammontare ELSE 0 END) * B.quota AS utili, SUM(case when C.id_tipo_soldi = 15 AND C.id_gestione = 7 then ammontare ELSE 0 END) * 0.5 AS volatili, " +
-            "SUM(case when (C.id_tipo_soldi = 4 OR C.id_tipo_soldi = 15) AND C.id_gestione <> 7 then ammontare ELSE 0 END) * B.quota + sum(case when C.id_tipo_soldi = 15 AND C.id_gestione = 7 then ammontare ELSE 0 END) * 0.5 AS totale " +
-            "FROM quote_periodi A, quote_guadagno B, conto_corrente C , gestioni D WHERE A.id_periodo_quote = B.id_quote_periodi AND B.id_quote_periodi = C.id_quote_periodi AND B.id_gestione = D.id_gestione " +
-            "GROUP BY B.id_gestione, anno ORDER BY anno, D.nome_gestione;";
+        public static readonly string GetQuoteSintesiGuadagno = "SELECT anno, B.nome_gestione, C.desc_tipo_soldi, SUM(guadagnato) AS Guadagno, SUM(prelevato) AS Preso, " +
+            "SUM(guadagnato + prelevato) AS In_Cassa FROM guadagni_totale_anno A, gestioni B, tipo_soldi C WHERE A.id_gestione = B.id_gestione AND A.id_tipo_soldi = C.id_tipo_soldi " +
+            "GROUP BY anno, A.id_gestione, A.id_tipo_soldi ORDER BY anno DESC, A.id_gestione DESC, A.id_tipo_soldi; ";
+
+        /// <summary>Estraggo gli anni dalla tabella guadagni_totale_anno</summary>
+        public static readonly string GetAnniFromGuadagni = "SELECT A.anno FROM guadagni_totale_anno A GROUP BY A.anno ORDER BY A.anno";
+
+        /// <summary>
+        /// Trovo la data che precede quella nuova
+        /// </summary>
+        public static readonly string GetDataPrecedente = "SELECT data_movimento FROM quote_investimenti A " +
+            "WHERE A.id_quote_inv > 0 AND A.id_tipo_movimento <> 12 AND A.data_movimento < @data_movimento " +
+            "ORDER BY A.data_movimento DESC LIMIT 1;";
+
+        /// <summary>Modifico la data di fine dei records con data di inizio </summary>
+        public static readonly string UpdateDataFine = "UPDATE quote_periodi A SET A.data_fine = @data_fine WHERE A.data_inizio = @data_inizio";
+        /// <summary>Inserisco il nuovo periodo di validità delle quote</summary>
+        public static readonly string InsertPeriodoValiditaQuote = "INSERT INTO quote_periodi (id_periodo_quote, data_inizio, data_fine) values (null, @data_inizio, '2099-12-31')";
+
+        public static readonly string GetLastPeriodoValiditaQuote = "SELECT id_periodo_quote FROM quote_periodi A ORDER BY A.id_periodo_quote DESC LIMIT 1";
+        /// <summary>
+        /// Calcolo le nuove quote e le inserisco nella tabella quote_guadagno
+        /// </summary>
+        public static readonly string ComputesAndInsertQuoteGuadagno = "SET @FV := 0; SET @DP := 0; INSERT INTO quote_guadagno (id_gestione, id_tipo_soldi, id_quote_periodi, quota) " +
+            "( SELECT id_gestione, 15 AS id_tipo_soldi, A.id_periodo_quote, QFV + QDP AS quota FROM ( SELECT id_gestione, Q1.data_movimento, cumulativeFv/cum AS QFV, cumulativeDp/cum AS QDP " +
+            "FROM (SELECT id_gestione, data_movimento, ammontare, case when id_gestione = 3 then (@FV := @FV + ammontare) ELSE 0 end AS cumulativeFv, " +
+            "case when id_gestione = 5 then (@DP := @DP + ammontare) ELSE 0 END AS cumulativeDp FROM quote_investimenti WHERE id_tipo_movimento <> 12 AND year(data_movimento) > 2010 AND id_gestione <> 4 " +
+            "ORDER BY data_movimento, id_gestione) AS Q1, (SELECT data_movimento, SUM(ammontare) over (ORDER BY data_movimento) AS cum FROM quote_investimenti " +
+            "WHERE id_tipo_movimento <> 12 AND year(data_movimento) > 2010 AND id_gestione <> 4 ) AS Q2 WHERE Q1.data_movimento = Q2.data_movimento " +
+            "GROUP BY Q1.data_movimento, id_gestione ORDER BY Q1.data_movimento DESC, id_gestione LIMIT 2) AS inn1, quote_periodi A WHERE inn1.data_movimento = A.data_inizio)";
+
+        /// <summary>
+        /// Esporto tutti i record della tabella quote_guadagno aggiungendo le descrizioni
+        /// di investitore e di tipologia investimento
+        /// </summary>
+        public static readonly string GetAllRecordQuote_Guadagno = "SELECT A.id_quota, A.id_gestione, B.nome_gestione, A.id_tipo_soldi, C.desc_tipo_soldi, A.id_quote_periodi, D.data_inizio, D.data_fine, A.quota " +
+            "FROM quote_guadagno A, gestioni B, tipo_soldi C, quote_periodi D WHERE A.id_gestione = B.id_gestione AND A.id_tipo_soldi = C.id_tipo_soldi AND A.id_quote_periodi = D.id_periodo_quote " +
+            "ORDER BY data_fine DESC, id_gestione DESC ";
+
+        /// <summary>
+        /// Inserisco un record nuovo nella tabella quote_guadagno
+        /// </summary>
+        public static readonly string InsertRecordQuote_Guadagno = "INSERT INTO quote_guadagno (id_quota, id_gestione, id_tipo_soldi, id_quote_periodi, quota) values (" +
+            "null, @id_gestione, @id_tipo_soldi, @id_quote_periodi, @quota)";
+
+        /// <summary>
+        /// Modifico un record della tabella quote_guadagno
+        /// </summary>
+        public static readonly string UpdateRecordQuote_Guadagno = "UPDATE quote_guadagno SET id_gestione = @id_gestione, id_tipo_soldi = @id_tipo_soldi, id_quote_periodi = @id_quote_periodi, " +
+            "quota = @quota WHERE id_quota = @id_quota";
+
+        /// <summary>
+        /// Elimino un record della tabella quote_guadagno
+        /// </summary>
+        public static readonly string DeleteRecordQuote_Guadagno = "DELETE FROM quote_guadagno WHERE id_quota = @id_quota ";
 
         /// <summary>
         /// Esporta tutti i record della quote prendendo anche le descrizioni
@@ -226,6 +274,11 @@ namespace FinanceManager.Services.SQL
         /// </summary>
         public static readonly string InsertInvestment = "INSERT INTO quote_investimenti (id_quote_inv, id_gestione, id_tipo_movimento, data_movimento, ammontare, note) " +
             "VALUES (null, @id_gestione, @id_tipo_movimento, @data_movimento, @ammontare, @note)";
+
+        /// <summary>
+        /// Calcola e restituisce il totale (somma algebrica) di quanto investito da un soggetto
+        /// </summary>
+        public static readonly string GetInvestmentByIdGestione = "SELECT SUM(ammontare) AS totale FROM quote_investimenti A WHERE A.id_tipo_movimento <> 12 AND id_gestione = @id_gestione";
 
         /// <summary>
         /// Modifica un record nella tabella quote_investimenti

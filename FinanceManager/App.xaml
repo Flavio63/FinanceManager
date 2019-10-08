@@ -3,20 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:viewModels="clr-namespace:FinanceManager.ViewModels"
-             xmlns:dialogYesNo="clr-namespace:FinanceManager.Dialogs.DialogYesNo"
-             xmlns:dialog3Combos="clr-namespace:FinanceManager.Dialogs.Dialog3Combos"
              xmlns:Events="clr-namespace:FinanceManager.Events"
              StartupUri="Views/MainWindow.xaml">
     <Application.Resources>
-        <Events:ComboboxDisableConverter x:Key="itemDisableconverter"/>
         <viewModels:MainWindowViewModel x:Key="MainWindowViewModel"/>
-        <!--<viewModels:GestioneContoCorrenteViewModel x:Key="GestioneContoCorrenteViewModel"/>-->
-        <DataTemplate DataType="{x:Type dialogYesNo:DialogYesNoViewModel}">
-            <dialogYesNo:DialogYesNoView></dialogYesNo:DialogYesNoView>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type dialog3Combos:Dialog3CombosViewModel}">
-            <dialog3Combos:Dialog3CombosView></dialog3Combos:Dialog3CombosView>
-        </DataTemplate>
         <sys:String x:Key="DAF_Caption">DAF-C Program</sys:String>
         <Style x:Key="ON" TargetType="ToggleButton">
             <Setter Property="OverridesDefaultStyle" Value="True"/>

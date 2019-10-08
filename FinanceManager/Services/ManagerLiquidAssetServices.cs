@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using FinanceManager.Models;
 using FinanceManager.Models.Enum;
@@ -659,12 +660,326 @@ namespace FinanceManager.Services
         }
 
         /// <summary>
+        /// Prelevo tutti i record della tabella quote_guadagno
+        /// </summary>
+        public QuotePerPeriodoList GetAllRecordQuote_Guadagno()
+        {
+            try
+            {
+                DataTable DT = new DataTable();
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetAllRecordQuote_Guadagno;
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.Fill(DT);
+                    QuotePerPeriodoList quotes = new QuotePerPeriodoList();
+                    foreach (DataRow dataRow in DT.Rows)
+                    {
+                        QuotePerPeriodo quote = new QuotePerPeriodo();
+                        quote.Id_Quota = (int)dataRow.Field<uint>("id_quota");
+                        quote.Id_Gestione = (int)dataRow.Field<uint>("id_gestione");
+                        quote.Nome_Gestione = dataRow.Field<string>("nome_gestione");
+                        quote.Id_Tipo_Soldi = (int)dataRow.Field<uint>("id_tipo_soldi");
+                        quote.Desc_Tipo_Soldi = dataRow.Field<string>("desc_tipo_soldi");
+                        quote.Id_Quote_Periodi = (int)dataRow.Field<uint>("id_quote_periodi");
+                        quote.Data_Inizio = dataRow.Field<DateTime>("data_inizio");
+                        quote.Data_Fine = dataRow.Field<DateTime>("data_fine");
+                        quote.Quota = dataRow.Field<double>("quota");
+                        quotes.Add(quote);
+                    }
+                    return quotes;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        /// <summary>
+        /// Inserisco un nuovo record nella tabella quote_guadagno
+        /// </summary>
+        /// <param name="record_quote_guadagno">Il record da inserire</param>
+        public void InsertRecordQuote_Guadagno(QuotePerPeriodo record_quote_guadagno)
+        {
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.ManagerScripts.InsertRecordQuote_Guadagno;
+                    dbComm.Parameters.AddWithValue("id_gestione", record_quote_guadagno.Id_Gestione);
+                    dbComm.Parameters.AddWithValue("id_tipo_soldi", record_quote_guadagno.Id_Tipo_Soldi);
+                    dbComm.Parameters.AddWithValue("id_quote_periodi", record_quote_guadagno.Id_Quote_Periodi);
+                    dbComm.Parameters.AddWithValue("quota", record_quote_guadagno.Quota);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        /// <summary>
+        /// Recupero l'ultimo id delle coppie di date inserite
+        /// </summary>
+        /// <returns>Identificativo</returns>
+        public int GetLastPeriodoValiditaQuote()
+        {
+            try
+            {
+                DataTable DT = new DataTable();
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetLastPeriodoValiditaQuote;
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.Fill(DT);
+                    return (int)DT.Rows[0].Field<uint>("id_periodo_quote");
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        /// <summary>
+        /// Calcolo le nuove quote e le inserisco nella tabella quote_guadagno
+        /// </summary>
+        public void ComputesAndInsertQuoteGuadagno()
+        {
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.ManagerScripts.ComputesAndInsertQuoteGuadagno;
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+        
+        /// <summary>
+        /// Modifico un record della tabella quote_guadagno
+        /// </summary>
+        /// <param name="record_quote_guadagno">Il record da modificare</param>
+        public void UpdateRecordQuote_Guadagno(QuotePerPeriodo record_quote_guadagno)
+        {
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.ManagerScripts.UpdateRecordQuote_Guadagno;
+                    dbComm.Parameters.AddWithValue("id_gestione", record_quote_guadagno.Id_Gestione);
+                    dbComm.Parameters.AddWithValue("id_tipo_soldi", record_quote_guadagno.Id_Tipo_Soldi);
+                    dbComm.Parameters.AddWithValue("id_quote_periodi", record_quote_guadagno.Id_Quote_Periodi);
+                    dbComm.Parameters.AddWithValue("quota", record_quote_guadagno.Quota);
+                    dbComm.Parameters.AddWithValue("id_quota", record_quote_guadagno.Id_Quota);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        /// <summary>
+        /// Elimino un record dalla tabella quote_guadagno
+        /// </summary>
+        /// <param name="id_quota">identificativo del record</param>
+        public void DeleteRecordQuote_Guadagno(int id_quota)
+        {
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.ManagerScripts.DeleteRecordQuote_Guadagno;
+                    dbComm.Parameters.AddWithValue("id_quota", id_quota);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        /// <summary>Estraggo gli anni dalla tabella guadagni_totale_anno</summary>
+        public List<int> GetAnniFromGuadagni()
+        {
+            try
+            {
+                DataTable DT = new DataTable();
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = ManagerScripts.GetAnniFromGuadagni;
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.Fill(DT);
+                    List<int> anni = new List<int>();
+                    foreach (DataRow row in DT.Rows)
+                        anni.Add(row.Field<int>("anno"));
+                    return anni;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        /// <summary>
+        /// Estraggo la data dalla tabella investimenti sulla base della
+        /// nuova data di movimento (versamento / prelevamento)
+        /// </summary>
+        /// <param name="NuovaData">DateTime</params>
+        /// <returns>DateTime</returns>
+        public DateTime GetDataPrecedente(DateTime NuovaData)
+        {
+            try
+            {
+                DataTable DT = new DataTable();
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = ManagerScripts.GetDataPrecedente;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("data_movimento", NuovaData.ToString("yyyy-MM-dd"));
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.Fill(DT);
+                    return DT.Rows[0].Field<DateTime>("data_movimento");
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception("GetDataPrecedente " + err.Message);
+            }
+        }
+        /// <summary>
+        /// Modifico la tabella quote_periodi cercando la data di inizio
+        /// e modificando la data di fine
+        /// </summary>
+        /// <param name="DataDal">Data da cercare</param>
+        /// <param name="DataAL">Data da modificare</param>
+        public void UpdateDataFine(DateTime DataDal, DateTime DataAL)
+        {
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.ManagerScripts.UpdateDataFine;
+                    dbComm.Parameters.AddWithValue("data_inizio", DataDal.ToString("yyyy-MM-dd"));
+                    dbComm.Parameters.AddWithValue("data_fine", DataAL.ToString("yyyy-MM-dd"));
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception("UpadateDataFine " + err.Message);
+            }
+        }
+
+        /// <summary>
+        /// Inserisco nella tabella quote_periodi la nuova coppia di date
+        /// </summary>
+        /// <param name="DataDal">La data di inizio periodo</param>
+        public void InsertPeriodoValiditaQuote(DateTime DataDal)
+        {
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = ManagerScripts.InsertPeriodoValiditaQuote;
+                    dbComm.Parameters.AddWithValue("data_inizio", DataDal.ToString("yyyy-MM-dd"));
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception("InsertPeriodoValiditaQuote " + err.Message);
+            }
+        }
+
+        /// <summary>
         /// Calcola le quote di guadagno per investitore applicando
         /// le quote di investimento per periodo.
         /// </summary>
         /// <param name="sintetico">se vero genera la sintesi altrimenti il dettaglio</param>
         /// <returns>Una lista con i dati per investitore</returns>
-        public QuoteGuadagnoList GetQuoteGuadagno(bool sintetico)
+        public GuadagnoPerQuoteList GetQuoteGuadagno(bool sintetico)
         {
             try
             {
@@ -676,23 +991,21 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.CommandText = !sintetico ? SQL.ManagerScripts.GetQuoteDettaglioGuadagno : SQL.ManagerScripts.GetQuoteSintesiGuadagno;
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
-                    QuoteGuadagnoList quotes = new QuoteGuadagnoList();
+                    GuadagnoPerQuoteList quotes = new GuadagnoPerQuoteList();
                     foreach (DataRow dataRow in DT.Rows)
                     {
-                        QuoteGuadagno quote = new QuoteGuadagno();
+                        GuadagnoPerQuote quote = new GuadagnoPerQuote();
+                        quote.Anno = dataRow.Field<int>("anno");
                         quote.Nome = dataRow.Field<string>("nome_gestione");
-                        if (sintetico)
-                            quote.Anno = dataRow.Field<int>("anno");
-                        else
+                        quote.DescTipoSoldi = dataRow.Field<string>("desc_tipo_soldi");
+                        if (!sintetico)
                         {
-                            quote.DataInizio = dataRow.Field<DateTime>("data_inizio");
-                            quote.DataFine = dataRow.Field<DateTime>("data_fine");
+                            quote.DataOperazione = dataRow.Field<DateTime>("data_operazione");
                             quote.QuotaInv = dataRow.Field<double>("quota");
                         }
-                        quote.TotaleCedole = dataRow.Field<double>("cedole");
-                        quote.TotaleUtili = dataRow.Field<double>("utili");
-                        quote.TotaleVolatili = dataRow.Field<double>("volatili");
-                        quote.TotaleGuadagno = dataRow.Field<double>("totale");
+                        quote.Guadagno = dataRow.Field<double>("Guadagno");
+                        quote.Preso = dataRow.Field<double>("Preso");
+                        quote.In_Cassa = dataRow.Field<double>("In_Cassa");
                         quotes.Add(quote);
                     }
                     return quotes;
@@ -836,7 +1149,7 @@ namespace FinanceManager.Services
                 {
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.ManagerScripts.InsertInvestment;
-                    dbComm.Parameters.AddWithValue("id_investitore", ActualQuote.IdGestione);
+                    dbComm.Parameters.AddWithValue("id_gestione", ActualQuote.IdGestione);
                     dbComm.Parameters.AddWithValue("id_tipo_movimento", ActualQuote.Id_tipo_movimento);
                     dbComm.Parameters.AddWithValue("data_movimento", ActualQuote.DataMovimento.ToString("yyyy-MM-dd"));
                     dbComm.Parameters.AddWithValue("ammontare", ActualQuote.Ammontare);
@@ -845,6 +1158,38 @@ namespace FinanceManager.Services
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        /// <summary>
+        /// Calcola il totale degli investimenti di
+        /// un investitore (somma algebrica)
+        /// </summary>
+        /// <param name="IdGestione">Identificativo</param>
+        /// <returns>double</returns>
+        public double GetInvestmentByIdGestione(int IdGestione)
+        {
+            try
+            {
+                DataTable DT = new DataTable();
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetInvestmentByIdGestione;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", IdGestione);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.Fill(DT);
+                    return DT.Rows[0].Field<double>("totale");
                 }
             }
             catch (MySqlException err)
@@ -894,7 +1239,7 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
-        
+
         /// <summary>
         /// Estrae tutti i movimenti in ordine di data del conto corrente
         /// </summary>
@@ -923,7 +1268,7 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
-        
+
         /// <summary>
         /// Dato il codice di un movimento estrae tutti i record in ordine di data
         /// </summary>
