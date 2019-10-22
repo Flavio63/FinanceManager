@@ -29,37 +29,46 @@ namespace FinanceManager.Services
         /// suddividendola per ogni periodo di validà delle 
         /// quote basate sugli investimenti versati / prelevati
         /// </summary>
-        /// <param name="sintetico">True per sintesi e False per dettaglio</param>
+        /// <param name="tipoReport">se 0 genera estrama sintesi, se 1 sintesi, se 2 il dettaglio</param>
         /// <returns>Observable Collection</returns>
-        GuadagnoPerQuoteList GetQuoteGuadagno(bool sintetico);
+        GuadagnoPerQuoteList GetQuoteGuadagno(int sintetico);
 
         /// <summary>Estraggo gli anni dalla tabella guadagni_totale_anno</summary>
         List<int> GetAnniFromGuadagni();
 
         /// <summary>
-        /// Estraggo la data dalla tabella investimenti sulla base della
-        /// nuova data di movimento (versamento / prelevamento)
+        /// Trovo il codice dei record da ricalcolare con le nuove quote
         /// </summary>
-        /// <param name="NuovaData">DateTime</params>
-        /// <returns>DateTime</returns>
-        DateTime GetDataPrecedente(DateTime NuovaData);
+        /// <param name="dateTime">la data dell'investimento</param>
+        /// <param name="Id_tipoSoldi">Identifica chi sta modificando l'investimento</param>
+        /// <returns>int</returns>
+        int GetIdPeriodoQuote(DateTime dateTime, int Id_tipoSoldi);
+
         /// <summary>
-        /// Modifico la tabella quote_periodi cercando la data di inizio
-        /// e modificando la data di fine
+        /// Modifico la tabella quote_periodi modificando la data di fine
+        /// e inserendo il nuovo record
         /// </summary>
         /// <param name="DataDal">Data da cercare</param>
-        /// <param name="DataAL">Data da modificare</param>
-        void UpdateDataFine(DateTime DataDal, DateTime DataAL);
-        /// <summary>
-        /// Inserisco nella tabella quote_periodi la nuova coppia di date
-        /// </summary>
-        /// <param name="DataDal">La data di inizio periodo</param>
-        void InsertPeriodoValiditaQuote(DateTime DataDal);
+        /// <param name="TipoSoldi">Tipologia dei soldi</param>
+        /// <returns>Last id record inserted</returns>
+        int Update_InsertQuotePeriodi(DateTime DataDal, int TipoSoldi);
 
         /// <summary>
         /// Calcolo le nuove quote e le inserisco nella tabella quote_guadagno
         /// </summary>
         void ComputesAndInsertQuoteGuadagno();
+
+        /// <summary>
+        /// Calcolo le nuove quote e modifico la tabella quote_guadagno
+        /// </summary>
+        void ComputesAndModifyQuoteGuadagno();
+        /// <summary>
+        /// Aggiorno la tabella Guadagni_totale_anno con le nuove
+        /// quote per il periodo interessato alle modifiche
+        /// </summary>
+        /// <param name="Id_Periodo_Quote">il periodo da modificare</param>
+        /// <param name="Id_Tipo_Soldi">Il tipo soldi</param>
+        void UpdateGuadagniTotaleAnno(int Id_Periodo_Quote, int Id_Tipo_Soldi);
 
         /// <summary>
         /// Recupero l'ultimo id delle coppie di date inserite
@@ -105,7 +114,36 @@ namespace FinanceManager.Services
         void DeleteRecordContoCorrente(int idCC);
         QuotePerPeriodoList GetAllRecordQuote_Guadagno();
         void InsertRecordQuote_Guadagno(QuotePerPeriodo record_quote_guadagno);
-        void UpdateRecordQuote_Guadagno(QuotePerPeriodo record_quote_guadagno);
         void DeleteRecordQuote_Guadagno(int id_quota);
+
+        /// <summary>
+        /// Verifico se nella data di inserimento è già presente
+        /// un investimento
+        /// </summary>
+        /// <param name="ActualQuote">Il record per verificare</param>
+        /// <param name="Id_Tipo_Soldi">Il tipo soldi che si sta movimentando</param>
+        /// <returns>-1 se falso altrimenti il numero del periodo quote</returns>
+        int VerifyInvestmentDate(QuoteTab ActualQuote, int Id_Tipo_Soldi);
+        /// <summary>
+        /// Trovo l'id del record da modificare
+        /// </summary>
+        /// <param name="ActualQuote">Il record con le modifiche</param>
+        /// <returns>id_quoteTab</returns>
+        int GetIdQuoteTab(QuoteTab ActualQuote);
+
+        /// <summary>
+        /// Estraggo la quantità di utile disponibile
+        /// sulla base dell'anno e della gestione
+        /// </summary>
+        /// <param name="quoteTab">Il record con i dati da verificare</param>
+        /// <returns>Disponibilità di utili</returns>
+        int VerifyDisponibilitaUtili(QuoteTab quoteTab);
+
+        /// <summary>
+        /// Registro il prelievo di utili
+        /// </summary>
+        /// <param name="quoteTab">Il record da inserire</param>
+        void InsertPrelievoUtili(QuoteTab quoteTab);
+
     }
 }

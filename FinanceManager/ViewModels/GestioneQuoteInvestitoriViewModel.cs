@@ -47,9 +47,10 @@ namespace FinanceManager.ViewModels
             ClearCommand = new CommandHandler(CleanCommand);
             #endregion
 
-            #region Inizializzazione Liste
             try
             {
+                #region Inizializzazione Liste
+
                 ListQuoteInv = new QuoteInvList();
                 ListQuoteDettaglioGuadagno = new GuadagnoPerQuoteList();
                 ListQuoteSintesiGuadagno = new GuadagnoPerQuoteList();
@@ -64,19 +65,7 @@ namespace FinanceManager.ViewModels
 
                 #endregion
 
-                UpdateCollection();
-            }
-            catch (Exception err)
-            {
-                MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Quote Investitori");
-            }
-
-        }
-
-        private void UpdateCollection()
-        {
-            try
-            {
+                #region liste combo
                 RegistryMovementTypeList listaOriginale = new RegistryMovementTypeList();
                 listaOriginale = _registryServices.GetRegistryMovementTypesList();
                 foreach (RegistryMovementType registry in listaOriginale)
@@ -92,8 +81,23 @@ namespace FinanceManager.ViewModels
                     else if (RO.Tipologia == "Gestore")
                         ListGestioni.Add(RO);
                 }
+                #endregion
 
+                UpdateCollection();
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Quote Investitori");
+            }
+
+        }
+
+        private void UpdateCollection()
+        {
+            try
+            {
                 QuotePerPeriodoList ListQuoteGuadagnoOriginale = _managerLiquidServices.GetAllRecordQuote_Guadagno();
+                ListQuoteGuadagno.Clear();
                 foreach (QuotePerPeriodo quotePerPeriodo in ListQuoteGuadagnoOriginale)
                     if (quotePerPeriodo.Id_Tipo_Soldi == 16)
                         ListQuoteGuadagno.Add(quotePerPeriodo);
@@ -104,8 +108,9 @@ namespace FinanceManager.ViewModels
 
                 ListQuoteInv = _managerLiquidServices.GetQuoteInv();
                 ListTabQuote = _managerLiquidServices.GetQuoteTab();
-                ListQuoteDettaglioGuadagno = _managerLiquidServices.GetQuoteGuadagno(false);
-                ListQuoteSintesiGuadagno = _managerLiquidServices.GetQuoteGuadagno(true);
+                ListQuoteDettaglioGuadagno = _managerLiquidServices.GetQuoteGuadagno(2);
+                ListQuoteSintesiGuadagno = _managerLiquidServices.GetQuoteGuadagno(1);
+                ListQuoteSuperSintesiGuadagno = _managerLiquidServices.GetQuoteGuadagno(0);
                 ListLocation = _registryServices.GetRegistryLocationList();
                 ListTipoSoldi = _registryServices.GetTipoSoldiList();
             }
@@ -244,6 +249,14 @@ namespace FinanceManager.ViewModels
             private set { SetValue(() => ListQuoteSintesiGuadagno, value); }
         }
         /// <summary>
+        /// Come sopra ma globale per gestione e anno
+        /// </summary>
+        public GuadagnoPerQuoteList ListQuoteSuperSintesiGuadagno
+        {
+            get { return GetValue(() => ListQuoteSuperSintesiGuadagno); }
+            private set { SetValue(() => ListQuoteSuperSintesiGuadagno, value); }
+        }
+        /// <summary>
         /// E' la tabella degli investimenti con i movimenti dettagliati
         /// </summary>
         public QuoteTabList ListTabQuote
@@ -344,9 +357,15 @@ namespace FinanceManager.ViewModels
                     QuotaPerPeriodo = quotaPerPeriodo;
                 }
             }
-            else if (e.AddedItems.Count > 0 && e.AddedItems[0] is DatePicker)
+            else if (e.AddedItems.Count > 0 && (sender is DatePicker || sender is ComboBox) )
             {
-                ActualQuote.DataMovimento = (DateTime)e.AddedItems[0];
+                if (sender is DatePicker)
+                    ActualQuote.DataMovimento = (DateTime)e.AddedItems[0];
+                else if (e.AddedItems[0] is RegistryMovementType)
+                {
+                    ActualQuote.Id_tipo_movimento = ((RegistryMovementType)e.AddedItems[0]).Id_tipo_movimento;
+                    VerifyQuoteTabOperation();
+                }
             }
         }
 
@@ -358,9 +377,12 @@ namespace FinanceManager.ViewModels
         /// <param name="e">LostFocus</param>
         public void LostFocus(object sender, EventArgs e)
         {
-            if (sender is TextBox TB && TB.Name == "txtAmmontare")
-                if (!VerifyQuoteTabOperation())
-                    return;
+            if (((TextBox)sender).Name == "Ammontare")
+            {
+                ActualQuote.Ammontare = Convert.ToDouble(((TextBox)sender).Text);
+            }
+            if (!VerifyQuoteTabOperation())
+                return;
         }
 
         /// <summary>
@@ -395,35 +417,69 @@ namespace FinanceManager.ViewModels
             {
                 if (((StackPanel)param).Name == "Bottoniera_1" && TabVersPre == true && ActualQuote.IdQuote == 0)
                 {
-                    DateTime DataDaModi = _managerLiquidServices.GetDataPrecedente(ActualQuote.DataMovimento); // scopro la coppia di date da modificare
-                    _managerLiquidServices.UpdateDataFine(DataDaModi, ActualQuote.DataMovimento.AddDays(-1));   // modifico la data di fine della coppia
-                    _managerLiquidServices.InsertPeriodoValiditaQuote(ActualQuote.DataMovimento);  // inserisco la nuova coppia di date
-                    _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il nuovo movimento di capitali
+                    int Id_Tipo_Soldi = ActualQuote.IdGestione == 4 ? 16 : 15;
+                    int result = _managerLiquidServices.VerifyInvestmentDate(ActualQuote, Id_Tipo_Soldi); // verifico se alla stessa data c'è già un inserimento
                     if (ActualQuote.IdGestione != 4)
                     {
-                        ActualQuote.IdGestione = ActualQuote.IdGestione == 3 ? 5 : 3;
-                        ActualQuote.Ammontare = 0;
-                        ActualQuote.Note = "Inserito per calcolo quote";
-                        _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco record vuoto per la gestione opposta
-                        // calcolo le nuove quote per gli investimenti stabili e le memorizzo
-                        _managerLiquidServices.ComputesAndInsertQuoteGuadagno();
+                        if (result == -1)
+                        {
+                            ActualQuote.Id_Periodo_Quote = _managerLiquidServices.Update_InsertQuotePeriodi(ActualQuote.DataMovimento, Id_Tipo_Soldi);
+                            _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il nuovo movimento di capitali
+                            ActualQuote.IdGestione = ActualQuote.IdGestione == 3 ? 5 : 3;
+                            ActualQuote.Ammontare = 0;
+                            ActualQuote.Note = "Inserimento per Quote";
+                            _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il movimento a 0 per effettuare le quote corrette.
+                            _managerLiquidServices.ComputesAndInsertQuoteGuadagno();
+                        }
+                        else
+                        {
+                            ActualQuote.Id_Periodo_Quote = result;
+                            ActualQuote.IdQuote = _managerLiquidServices.GetIdQuoteTab(ActualQuote); // trovo il codice per modificare il record
+                            _managerLiquidServices.UpdateQuoteTab(ActualQuote);     // modifico l'inserimento
+                            _managerLiquidServices.ComputesAndModifyQuoteGuadagno();
+                        }
                     }
                     else
                     {
+                        if (result == -1)
+                        {
+                            ActualQuote.Id_Periodo_Quote = _managerLiquidServices.Update_InsertQuotePeriodi(ActualQuote.DataMovimento, Id_Tipo_Soldi);
+                            _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il nuovo movimento di capitali
+                            ActualQuote.IdGestione = 3; ActualQuote.Ammontare = 0; ActualQuote.Note = "Inserimento per Quote";
+                            _managerLiquidServices.InsertInvestment(ActualQuote); // FLAVIO inserisco il movimento a 0 per effettuare le quote corrette.
+                            ActualQuote.IdGestione = 5; ActualQuote.Ammontare = 0; ActualQuote.Note = "Inserimento per Quote";
+                            _managerLiquidServices.InsertInvestment(ActualQuote); // DANIELA inserisco il movimento a 0 per effettuare le quote corrette.
+                        }
                         // calcolo la nuova quota di aurora e modifico le nostre quote di conseguenza
-                        // baso il 100% sul 0,22% circa attuale che vuol dire considerare un 250000 di budget totale come 100%
-                        int lastID = _managerLiquidServices.GetLastPeriodoValiditaQuote();  // trovo l'id dell'ultima coppia di date
+                        // baso il 100% sul 0,22% circa attuale (01/10/2019) che vuol dire considerare un 250000 di budget totale come 100%
+                        ActualQuote.IdGestione = 4;
+                        //inutile int lastID = _managerLiquidServices.GetLastPeriodoValiditaQuote();  // trovo l'id dell'ultima coppia di date
                         double VolatiliDAFLA = 249495;
                         double TotaleAury = _managerLiquidServices.GetInvestmentByIdGestione(ActualQuote.IdGestione);
                         double NuovaQuota = TotaleAury / (VolatiliDAFLA + TotaleAury);
-                        QuotePerPeriodo QPP = new QuotePerPeriodo() { Id_Gestione = ActualQuote.IdGestione, Id_Quote_Periodi = lastID, Id_Tipo_Soldi = 16, Quota = NuovaQuota };
+                        QuotePerPeriodo QPP = new QuotePerPeriodo() { Id_Gestione = ActualQuote.IdGestione, Id_Quote_Periodi = ActualQuote.Id_Periodo_Quote,
+                            Quota = NuovaQuota };
                         _managerLiquidServices.InsertRecordQuote_Guadagno(QPP);
                         QPP.Id_Gestione = 3; QPP.Quota = (1 - NuovaQuota) / 2; _managerLiquidServices.InsertRecordQuote_Guadagno(QPP); //nuova quota Flavio volatili
                         QPP.Id_Gestione = 5; _managerLiquidServices.InsertRecordQuote_Guadagno(QPP); //nuova quota Dany volatili
-
                     }
+                    // aggiorno la tabella con i guadagni totali
+                    _managerLiquidServices.UpdateGuadagniTotaleAnno(ActualQuote.Id_Periodo_Quote, Id_Tipo_Soldi);
+                    UpdateCollection();
                     MessageBox.Show(string.Format("Ho effettuato l'operazione {0} correttamente.", ActualQuote.Desc_tipo_movimento),
                     Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else if (((StackPanel)param).Name == "Bottoniera_2")
+                {
+                    // verifica se puoi prelevare la cifra
+                    _managerLiquidServices.VerifyDisponibilitaUtili(ActualQuote);
+                    // scrivi il record
+                    _managerLiquidServices.InsertPrelievoUtili(ActualQuote);
+                    // aggiorna la maschera
+                    UpdateCollection();
+                    MessageBox.Show(string.Format("Ho effettuato il prelievo di {0} €. dal conto di {1} per l'anno {2}.", 
+                        ActualQuote.Desc_tipo_movimento, ActualQuote.NomeInvestitore, ActualQuote.Anno),
+                        Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
             catch (Exception err)
@@ -436,6 +492,20 @@ namespace FinanceManager.ViewModels
         {
             try
             {
+                if (((StackPanel)param).Name == "Bottoniera_1" && TabVersPre == true && ActualQuote.IdQuote > 0)
+                {
+                    _managerLiquidServices.UpdateQuoteTab(ActualQuote); // aggiorno il record con la nuova cifra
+                    // scopro il codice dei record da ricalcolare con le nuove quote
+                    ActualQuote.Id_Periodo_Quote = ActualQuote.IdGestione == 4 ? 
+                        _managerLiquidServices.GetIdPeriodoQuote(ActualQuote.DataMovimento, 16) : _managerLiquidServices.GetIdPeriodoQuote(ActualQuote.DataMovimento, 15);
+                    if (ActualQuote.IdGestione != 4)
+                    {
+                        _managerLiquidServices.ComputesAndModifyQuoteGuadagno();    // colcolo le nuove quote (tipo_soldi = 15) e modifico i record interessati (tabella quote_guadagno)
+                    }
+                    _managerLiquidServices.UpdateGuadagniTotaleAnno(ActualQuote.Id_Periodo_Quote,
+                                                                    ActualQuote.IdGestione == 4 ? 16 : 15);  // modifico i dati di guadagno per socio delle operazioni con il codice di periodo che ha subito la modifica
+                    UpdateCollection();
+                }
             }
             catch (Exception err)
             {
@@ -486,9 +556,15 @@ namespace FinanceManager.ViewModels
             UpdateCollection();
         }
 
+        /// <summary>
+        /// Attiva il tasto di inserimento per le operazioni di 
+        /// Versamento, Prelevamento e Giroconto fra tabella quote_investimenti e tabella conto_corrente
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public bool CanSave(object param)
         {
-            if (ActualQuote.IdQuote == 0 && ActualQuote.Ammontare != 0)
+            if (ActualQuote.IdQuote == 0 && ActualQuote.Ammontare != 0 && ActualQuote.IdGestione > 0 && ActualQuote.Id_tipo_movimento > 0)
             {
                 return true;
             }
@@ -511,7 +587,7 @@ namespace FinanceManager.ViewModels
 
         public bool CanModify(object param)
         {
-            if (ActualQuote.IdQuote > 0)
+            if (ActualQuote.IdQuote > 0 )
                 return true;
             return false;
         }

@@ -16,5 +16,6 @@ namespace FinanceManager.Models
         public double Guadagno { get; set; }
         public double Preso { get; set; }
         public double In_Cassa { get; set; }
+        public string Causale { get; set; }
     }
 }

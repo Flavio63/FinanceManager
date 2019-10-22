@@ -15,6 +15,8 @@ namespace FinanceManager.Models
         public string NomeInvestitore { get; set; }
         public int Id_tipo_movimento { get; set; }
         public string Desc_tipo_movimento { get; set; }
+        public int Id_Periodo_Quote { get; set; }
+        public int Anno { get; set; }
         public DateTime DataMovimento
         {
             get
