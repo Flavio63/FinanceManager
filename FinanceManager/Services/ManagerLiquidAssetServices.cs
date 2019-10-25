@@ -848,6 +848,40 @@ namespace FinanceManager.Services
             }
         }
         /// <summary>
+        /// Aggiorno la tabella Guadagni_totale_anno nel caso di
+        /// modifiche del record di prelievo utili
+        /// </summary>
+        /// <param name="RecordQuoteGuadagno">il record da modificare</param>
+        public void UpdateGuadagniTotaleAnno(GuadagnoPerQuote RecordQuoteGuadagno)
+        {
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.ManagerScripts.UpdatePrelievoUtili;
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbComm.Parameters.AddWithValue("id_gestione", RecordQuoteGuadagno.IdGestione);
+                    dbComm.Parameters.AddWithValue("anno", RecordQuoteGuadagno.Anno);
+                    dbComm.Parameters.AddWithValue("prelevato", RecordQuoteGuadagno.Preso);
+                    dbComm.Parameters.AddWithValue("data", RecordQuoteGuadagno.DataOperazione);
+                    dbComm.Parameters.AddWithValue("causale", RecordQuoteGuadagno.Causale);
+                    dbComm.Parameters.AddWithValue("id_guadagno", RecordQuoteGuadagno.IdGuadagno);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+        /// <summary>
         /// Elimino un record dalla tabella quote_guadagno
         /// </summary>
         /// <param name="id_quota">identificativo del record</param>
@@ -962,7 +996,7 @@ namespace FinanceManager.Services
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
-                    return Convert.ToInt32( dbComm.Parameters["LastIdDate"].Value);
+                    return Convert.ToInt32(dbComm.Parameters["LastIdDate"].Value);
                 }
             }
             catch (MySqlException err)
@@ -1015,6 +1049,9 @@ namespace FinanceManager.Services
                             quote.DescTipoSoldi = dataRow.Field<string>("desc_tipo_soldi");
                             if (tipoReport == 2)
                             {
+                                quote.IdGuadagno = (int)dataRow.Field<uint>("id_guadagno");
+                                quote.IdGestione = (int)dataRow.Field<uint>("id_gestione");
+                                quote.IdTipoMovimento = (int)dataRow.Field<uint>("id_tipo_movimento");
                                 quote.DataOperazione = dataRow.Field<DateTime>("data_operazione");
                                 quote.QuotaInv = dataRow.Field<double>("quota");
                                 quote.Causale = dataRow.Field<string>("causale");
@@ -1203,6 +1240,8 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetIdQuoteTab;
+                    if (ActualQuote.Id_Periodo_Quote == 0)
+                        dbAdapter.SelectCommand.CommandText += "ORDER BY id_quote_inv DESC LIMIT 1";
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", ActualQuote.IdGestione);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_tipo_movimento", ActualQuote.Id_tipo_movimento);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_periodo_quote", ActualQuote.Id_Periodo_Quote);
@@ -1654,14 +1693,14 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
-    
+
         /// <summary>
         /// Estraggo la quantità di utile disponibile
         /// sulla base dell'anno e della gestione
         /// </summary>
-        /// <param name="quoteTab">Il record con i dati da verificare</param>
+        /// <param name="gudadagnoQuote">Il record con i dati da verificare</param>
         /// <returns>Disponibilità di utili</returns>
-        public int VerifyDisponibilitaUtili(QuoteTab quoteTab)
+        public double VerifyDisponibilitaUtili(GuadagnoPerQuote gudadagnoQuote)
         {
             try
             {
@@ -1671,11 +1710,12 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = ManagerScripts.VerifyDisponibilitaUtili;
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", quoteTab.IdGestione);
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("anno", quoteTab.Anno);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", gudadagnoQuote.IdGestione);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("anno", gudadagnoQuote.Anno);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("daInserire", gudadagnoQuote.Preso);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
-                    return (int)DT.Rows[0].ItemArray[0];
+                    return DT.Rows[0].ItemArray[0] is DBNull ? -1.0 : Convert.ToDouble(DT.Rows[0].ItemArray[0]);
                 }
             }
             catch (MySqlException err)
@@ -1687,12 +1727,12 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
-    
+
         /// <summary>
         /// Registro il prelievo di utili
         /// </summary>
-        /// <param name="quoteTab">Il record da inserire</param>
-        public void InsertPrelievoUtili(QuoteTab quoteTab)
+        /// <param name="gudadagnoQuote">Il record da inserire</param>
+        public void InsertPrelievoUtili(GuadagnoPerQuote gudadagnoQuote)
         {
             try
             {
@@ -1700,12 +1740,12 @@ namespace FinanceManager.Services
                 {
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.ManagerScripts.InsertPrelievoUtili;
-                    dbComm.Parameters.AddWithValue("id_gestione", quoteTab.IdGestione);
-                    dbComm.Parameters.AddWithValue("id_tipo_movimento", quoteTab.Id_tipo_movimento);
-                    dbComm.Parameters.AddWithValue("anno", quoteTab.Anno);
-                    dbComm.Parameters.AddWithValue("ammontare", quoteTab.Ammontare);
-                    dbComm.Parameters.AddWithValue("data_operazione", quoteTab.DataMovimento.ToString("yyyy-MM-dd"));
-                    dbComm.Parameters.AddWithValue("causale", quoteTab.Note);
+                    dbComm.Parameters.AddWithValue("id_gestione", gudadagnoQuote.IdGestione);
+                    dbComm.Parameters.AddWithValue("id_tipo_movimento", gudadagnoQuote.IdTipoMovimento);
+                    dbComm.Parameters.AddWithValue("anno", gudadagnoQuote.Anno);
+                    dbComm.Parameters.AddWithValue("ammontare", gudadagnoQuote.Preso);
+                    dbComm.Parameters.AddWithValue("data_operazione", gudadagnoQuote.DataOperazione.ToString("yyyy-MM-dd"));
+                    dbComm.Parameters.AddWithValue("causale", gudadagnoQuote.Causale);
                     dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();

@@ -69,6 +69,12 @@ namespace FinanceManager.Services
         /// <param name="Id_Periodo_Quote">il periodo da modificare</param>
         /// <param name="Id_Tipo_Soldi">Il tipo soldi</param>
         void UpdateGuadagniTotaleAnno(int Id_Periodo_Quote, int Id_Tipo_Soldi);
+        /// <summary>
+        /// Aggiorno la tabella Guadagni_totale_anno nel caso di
+        /// modifiche del record di prelievo utili
+        /// </summary>
+        /// <param name="RecordQuoteGuadagno">il record da modificare</param>
+        void UpdateGuadagniTotaleAnno(GuadagnoPerQuote RecordQuoteGuadagno);
 
         /// <summary>
         /// Recupero l'ultimo id delle coppie di date inserite
@@ -135,15 +141,15 @@ namespace FinanceManager.Services
         /// Estraggo la quantità di utile disponibile
         /// sulla base dell'anno e della gestione
         /// </summary>
-        /// <param name="quoteTab">Il record con i dati da verificare</param>
+        /// <param name="gudadagnoQuote">Il record con i dati da verificare</param>
         /// <returns>Disponibilità di utili</returns>
-        int VerifyDisponibilitaUtili(QuoteTab quoteTab);
+        double VerifyDisponibilitaUtili(GuadagnoPerQuote gudadagnoQuote);
 
         /// <summary>
         /// Registro il prelievo di utili
         /// </summary>
-        /// <param name="quoteTab">Il record da inserire</param>
-        void InsertPrelievoUtili(QuoteTab quoteTab);
+        /// <param name="gudadagnoQuote">Il record da inserire</param>
+        void InsertPrelievoUtili(GuadagnoPerQuote gudadagnoQuote);
 
     }
 }
