@@ -608,11 +608,15 @@ namespace FinanceManager.ViewModels
                     _liquidAssetServices.InsertAccountMovement(RecordContoCorrente);
                     _liquidAssetServices.InsertAccountMovement(Record2ContoCorrente);
                 }
-                else if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || 
-                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili || 
+                else if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ||
+                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ||
                     RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Costi)
                 {
+                    // Inserisco il codice del periodo quote_guadagno
+                    RecordContoCorrente.Id_Quote_Periodi = _liquidAssetServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Tipo_Soldi);
                     _liquidAssetServices.InsertAccountMovement(RecordContoCorrente);
+                    // Inserisco il guadagno ripartito per i soci
+                    _liquidAssetServices.AddSingoloGuadagno(RecordContoCorrente);
                 }
 
                 MessageBox.Show(string.Format("Ho effettuato l'operazione {0} correttamente.", RecordContoCorrente.Desc_tipo_movimento),
@@ -630,11 +634,14 @@ namespace FinanceManager.ViewModels
             try
             {
                 // se è una registrazione cedola modifico direttamente il record 1
-                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || 
+                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ||
                     RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ||
                     RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Costi)
                 {
+                    // nel caso si sia cambiata la data nella modifica
+                    RecordContoCorrente.Id_Quote_Periodi = _liquidAssetServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Tipo_Soldi);
                     _liquidAssetServices.UpdateRecordContoCorrente(RecordContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);    //registro la modifica in conto corrente
+                    _liquidAssetServices.ModifySingoloGuadagno(RecordContoCorrente); // modifico di conseguenza i record del guadagno totale anno
                 }
                 else
                 {

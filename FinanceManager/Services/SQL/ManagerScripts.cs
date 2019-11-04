@@ -159,8 +159,8 @@ namespace FinanceManager.Services.SQL
         /// Inserisce un movimento nel conto corrente
         /// </summary>
         public static readonly string InsertAccountMovement = "INSERT INTO conto_corrente (id_conto, id_quote_investimenti, id_valuta, id_portafoglio_titoli, id_tipo_movimento, " +
-            "id_gestione, id_titolo, data_movimento, ammontare, cambio, causale, id_tipo_soldi) VALUE ( @id_conto, @id_quote_investimenti, @id_valuta, @id_portafoglio_titoli, @id_tipo_movimento, " +
-            "@id_gestione, @id_titolo, @data_movimento, @ammontare, @cambio, @causale, @id_tipo_soldi)";
+            "id_gestione, id_titolo, data_movimento, ammontare, cambio, causale, id_tipo_soldi, id_quote_periodi) VALUE ( @id_conto, @id_quote_investimenti, @id_valuta, @id_portafoglio_titoli, @id_tipo_movimento, " +
+            "@id_gestione, @id_titolo, @data_movimento, @ammontare, @cambio, @causale, @id_tipo_soldi, @id_quote_periodi)";
 
         /// <summary>
         /// Estrae tutti i movimenti di tutti i conti correnti di tutte le gestioni
@@ -180,17 +180,17 @@ namespace FinanceManager.Services.SQL
         // aggiorno un record conto corrente sulla base dell'ID QUOTE INVESTIMENTI//
         public static readonly string UpdateContoCorrenteByIdQuote = "UPDATE conto_corrente SET id_conto = @id_conto, id_valuta = @id_valuta, id_portafoglio_titoli = @id_portafoglio_titoli, " +
             "id_tipo_movimento = @id_tipo_movimento, id_gestione = @id_gestione, id_titolo = @id_titolo, data_movimento = @data_movimento, ammontare = @ammontare, " +
-            "cambio = @cambio, causale = @causale, id_tipo_soldi = @id_tipo_soldi WHERE id_quote_investimenti = @id_quote_investimenti";
+            "cambio = @cambio, causale = @causale, id_tipo_soldi = @id_tipo_soldi, id_quote_periodi = @id_quote_periodi WHERE id_quote_investimenti = @id_quote_investimenti";
 
         // aggiorno un record conto corrente sulla base dell'ID PORTAFOGLIO TITOLI //
         public static readonly string UpdateContoCorrenteByIdPortafoglioTitoli = "UPDATE conto_corrente SET id_conto = @id_conto, id_valuta = @id_valuta, id_quote_investimenti = @id_quote_investimenti, " +
             "id_tipo_movimento = @id_tipo_movimento, id_gestione = @id_gestione, id_titolo = @id_titolo, data_movimento = @data_movimento, ammontare = @ammontare, " +
-            "cambio = @cambio, causale = @causale, id_tipo_soldi = @id_tipo_soldi WHERE id_portafoglio_titoli = @id_portafoglio_titoli";
+            "cambio = @cambio, causale = @causale, id_tipo_soldi = @id_tipo_soldi, id_quote_periodi = @id_quote_periodi WHERE id_portafoglio_titoli = @id_portafoglio_titoli";
 
         // aggiorno un record conto corrente sulla base dell'ID CONTO CORRENTE //
         public static readonly string UpdateContoCorrenteByIdCC = "UPDATE conto_corrente SET id_conto = @id_conto, id_quote_investimenti = @id_quote_investimenti, id_valuta = @id_valuta, " +
             "id_portafoglio_titoli = @id_portafoglio_titoli, id_tipo_movimento = @id_tipo_movimento, id_gestione = @id_gestione, id_titolo = @id_titolo, data_movimento = @data_movimento, " +
-            "ammontare = @ammontare, cambio = @cambio, causale = @causale, id_tipo_soldi = @id_tipo_soldi WHERE id_fineco_euro = @id_fineco_euro";
+            "ammontare = @ammontare, cambio = @cambio, causale = @causale, id_tipo_soldi = @id_tipo_soldi, id_quote_periodi = @id_quote_periodi WHERE id_fineco_euro = @id_fineco_euro";
 
         // cancello un record del conto corrente //
         public static readonly string DeleteAccount = "DELETE FROM conto_corrente WHERE id_fineco_euro = @id_fineco_euro";
@@ -223,8 +223,12 @@ namespace FinanceManager.Services.SQL
             "SUM(guadagnato + prelevato) AS In_Cassa FROM guadagni_totale_anno A, gestioni B, tipo_soldi C WHERE A.id_gestione = B.id_gestione AND A.id_tipo_soldi = C.id_tipo_soldi " +
             "GROUP BY anno, A.id_gestione, A.id_tipo_soldi ORDER BY anno DESC, A.id_gestione DESC, A.id_tipo_soldi; ";
 
-        public static readonly string GetQuoteGuadagno = "SELECT anno, B.nome_gestione, SUM(guadagnato) AS Guadagno, SUM(prelevato) AS Preso, SUM(guadagnato+prelevato) AS In_Cassa " +
-            "FROM guadagni_totale_anno A, gestioni B WHERE A.id_gestione = B.id_gestione AND anno >= 2019 GROUP BY A.id_gestione, anno ORDER BY anno, A.id_gestione DESC ";
+        public static readonly string GetQuoteGuadagno = "SET @`cassaFV` := 0; SET @`cassaDP` := 0; SET @`cassaAV` := 0; " +
+            "SELECT anno, nome_gestione, Guadagno, Preso, avanzoFV + avanzoAV + avanzoDP AS In_Cassa FROM (SELECT anno, id_gestione, nome_gestione, Guadagno, Preso, In_Cassa, " +
+            "case when id_gestione = 3 then @`cassaFV`:= @`cassaFV` + In_Cassa ELSE 0 end AS avanzoFV, case when id_gestione = 4 then @`cassaAV`:= @`cassaAV` + In_Cassa ELSE 0 end AS avanzoAV, " +
+            "case when id_gestione = 5 then @`cassaDP`:= @`cassaDP` + In_Cassa ELSE 0 end AS avanzoDP FROM (SELECT anno, A.id_gestione, B.nome_gestione, SUM(guadagnato) AS Guadagno, SUM(prelevato) AS Preso,  sum(guadagnato + prelevato) AS In_Cassa " +
+            "FROM guadagni_totale_anno A, gestioni B WHERE A.id_gestione = B.id_gestione AND anno >= 2019 GROUP BY A.id_gestione, anno ORDER BY anno, A.id_gestione DESC) BBB) CCC " +
+            "ORDER BY anno DESC, id_gestione DESC;";
 
         /// <summary>Estraggo gli anni dalla tabella guadagni_totale_anno</summary>
         public static readonly string GetAnniFromGuadagni = "SELECT A.anno FROM guadagni_totale_anno A GROUP BY A.anno ORDER BY A.anno";
@@ -237,7 +241,10 @@ namespace FinanceManager.Services.SQL
             "ORDER BY A.data_movimento DESC LIMIT 1;";
 
         /// <summary>Trovo il codice dei record da ricalcolare con le nuove quote</summary>
-        public static readonly string GetIdPeriodoQuote = "SELECT * FROM quote_periodi A WHERE A.data_inizio = @data_movimento and A.id_tipo_soldi = @id_tipo_soldi;";
+        //public static readonly string GetIdPeriodoQuote = "SELECT * FROM quote_periodi A WHERE A.data_inizio = @data_movimento and A.id_tipo_soldi = @id_tipo_soldi;";
+        /// <summary>Trovo il codice del periodo quote basandomi sulla data del movimento e sul tipo soldi</summary>
+        public static readonly string GetIdPeriodoQuote = "SELECT id_periodo_quote FROM quote_periodi A WHERE @data_movimento " +
+            "BETWEEN A.data_inizio AND A.data_fine AND A.id_tipo_soldi = @id_tipo_soldi";
 
         public static readonly string GetLastPeriodoValiditaQuote = "SELECT id_periodo_quote FROM quote_periodi A ORDER BY A.id_periodo_quote DESC LIMIT 1";
 
@@ -315,5 +322,25 @@ namespace FinanceManager.Services.SQL
         /// <summary>Registro la modifica sui prelievi di utili</summary>
         public static readonly string UpdatePrelievoUtili = "UPDATE guadagni_totale_anno SET id_gestione = @id_gestione, anno = @anno, prelevato = @prelevato, data_operazione = @data, " +
             "causale = @causale WHERE id_guadagno = @id_guadagno ";
+
+        /// <summary>Dopo l'inserimento sul conto corrente, registro il guadagno</summary>
+        public static readonly string AddSingoloGuadagno = "INSERT INTO guadagni_totale_anno (id_gestione, id_tipo_soldi, id_tipo_movimento, anno, quota, guadagnato, data_operazione, " +
+            "causale, id_quote_periodi) ( SELECT B.id_gestione, id_tipo_soldi, id_tipo_movimento, YEAR(data_movimento) AS anno, " +
+            "case when B.id_gestione = 4 AND A.id_tipo_movimento = 8 then 0 ELSE (case when A.id_tipo_movimento = 8 then 0.5 ELSE B.quota END) END AS quota, " +
+            "case when B.id_gestione = 4 AND A.id_tipo_movimento = 8 then 0 ELSE (case when A.id_tipo_movimento = 8 then 0.5 * A.ammontare ELSE A.ammontare* B.quota END) END AS guadagnato, " +
+            "data_movimento, causale, A.id_quote_periodi FROM conto_corrente A, quote_guadagno B WHERE A.id_quote_periodi = B.id_quote_periodi AND A.id_fineco_euro = " +
+            "(SELECT id_fineco_euro FROM conto_corrente C WHERE C.id_tipo_movimento = @id_tipo_movimento AND id_tipo_soldi = @id_tipo_soldi AND id_quote_periodi = @id_quote_periodi " +
+            "ORDER BY id_fineco_euro DESC LIMIT 1) GROUP BY B.id_gestione); ";
+
+        /// <summary>Dopo la modifica sul conto corrente, registro la modifica sul guadagno totale anno</summary>
+        public static readonly string ModifySingoloGuadagno = " UPDATE guadagni_totale_anno AA, (SELECT B.id_gestione, id_tipo_soldi, id_tipo_movimento, YEAR(data_movimento) AS anno, " +
+            "case when B.id_gestione = 4 AND A.id_tipo_movimento = 8 then 0 ELSE(case when A.id_tipo_movimento = 8 then 0.5 ELSE B.quota END) END AS quota, " +
+            "case when B.id_gestione = 4 AND A.id_tipo_movimento = 8 then 0 ELSE(case when A.id_tipo_movimento = 8 then 0.5 * A.ammontare ELSE A.ammontare * B.quota END) END AS guadagnato, " +
+            "data_movimento, causale, A.id_quote_periodi FROM conto_corrente A, quote_guadagno B WHERE A.id_quote_periodi = B.id_quote_periodi AND A.id_fineco_euro = " +
+            "(SELECT  id_fineco_euro FROM conto_corrente C WHERE C.id_tipo_movimento = @id_tipo_movimento AND id_tipo_soldi = @id_tipo_soldi AND id_quote_periodi = @id_quote_periodi " +
+            "ORDER BY id_fineco_euro DESC LIMIT 1) GROUP BY B.id_gestione ) BB SET AA.id_gestione = BB.id_gestione, AA.id_tipo_soldi = BB.id_tipo_soldi, " +
+            "AA.anno = BB.anno, AA.quota = BB.quota, AA.guadagnato = BB.guadagnato, AA.data_operazione = BB.data_movimento, AA.causale = BB.causale, AA.id_quote_periodi = BB.id_quote_periodi " +
+            "WHERE AA.id_gestione = BB.id_gestione AND AA.id_tipo_soldi = BB.id_tipo_soldi AND AA.id_quote_periodi = BB.id_quote_periodi;";
+
     }
 }

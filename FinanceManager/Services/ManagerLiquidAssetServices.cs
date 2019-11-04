@@ -536,6 +536,7 @@ namespace FinanceManager.Services
             MLA.Link_Movimenti = dr.Field<DateTime>("link_movimenti");
             return MLA;
         }
+        
         #region ContoCorrente
 
         private ContoCorrenteList contoCorrentes(DataTable dataTable)
@@ -595,6 +596,71 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("cambio", contoCorrente.Valore_Cambio);
                     dbComm.Parameters.AddWithValue("causale", contoCorrente.Causale);
                     dbComm.Parameters.AddWithValue("id_tipo_soldi", contoCorrente.Id_Tipo_Soldi);
+                    dbComm.Parameters.AddWithValue("id_quote_periodi", contoCorrente.Id_Quote_Periodi);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        /// <summary>
+        /// Tramite l'ultimo record conto_corrente inserito
+        /// calcolo e inserisco le quote guadagno per ogni singolo socio
+        /// </summary>
+        /// <param name="RecordContoCorrente">record conto corrente con i dati</param>
+        public void AddSingoloGuadagno(ContoCorrente RecordContoCorrente)
+        {
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.ManagerScripts.AddSingoloGuadagno;
+                    dbComm.Parameters.AddWithValue("id_tipo_movimento", RecordContoCorrente.Id_tipo_movimento);
+                    dbComm.Parameters.AddWithValue("id_tipo_soldi", RecordContoCorrente.Id_Tipo_Soldi);
+                    dbComm.Parameters.AddWithValue("id_quote_periodi", RecordContoCorrente.Id_Quote_Periodi);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        /// <summary>
+        /// Tramite l'ultimo record conto_corrente inserito
+        /// calcolo e inserisco le quote guadagno per ogni singolo socio
+        /// </summary>
+        /// <param name="RecordContoCorrente">record conto corrente con i dati</param>
+        public void ModifySingoloGuadagno(ContoCorrente RecordContoCorrente)
+        {
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = SQL.ManagerScripts.ModifySingoloGuadagno;
+                    dbComm.Parameters.AddWithValue("id_tipo_movimento", RecordContoCorrente.Id_tipo_movimento);
+                    dbComm.Parameters.AddWithValue("id_tipo_soldi", RecordContoCorrente.Id_Tipo_Soldi);
+                    dbComm.Parameters.AddWithValue("id_quote_periodi", RecordContoCorrente.Id_Quote_Periodi);
                     dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -765,7 +831,8 @@ namespace FinanceManager.Services
         /// <summary>
         /// Calcolo le nuove quote e le inserisco nella tabella quote_guadagno
         /// </summary>
-        public void ComputesAndInsertQuoteGuadagno()
+        /// <param name="Tipo_Soldi">Codice identificativo</param>
+        public void ComputesAndInsertQuoteGuadagno(int Tipo_Soldi)
         {
             try
             {
@@ -773,6 +840,8 @@ namespace FinanceManager.Services
                 {
                     dbComm.CommandType = CommandType.StoredProcedure;
                     dbComm.CommandText = "ComputesAndInsertQuoteGuadagno";
+                    dbComm.Parameters.AddWithValue("Tipo_Soldi", Tipo_Soldi);
+                    dbComm.Parameters["Tipo_Soldi"].Direction = ParameterDirection.Input;
                     dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -791,7 +860,8 @@ namespace FinanceManager.Services
         /// <summary>
         /// Calcolo le nuove quote e modifico la tabella quote_guadagno
         /// </summary>
-        public void ComputesAndModifyQuoteGuadagno()
+        /// <param name="Tipo_Soldi">Codice identificativo</param>
+        public void ComputesAndModifyQuoteGuadagno(int Tipo_Soldi)
         {
             try
             {
@@ -799,6 +869,8 @@ namespace FinanceManager.Services
                 {
                     dbComm.CommandType = CommandType.StoredProcedure;
                     dbComm.CommandText = "ComputeAndModifyQuoteGuadagno";
+                    dbComm.Parameters.AddWithValue("Tipo_Soldi", Tipo_Soldi);
+                    dbComm.Parameters["Tipo_Soldi"].Direction = ParameterDirection.Input;
                     dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -847,6 +919,7 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
+        
         /// <summary>
         /// Aggiorno la tabella Guadagni_totale_anno nel caso di
         /// modifiche del record di prelievo utili
@@ -881,6 +954,7 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
+        
         /// <summary>
         /// Elimino un record dalla tabella quote_guadagno
         /// </summary>
@@ -1179,16 +1253,6 @@ namespace FinanceManager.Services
             {
                 throw new Exception(err.Message);
             }
-        }
-
-        public void AddGiroconto()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateGiroconto(int idQuote)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -1573,6 +1637,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("cambio", contoCorrente.Valore_Cambio);
                     dbComm.Parameters.AddWithValue("causale", contoCorrente.Causale);
                     dbComm.Parameters.AddWithValue("id_tipo_soldi", contoCorrente.Id_Tipo_Soldi);
+                    dbComm.Parameters.AddWithValue("id_quote_periodi", contoCorrente.Id_Quote_Periodi);
                     dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();

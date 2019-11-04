@@ -275,16 +275,6 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Restante" Binding="{Binding In_Cassa, 
-                                UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}"
-                                                IsReadOnly="True" FontSize="14" FontWeight="Bold">
-                                <DataGridTextColumn.ElementStyle>
-                                    <Style TargetType="{x:Type TextBlock}">
-                                        <Setter Property="HorizontalAlignment" Value="Right"/>
-                                        <Setter Property="Margin" Value="5,0,5,0"/>
-                                    </Style>
-                                </DataGridTextColumn.ElementStyle>
-                            </DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </TabItem>
@@ -377,16 +367,6 @@
                                     <Style TargetType="{x:Type TextBlock}">
                                         <Setter Property="HorizontalAlignment" Value="Right"/>
                                         <Setter Property="FontWeight" Value="Normal"/>
-                                        <Setter Property="Margin" Value="5,0,5,0"/>
-                                    </Style>
-                                </DataGridTextColumn.ElementStyle>
-                            </DataGridTextColumn>
-                            <DataGridTextColumn Header="Restante" Binding="{Binding In_Cassa, 
-                                UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}"
-                                                IsReadOnly="True" FontSize="14" FontWeight="Bold">
-                                <DataGridTextColumn.ElementStyle>
-                                    <Style TargetType="{x:Type TextBlock}">
-                                        <Setter Property="HorizontalAlignment" Value="Right"/>
                                         <Setter Property="Margin" Value="5,0,5,0"/>
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
@@ -518,7 +498,7 @@
                         </DatePicker>
                         <TextBlock Grid.Row="1" Grid.Column="2" Text="Cifra" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
                         <TextBox Name="CifraCapitali" Grid.Row="1" Grid.Column="3" Margin="5, 2" Padding="0,0,5,0" Height="25" HorizontalContentAlignment="Right"
-                                Text="{Binding ActualQuote.Ammontare, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" FontSize="16">
+                                Text="{Binding ActualQuote.Ammontare, ConverterCulture=it-IT}" FontSize="16">
                             <iy:Interaction.Triggers>
                                 <iy:EventTrigger EventName="LostFocus">
                                     <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
@@ -705,7 +685,7 @@
                         </DatePicker>
                         <TextBlock Grid.Row="1" Grid.Column="2" Text="Cifra" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
                         <TextBox x:Name="CifraUtili" Grid.Row="1" Grid.Column="3" Margin="5, 2" Padding="0,0,5,0" Height="25" HorizontalContentAlignment="Right"
-                                Text="{Binding RecordQuoteGuadagno.Preso, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" FontSize="16">
+                                Text="{Binding RecordQuoteGuadagno.Preso, ConverterCulture=it-IT}" FontSize="16" ToolTip="La cifra DEVE essere negativa">
                             <iy:Interaction.Triggers>
                                 <iy:EventTrigger EventName="LostFocus">
                                     <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
@@ -745,7 +725,7 @@
                                 <Button Content="Registra" Margin="10" Width="75" Height="25" Command="{Binding InsertQuotaCommand}" CommandParameter="{Binding ElementName=Bottoniera_2}"/>
                                 <Button Content="Modifica" Margin="10" Width="75" Height="25" Command="{Binding ModifyQuotaCommand}" CommandParameter="{Binding ElementName=Bottoniera_2}"/>
                                 <Button Content="Pulisci" Margin="10" Width="75" Height="25" Command="{Binding ClearCommand}" CommandParameter="{Binding ElementName=Bottoniera_2}"/>
-                                <Button Content="Elimina" Margin="10" Width="75" Height="25" Command="{Binding EraseQuotaCommand}" CommandParameter="{Binding ElementName=Bottoniera_2}"/>
+                                <Button IsEnabled="False" Content="Elimina" Margin="10" Width="75" Height="25" Command="{Binding EraseQuotaCommand}" CommandParameter="{Binding ElementName=Bottoniera_2}"/>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
@@ -773,6 +753,7 @@
                                         </Style>
                                     </DataGridTextColumn.ElementStyle>
                                 </DataGridTextColumn>
+                                <DataGridTextColumn Header="ID" Binding="{Binding Id_Quote_Periodi}"/>
                                 <DataGridTextColumn Header="Valida DAL" Binding="{Binding Data_Inizio, ConverterCulture=it-IT, StringFormat=d}"/>
                                 <DataGridTextColumn Header="Valida AL" Binding="{Binding Data_Fine, ConverterCulture=it-IT, StringFormat=d}"/>
                             </DataGrid.Columns>

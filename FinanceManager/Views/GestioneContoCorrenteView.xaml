@@ -29,7 +29,7 @@
                 HorizontalContentAlignment="Center" Grid.Column="5" HorizontalAlignment="Right"
                     VerticalContentAlignment="Center" Width="20" Height="20" Background="Red" Foreground="Yellow" FontWeight="Bold" 
                 Margin="0,0, 15, 0"/>
-        <TabControl Grid.Row="1" Margin="5" HorizontalAlignment="Left">
+        <TabControl Grid.Row="1" Margin="5" HorizontalAlignment="Left" Visibility="Collapsed">
             <TabItem Header="Dany&amp;Fla" FontSize="20" FontWeight="Bold">
                 <DataGrid ItemsSource="{Binding SintesiSoldiDF, UpdateSourceTrigger=PropertyChanged}"
                               AutoGenerateColumns="False" AlternatingRowBackground="LightGray" Margin="5"

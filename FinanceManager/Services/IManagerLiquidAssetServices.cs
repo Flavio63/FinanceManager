@@ -56,12 +56,14 @@ namespace FinanceManager.Services
         /// <summary>
         /// Calcolo le nuove quote e le inserisco nella tabella quote_guadagno
         /// </summary>
-        void ComputesAndInsertQuoteGuadagno();
+        /// <param name="Tipo_Soldi">Codice identificativo</param>
+        void ComputesAndInsertQuoteGuadagno(int Tipo_Soldi);
 
         /// <summary>
         /// Calcolo le nuove quote e modifico la tabella quote_guadagno
         /// </summary>
-        void ComputesAndModifyQuoteGuadagno();
+        /// <param name="Tipo_Soldi">Codice identificativo</param>
+        void ComputesAndModifyQuoteGuadagno(int Tipo_Soldi);
         /// <summary>
         /// Aggiorno la tabella Guadagni_totale_anno con le nuove
         /// quote per il periodo interessato alle modifiche
@@ -99,6 +101,19 @@ namespace FinanceManager.Services
         QuoteTab GetLastQuoteTab();                                     // Prendo l'ultimo record della tabella perchè nel caso di giroconto devo conoscere il nuovo ID
 
         void InsertAccountMovement(ContoCorrente contoCorrente);        // inserisco il movimento nella tabella conto_corrente
+        /// <summary>
+        /// Tramite l'ultimo record conto_corrente inserito
+        /// calcolo e inserisco le quote guadagno per ogni singolo socio
+        /// </summary>
+        /// <param name="RecordContoCorrente">record conto corrente con i dati</param>
+        void AddSingoloGuadagno(ContoCorrente RecordContoCorrente);
+        /// <summary>
+        /// Tramite l'ultimo record conto_corrente inserito
+        /// calcolo e inserisco le quote guadagno per ogni singolo socio
+        /// </summary>
+        /// <param name="RecordContoCorrente">record conto corrente con i dati</param>
+        void ModifySingoloGuadagno(ContoCorrente RecordContoCorrente);
+
         ContoCorrenteList GetContoCorrenteList();                       // Prendo tutti i record della tabella ContoCorrente
         ContoCorrente GetContoCorrenteByIdCC(int idRecord);             // Prendo un solo record dalla tabella ContoCorrente
         ContoCorrente GetContoCorrenteByIdQuote(int idQuote);       // Il movimento del conto legato al giroconto selezionato
