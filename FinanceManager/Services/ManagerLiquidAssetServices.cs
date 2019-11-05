@@ -658,9 +658,7 @@ namespace FinanceManager.Services
                 {
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.ManagerScripts.ModifySingoloGuadagno;
-                    dbComm.Parameters.AddWithValue("id_tipo_movimento", RecordContoCorrente.Id_tipo_movimento);
-                    dbComm.Parameters.AddWithValue("id_tipo_soldi", RecordContoCorrente.Id_Tipo_Soldi);
-                    dbComm.Parameters.AddWithValue("id_quote_periodi", RecordContoCorrente.Id_Quote_Periodi);
+                    dbComm.Parameters.AddWithValue("id_fineco_euro", RecordContoCorrente.Id_RowConto);
                     dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -959,15 +957,15 @@ namespace FinanceManager.Services
         /// Elimino un record dalla tabella quote_guadagno
         /// </summary>
         /// <param name="id_quota">identificativo del record</param>
-        public void DeleteRecordQuote_Guadagno(int id_quota)
+        public void DeleteRecordGuadagno_Totale_anno(int id_quota)
         {
             try
             {
                 using (MySqlCommand dbComm = new MySqlCommand())
                 {
                     dbComm.CommandType = CommandType.Text;
-                    dbComm.CommandText = SQL.ManagerScripts.DeleteRecordQuote_Guadagno;
-                    dbComm.Parameters.AddWithValue("id_quota", id_quota);
+                    dbComm.CommandText = SQL.ManagerScripts.DeleteRecordGuadagno_Totale_anno;
+                    dbComm.Parameters.AddWithValue("id_conto_corrente", id_quota);
                     dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();

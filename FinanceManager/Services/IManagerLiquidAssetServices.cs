@@ -135,7 +135,7 @@ namespace FinanceManager.Services
         void DeleteRecordContoCorrente(int idCC);
         QuotePerPeriodoList GetAllRecordQuote_Guadagno();
         void InsertRecordQuote_Guadagno(QuotePerPeriodo record_quote_guadagno);
-        void DeleteRecordQuote_Guadagno(int id_quota);
+        void DeleteRecordGuadagno_Totale_anno(int id_quota);
 
         /// <summary>
         /// Verifico se nella data di inserimento è già presente

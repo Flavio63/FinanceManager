@@ -681,8 +681,12 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili)
+                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || 
+                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili || 
+                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Costi )
                 {
+                    // con il codice del record elimino anche le righe inserite nella tabella guadagno
+                    _liquidAssetServices.DeleteRecordGuadagno_Totale_anno(RecordContoCorrente.Id_RowConto);
                     _liquidAssetServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);  // registro l'eliminazione in conto corrente
                 }
                 else

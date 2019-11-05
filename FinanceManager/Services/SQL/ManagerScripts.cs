@@ -44,8 +44,8 @@ namespace FinanceManager.Services.SQL
         /// per c/c e per valuta
         /// </summary>
         private static readonly string GetCurrencyAvailable = "SELECT C.desc_conto, B.cod_valuta, " +
-            "ROUND(SUM(CASE WHEN id_tipo_soldi = 4 THEN ammontare ELSE 0 END), 2) AS Cedole, " +
-            "ROUND(SUM(CASE WHEN id_tipo_soldi = 15 THEN ammontare ELSE 0 END), 2) AS Utili, " +
+            "ROUND(SUM(CASE WHEN A.id_tipo_movimento = 4 THEN ammontare ELSE 0 END), 2) AS Cedole, " +
+            "ROUND(SUM(CASE WHEN A.id_tipo_movimento <> 4 AND (A.id_tipo_soldi = 15 OR A.id_tipo_soldi = 16) THEN ammontare ELSE 0 END), 2) AS Utili, " +
             "ROUND(SUM(CASE WHEN id_tipo_soldi = 1 THEN ammontare ELSE 0 END), 2) AS Disponibili " +
             "FROM conto_corrente A, valuta B, conti C WHERE A.id_conto = C.id_conto and A.id_valuta = B.id_valuta ";
 
@@ -265,7 +265,7 @@ namespace FinanceManager.Services.SQL
         /// <summary>
         /// Elimino un record della tabella quote_guadagno
         /// </summary>
-        public static readonly string DeleteRecordQuote_Guadagno = "DELETE FROM quote_guadagno WHERE id_quota = @id_quota ";
+        public static readonly string DeleteRecordGuadagno_Totale_anno = "DELETE FROM guadagni_totale_anno WHERE id_conto_corrente = @id_conto_corrente ";
 
         /// <summary>
         /// Esporta tutti i record della quote prendendo anche le descrizioni
@@ -325,22 +325,20 @@ namespace FinanceManager.Services.SQL
 
         /// <summary>Dopo l'inserimento sul conto corrente, registro il guadagno</summary>
         public static readonly string AddSingoloGuadagno = "INSERT INTO guadagni_totale_anno (id_gestione, id_tipo_soldi, id_tipo_movimento, anno, quota, guadagnato, data_operazione, " +
-            "causale, id_quote_periodi) ( SELECT B.id_gestione, id_tipo_soldi, id_tipo_movimento, YEAR(data_movimento) AS anno, " +
+            "causale, id_quote_periodi, id_conto_corrente) ( SELECT B.id_gestione, id_tipo_soldi, id_tipo_movimento, YEAR(data_movimento) AS anno, " +
             "case when B.id_gestione = 4 AND A.id_tipo_movimento = 8 then 0 ELSE (case when A.id_tipo_movimento = 8 then 0.5 ELSE B.quota END) END AS quota, " +
             "case when B.id_gestione = 4 AND A.id_tipo_movimento = 8 then 0 ELSE (case when A.id_tipo_movimento = 8 then 0.5 * A.ammontare ELSE A.ammontare* B.quota END) END AS guadagnato, " +
-            "data_movimento, causale, A.id_quote_periodi FROM conto_corrente A, quote_guadagno B WHERE A.id_quote_periodi = B.id_quote_periodi AND A.id_fineco_euro = " +
+            "data_movimento, causale, A.id_quote_periodi, A.id_fineco_euro FROM conto_corrente A, quote_guadagno B WHERE A.id_quote_periodi = B.id_quote_periodi AND A.id_fineco_euro = " +
             "(SELECT id_fineco_euro FROM conto_corrente C WHERE C.id_tipo_movimento = @id_tipo_movimento AND id_tipo_soldi = @id_tipo_soldi AND id_quote_periodi = @id_quote_periodi " +
             "ORDER BY id_fineco_euro DESC LIMIT 1) GROUP BY B.id_gestione); ";
 
         /// <summary>Dopo la modifica sul conto corrente, registro la modifica sul guadagno totale anno</summary>
         public static readonly string ModifySingoloGuadagno = " UPDATE guadagni_totale_anno AA, (SELECT B.id_gestione, id_tipo_soldi, id_tipo_movimento, YEAR(data_movimento) AS anno, " +
             "case when B.id_gestione = 4 AND A.id_tipo_movimento = 8 then 0 ELSE(case when A.id_tipo_movimento = 8 then 0.5 ELSE B.quota END) END AS quota, " +
-            "case when B.id_gestione = 4 AND A.id_tipo_movimento = 8 then 0 ELSE(case when A.id_tipo_movimento = 8 then 0.5 * A.ammontare ELSE A.ammontare * B.quota END) END AS guadagnato, " +
-            "data_movimento, causale, A.id_quote_periodi FROM conto_corrente A, quote_guadagno B WHERE A.id_quote_periodi = B.id_quote_periodi AND A.id_fineco_euro = " +
-            "(SELECT  id_fineco_euro FROM conto_corrente C WHERE C.id_tipo_movimento = @id_tipo_movimento AND id_tipo_soldi = @id_tipo_soldi AND id_quote_periodi = @id_quote_periodi " +
-            "ORDER BY id_fineco_euro DESC LIMIT 1) GROUP BY B.id_gestione ) BB SET AA.id_gestione = BB.id_gestione, AA.id_tipo_soldi = BB.id_tipo_soldi, " +
-            "AA.anno = BB.anno, AA.quota = BB.quota, AA.guadagnato = BB.guadagnato, AA.data_operazione = BB.data_movimento, AA.causale = BB.causale, AA.id_quote_periodi = BB.id_quote_periodi " +
-            "WHERE AA.id_gestione = BB.id_gestione AND AA.id_tipo_soldi = BB.id_tipo_soldi AND AA.id_quote_periodi = BB.id_quote_periodi;";
+            "case when B.id_gestione = 4 AND A.id_tipo_movimento = 8 then 0 ELSE(case when A.id_tipo_movimento = 8 then 0.5 * A.ammontare ELSE A.ammontare* B.quota END) END AS guadagnato, " +
+            "data_movimento, causale, A.id_quote_periodi, A.id_fineco_euro FROM conto_corrente A, quote_guadagno B WHERE A.id_quote_periodi = B.id_quote_periodi AND A.id_fineco_euro = @id_fineco_euro GROUP BY B.id_gestione ) BB " +
+            "SET AA.anno = BB.anno, AA.guadagnato = BB.guadagnato, AA.data_operazione = BB.data_movimento, AA.causale = BB.causale, AA.id_quote_periodi = BB.id_quote_periodi " +
+            "WHERE AA.id_gestione = BB.id_gestione AND AA.id_conto_corrente = BB.id_fineco_euro;";
 
     }
 }
