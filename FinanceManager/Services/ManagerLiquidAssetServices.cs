@@ -956,7 +956,7 @@ namespace FinanceManager.Services
         /// <summary>
         /// Elimino un record dalla tabella quote_guadagno
         /// </summary>
-        /// <param name="id_quota">identificativo del record</param>
+        /// <param name="id_quota">identificativo del record base conto corrente</param>
         public void DeleteRecordGuadagno_Totale_anno(int id_quota)
         {
             try
@@ -1031,7 +1031,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_tipo_soldi", Id_tipoSoldi);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
-                    return (int)DT.Rows[0].Field<uint>("id_periodo_quote");
+                    return DT.Rows.Count == 0 ? 0 : (int)DT.Rows[0].Field<uint>("id_periodo_quote");
                 }
             }
             catch (MySqlException err)

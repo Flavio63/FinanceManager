@@ -252,9 +252,11 @@
     <Compile Include="Views\GestioneQuoteInvestitoriView.xaml.cs">
       <DependentUpon>GestioneQuoteInvestitoriView.xaml</DependentUpon>
     </Compile>
+    <!--
     <Compile Include="Views\GiroContoView.xaml.cs">
       <DependentUpon>GiroContoView.xaml</DependentUpon>
     </Compile>
+    -->
     <Compile Include="Views\ManagerReportsView.xaml.cs">
       <DependentUpon>ManagerReportsView.xaml</DependentUpon>
     </Compile>
@@ -308,10 +310,12 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <!--
     <Page Include="Views\GiroContoView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    -->
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
