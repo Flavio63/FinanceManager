@@ -57,7 +57,7 @@ namespace FinanceManager.Models
         /// <param name="portafoglioTitoli">Record di PortafoglioTitoli</param>
         /// <param name="valoreInCC">Valore da registrare in c/c</param>
         /// <param name="idTipoSoldi">Destinazione d'uso dei soldi</param>
-        public ContoCorrente(PortafoglioTitoli portafoglioTitoli, double valoreInCC, TipologiaSoldi idTipoSoldi)
+        public ContoCorrente(PortafoglioTitoli portafoglioTitoli, double valoreInCC, TipologiaSoldi idTipoSoldi, int IdQuotePeriodi)
         {
             Id_Conto = portafoglioTitoli.Id_Conto;
             Id_Quote_Investimenti = 0;
@@ -71,6 +71,7 @@ namespace FinanceManager.Models
             Valore_Cambio = portafoglioTitoli.Valore_di_cambio;
             Causale = portafoglioTitoli.Note;
             Id_Tipo_Soldi = (int)idTipoSoldi;
+            Id_Quote_Periodi = IdQuotePeriodi;
         }
     }
 }
