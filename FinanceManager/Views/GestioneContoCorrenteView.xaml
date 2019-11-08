@@ -406,7 +406,7 @@
                    FontWeight="Bold" Grid.ColumnSpan="3"/>
                     <TextBlock Grid.Row="1" Text="Il conto di destinazione" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                     <ComboBox Name="Conto2" Grid.Row="1" Grid.Column="1" ItemsSource="{Binding ListConti, UpdateSourceTrigger=PropertyChanged}"
-                          SelectedValuePath="Id_conto" DisplayMemberPath="Desc_conto" Margin="5, 2" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Left"
+                          SelectedValuePath="Id_Conto" DisplayMemberPath="Desc_Conto" Margin="5, 2" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Left"
                           SelectedValue="{Binding Record2ContoCorrente.Id_Conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                         <iy:Interaction.Triggers>
                             <iy:EventTrigger EventName="SelectionChanged">

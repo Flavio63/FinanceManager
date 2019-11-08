@@ -7,7 +7,7 @@
         public static readonly string GetProfitLoss = "SELECT YEAR(data_movimento) AS Anno, B.nome_gestione, D.desc_tipo_soldi, " +
             "ROUND(SUM(CASE WHEN C.id_tipo_titolo = 1 THEN ammontare ELSE 0 END), 2) AS Azioni, " +
             "round(sum(case when C.id_tipo_titolo = 2 THEN ammontare else 0 end), 2) AS Obbligazioni, " +
-            "round(sum(case when C.id_tipo_titolo = 5 THEN ammontare else 0 end), 2) AS ETF, " +
+            "round(sum(case when (C.id_tipo_titolo = 4 OR C.id_tipo_titolo = 5 OR C.id_tipo_titolo = 6 OR C.id_tipo_titolo = 8) AND A.id_gestione <> 7 THEN ammontare else 0 end), 2) AS ETF, " +
             "round(sum(case when C.id_tipo_titolo = 7 THEN ammontare else 0 end), 2) AS Fondo, " +
             "round(sum(case when C.id_tipo_titolo = 13 or C.id_tipo_titolo = 4 THEN ammontare else 0 end), 2) AS Volatili, " +
             "round(sum(case when A.id_tipo_movimento = 8 THEN ammontare else 0 end), 2) AS Costi, " +
@@ -21,7 +21,7 @@
         public static readonly string GetDetailedProfitLoss = "SELECT YEAR(data_movimento) AS Anno, B.nome_gestione, D.desc_tipo_soldi, C.desc_titolo, C.isin, " +
             "ROUND(SUM(CASE WHEN C.id_tipo_titolo = 1 THEN ammontare ELSE 0 END), 2) AS Azioni, " +
             "round(sum(case when C.id_tipo_titolo = 2 THEN ammontare else 0 end), 2) AS Obbligazioni, " +
-            "round(sum(case when C.id_tipo_titolo = 5 THEN ammontare else 0 end), 2) AS ETF, " +
+            "round(sum(case when (C.id_tipo_titolo = 4 OR C.id_tipo_titolo = 5 OR C.id_tipo_titolo = 6 OR C.id_tipo_titolo = 8) AND A.id_gestione <> 7 THEN ammontare else 0 end), 2) AS ETF, " +
             "round(sum(case when C.id_tipo_titolo = 7 THEN ammontare else 0 end), 2) AS Fondo, " +
             "round(sum(case when C.id_tipo_titolo = 13 or C.id_tipo_titolo = 4 THEN ammontare else 0 end), 2) AS Volatili, " +
             "round(sum(case when A.id_tipo_movimento = 8 THEN ammontare else 0 end), 2) AS Costi, " +
