@@ -146,21 +146,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </ApplicationDefinition>
     <Compile Include="Comparators\QuoteTabComparator.cs" />
-    <Compile Include="Dialogs\Dialog3Combos\Dialog3CombosView.xaml.cs">
-      <DependentUpon>Dialog3CombosView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\Dialog3Combos\Dialog3CombosViewModel.cs" />
-    <Compile Include="Dialogs\DialogService\Dialog3CombosService.cs" />
-    <Compile Include="Dialogs\DialogService\DialogResultEnum.cs" />
-    <Compile Include="Dialogs\DialogService\DialogService.cs" />
-    <Compile Include="Dialogs\DialogService\DialogViewModelBase.cs" />
-    <Compile Include="Dialogs\DialogService\DialogWindow.xaml.cs">
-      <DependentUpon>DialogWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\DialogYesNo\DialogYesNoView.xaml.cs">
-      <DependentUpon>DialogYesNoView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\DialogYesNo\DialogYesNoViewModel.cs" />
     <Compile Include="Events\ComboboxDisableConverter.cs" />
     <Compile Include="Events\CommandHandler.cs" />
     <Compile Include="Events\EnableControl.cs" />
@@ -236,6 +221,7 @@
     <Compile Include="ViewModels\RegistryMovementTypeViewModel.cs" />
     <Compile Include="ViewModels\RegistryOwnerViewModel.cs" />
     <Compile Include="ViewModels\RegistryShareTypeViewModel.cs" />
+    <Compile Include="ViewModels\ReportGuadagniViewModel.cs" />
     <Compile Include="ViewModels\ReportMovementDetailedViewModel.cs" />
     <Compile Include="ViewModels\ReportPorfitLossAnnoGestioniViewModel.cs" />
     <Compile Include="ViewModels\ReportTitoliAttiviViewModel.cs" />
@@ -251,6 +237,9 @@
     </Compile>
     <Compile Include="Views\GestioneQuoteInvestitoriView.xaml.cs">
       <DependentUpon>GestioneQuoteInvestitoriView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ReportGuadagniView.xaml.cs">
+      <DependentUpon>ReportGuadagniView.xaml</DependentUpon>
     </Compile>
     <!--
     <Compile Include="Views\GiroContoView.xaml.cs">
@@ -290,23 +279,15 @@
     <Compile Include="Views\SchedeTitoliView.xaml.cs">
       <DependentUpon>SchedeTitoliView.xaml</DependentUpon>
     </Compile>
-    <Page Include="Dialogs\Dialog3Combos\Dialog3CombosView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\DialogService\DialogWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\DialogYesNo\DialogYesNoView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\AnalisiPortafoglioView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\GestioneContoCorrenteView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ReportGuadagniView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

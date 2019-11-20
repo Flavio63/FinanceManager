@@ -6,8 +6,11 @@
              xmlns:is="http://schemas.microsoft.com/expression/2010/interactions"
              xmlns:iy="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" Name="_ManagerReportsView"
-             xmlns:local="clr-namespace:FinanceManager.Views"
+             xmlns:local="clr-namespace:FinanceManager.Events"
              d:DesignHeight="650" >
+    <UserControl.Resources>
+        <local:ComboboxDisableConverter x:Key="Inverter"/>
+    </UserControl.Resources>
     <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
@@ -47,7 +50,8 @@
                 <StackPanel Margin="5" Grid.Row="1">
                     <TextBlock Grid.Row="1" Text="Le Gestioni" FontSize="16" FontWeight="Bold" Margin="10, 2" HorizontalAlignment="Center"/>
                     <ListBox Name="Gestione" Grid.Row="1" Grid.Column="1" ItemsSource="{Binding OwnerList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                          SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione" Margin="10, 2" MinWidth="100" Height="75" SelectionMode="Multiple">
+                          SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione" Margin="10, 2" MinWidth="100" Height="75" SelectionMode="Multiple"
+                             IsEnabled="{Binding ElementName=Guadagni, Path=IsChecked, Converter={StaticResource Inverter}}">
                         <iy:Interaction.Triggers>
                             <iy:EventTrigger EventName="SelectionChanged">
                                 <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
@@ -166,8 +170,8 @@
                             </iy:EventTrigger>
                         </iy:Interaction.Triggers>
                     </RadioButton>
-                    <RadioButton GroupName="report" Name="Scalare" Content="Conto Scalare" HorizontalAlignment="Left" VerticalAlignment="Top"
-                              FontSize="20" Margin="5" VerticalContentAlignment="Center" IsEnabled="False">
+                    <RadioButton GroupName="report" Name="Guadagni" Content="Dettagli Guadagni" HorizontalAlignment="Left" VerticalAlignment="Top"
+                              FontSize="20" Margin="5" VerticalContentAlignment="Center">
                         <iy:Interaction.Triggers>
                             <iy:EventTrigger EventName="Checked">
                                 <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
@@ -200,10 +204,9 @@
 
         </Border>
         <!-- reports -->
-        <!--<ScrollViewer Grid.Row="2" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">-->
-            <Border Name="BorderReport" Grid.Row="2" Grid.ColumnSpan="3" BorderBrush="Coral" BorderThickness="0.8" Margin="5,7,5,3">
+        <GridSplitter Grid.Row="2" Grid.ColumnSpan="3" Margin="5, 1, 5, -1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="5" Background="Green"></GridSplitter>
+            <Border Name="BorderReport" Grid.Row="2" Grid.ColumnSpan="3" BorderBrush="Coral" BorderThickness="0.8" Margin="5,9,5,3">
 
             </Border>
-        <!--</ScrollViewer>-->
     </Grid>
 </UserControl>

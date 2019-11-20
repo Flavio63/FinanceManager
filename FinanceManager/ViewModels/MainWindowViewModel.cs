@@ -270,7 +270,7 @@ namespace FinanceManager.ViewModels
             DockPanel mainGrid = param as DockPanel;
             if (managerReportsView == null || !mainGrid.Children.Contains(managerReportsView))
             {
-                managerReportsViewModel = new ManagerReportsViewModel(_registryServices, _managerReportServices);
+                managerReportsViewModel = new ManagerReportsViewModel(_registryServices, _managerReportServices, _managerLiquidServices);
                 managerReportsView = new ManagerReportsView(managerReportsViewModel);
                 mainGrid.Children.Add(managerReportsView);
             }

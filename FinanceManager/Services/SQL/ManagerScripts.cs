@@ -217,10 +217,10 @@ namespace FinanceManager.Services.SQL
         /// </summary>
         public static readonly string GetQuoteDettaglioGuadagno = "SELECT anno, A.id_guadagno, A.id_gestione, B.nome_gestione, A.id_tipo_movimento, C.desc_tipo_soldi, A.data_operazione, " +
             "A.quota, guadagnato AS Guadagno, prelevato AS Preso, guadagnato + prelevato AS In_Cassa, causale FROM guadagni_totale_anno A, gestioni B, tipo_soldi C " +
-            "WHERE A.id_gestione = B.id_gestione AND A.id_tipo_soldi = C.id_tipo_soldi ORDER BY anno DESC, A.data_operazione DESC, A.id_tipo_soldi, A.id_gestione DESC";
+            "WHERE anno >= 2019 AND A.id_gestione = B.id_gestione AND A.id_tipo_soldi = C.id_tipo_soldi ORDER BY anno DESC, A.data_operazione DESC, A.id_tipo_soldi, A.id_gestione DESC";
 
         public static readonly string GetQuoteSintesiGuadagno = "SELECT anno, B.nome_gestione, C.desc_tipo_soldi, SUM(guadagnato) AS Guadagno, SUM(prelevato) AS Preso, " +
-            "SUM(guadagnato + prelevato) AS In_Cassa FROM guadagni_totale_anno A, gestioni B, tipo_soldi C WHERE A.id_gestione = B.id_gestione AND A.id_tipo_soldi = C.id_tipo_soldi " +
+            "SUM(guadagnato + prelevato) AS In_Cassa FROM guadagni_totale_anno A, gestioni B, tipo_soldi C WHERE anno >= 2019 AND A.id_gestione = B.id_gestione AND A.id_tipo_soldi = C.id_tipo_soldi " +
             "GROUP BY anno, A.id_gestione, A.id_tipo_soldi ORDER BY anno DESC, A.id_gestione DESC, A.id_tipo_soldi; ";
 
         public static readonly string GetQuoteGuadagno = "SET @`cassaFV` := 0; SET @`cassaDP` := 0; SET @`cassaAV` := 0; " +

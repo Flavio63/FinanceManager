@@ -11,7 +11,6 @@ namespace FinanceManager.Exports
 {
     public class ManagerWorkbooks
     {
-        private static IWorkbook _workbook;
         /// <summary>
         /// Esporta i dati di una tabella in un nuovo file di excel
         /// </summary>
@@ -22,7 +21,6 @@ namespace FinanceManager.Exports
             saveFileDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
             saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             IWorkbook workbook = new XSSFWorkbook();
-            _workbook = workbook;
             if (saveFileDialog.ShowDialog() == true)
             {
                 if (param is ReportProfitLossList report1)
@@ -57,7 +55,7 @@ namespace FinanceManager.Exports
                             }
                             else
                             {
-                                if ( prop.GetValue(report1[xRow]).ToString().Contains("Totale") )
+                                if (prop.GetValue(report1[xRow]).ToString().Contains("Totale"))
                                     total = true;
                                 cell.SetCellValue(prop.GetValue(report1[xRow]).ToString());
                             }
@@ -181,7 +179,7 @@ namespace FinanceManager.Exports
                                 {
                                     cell.SetCellValue(dbl);
                                     if (iRow < 2)
-                                        cell.CellStyle.DataFormat =  8;
+                                        cell.CellStyle.DataFormat = 8;
                                     else
                                         cell.CellStyle.DataFormat = format.GetFormat("0.00%");
                                 }
@@ -195,6 +193,113 @@ namespace FinanceManager.Exports
                             }
                         }
                         iCol++;
+                    }
+                }
+                else if (param is GuadagnoPerQuoteList report5)
+                {
+                    ISheet sheet = workbook.CreateSheet("GuadagnoPerQuote");
+                    ICellStyle R0C0 = CellsTableBorderStyle.TopSx(workbook.CreateCellStyle());
+                    ICellStyle R0CX = CellsTableBorderStyle.TopCenter(workbook.CreateCellStyle());
+                    ICellStyle R0CF = CellsTableBorderStyle.TopDx(workbook.CreateCellStyle());
+                    ICellStyle RXC0 = CellsTableBorderStyle.LeftTable(workbook.CreateCellStyle());
+                    ICellStyle RXCX = CellsTableBorderStyle.CenterTable(workbook.CreateCellStyle());
+                    ICellStyle RXCF = CellsTableBorderStyle.RightTable(workbook.CreateCellStyle());
+                    ICellStyle RFC0 = CellsTableBorderStyle.BottomSx(workbook.CreateCellStyle());
+                    ICellStyle RFCX = CellsTableBorderStyle.BottomCenter(workbook.CreateCellStyle());
+                    ICellStyle RFCF = CellsTableBorderStyle.BottomDx(workbook.CreateCellStyle());
+                    ICellStyle RXCData = CellsTableBorderStyle.CenterTable(workbook.CreateCellStyle());
+                    ICellStyle RXCPerc = CellsTableBorderStyle.CenterTable(workbook.CreateCellStyle());
+                    ICellStyle RXCValuta = CellsTableBorderStyle.CenterTable(workbook.CreateCellStyle());
+                    ICellStyle RFCData = CellsTableBorderStyle.BottomCenter(workbook.CreateCellStyle());
+                    ICellStyle RFCPerc = CellsTableBorderStyle.BottomCenter(workbook.CreateCellStyle());
+                    ICellStyle RFCValuta = CellsTableBorderStyle.BottomCenter(workbook.CreateCellStyle());
+                    IFont myBoldFont = workbook.CreateFont();
+                    myBoldFont.Boldweight = (short)FontBoldWeight.Bold;
+                    myBoldFont.FontHeightInPoints = 14;
+                    IFont myPlainFont = workbook.CreateFont();
+                    myPlainFont.Boldweight = (short)FontBoldWeight.Normal;
+                    myPlainFont.FontHeightInPoints = 12;
+                    R0C0.SetFont(myBoldFont);
+                    R0CF.SetFont(myBoldFont);
+                    R0CX.SetFont(myBoldFont);
+                    RXC0.SetFont(myPlainFont);
+                    RXCX.SetFont(myPlainFont);
+                    RXCF.SetFont(myPlainFont);
+                    RFC0.SetFont(myPlainFont);
+                    RFCX.SetFont(myPlainFont);
+                    RFCF.SetFont(myPlainFont);
+                    RXCData.SetFont(myPlainFont);
+                    RXCPerc.SetFont(myPlainFont);
+                    RXCValuta.SetFont(myPlainFont);
+                    RFCData.SetFont(myPlainFont);
+                    RFCPerc.SetFont(myPlainFont);
+                    RFCValuta.SetFont(myPlainFont);
+                    RXCData.DataFormat = 14;
+                    RXCPerc.DataFormat = 10;
+                    RXCValuta.DataFormat = 8;
+                    RFCData.DataFormat = 14;
+                    RFCPerc.DataFormat = 10;
+                    RFCValuta.DataFormat = 8;
+                    int EndCol = SearchEndColumn(report5[0]);
+                    int Riga = 1;
+                    int Colonna;
+                    IRow row;
+                    foreach (GuadagnoPerQuote GPQ in report5)                   // tutti i record
+                    {
+                        Colonna = 0;
+                        foreach (var prop in GPQ.GetType().GetProperties())
+                        {
+                            if (prop.Name != "IdTipoMovimento")
+                            {
+                                ICell cell;
+                                string fieldValue = prop.GetValue(GPQ) == null ? "" : prop.GetValue(GPQ).ToString();
+                                bool isDbl = double.TryParse(fieldValue, out double dbl);
+                                bool isDate = DateTime.TryParse(fieldValue, out DateTime dt);
+                                if (Riga -1 == 0)
+                                {
+                                    row = Colonna == 0 ? sheet.CreateRow(0) : sheet.GetRow(0);
+                                    cell = row.CreateCell(Colonna);
+                                    cell.SetCellValue(prop.Name);
+                                    if (Colonna == 0) cell.CellStyle = R0C0;
+                                    else if (Colonna > 0 && Colonna < EndCol) cell.CellStyle = R0CX;
+                                    else if (Colonna == EndCol) cell.CellStyle = R0CF;
+                                }
+                                row = Colonna == 0 ? sheet.CreateRow(Riga) : sheet.GetRow(Riga);
+                                cell = row.CreateCell(Colonna);
+                                if (Riga < report5.Count)
+                                {
+                                    if (Colonna == 0) cell.CellStyle = RXC0;
+                                    else if (Colonna < 5) cell.CellStyle = RXCX;
+                                    else if (Colonna == 5) cell.CellStyle = RXCData;
+                                    else if (Colonna == 6) cell.CellStyle = RXCPerc;
+                                    else if (Colonna > 6 && Colonna < 10) cell.CellStyle = RXCValuta;
+                                    else if (Colonna == 10) cell.CellStyle = RXCF;
+                                }
+                                else if (Riga == report5.Count)
+                                {
+                                    if (Colonna == 0) cell.CellStyle = RFC0;
+                                    else if (Colonna < 5) cell.CellStyle = RFCX;
+                                    else if (Colonna == 5) cell.CellStyle = RFCData;
+                                    else if (Colonna == 6) cell.CellStyle = RFCPerc;
+                                    else if (Colonna > 6 && Colonna < 10) cell.CellStyle = RFCValuta;
+                                    else if (Colonna == 10) cell.CellStyle = RFCF;
+                                }
+                                if (isDbl)
+                                {
+                                    cell.SetCellValue(dbl);
+                                }
+                                else if (isDate)
+                                {
+                                    cell.SetCellValue(dt);
+                                }
+                                else if(!isDbl && !isDate)
+                                {
+                                    cell.SetCellValue(fieldValue);
+                                }
+                                Colonna++;
+                            }
+                        }
+                        Riga++;
                     }
                 }
                 FileStream file = new FileStream(saveFileDialog.FileName, FileMode.Create);
@@ -233,13 +338,6 @@ namespace FinanceManager.Exports
                 else if (Row == EndRow)
                     cell.CellStyle = CellsTableBorderStyle.BottomDx(style);
             }
-        }
-
-        private static IFont Bold(IFont font)
-        {
-            font.IsBold = true;
-            font.FontHeightInPoints = 12;
-            return font;
         }
 
         private static void MakeCellBold(IWorkbook workbook, ICell cell)

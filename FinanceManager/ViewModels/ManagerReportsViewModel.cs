@@ -20,6 +20,7 @@ namespace FinanceManager.ViewModels
     {
         private IRegistryServices _services;
         private IManagerReportServices _reportServices;
+        private IManagerLiquidAssetServices _assetServices;
 
         public ICommand CloseMeCommand { get; set; }
         public ICommand ViewCommand { get; set; }
@@ -31,10 +32,11 @@ namespace FinanceManager.ViewModels
         private IList<RegistryOwner> _selectedOwners;
         private IList<int> _selectedAccount;
 
-        public ManagerReportsViewModel(IRegistryServices registryServices, IManagerReportServices managerReportServices)
+        public ManagerReportsViewModel(IRegistryServices registryServices, IManagerReportServices managerReportServices, IManagerLiquidAssetServices managerLiquidAssetServices)
         {
             _services = registryServices ?? throw new ArgumentNullException("ManagerReportsViewModel with no registry services");
             _reportServices = managerReportServices ?? throw new ArgumentNullException("ManagerReportsViewModel with no report services");
+            _assetServices = managerLiquidAssetServices ?? throw new ArgumentNullException("ManagerLiquidAssetServices");
             CloseMeCommand = new CommandHandler(CloseMe);
             ViewCommand = new CommandHandler(ViewReport, CanDoReport);
             ClearCommand = new CommandHandler(ClearReport, CanClearReport);
@@ -388,6 +390,23 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => YearsIsEnable); }
             private set { SetValue(() => YearsIsEnable, value); }
         }
+
+        public GuadagnoPerQuoteList GuadagnoPerQuoteDettagliato
+        {
+            get { return GetValue(() => GuadagnoPerQuoteDettagliato); }
+            set { SetValue(() => GuadagnoPerQuoteDettagliato, value); }
+        }
+        public GuadagnoPerQuoteList GuadagnoPerQuoteSintesi
+        {
+            get { return GetValue(() => GuadagnoPerQuoteSintesi); }
+            set { SetValue(() => GuadagnoPerQuoteSintesi, value); }
+        }
+        public GuadagnoPerQuoteList GuadagnoPerQuote
+        {
+            get { return GetValue(() => GuadagnoPerQuote); }
+            set { SetValue(() => GuadagnoPerQuote, value); }
+        }
+
         #endregion Getter&Setter
 
         #region command
@@ -421,6 +440,8 @@ namespace FinanceManager.ViewModels
                     if (_selectedOwners.Count() > 0)
                         return true;
                     return false;
+                case "Guadagni":
+                    return true;
                 default:
                     return false;
             }
@@ -467,7 +488,6 @@ namespace FinanceManager.ViewModels
                     CanClear = true;
                     break;
                 case "Delta":
-                case "Scalare":
                 case "Titolo":
                     ReportMovementDetaileds = _reportServices.GetMovementDetailed(_selectedOwners[0].Id_gestione, TitoloSelezionato);
                     ReportMovementDetailedViewModel TitoloData = new ReportMovementDetailedViewModel(ReportMovementDetaileds);
@@ -488,7 +508,7 @@ namespace FinanceManager.ViewModels
                     GetAnalisiPortafoglio = new ObservableCollection<AnalisiPortafoglio>();
                     if ((bool)((ToggleButton)userControl.FindName("switchBTN")).IsChecked)
                     {
-                        GetAnalisiPortafoglio.Add (_reportServices.QuoteInvGeoSettori(_selectedOwners));
+                        GetAnalisiPortafoglio.Add(_reportServices.QuoteInvGeoSettori(_selectedOwners));
                         AnalisiPortafoglioViewModel analisiPortafoglioViewModel = new AnalisiPortafoglioViewModel(_reportServices.QuoteInvGeoSettori(_selectedOwners));
                         AnalisiPortafoglioView report4 = new AnalisiPortafoglioView(analisiPortafoglioViewModel);
                         border.Child = report4;
@@ -511,6 +531,13 @@ namespace FinanceManager.ViewModels
                     ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
                     CanClear = true;
                     break;
+                case "Guadagni":
+                    GuadagnoPerQuoteDettagliato = _assetServices.GetQuoteGuadagno(2);
+                    GuadagnoPerQuoteSintesi = _assetServices.GetQuoteGuadagno(1);
+                    GuadagnoPerQuote = _assetServices.GetQuoteGuadagno(0);
+                    border.Child = new ReportGuadagniView(new ReportGuadagniViewModel(GuadagnoPerQuoteDettagliato, GuadagnoPerQuoteSintesi, GuadagnoPerQuote));
+                    CanClear = true;
+                    break;
                 default:
                     break;
             }
@@ -520,7 +547,6 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-
                 switch (ReportSelezionato)
                 {
                     case "PL":
@@ -534,7 +560,10 @@ namespace FinanceManager.ViewModels
                         Exports.ManagerWorkbooks.ExportDataInXlsx(ReportTitoliAttivis);
                         break;
                     case "AnalisiPortafoglio":
-                            Exports.ManagerWorkbooks.ExportDataInXlsx(GetAnalisiPortafoglio);
+                        Exports.ManagerWorkbooks.ExportDataInXlsx(GetAnalisiPortafoglio);
+                        break;
+                    case "Guadagni":
+                        Exports.ManagerWorkbooks.ExportDataInXlsx(AddGuadagni());
                         break;
                     default:
                         break;
@@ -549,5 +578,32 @@ namespace FinanceManager.ViewModels
 
         #endregion command
 
+        private GuadagnoPerQuoteList AddGuadagni()
+        {
+            GuadagnoPerQuoteList result = new GuadagnoPerQuoteList();
+            try
+            {
+                foreach (GuadagnoPerQuote GPQ in GuadagnoPerQuote)
+                {
+                    GPQ.IdGestione = 100;
+                    result.Add(GPQ);
+                }
+                foreach (GuadagnoPerQuote GPQ in GuadagnoPerQuoteSintesi)
+                {
+                    GPQ.IdGestione = 200;
+                    result.Add(GPQ);
+                }
+                foreach (GuadagnoPerQuote GPQ in GuadagnoPerQuoteDettagliato)
+                {
+                    GPQ.IdGestione = 300;
+                    result.Add(GPQ);
+                }
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show("Problemi con l'elaborazione dei guadagni: " + Environment.NewLine + err, "Finance Manager - Export Report", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            return result;
+        }
     }
 }
