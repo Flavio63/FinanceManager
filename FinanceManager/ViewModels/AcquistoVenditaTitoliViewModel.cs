@@ -57,6 +57,7 @@ namespace FinanceManager.ViewModels
                 ListGestioni = new RegistryOwnersList();
                 ListConti = new RegistryLocationList();
                 ListValute = new RegistryCurrencyList();
+                ListTipoTitoli = new RegistryShareTypeList();
                 RegistryMovementTypeList listaOriginale = new RegistryMovementTypeList();
                 listaOriginale = _registryServices.GetRegistryMovementTypesList();
                 var RMTL = from movimento in listaOriginale
@@ -73,7 +74,7 @@ namespace FinanceManager.ViewModels
                 foreach (RegistryOwner registryOwner in ROL)
                     ListGestioni.Add(registryOwner);
                 ListConti = _registryServices.GetRegistryLocationList();
-
+                ListTipoTitoli = _registryServices.GetRegistryShareTypeList();
                 SharesList = new ObservableCollection<RegistryShare>(_registryServices.GetRegistryShareList());
                 _Filter = new Predicate<object>(Filter);
             }
@@ -100,6 +101,7 @@ namespace FinanceManager.ViewModels
                 SintesiSoldiDFV = _liquidAssetServices.GetCurrencyAvailable(7);
                 RecordPortafoglioTitoli = new PortafoglioTitoli();
                 ListPortafoglioTitoli = _liquidAssetServices.GetManagerLiquidAssetListByOwnerAndLocation();
+                ListCostiMediTitoli = _liquidAssetServices.GetCostiMediPerTitolo();
             }
             catch (Exception err)
             {
@@ -145,6 +147,10 @@ namespace FinanceManager.ViewModels
                     RecordPortafoglioTitoli.Isin = RS.Isin;
                     RecordPortafoglioTitoli.Id_azienda = RS.id_azienda;
                     ISIN = RS.Isin;
+                }
+                if (e.AddedItems[0] is RegistryShareType RST)
+                {
+                    TipoTitolo = RST.desc_tipo_titolo;
                 }
                 if (e.AddedItems[0] is DateTime DT)
                 {
@@ -303,6 +309,18 @@ namespace FinanceManager.ViewModels
                 AmountChangedValue = RecordPortafoglioTitoli.Valore_di_cambio == 0 ? 0 : (TotaleContabile / RecordPortafoglioTitoli.Valore_di_cambio);
         }
 
+        private bool FilterCostiMedi(object obj)
+        {
+            if (obj != null)
+            {
+                if (obj is PortafoglioTitoli Ptf)
+                {
+                    if (!string.IsNullOrWhiteSpace(TipoTitolo))
+                        return Ptf.Desc_tipo_titolo.ToLower() == (TipoTitolo.ToLower());
+                }
+            }
+            return true;
+        }
         /// <summary>
         /// E' il filtro da applicare all'elenco delle azioni
         /// e contestualmente al datagrid sottostante
@@ -373,6 +391,12 @@ namespace FinanceManager.ViewModels
             get { return _isin; }
             set { _isin = value; PtfCollectionView.Filter = _Filter; PtfCollectionView.Refresh(); }
         }
+        private string _TipoTitolo;
+        private string TipoTitolo
+        {
+            get { return _TipoTitolo; }
+            set { _TipoTitolo = value; CollectionCostiMedi.Filter = FilterCostiMedi; CollectionCostiMedi.Refresh(); }
+        }
         #endregion
 
         #region SintesiSoldi
@@ -435,6 +459,12 @@ namespace FinanceManager.ViewModels
         {
             get { return GetValue(() => ListValute); }
             set { SetValue(() => ListValute, value); }
+        }
+
+        public RegistryShareTypeList ListTipoTitoli
+        {
+            get { return GetValue(() => ListTipoTitoli); }
+            set { SetValue(() => ListTipoTitoli, value); }
         }
         /// <summary>
         /// La ricerca degli isin dei titoli per l'acquisto / vendita
@@ -536,6 +566,20 @@ namespace FinanceManager.ViewModels
         {
             get { return GetValue(() => ListPortafoglioTitoli); }
             private set { SetValue(() => ListPortafoglioTitoli, value); PtfCollectionView = CollectionViewSource.GetDefaultView(value); }
+        }
+        /// <summary>
+        /// Contiene la lista di tutti i titoli attivi,
+        /// con il n. di titoli e il costo medio di carico comprensivo di tutti i costi sostenuti.
+        /// </summary>
+        public PortafoglioTitoliList ListCostiMediTitoli
+        {
+            get { return GetValue(() => ListCostiMediTitoli); }
+            private set { SetValue(() => ListCostiMediTitoli, value); CollectionCostiMedi = CollectionViewSource.GetDefaultView(value); }
+        }
+        public System.ComponentModel.ICollectionView CollectionCostiMedi
+        {
+            get { return GetValue(() => CollectionCostiMedi); }
+            set { SetValue(() => CollectionCostiMedi, value); }
         }
 
         public System.ComponentModel.ICollectionView PtfCollectionView

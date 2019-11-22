@@ -183,7 +183,7 @@ namespace FinanceManager.Services
         /// Estrae tutti i record di una gestione in un conto di un titolo
         /// </summary>
         /// <param name="idGestione">la gestione scelta</param>
-        /// <param name="idConti">il conto corrente</param>
+        /// <param name="idConto">il conto corrente</param>
         /// <param name="idTitolo">il titolo</param>
         /// <returns></returns>
         public PortafoglioTitoliList GetManagerLiquidAssetListByOwnerLocationAndTitolo(int idGestione, int idConto, int idTitolo)
@@ -215,11 +215,9 @@ namespace FinanceManager.Services
         }
 
         /// <summary>
-        /// Estrae tutti i record di una gestione in un conto di un titolo
+        /// Estrae tutti i record legati di un titolo
         /// </summary>
-        /// <param name="idGestione">la gestione scelta</param>
-        /// <param name="idConti">il conto corrente</param>
-        /// <param name="idTitolo">il titolo</param>
+        /// <param name="link_movimenti">il link di tutti i movimenti di un titolo</param>
         /// <returns></returns>
         public PortafoglioTitoliList GetManagerLiquidAssetListByLinkMovimenti(DateTime link_movimenti)
         {
@@ -1813,6 +1811,49 @@ namespace FinanceManager.Services
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+    
+        /// <summary>
+        /// Prelevo le info per i costi medi dei titoli attivi
+        /// </summary>
+        /// <returns></returns>
+        public PortafoglioTitoliList GetCostiMediPerTitolo()
+        {
+            try
+            {
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = System.Data.CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = ManagerScripts.GetCostiMediPerTitolo;
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    DataTable dt = new DataTable();
+                    dbAdapter.Fill(dt);
+                    PortafoglioTitoliList PTL = new PortafoglioTitoliList();
+                    foreach (DataRow DR in dt.Rows)
+                    {
+                        PortafoglioTitoli PT = new PortafoglioTitoli();
+                        PT.Nome_Gestione = DR.Field<string>("nome_gestione");
+                        PT.Desc_Conto = DR.Field<string>("desc_conto");
+                        PT.Desc_tipo_titolo = DR.Field<string>("desc_tipo_titolo");
+                        PT.Desc_titolo = DR.Field<string>("desc_titolo");
+                        PT.Isin = DR.Field<string>("isin");
+                        PT.Importo_totale = DR.Field<double>("CostoMedio");
+                        PT.N_titoli = DR.Field<double>("TitoliAttivi");
+                        PT.Costo_unitario_in_valuta = DR.Field<double>("CostoUnitarioMedio");
+                        PTL.Add(PT);
+                    }
+                    return PTL;
                 }
             }
             catch (MySqlException err)

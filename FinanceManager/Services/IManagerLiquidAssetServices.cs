@@ -18,6 +18,12 @@ namespace FinanceManager.Services
         SintesiSoldiList GetCurrencyAvailable(int IdGestione = 0, int IdConto = 0, int IdValuta = 0);
         PortafoglioTitoliList GetShareMovements(int IdOwner, int IdLocation, uint id_titolo);
         double GetSharesQuantity(int IdOwner, int IdLocation, uint id_titolo);
+        /// <summary>
+        /// Prelevo le info per i costi medi dei titoli attivi
+        /// </summary>
+        /// <returns></returns>
+        PortafoglioTitoliList GetCostiMediPerTitolo();
+
         double GetProfitLossByCurrency(int IdOwner, int IdLocation, int IdCurrency);
         void AddManagerLiquidAsset(PortafoglioTitoli managerLiquidAsset);
         void UpdateManagerLiquidAsset(PortafoglioTitoli managerLiquidAsset);

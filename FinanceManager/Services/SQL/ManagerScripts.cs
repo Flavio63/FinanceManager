@@ -340,5 +340,12 @@ namespace FinanceManager.Services.SQL
             "SET AA.anno = BB.anno, AA.guadagnato = BB.guadagnato, AA.data_operazione = BB.data_movimento, AA.causale = BB.causale, AA.id_quote_periodi = BB.id_quote_periodi " +
             "WHERE AA.id_gestione = BB.id_gestione AND AA.id_conto_corrente = BB.id_fineco_euro;";
 
+        public static readonly string GetCostiMediPerTitolo = "SELECT C.nome_gestione, D.desc_conto, E.desc_tipo_titolo, B.desc_titolo, B.isin, " +
+            "SUM(ammontare +(total_commission + tobin_tax + disaggio_cedole + ritenuta_fiscale)*-1) AS CostoMedio, SUM(shares_quantity) AS TitoliAttivi, " +
+            "SUM(ammontare + (total_commission + tobin_tax + disaggio_cedole + ritenuta_fiscale) * -1) / SUM(shares_quantity) AS CostoUnitarioMedio " +
+            "FROM portafoglio_titoli A, titoli B, gestioni C, conti D, tipo_titoli E " +
+            "WHERE A.id_gestione<> 0 AND attivo > 0 AND A.id_titolo = B.id_titolo AND A.id_gestione = C.id_gestione AND A.id_conto = D.id_conto AND B.id_tipo_titolo = E.id_tipo_titolo " +
+            "GROUP BY A.id_gestione, A.id_conto, E.id_tipo_titolo, A.id_titolo " +
+            "ORDER BY A.id_gestione, A.id_conto, E.desc_tipo_titolo, B.desc_titolo";
     }
 }
