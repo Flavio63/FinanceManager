@@ -80,7 +80,7 @@
                 <!-- la selezione degli anni -->
                 <StackPanel Grid.Row="2" Grid.Column="0" Margin="5" IsEnabled="{Binding YearsIsEnable, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
                     <TextBlock Grid.Row="2" Text="Anni disponibili" FontWeight="Bold" FontSize="16" Margin="10, 2" HorizontalAlignment="Center"/>
-                    <ListBox x:Name="Anni" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding AvailableYears}" 
+                    <ListBox x:Name="Anni" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding AvailableYears}" SelectionMode="Multiple"
                           Margin="10, 2" MinWidth="100" Height="75">
                         <iy:Interaction.Triggers>
                             <iy:EventTrigger EventName="SelectionChanged">
