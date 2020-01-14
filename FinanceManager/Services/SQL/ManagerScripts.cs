@@ -319,9 +319,14 @@ namespace FinanceManager.Services.SQL
         public static readonly string InsertPrelievoUtili = "INSERT INTO guadagni_totale_anno (id_gestione, id_tipo_movimento, anno, prelevato, data_operazione, causale) " +
             "VALUES (@id_gestione, @id_tipo_movimento, @anno, @ammontare, @data_operazione, @causale)";
 
+        public static readonly string InsertPrelievoUtiliBkd = "INSERT INTO prelievi (id_prelievo, id_gestione, id_tipo_movimento, anno, prelevato, data_operazione, causale) " +
+            "VALUES (@id_prelievo, @id_gestione, @id_tipo_movimento, @anno, @ammontare, @data_operazione, @causale)";
+
         /// <summary>Registro la modifica sui prelievi di utili</summary>
         public static readonly string UpdatePrelievoUtili = "UPDATE guadagni_totale_anno SET id_gestione = @id_gestione, anno = @anno, prelevato = @prelevato, data_operazione = @data, " +
             "causale = @causale WHERE id_guadagno = @id_guadagno ";
+        public static readonly string UpdatePrelievoUtiliBkd = "UPDATE prelievi SET id_gestione = @id_gestione, anno = @anno, prelevato = @prelevato, data_operazione = @data, " +
+            "causale = @causale WHERE id_prelievo = @id_prelievo ";
 
         /// <summary>Dopo l'inserimento sul conto corrente, registro il guadagno</summary>
         public static readonly string AddSingoloGuadagno = "INSERT INTO guadagni_totale_anno (id_gestione, id_tipo_soldi, id_tipo_movimento, anno, quota, guadagnato, data_operazione, " +

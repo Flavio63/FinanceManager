@@ -498,7 +498,7 @@ namespace FinanceManager.ViewModels
                             ActualQuote.Ammontare = 0;
                             ActualQuote.Note = "Inserimento per Quote";
                             _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il movimento a 0 per effettuare le quote corrette.
-                            _managerLiquidServices.ComputesAndInsertQuoteGuadagno(Id_Tipo_Soldi);
+                            _managerLiquidServices.ComputesAndInsertQuoteGuadagno(Id_Tipo_Soldi, ActualQuote.Id_Periodo_Quote);
                         }
                         else if (ActualQuote.IdGestione == 4)
                         {
@@ -508,7 +508,7 @@ namespace FinanceManager.ViewModels
                             _managerLiquidServices.InsertInvestment(ActualQuote); // FLAVIO inserisco il movimento a 0 per effettuare le quote corrette.
                             ActualQuote.IdGestione = 5; ActualQuote.Ammontare = 0; ActualQuote.Note = "Inserimento per Quote";
                             _managerLiquidServices.InsertInvestment(ActualQuote); // DANIELA inserisco il movimento a 0 per effettuare le quote corrette.
-                            _managerLiquidServices.ComputesAndInsertQuoteGuadagno(Id_Tipo_Soldi);
+                            _managerLiquidServices.ComputesAndInsertQuoteGuadagno(Id_Tipo_Soldi, ActualQuote.Id_Periodo_Quote);
                         }
                     }
                     else
@@ -549,7 +549,7 @@ namespace FinanceManager.ViewModels
                         if (answer == MessageBoxResult.No)
                             return;
                     }
-                    _managerLiquidServices.InsertPrelievoUtili(RecordQuoteGuadagno);
+                    _managerLiquidServices.InsertPrelievoUtili(RecordQuoteGuadagno); // in questo script inserisco il prelievo anche nella tabella prelievi
                     MessageBox.Show(string.Format("Ho effettuato il prelievo di {0} €. dal conto di {1} per l'anno {2}.",
                         RecordQuoteGuadagno.Preso, RecordQuoteGuadagno.Nome, RecordQuoteGuadagno.Anno),
                         Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);

@@ -63,7 +63,8 @@ namespace FinanceManager.Services
         /// Calcolo le nuove quote e le inserisco nella tabella quote_guadagno
         /// </summary>
         /// <param name="Tipo_Soldi">Codice identificativo</param>
-        void ComputesAndInsertQuoteGuadagno(int Tipo_Soldi);
+        /// <param name="NuovoPeriodo">Il nuovo periodo da inserire in tabella</param>
+        void ComputesAndInsertQuoteGuadagno(int Tipo_Soldi, int NuovoPeriodo);
 
         /// <summary>
         /// Calcolo le nuove quote e modifico la tabella quote_guadagno

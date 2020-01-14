@@ -534,7 +534,7 @@ namespace FinanceManager.Services
             MLA.Link_Movimenti = dr.Field<DateTime>("link_movimenti");
             return MLA;
         }
-        
+
         #region ContoCorrente
 
         private ContoCorrenteList contoCorrentes(DataTable dataTable)
@@ -828,7 +828,8 @@ namespace FinanceManager.Services
         /// Calcolo le nuove quote e le inserisco nella tabella quote_guadagno
         /// </summary>
         /// <param name="Tipo_Soldi">Codice identificativo</param>
-        public void ComputesAndInsertQuoteGuadagno(int Tipo_Soldi)
+        /// <param name="NuovoPeriodo">Il nuovo periodo da inserire in tabella</param>
+        public void ComputesAndInsertQuoteGuadagno(int Tipo_Soldi, int NuovoPeriodo)
         {
             try
             {
@@ -838,6 +839,8 @@ namespace FinanceManager.Services
                     dbComm.CommandText = "ComputesAndInsertQuoteGuadagno";
                     dbComm.Parameters.AddWithValue("Tipo_Soldi", Tipo_Soldi);
                     dbComm.Parameters["Tipo_Soldi"].Direction = ParameterDirection.Input;
+                    dbComm.Parameters.AddWithValue("Nuovo_Periodo", NuovoPeriodo);
+                    dbComm.Parameters["Nuovo_Periodo"].Direction = ParameterDirection.Input;
                     dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -915,7 +918,7 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
-        
+
         /// <summary>
         /// Aggiorno la tabella Guadagni_totale_anno nel caso di
         /// modifiche del record di prelievo utili
@@ -938,6 +941,10 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("id_guadagno", RecordQuoteGuadagno.IdGuadagno);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
+                    dbComm.CommandText = SQL.ManagerScripts.UpdatePrelievoUtiliBkd;
+                    dbComm.Parameters.RemoveAt("id_guadagno");
+                    dbComm.Parameters.AddWithValue("id_prelievo", RecordQuoteGuadagno.IdGuadagno);
+                    dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
                 }
             }
@@ -950,7 +957,7 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
-        
+
         /// <summary>
         /// Elimino un record dalla tabella quote_guadagno
         /// </summary>
@@ -1797,10 +1804,37 @@ namespace FinanceManager.Services
         {
             try
             {
+                int result = 0;
                 using (MySqlCommand dbComm = new MySqlCommand())
                 {
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.ManagerScripts.InsertPrelievoUtili;
+                    dbComm.Parameters.AddWithValue("id_gestione", gudadagnoQuote.IdGestione);
+                    dbComm.Parameters.AddWithValue("id_tipo_movimento", gudadagnoQuote.IdTipoMovimento);
+                    dbComm.Parameters.AddWithValue("anno", gudadagnoQuote.Anno);
+                    dbComm.Parameters.AddWithValue("ammontare", gudadagnoQuote.Preso);
+                    dbComm.Parameters.AddWithValue("data_operazione", gudadagnoQuote.DataOperazione.ToString("yyyy-MM-dd"));
+                    dbComm.Parameters.AddWithValue("causale", gudadagnoQuote.Causale);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+                using (MySqlDataAdapter dataAdapter = new MySqlDataAdapter())
+                {
+                    dataAdapter.SelectCommand = new MySqlCommand();
+                    dataAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dataAdapter.SelectCommand.CommandText = "SELECT id_guadagno FROM guadagni_totale_anno ORDER BY id_guadagno DESC LIMIT 1";
+                    dataAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    DataTable dt = new DataTable();
+                    dataAdapter.Fill(dt);
+                    result = Convert.ToInt32( dt.Rows[0].ItemArray[0]);
+                }
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = ManagerScripts.InsertPrelievoUtiliBkd;
+                    dbComm.Parameters.AddWithValue("id_prelievo", result);
                     dbComm.Parameters.AddWithValue("id_gestione", gudadagnoQuote.IdGestione);
                     dbComm.Parameters.AddWithValue("id_tipo_movimento", gudadagnoQuote.IdTipoMovimento);
                     dbComm.Parameters.AddWithValue("anno", gudadagnoQuote.Anno);
@@ -1822,7 +1856,7 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
-    
+
         /// <summary>
         /// Prelevo le info per i costi medi dei titoli attivi
         /// </summary>
