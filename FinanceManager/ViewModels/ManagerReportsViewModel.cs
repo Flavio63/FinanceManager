@@ -135,22 +135,23 @@ namespace FinanceManager.ViewModels
                     }
                     break;
                 case "DPL":
-                    for (int Rrow = 0; Rrow < ReportProfitLosses.Count; Rrow++)
+                    for (int Rrow = 0; Rrow < ReportProfitLosses.Count;)
                     {
                         int Anno = ReportProfitLosses[Rrow].Anno;
                         ReportProfitLoss TotaleAnno = new ReportProfitLoss();
-                        int contAnno = Rrow;
-                        do // ciclo anno
+                        int contAnno = 0;
+                        while (Anno == ReportProfitLosses[Rrow].Anno) // ciclo anno
                         {
                             ReportProfitLoss TotaleGestione = new ReportProfitLoss();
                             string Gestione = ReportProfitLosses[Rrow].Gestione;
-                            int contGestione = Rrow;
-                            do // ciclo gestione
+                            int contGestione = 0;
+                            while (Anno == ReportProfitLosses[Rrow].Anno && Gestione == ReportProfitLosses[Rrow].Gestione)  // ciclo gestione
                             {
                                 ReportProfitLoss TotaleTipoSoldi = new ReportProfitLoss();
                                 string tipoSoldi = ReportProfitLosses[Rrow].TipoSoldi;
-                                int contTipoSoldi = Rrow;
-                                do // ciclo tiposoldi
+                                int contTipoSoldi = 0;
+                                while (Anno == ReportProfitLosses[Rrow].Anno && Gestione == ReportProfitLosses[Rrow].Gestione
+                                    && tipoSoldi == ReportProfitLosses[Rrow].TipoSoldi) // ciclo tiposoldi
                                 {
                                     TotaleAnno.Azioni += ReportProfitLosses[Rrow].Azioni;
                                     TotaleAnno.Obbligazioni += ReportProfitLosses[Rrow].Obbligazioni;
@@ -173,53 +174,51 @@ namespace FinanceManager.ViewModels
                                     TotaleTipoSoldi.Volatili += ReportProfitLosses[Rrow].Volatili;
                                     TotaleTipoSoldi.Costi += ReportProfitLosses[Rrow].Costi;
                                     TotaleTipoSoldi.Totale += ReportProfitLosses[Rrow].Totale;
-                                    if (Rrow + 1 >= ReportProfitLosses.Count)
+                                    contTipoSoldi++;
+                                    if (Rrow + 1 >= ReportProfitLosses.Count) // verifico di non andare oltre
                                     {
-                                        if (Rrow - contTipoSoldi > 1)
-                                            Rrow++;
+                                        Rrow++; // incremento comunque il contatore per avere la stessa situazione in uscita dal ciclo
                                         break;
                                     }
                                     Rrow++;
-                                } while (Anno == ReportProfitLosses[Rrow].Anno && Gestione == ReportProfitLosses[Rrow].Gestione && tipoSoldi == ReportProfitLosses[Rrow].TipoSoldi);
-                                if (Rrow - contTipoSoldi > 1)
+                                } // fine ciclo tipo soldi
+                                contGestione++;
+                                if (contTipoSoldi > 1) // se il contatore è maggiore di 1 aggiungo riga x totali
                                 {
                                     TotaleTipoSoldi.ISIN = "TOTALE TIPO SOLDI";
                                     TotaleTipoSoldi.NomeTitolo = "TOTALE TIPO SOLDI";
                                     TotaleTipoSoldi.TipoSoldi = tipoSoldi;
                                     TotaleTipoSoldi.Gestione = Gestione;
                                     TotaleTipoSoldi.Anno = Anno;
-                                    ReportProfitLosses.Insert(Rrow, TotaleTipoSoldi);
-                                    if (Rrow + 1 >= ReportProfitLosses.Count)
-                                    {
-                                        if (Rrow - contGestione > 1)
-                                            Rrow++;
-                                        break;
-                                    }
-                                    Rrow++;
+                                    ReportProfitLosses.Insert(Rrow, TotaleTipoSoldi);   // il contatore viene incrementato automaticamente
+                                    Rrow++;                                                 // mi adeguo
                                 }
                                 else
+                                {
                                     ReportProfitLosses[Rrow - 1].TipoSoldi += " TOTALE";
-                            } while (Anno == ReportProfitLosses[Rrow].Anno && Gestione == ReportProfitLosses[Rrow].Gestione);
-                            if (Rrow - contGestione > 1)
+                                }
+                                if (Rrow >= ReportProfitLosses.Count)
+                                    break;
+                            }   // fine ciclo gestione
+                            contAnno++;
+                            if (contGestione > 1)
                             {
                                 TotaleGestione.ISIN = "TOTALE GESTIONE";
                                 TotaleGestione.NomeTitolo = "TOTALE GESTIONE";
                                 TotaleGestione.TipoSoldi = "TOTALE GESTIONE";
                                 TotaleGestione.Gestione = Gestione;
                                 TotaleGestione.Anno = Anno;
-                                ReportProfitLosses.Insert(Rrow, TotaleGestione);
-                                if (Rrow + 1 >= ReportProfitLosses.Count)
-                                {
-                                    if (Rrow - contAnno > 1)
-                                        Rrow++;
-                                    break;
-                                }
-                                Rrow++;
+                                ReportProfitLosses.Insert(Rrow, TotaleGestione);      // il contatore viene incrementato automaticamente
+                                Rrow++;                                                 // mi adeguo
                             }
                             else
-                                ReportProfitLosses[Rrow - 1].Gestione += " TOTALE";
-                        } while (Anno == ReportProfitLosses[Rrow].Anno);
-                        if (Rrow - contAnno > 1)
+                            {
+                                ReportProfitLosses[Rrow  - 1].Gestione += " TOTALE";
+                            }
+                            if (Rrow >= ReportProfitLosses.Count)
+                                break;
+                        } // fine ciclo anno
+                        if (contAnno > 1)
                         {
                             TotaleAnno.ISIN = "TOTALE ANNO";
                             TotaleAnno.NomeTitolo = "TOTALE ANNO";
@@ -227,6 +226,11 @@ namespace FinanceManager.ViewModels
                             TotaleAnno.Gestione = "TOTALE ANNO";
                             TotaleAnno.Anno = Anno;
                             ReportProfitLosses.Insert(Rrow, TotaleAnno);
+                            Rrow++;
+                        }
+                        else
+                        {
+                            ReportProfitLosses[Rrow - 1].Gestione += " - TOTALE ANNO";
                         }
                     }
                     break;

@@ -23,51 +23,111 @@ namespace FinanceManager.Exports
             IWorkbook workbook = new XSSFWorkbook();
             if (saveFileDialog.ShowDialog() == true)
             {
+                int riga = 1;           // la riga in excel parte da uno perchè in 0 c'è l'intestazione
+                int colonna = 0;        // la colonna in excel
+                int ultimaColonna = 0;    // l'ultima colonna dei dati
+                string valoreCampo;     // il valore del campo da scrivere in excel
+                ISheet sheet;           // il foglio di excel
+                IRow rigaXLS;           // la riga di excel
+                ICell cellaXLS;         // la cella di excel
+
+                #region style
+                ICellStyle rowStyle = workbook.CreateCellStyle();
+                ICellStyle R0C0 = CellsTableBorderStyle.TopSx(workbook.CreateCellStyle());
+                ICellStyle R0CX = CellsTableBorderStyle.TopCenter(workbook.CreateCellStyle());
+                ICellStyle R0CF = CellsTableBorderStyle.TopDx(workbook.CreateCellStyle());
+                ICellStyle RXC0 = CellsTableBorderStyle.LeftTable(workbook.CreateCellStyle());
+                ICellStyle RXCX = CellsTableBorderStyle.CenterTable(workbook.CreateCellStyle());
+                ICellStyle RXCF = CellsTableBorderStyle.RightTable(workbook.CreateCellStyle());
+                ICellStyle RFC0 = CellsTableBorderStyle.BottomSx(workbook.CreateCellStyle());
+                ICellStyle RFCX = CellsTableBorderStyle.BottomCenter(workbook.CreateCellStyle());
+                ICellStyle RFCF = CellsTableBorderStyle.BottomDx(workbook.CreateCellStyle());
+                ICellStyle RXCData = CellsTableBorderStyle.CenterTable(workbook.CreateCellStyle());
+                ICellStyle RXCPerc = CellsTableBorderStyle.CenterTable(workbook.CreateCellStyle());
+                ICellStyle RXCValuta = CellsTableBorderStyle.CenterTable(workbook.CreateCellStyle());
+                ICellStyle RFCData = CellsTableBorderStyle.BottomCenter(workbook.CreateCellStyle());
+                ICellStyle RFCPerc = CellsTableBorderStyle.BottomCenter(workbook.CreateCellStyle());
+                ICellStyle RFCValuta = CellsTableBorderStyle.BottomCenter(workbook.CreateCellStyle());
+                IFont myBoldFont = workbook.CreateFont();
+                myBoldFont.Boldweight = (short)FontBoldWeight.Bold;
+                myBoldFont.FontHeightInPoints = 14;
+                IFont myPlainFont = workbook.CreateFont();
+                myPlainFont.Boldweight = (short)FontBoldWeight.Normal;
+                myPlainFont.FontHeightInPoints = 12;
+                #endregion
+
                 if (param is ReportProfitLossList report1)
                 {
-                    ISheet sheet = workbook.CreateSheet("ProfitLoss");
-                    IDataFormat format = workbook.CreateDataFormat();
-                    int EndCol = SearchEndColumn(report1[0]);
-                    MakeTopTableRow(report1[0], workbook, sheet, EndCol, report1.Count);
-                    for (int xRow = 0; xRow < report1.Count; xRow++)
+                    sheet = workbook.CreateSheet("ProfitLoss");
+                    ultimaColonna = SearchEndColumn(report1[0]);
+                    RXCF.DataFormat = 8;
+                    RFCF.DataFormat = 8;
+                    RXCValuta.DataFormat = 8;
+                    RFCValuta.DataFormat = 8;
+                    foreach (ReportProfitLoss RPL in report1)
                     {
-                        IRow row;
-                        int iCol = 0;
-                        row = sheet.CreateRow(xRow + 1);
-                        // dati
+                        colonna = 0;
                         bool total = false;
-                        foreach (var prop in report1[xRow].GetType().GetProperties())
+                        foreach (var prop in RPL.GetType().GetProperties())
                         {
-                            bool isDbl = double.TryParse(prop.GetValue(report1[xRow]).ToString(), out double dbl);
-                            ICell cell = row.CreateCell(iCol);
-                            SetStyle(workbook, cell, iCol, xRow + 1, EndCol, report1.Count);
-                            if (isDbl && iCol > 0)
+                            valoreCampo = prop.GetValue(RPL) == null ? "" : prop.GetValue(RPL).ToString();
+                            bool isDbl = double.TryParse(valoreCampo, out double dbl);
+                            if (riga - 1 == 0)  // la riga di intestazione in excel
                             {
-                                cell.SetCellValue(dbl);
-                                cell.CellStyle.DataFormat = 8;
-                                if (iCol == EndCol)
-                                    MakeCellBold(workbook, cell);
+                                rigaXLS = colonna == 0 ? sheet.CreateRow(0) : sheet.GetRow(0);
+                                rowStyle.SetFont(myBoldFont);
+                                rigaXLS.RowStyle = rowStyle;
+                                cellaXLS = rigaXLS.CreateCell(colonna);
+                                cellaXLS.SetCellValue(prop.Name);
+                                if (colonna == 0) cellaXLS.CellStyle = R0C0;
+                                else if (colonna > 0 && colonna < ultimaColonna) cellaXLS.CellStyle = R0CX;
+                                else if (colonna == ultimaColonna) cellaXLS.CellStyle = R0CF;
+                            } // fine intestazione
+                            rigaXLS = colonna == 0 ? sheet.CreateRow(riga) : sheet.GetRow(riga);
+                            rowStyle.SetFont(myPlainFont);
+                            rigaXLS.RowStyle = rowStyle;
+                            cellaXLS = rigaXLS.CreateCell(colonna);
+                            if (riga < report1.Count)   // il corpo centrale del report
+                            {
+                                if (colonna == 0) cellaXLS.CellStyle = RXC0;
+                                else if (colonna < 4) cellaXLS.CellStyle = RXCX;
+                                else if (colonna >= 4 && colonna < ultimaColonna) cellaXLS.CellStyle = RXCValuta;
+                                else if (colonna == ultimaColonna) cellaXLS.CellStyle = RXCF;
                             }
-                            else if (iCol == 0)
+                            if (riga == report1.Count)  // la riga di chiusura
                             {
-                                cell.SetCellValue(dbl);
-                                cell.CellStyle.DataFormat = format.GetFormat("0");
+                                if (colonna == 0) cellaXLS.CellStyle = RFC0;
+                                else if (colonna < 4) cellaXLS.CellStyle = RFCX;
+                                else if (colonna >= 4 && colonna < ultimaColonna) cellaXLS.CellStyle = RFCValuta;
+                                else if (colonna == ultimaColonna) cellaXLS.CellStyle = RFCF;
                             }
-                            else
+                            if (isDbl) cellaXLS.SetCellValue(dbl);
+                            else if (!isDbl)
                             {
-                                if (prop.GetValue(report1[xRow]).ToString().Contains("TOTALE"))
+                                cellaXLS.SetCellValue(valoreCampo);
+                                if (valoreCampo.Contains("TOTALE"))
                                     total = true;
-                                cell.SetCellValue(prop.GetValue(report1[xRow]).ToString());
                             }
-                            iCol++;
+                            colonna++;
                         }
                         if (total)
-                            MakeRowBold(workbook, row);
+                        {
+                            rigaXLS = sheet.GetRow(riga);
+                            rowStyle.SetFont(myBoldFont);
+                            rigaXLS.RowStyle = rowStyle;
+                        }
+                        //else
+                        //{
+                        //    rigaXLS = sheet.GetRow(riga);
+                        //    foreach (ICell cell in rigaXLS)
+                        //        cell.CellStyle.SetFont(myPlainFont);
+                        //}
+                        riga++;
                     }
                 }
                 else if (param is ReportMovementDetailedList report2)
                 {
-                    ISheet sheet = workbook.CreateSheet("DettaglioTitolo");
+                    sheet = workbook.CreateSheet("DettaglioTitolo");
                     IDataFormat format = workbook.CreateDataFormat();
                     int EndCol = SearchEndColumn(report2[0]);
                     MakeTopTableRow(report2[0], workbook, sheet, EndCol, report2.Count);
@@ -106,7 +166,7 @@ namespace FinanceManager.Exports
                 }
                 else if (param is ReportTitoliAttiviList report3)
                 {
-                    ISheet sheet = workbook.CreateSheet("TitoliAttivi");
+                    sheet = workbook.CreateSheet("TitoliAttivi");
                     IDataFormat format = workbook.CreateDataFormat();
                     int EndCol = SearchEndColumn(report3[0]);
                     MakeTopTableRow(report3[0], workbook, sheet, EndCol, report3.Count);
@@ -144,7 +204,7 @@ namespace FinanceManager.Exports
                 }
                 else if (param is ObservableCollection<AnalisiPortafoglio> report4)
                 {
-                    ISheet sheet = workbook.CreateSheet("AnalisiPortafoglio");
+                   sheet = workbook.CreateSheet("AnalisiPortafoglio");
                     IDataFormat format = workbook.CreateDataFormat();
                     int TotalRow = SearchEndColumn(report4[0]) - 6;
                     int iColText = 0;
@@ -197,28 +257,8 @@ namespace FinanceManager.Exports
                 }
                 else if (param is GuadagnoPerQuoteList report5)
                 {
-                    ISheet sheet = workbook.CreateSheet("GuadagnoPerQuote");
-                    ICellStyle R0C0 = CellsTableBorderStyle.TopSx(workbook.CreateCellStyle());
-                    ICellStyle R0CX = CellsTableBorderStyle.TopCenter(workbook.CreateCellStyle());
-                    ICellStyle R0CF = CellsTableBorderStyle.TopDx(workbook.CreateCellStyle());
-                    ICellStyle RXC0 = CellsTableBorderStyle.LeftTable(workbook.CreateCellStyle());
-                    ICellStyle RXCX = CellsTableBorderStyle.CenterTable(workbook.CreateCellStyle());
-                    ICellStyle RXCF = CellsTableBorderStyle.RightTable(workbook.CreateCellStyle());
-                    ICellStyle RFC0 = CellsTableBorderStyle.BottomSx(workbook.CreateCellStyle());
-                    ICellStyle RFCX = CellsTableBorderStyle.BottomCenter(workbook.CreateCellStyle());
-                    ICellStyle RFCF = CellsTableBorderStyle.BottomDx(workbook.CreateCellStyle());
-                    ICellStyle RXCData = CellsTableBorderStyle.CenterTable(workbook.CreateCellStyle());
-                    ICellStyle RXCPerc = CellsTableBorderStyle.CenterTable(workbook.CreateCellStyle());
-                    ICellStyle RXCValuta = CellsTableBorderStyle.CenterTable(workbook.CreateCellStyle());
-                    ICellStyle RFCData = CellsTableBorderStyle.BottomCenter(workbook.CreateCellStyle());
-                    ICellStyle RFCPerc = CellsTableBorderStyle.BottomCenter(workbook.CreateCellStyle());
-                    ICellStyle RFCValuta = CellsTableBorderStyle.BottomCenter(workbook.CreateCellStyle());
-                    IFont myBoldFont = workbook.CreateFont();
-                    myBoldFont.Boldweight = (short)FontBoldWeight.Bold;
-                    myBoldFont.FontHeightInPoints = 14;
-                    IFont myPlainFont = workbook.CreateFont();
-                    myPlainFont.Boldweight = (short)FontBoldWeight.Normal;
-                    myPlainFont.FontHeightInPoints = 12;
+                    sheet = workbook.CreateSheet("GuadagnoPerQuote");
+                    #region syling
                     R0C0.SetFont(myBoldFont);
                     R0CF.SetFont(myBoldFont);
                     R0CX.SetFont(myBoldFont);
@@ -240,6 +280,7 @@ namespace FinanceManager.Exports
                     RFCData.DataFormat = 14;
                     RFCPerc.DataFormat = 10;
                     RFCValuta.DataFormat = 8;
+                    #endregion
                     int EndCol = SearchEndColumn(report5[0]);
                     int Riga = 1;
                     int Colonna;
