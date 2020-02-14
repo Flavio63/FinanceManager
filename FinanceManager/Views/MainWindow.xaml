@@ -7,7 +7,8 @@
              xmlns:iy="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:local="clr-namespace:FinanceManager" WindowStartupLocation="CenterScreen"
         mc:Ignorable="d" x:Name="FinestraPrincipale" DataContext="{StaticResource ResourceKey=MainWindowViewModel}"
-        Title="{Binding Titolo, UpdateSourceTrigger=PropertyChanged}">
+        Title="{Binding Titolo, UpdateSourceTrigger=PropertyChanged}"
+        >
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -79,7 +80,9 @@
             </MenuItem>
         </Menu>
         <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-            <DockPanel Grid.Row="1" MinHeight="250" MinWidth="250" Name="mainGrid"></DockPanel>
+            <DockPanel Grid.Row="1" MinHeight="250" MinWidth="250" Name="mainGrid"
+                Height="{Binding Source={x:Static SystemParameters.FullPrimaryScreenHeight}}"
+                       />
         </ScrollViewer>
 
     </Grid>
