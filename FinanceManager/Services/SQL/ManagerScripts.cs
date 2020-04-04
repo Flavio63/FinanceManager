@@ -216,17 +216,17 @@ namespace FinanceManager.Services.SQL
         /// in base al periodo di validità delle quote di investimento
         /// </summary>
         public static readonly string GetQuoteDettaglioGuadagno = "SELECT anno, A.id_guadagno, A.id_gestione, B.nome_gestione, A.id_tipo_movimento, C.desc_tipo_soldi, A.data_operazione, " +
-            "A.quota, guadagnato AS Guadagno, prelevato AS Preso, guadagnato + prelevato AS In_Cassa, causale FROM guadagni_totale_anno A, gestioni B, tipo_soldi C " +
+            "A.quota, guadagnato AS GuadagnoAnno1, prelevato AS Preso, guadagnato + prelevato AS In_Cassa, causale FROM guadagni_totale_anno A, gestioni B, tipo_soldi C " +
             "WHERE anno >= 2019 AND A.id_gestione = B.id_gestione AND A.id_tipo_soldi = C.id_tipo_soldi ORDER BY anno DESC, A.data_operazione DESC, A.id_tipo_soldi, A.id_gestione DESC";
 
-        public static readonly string GetQuoteSintesiGuadagno = "SELECT anno, B.nome_gestione, C.desc_tipo_soldi, SUM(guadagnato) AS Guadagno, SUM(prelevato) AS Preso, " +
+        public static readonly string GetQuoteSintesiGuadagno = "SELECT anno, B.nome_gestione, C.desc_tipo_soldi, SUM(guadagnato) AS GuadagnoAnno1, SUM(prelevato) AS Preso, " +
             "SUM(guadagnato + prelevato) AS In_Cassa FROM guadagni_totale_anno A, gestioni B, tipo_soldi C WHERE anno >= 2019 AND A.id_gestione = B.id_gestione AND A.id_tipo_soldi = C.id_tipo_soldi " +
             "GROUP BY anno, A.id_gestione, A.id_tipo_soldi ORDER BY anno DESC, A.id_gestione DESC, A.id_tipo_soldi; ";
 
         public static readonly string GetQuoteGuadagno = "SET @`cassaFV` := 0; SET @`cassaDP` := 0; SET @`cassaAV` := 0; " +
-            "SELECT anno, nome_gestione, Guadagno, Preso, avanzoFV + avanzoAV + avanzoDP AS In_Cassa FROM (SELECT anno, id_gestione, nome_gestione, Guadagno, Preso, In_Cassa, " +
+            "SELECT anno, nome_gestione, GuadagnoAnno1, Preso, avanzoFV + avanzoAV + avanzoDP AS In_Cassa FROM (SELECT anno, id_gestione, nome_gestione, GuadagnoAnno1, Preso, In_Cassa, " +
             "case when id_gestione = 3 then @`cassaFV`:= @`cassaFV` + In_Cassa ELSE 0 end AS avanzoFV, case when id_gestione = 4 then @`cassaAV`:= @`cassaAV` + In_Cassa ELSE 0 end AS avanzoAV, " +
-            "case when id_gestione = 5 then @`cassaDP`:= @`cassaDP` + In_Cassa ELSE 0 end AS avanzoDP FROM (SELECT anno, A.id_gestione, B.nome_gestione, SUM(guadagnato) AS Guadagno, SUM(prelevato) AS Preso,  sum(guadagnato + prelevato) AS In_Cassa " +
+            "case when id_gestione = 5 then @`cassaDP`:= @`cassaDP` + In_Cassa ELSE 0 end AS avanzoDP FROM (SELECT anno, A.id_gestione, B.nome_gestione, SUM(guadagnato) AS GuadagnoAnno1, SUM(prelevato) AS Preso,  sum(guadagnato + prelevato) AS In_Cassa " +
             "FROM guadagni_totale_anno A, gestioni B WHERE A.id_gestione = B.id_gestione AND anno >= 2019 GROUP BY A.id_gestione, anno ORDER BY anno, A.id_gestione DESC) BBB) CCC " +
             "ORDER BY anno DESC, id_gestione DESC;";
 

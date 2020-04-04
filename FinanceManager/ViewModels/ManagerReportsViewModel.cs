@@ -273,6 +273,18 @@ namespace FinanceManager.ViewModels
         public void IsChecked(object sender, RoutedEventArgs e)
         {
             ReportSelezionato = ((RadioButton)sender).Name;
+            switch (ReportSelezionato)
+            {
+                case "PL":
+                case "DPL":
+                case "DeltaMese":
+                case "DeltaAnni":
+                    YearsIsEnable = true;
+                    break;
+                default:
+                    YearsIsEnable = false;
+                    break;
+            }
         }
 
         /// <summary>
@@ -436,28 +448,30 @@ namespace FinanceManager.ViewModels
                 case "DPL":
                     if (_selectedOwners.Count() > 0 && SelectedYears.Count() > 0)
                         return true;
-                    YearsIsEnable = true;
                     return false;
                 case "Titolo":
                     if (_selectedOwners.Count() > 0 && TitoloSelezionato != 0)
                         return true;
-                    YearsIsEnable = false;
                     return false;
                 case "ElencoTitoliAttivi":
                     if (_selectedOwners.Count() > 0 && _selectedAccount.Count > 0)
                         return true;
-                    YearsIsEnable = false;
                     return false;
                 case "AnalisiPortafoglio":
                     if (_selectedOwners.Count() > 0)
                         return true;
-                    YearsIsEnable = false;
                     return false;
                 case "Guadagni":
-                    YearsIsEnable = false;
                     return true;
+                case "DeltaAnni":
+                    if (_selectedOwners.Count() > 0 && SelectedYears.Count() >= 2)
+                        return true;
+                    return false;
+                case "DeltaMese":
+                    if (_selectedOwners.Count() > 0 && SelectedYears.Count() == 2)
+                        return true;
+                    return false;
                 default:
-                    YearsIsEnable = false;
                     return false;
             }
         }
@@ -502,7 +516,15 @@ namespace FinanceManager.ViewModels
                     ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
                     CanClear = true;
                     break;
-                case "Delta":
+                case "DeltaAnni":
+                    break;
+                case "DeltaMese":
+                    ReportDeltaSplitMeseViewModel viewModel = new ReportDeltaSplitMeseViewModel(_reportServices, _selectedOwners, SelectedYears);
+                    ReportDeltaSplitMeseView reportDeltaSplitMese = new ReportDeltaSplitMeseView(viewModel);
+                    border.Child = reportDeltaSplitMese;
+                    ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
+                    CanClear = true;
+                    break;
                 case "Titolo":
                     ReportMovementDetaileds = _reportServices.GetMovementDetailed(_selectedOwners[0].Id_gestione, TitoloSelezionato);
                     ReportMovementDetailedViewModel TitoloData = new ReportMovementDetailedViewModel(ReportMovementDetaileds);

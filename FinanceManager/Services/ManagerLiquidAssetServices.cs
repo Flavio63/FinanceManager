@@ -1134,7 +1134,7 @@ namespace FinanceManager.Services
                                 quote.Causale = dataRow.Field<string>("causale");
                             }
                         }
-                        quote.Guadagno = dataRow.Field<double>("Guadagno");
+                        quote.Guadagno = dataRow.Field<double>("GuadagnoAnno1");
                         quote.Preso = dataRow.Field<double>("Preso");
                         quote.In_Cassa = dataRow.Field<double>("In_Cassa");
                         quotes.Add(quote);

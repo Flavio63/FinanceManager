@@ -162,8 +162,16 @@
                     </RadioButton>
                 </StackPanel>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Margin="5" VerticalAlignment="Top">
-                    <RadioButton GroupName="report" Name="Delta" Content="Delta per Anno" HorizontalAlignment="Left" VerticalAlignment="Top" 
-                              FontSize="20" Margin="5" VerticalContentAlignment="Center" IsEnabled="False">
+                    <RadioButton GroupName="report" Name="DeltaAnni" Content="Delta per Anno" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                              FontSize="20" Margin="5" VerticalContentAlignment="Center">
+                        <iy:Interaction.Triggers>
+                            <iy:EventTrigger EventName="Checked">
+                                <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
+                            </iy:EventTrigger>
+                        </iy:Interaction.Triggers>
+                    </RadioButton>
+                    <RadioButton GroupName="report" Name="DeltaMese" Content="Delta per Mese" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                              FontSize="20" Margin="5" VerticalContentAlignment="Center">
                         <iy:Interaction.Triggers>
                             <iy:EventTrigger EventName="Checked">
                                 <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>

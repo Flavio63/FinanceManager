@@ -98,6 +98,106 @@ namespace FinanceManager.Services
             }
         }
 
+        public GuadagnoPerPeriodoList GetDeltaPeriod(IList<RegistryOwner> _selectedOwners, IList<int> _selectedYears, bool isYear)
+        {
+            GuadagnoPerPeriodoList GPPL = new GuadagnoPerPeriodoList();
+            string gestione = "A.id_gestione = ";
+            foreach(RegistryOwner RO in _selectedOwners)
+            {
+                gestione += RO.Id_gestione;
+                gestione += " OR A.id_gestione = ";
+            }
+            gestione = gestione.Substring(0, gestione.Length - 20);
+            
+            string anni = "YEAR(data_movimento) = ";
+            foreach(int anno in _selectedYears)
+            {
+                anni += anno + " OR YEAR(data_movimento) = ";
+            }
+            anni = anni.Substring(0, anni.Length - 27);
+
+            string query = string.Format("AND ({0}) AND ({1})", gestione, anni);
+
+            try
+            {
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = isYear ? 
+                        string.Format(ReportScripts.GetDeltaPerYear, query) :
+                        string.Format(ReportScripts.GetDeltaPerMonth, query);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("Anno1", _selectedYears[0] > _selectedYears[1] ? _selectedYears[1] : _selectedYears[0]);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("Anno2", _selectedYears[1] < _selectedYears[0] ? _selectedYears[0] : _selectedYears[1]);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    DataTable dataTable = new DataTable();
+                    dbAdapter.Fill(dataTable);
+                    foreach(DataRow DR in dataTable.Rows)
+                    {
+                        GuadagnoPerPeriodo GPP = new GuadagnoPerPeriodo();
+                        GPP.IdGestione = (int)DR.Field<uint>("id_gestione");
+                        GPP.Gestione = DR.Field<string>("nome_gestione");
+                        if (!isYear)
+                        {
+                            switch ( DR.Field<int>("Mese") )
+                            {
+                                case 1:
+                                    GPP.Mese = "Gennaio";
+                                    break;
+                                case 2:
+                                    GPP.Mese = "Febbraio";
+                                    break;
+                                case 3:
+                                    GPP.Mese = "Marzo";
+                                    break;
+                                case 4:
+                                    GPP.Mese = "Aprile";
+                                    break;
+                                case 5:
+                                    GPP.Mese = "Maggio";
+                                    break;
+                                case 6:
+                                    GPP.Mese = "Giugno";
+                                    break;
+                                case 7:
+                                    GPP.Mese = "Luglio";
+                                    break;
+                                case 8:
+                                    GPP.Mese = "Agosto";
+                                    break;
+                                case 9:
+                                    GPP.Mese = "Settembre";
+                                    break;
+                                case 10:
+                                    GPP.Mese = "Ottobre";
+                                    break;
+                                case 11:
+                                    GPP.Mese = "Novembre";
+                                    break;
+                                case 12:
+                                    GPP.Mese = "Dicembre";
+                                    break;
+                            }
+                        }
+                        GPP.GuadagnoAnno1 = DR.Field<double>("GuadagniAnno1");
+                        GPP.GuadagnoAnno2 = DR.Field<double>("GuadagniAnno2");
+                        GPP.Differenza = DR.Field<double>("Differenza");
+                        GPP.Delta = DR.Field<double>("Delta");
+                        GPPL.Add(GPP);
+                    }
+                }
+                return GPPL;
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
         public ReportMovementDetailedList GetMovementDetailed(int IdGestione, int IdTitolo)
         {
             try

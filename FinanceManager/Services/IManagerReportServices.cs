@@ -15,5 +15,7 @@ namespace FinanceManager.Services
         ReportTitoliAttiviList GetActiveAssets(IList<RegistryOwner> _selectedOwners, IList<int> _selectedAccount);
 
         AnalisiPortafoglio QuoteInvGeoSettori(IList<RegistryOwner> _selectedOwners);
+
+        GuadagnoPerPeriodoList GetDeltaPeriod(IList<RegistryOwner> _selectedOwners, IList<int> _selectedYears, bool isYear);
     }
 }
