@@ -16,6 +16,6 @@ namespace FinanceManager.Services
 
         AnalisiPortafoglio QuoteInvGeoSettori(IList<RegistryOwner> _selectedOwners);
 
-        GuadagnoPerPeriodoList GetDeltaPeriod(IList<RegistryOwner> _selectedOwners, IList<int> _selectedYears, bool isYear);
+        GuadagnoPerPeriodoList GetDeltaPeriod(IList<RegistryOwner> _selectedOwners, IList<int> _selectedYears, bool isYear, bool isAggregated);
     }
 }

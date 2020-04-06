@@ -275,14 +275,22 @@ namespace FinanceManager.ViewModels
             ReportSelezionato = ((RadioButton)sender).Name;
             switch (ReportSelezionato)
             {
+                case "AnalisiPortafoglio":
+                    IsAggregated = true;
+                    break;
                 case "PL":
                 case "DPL":
+                    YearsIsEnable = true;
+                    IsAggregated = false;
+                    break;
                 case "DeltaMese":
                 case "DeltaAnni":
                     YearsIsEnable = true;
+                    IsAggregated = true;
                     break;
                 default:
                     YearsIsEnable = false;
+                    IsAggregated = false;
                     break;
             }
         }
@@ -308,6 +316,16 @@ namespace FinanceManager.ViewModels
         #endregion events
 
         #region Getter&Setter
+        /// <summary>
+        /// Serve ad aggregare i dati delle gestioni (true) o a
+        /// mantenerle separate (false)
+        /// </summary>
+        public bool IsAggregated
+        {
+            get { return GetValue(() => IsAggregated); }
+            set { SetValue(() => IsAggregated, value); }
+        }
+
         /// <summary>
         /// La ricerca degli isin dei titoli per l'acquisto / vendita
         /// </summary>
@@ -517,9 +535,10 @@ namespace FinanceManager.ViewModels
                     CanClear = true;
                     break;
                 case "DeltaAnni":
-                    break;
                 case "DeltaMese":
-                    ReportDeltaSplitMeseViewModel viewModel = new ReportDeltaSplitMeseViewModel(_reportServices, _selectedOwners, SelectedYears);
+                    bool IsYear = ReportSelezionato == "DeltaAnni" ? true : false;
+                    ReportDeltaSplitMeseViewModel viewModel = new ReportDeltaSplitMeseViewModel(_reportServices, _selectedOwners, SelectedYears, IsYear,
+                        (bool)((ToggleButton)userControl.FindName("switchBTN")).IsChecked);
                     ReportDeltaSplitMeseView reportDeltaSplitMese = new ReportDeltaSplitMeseView(viewModel);
                     border.Child = reportDeltaSplitMese;
                     ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;

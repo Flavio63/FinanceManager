@@ -14,10 +14,10 @@ namespace FinanceManager.ViewModels
     {
         IManagerReportServices _managerLiquidAssetServices;
 
-        public ReportDeltaSplitMeseViewModel(IManagerReportServices managerReportServices, IList<RegistryOwner> _RegistryOwners, IList<int> SelectedYears)
+        public ReportDeltaSplitMeseViewModel(IManagerReportServices managerReportServices, IList<RegistryOwner> _RegistryOwners, IList<int> SelectedYears, bool IsYear, bool IsAggregated)
         {
             _managerLiquidAssetServices = managerReportServices ?? throw new ArgumentNullException("Manca il servizio");
-            DataDeltaPerMonth = (CollectionView)CollectionViewSource.GetDefaultView(_managerLiquidAssetServices.GetDeltaPeriod(_RegistryOwners, SelectedYears, false));
+            DataDeltaPerMonth = (CollectionView)CollectionViewSource.GetDefaultView(_managerLiquidAssetServices.GetDeltaPeriod(_RegistryOwners, SelectedYears, IsYear, IsAggregated));
             PropertyGroupDescription groupDescription = new PropertyGroupDescription("Gestione");
             DataDeltaPerMonth.GroupDescriptions.Add(groupDescription);
             SetDataDock();

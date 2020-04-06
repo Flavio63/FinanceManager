@@ -98,7 +98,7 @@ namespace FinanceManager.Services
             }
         }
 
-        public GuadagnoPerPeriodoList GetDeltaPeriod(IList<RegistryOwner> _selectedOwners, IList<int> _selectedYears, bool isYear)
+        public GuadagnoPerPeriodoList GetDeltaPeriod(IList<RegistryOwner> _selectedOwners, IList<int> _selectedYears, bool isYear, bool isAggregated)
         {
             GuadagnoPerPeriodoList GPPL = new GuadagnoPerPeriodoList();
             string gestione = "A.id_gestione = ";
@@ -124,9 +124,14 @@ namespace FinanceManager.Services
                 {
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
-                    dbAdapter.SelectCommand.CommandText = isYear ? 
-                        string.Format(ReportScripts.GetDeltaPerYear, query) :
-                        string.Format(ReportScripts.GetDeltaPerMonth, query);
+                    if (isYear && isAggregated)
+                        dbAdapter.SelectCommand.CommandText = string.Format(ReportScripts.GetDeltaPerYearTot, query);
+                    else if(isYear && !isAggregated)
+                        dbAdapter.SelectCommand.CommandText = string.Format(ReportScripts.GetDeltaPerYear, query);
+                    else if(!isYear && isAggregated)
+                        dbAdapter.SelectCommand.CommandText = string.Format(ReportScripts.GetDeltaPerMonthTot, query);
+                    else if(!isYear && !isAggregated)
+                        dbAdapter.SelectCommand.CommandText = string.Format(ReportScripts.GetDeltaPerMonth, query);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("Anno1", _selectedYears[0] > _selectedYears[1] ? _selectedYears[1] : _selectedYears[0]);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("Anno2", _selectedYears[1] < _selectedYears[0] ? _selectedYears[0] : _selectedYears[1]);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
@@ -135,7 +140,7 @@ namespace FinanceManager.Services
                     foreach(DataRow DR in dataTable.Rows)
                     {
                         GuadagnoPerPeriodo GPP = new GuadagnoPerPeriodo();
-                        GPP.IdGestione = (int)DR.Field<uint>("id_gestione");
+                        GPP.IdGestione = Convert.ToInt32(DR.ItemArray[0]);
                         GPP.Gestione = DR.Field<string>("nome_gestione");
                         if (!isYear)
                         {

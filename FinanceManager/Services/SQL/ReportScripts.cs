@@ -94,5 +94,20 @@
             "FROM conto_corrente A, gestioni B WHERE A.id_gestione = B.id_gestione AND (A.id_tipo_soldi = 11 OR A.id_tipo_soldi = 15 OR A.id_tipo_soldi = 16) " +
             "{0} " +
             "GROUP BY A.id_gestione, Mese ORDER BY nome_gestione, Mese) A;";
+
+        public static readonly string GetDeltaPerYearTot = "SELECT id_gestione, nome_gestione, GuadagniAnno1, GuadagniAnno2, GuadagniAnno2 - GuadagniAnno1 AS Differenza, " +
+                    "(GuadagniAnno2 - GuadagniAnno1)/GuadagniAnno1 * 100 AS Delta FROM ( SELECT 0 as id_gestione, 'Totale' as nome_gestione, " +
+                    "SUM(CASE WHEN YEAR(A.data_movimento) = @Anno1 THEN CASE WHEN A.id_tipo_soldi = 11 THEN A.ammontare * -1 ELSE A.ammontare END ELSE 0 END) AS GuadagniAnno1, " +
+                    "SUM(CASE WHEN YEAR(A.data_movimento) = @Anno2 THEN CASE WHEN A.id_tipo_soldi = 11 THEN A.ammontare * -1 ELSE A.ammontare END ELSE 0 END) AS GuadagniAnno2 " +
+                    "FROM conto_corrente A WHERE (A.id_tipo_soldi = 11 OR A.id_tipo_soldi = 15 OR A.id_tipo_soldi = 16) " +
+                    "{0} ) A; ";
+
+        public static readonly string GetDeltaPerMonthTot = "SELECT id_gestione, nome_gestione, Mese, GuadagniAnno1, GuadagniAnno2, GuadagniAnno2 - GuadagniAnno1 AS Differenza, " +
+            "(GuadagniAnno2 - GuadagniAnno1)/GuadagniAnno1 * 100 AS Delta FROM ( SELECT 0 as id_gestione, 'Totale' as nome_gestione,  MONTH(A.data_movimento) AS Mese, " +
+            "SUM(CASE WHEN YEAR(A.data_movimento) = @Anno1 THEN CASE WHEN A.id_tipo_soldi = 11 THEN A.ammontare * -1 ELSE A.ammontare END ELSE 0 END) AS GuadagniAnno1, " +
+            "SUM(CASE WHEN YEAR(A.data_movimento) = @Anno2 THEN CASE WHEN A.id_tipo_soldi = 11 THEN A.ammontare * -1 ELSE A.ammontare END ELSE 0 END) AS GuadagniAnno2 " +
+            "FROM conto_corrente A WHERE (A.id_tipo_soldi = 11 OR A.id_tipo_soldi = 15 OR A.id_tipo_soldi = 16) " +
+            "{0} " +
+            "GROUP BY Mese ORDER BY Mese) A;";
     }
 }
