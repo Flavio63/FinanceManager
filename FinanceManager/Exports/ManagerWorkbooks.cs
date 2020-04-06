@@ -48,6 +48,8 @@ namespace FinanceManager.Exports
                 ICellStyle RFCData = CellsTableBorderStyle.BottomCenter(workbook.CreateCellStyle());
                 ICellStyle RFCPerc = CellsTableBorderStyle.BottomCenter(workbook.CreateCellStyle());
                 ICellStyle RFCValuta = CellsTableBorderStyle.BottomCenter(workbook.CreateCellStyle());
+                ICellStyle RXCFPerc = CellsTableBorderStyle.RightTable(workbook.CreateCellStyle());
+                ICellStyle RFCFPerc = CellsTableBorderStyle.BottomDx(workbook.CreateCellStyle());
                 IFont myBoldFont = workbook.CreateFont();
                 myBoldFont.Boldweight = (short)FontBoldWeight.Bold;
                 myBoldFont.FontHeightInPoints = 14;
@@ -204,7 +206,7 @@ namespace FinanceManager.Exports
                 }
                 else if (param is ObservableCollection<AnalisiPortafoglio> report4)
                 {
-                   sheet = workbook.CreateSheet("AnalisiPortafoglio");
+                    sheet = workbook.CreateSheet("AnalisiPortafoglio");
                     IDataFormat format = workbook.CreateDataFormat();
                     int TotalRow = SearchEndColumn(report4[0]) - 6;
                     int iColText = 0;
@@ -296,7 +298,7 @@ namespace FinanceManager.Exports
                                 string fieldValue = prop.GetValue(GPQ) == null ? "" : prop.GetValue(GPQ).ToString();
                                 bool isDbl = double.TryParse(fieldValue, out double dbl);
                                 bool isDate = DateTime.TryParse(fieldValue, out DateTime dt);
-                                if (Riga -1 == 0)
+                                if (Riga - 1 == 0)
                                 {
                                     row = Colonna == 0 ? sheet.CreateRow(0) : sheet.GetRow(0);
                                     cell = row.CreateCell(Colonna);
@@ -333,7 +335,79 @@ namespace FinanceManager.Exports
                                 {
                                     cell.SetCellValue(dt);
                                 }
-                                else if(!isDbl && !isDate)
+                                else if (!isDbl && !isDate)
+                                {
+                                    cell.SetCellValue(fieldValue);
+                                }
+                                Colonna++;
+                            }
+                        }
+                        Riga++;
+                    }
+                }
+                else if (param is GuadagnoPerPeriodoList report6)
+                {
+                    sheet = workbook.CreateSheet("DeltaPerPeriodo");
+                    int EndCol = SearchEndColumn(report6[0]);
+                    int Riga = 1;
+                    int Colonna;
+                    IRow row;
+                    #region syling
+                    R0C0.SetFont(myBoldFont);
+                    R0CF.SetFont(myBoldFont);
+                    R0CX.SetFont(myBoldFont);
+                    RXC0.SetFont(myPlainFont);
+                    RXCX.SetFont(myPlainFont);
+                    RXCValuta.SetFont(myPlainFont);
+                    RFCValuta.SetFont(myPlainFont);
+                    RXCFPerc.SetFont(myPlainFont);
+                    RFCFPerc.SetFont(myPlainFont);
+                    RFCFPerc.DataFormat = 10;
+                    RXCFPerc.DataFormat = 10;
+                    RXCValuta.DataFormat = 8;
+                    RFCValuta.DataFormat = 8;
+                    #endregion
+                    foreach (GuadagnoPerPeriodo GPP in report6)
+                    {
+                        Colonna = 0;
+                        foreach (var prop in GPP.GetType().GetProperties())
+                        {
+                            if (prop.Name != "IdGestione")
+                            {
+                                ICell cell;
+                                string fieldValue = prop.GetValue(GPP) == null ? "" : prop.GetValue(GPP).ToString();
+                                bool isDbl = double.TryParse(fieldValue, out double dbl);
+                                bool isDate = DateTime.TryParse(fieldValue, out DateTime dt);
+                                if (Riga - 1 == 0)
+                                {
+                                    row = Colonna == 0 ? sheet.CreateRow(0) : sheet.GetRow(0);
+                                    cell = row.CreateCell(Colonna);
+                                    cell.SetCellValue(prop.Name);
+                                    if (Colonna == 0) cell.CellStyle = R0C0;
+                                    else if (Colonna > 0 && Colonna < EndCol) cell.CellStyle = R0CX;
+                                    else if (Colonna == EndCol) cell.CellStyle = R0CF;
+                                }
+                                row = Colonna == 0 ? sheet.CreateRow(Riga) : sheet.GetRow(Riga);
+                                cell = row.CreateCell(Colonna);
+                                if (Riga < report6.Count)
+                                {
+                                    if (Colonna == 0) cell.CellStyle = RXC0;
+                                    else if (Colonna == 1) cell.CellStyle = RXCX;
+                                    else if (Colonna < 5) cell.CellStyle = RXCValuta;
+                                    else if (Colonna == 5) cell.CellStyle = RXCFPerc;
+                                }
+                                else if (Riga == report6.Count)
+                                {
+                                    if (Colonna == 0) cell.CellStyle = RFC0;
+                                    else if (Colonna == 1) cell.CellStyle = RFCX;
+                                    else if (Colonna < 5) cell.CellStyle = RFCValuta;
+                                    else if (Colonna == 5) cell.CellStyle = RFCFPerc;
+                                }
+                                if (isDbl)
+                                {
+                                    cell.SetCellValue(dbl);
+                                }
+                                else if (!isDbl && !isDate)
                                 {
                                     cell.SetCellValue(fieldValue);
                                 }

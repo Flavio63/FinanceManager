@@ -276,21 +276,29 @@ namespace FinanceManager.ViewModels
             switch (ReportSelezionato)
             {
                 case "AnalisiPortafoglio":
-                    IsAggregated = true;
+                    AggregateIsEnabled = true;
+                    IsTotalYear = false;
                     break;
                 case "PL":
                 case "DPL":
+                    IsTotalYear = false;
                     YearsIsEnable = true;
-                    IsAggregated = false;
+                    AggregateIsEnabled = false;
+                    break;
+                case "DeltaAnni":
+                    IsTotalYear = true;
+                    YearsIsEnable = true;
+                    AggregateIsEnabled = true;
                     break;
                 case "DeltaMese":
-                case "DeltaAnni":
+                    IsTotalYear = false;
                     YearsIsEnable = true;
-                    IsAggregated = true;
+                    AggregateIsEnabled = true;
                     break;
                 default:
                     YearsIsEnable = false;
-                    IsAggregated = false;
+                    AggregateIsEnabled = false;
+                    IsTotalYear = false;
                     break;
             }
         }
@@ -316,18 +324,10 @@ namespace FinanceManager.ViewModels
         #endregion events
 
         #region Getter&Setter
-        /// <summary>
-        /// Serve ad aggregare i dati delle gestioni (true) o a
-        /// mantenerle separate (false)
-        /// </summary>
-        public bool IsAggregated
-        {
-            get { return GetValue(() => IsAggregated); }
-            set { SetValue(() => IsAggregated, value); }
-        }
 
+        #region Titoli
         /// <summary>
-        /// La ricerca degli isin dei titoli per l'acquisto / vendita
+        /// La ricerca degli isin dei titoli per la selezione del report
         /// </summary>
         public string SrchShares
         {
@@ -361,26 +361,94 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => SharesListView); }
             set { SetValue(() => SharesListView, value); }
         }
+        /// <summary>
+        /// Il titolo selezionato per il report
+        /// </summary>
+        public int TitoloSelezionato
+        {
+            get { return GetValue(() => TitoloSelezionato); }
+            private set { SetValue(() => TitoloSelezionato, value); }
+        }
+        #endregion
 
+        #region Gestioni
+        /// <summary>
+        /// La lista di tutte le gestioni selezionabili
+        /// </summary>
         public RegistryOwnersList OwnerList
         {
             get { return GetValue(() => OwnerList); }
             set { SetValue(() => OwnerList, value); }
         }
-        public RegistryLocationList AccountList
-        {
-            get { return GetValue(() => AccountList); }
-            private set { SetValue(() => AccountList, value); }
-        }
+        
+        /// <summary>
+        /// L'elenco delle gestioni selezionate in maschera
+        /// </summary>
         public RegistryOwnersList SelectedOwner
         {
             get { return GetValue(() => SelectedOwner); }
             set { SetValue(() => SelectedOwner, value); }
         }
+        
+        /// <summary>
+        /// Serve ad aggregare i dati delle gestioni (true) o a
+        /// mantenerle separate (false)
+        /// </summary>
+        public bool AggregateIsEnabled
+        {
+            get { return GetValue(() => AggregateIsEnabled); }
+            set { SetValue(() => AggregateIsEnabled, value); }
+        }
+        #endregion
+
+        /// <summary>
+        /// Elenco con i conti correnti disponibili
+        /// </summary>
+        public RegistryLocationList AccountList
+        {
+            get { return GetValue(() => AccountList); }
+            private set { SetValue(() => AccountList, value); }
+        }
+
+        #region Anni
+        /// <summary>
+        /// Anni disponibili nel database
+        /// </summary>
         public IList<int> AvailableYears
         {
             get { return GetValue(() => AvailableYears); }
             set { SetValue(() => AvailableYears, value); }
+        }
+        
+        /// <summary>
+        /// Gestisce la selezionabilità degli anni in maschera
+        /// </summary>
+        public bool YearsIsEnable
+        {
+            get { return GetValue(() => YearsIsEnable); }
+            private set { SetValue(() => YearsIsEnable, value); }
+        }
+        
+        /// <summary>
+        /// Gli anni selezionati in maschera
+        /// </summary>
+        public IList<int> SelectedYears
+        {
+            get { return GetValue(() => SelectedYears); }
+            set { SetValue(() => SelectedYears, value); }
+        }
+
+        private bool IsTotalYear { get; set; }
+        #endregion
+
+        #region Reports
+        /// <summary>
+        /// il report selezionato nel menu
+        /// </summary>
+        public string ReportSelezionato
+        {
+            get { return GetValue(() => ReportSelezionato); }
+            set { SetValue(() => ReportSelezionato, value); }
         }
 
         public ReportProfitLossList ReportProfitLosses
@@ -406,47 +474,38 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => GetAnalisiPortafoglio); }
             private set { SetValue(() => GetAnalisiPortafoglio, value); }
         }
-        public IList<int> SelectedYears
-        {
-            get { return GetValue(() => SelectedYears); }
-            set { SetValue(() => SelectedYears, value); }
-        }
-
-        public string ReportSelezionato
-        {
-            get { return GetValue(() => ReportSelezionato); }
-            set { SetValue(() => ReportSelezionato, value); }
-        }
-
-        public bool CanClear { get; set; }
-
-        public int TitoloSelezionato
-        {
-            get { return GetValue(() => TitoloSelezionato); }
-            private set { SetValue(() => TitoloSelezionato, value); }
-        }
-
-        public bool YearsIsEnable
-        {
-            get { return GetValue(() => YearsIsEnable); }
-            private set { SetValue(() => YearsIsEnable, value); }
-        }
 
         public GuadagnoPerQuoteList GuadagnoPerQuoteDettagliato
         {
             get { return GetValue(() => GuadagnoPerQuoteDettagliato); }
             set { SetValue(() => GuadagnoPerQuoteDettagliato, value); }
         }
+        
         public GuadagnoPerQuoteList GuadagnoPerQuoteSintesi
         {
             get { return GetValue(() => GuadagnoPerQuoteSintesi); }
             set { SetValue(() => GuadagnoPerQuoteSintesi, value); }
         }
+        
         public GuadagnoPerQuoteList GuadagnoPerQuote
         {
             get { return GetValue(() => GuadagnoPerQuote); }
             set { SetValue(() => GuadagnoPerQuote, value); }
         }
+
+        /// <summary>
+        /// I dati per ottenere la tabella con i delta per periodo
+        /// sia splittati per gestione che aggregati
+        /// </summary>
+        public GuadagnoPerPeriodoList DataDeltaPerPeriodo
+        {
+            get { return GetValue(() => DataDeltaPerPeriodo); }
+            set { SetValue(() => DataDeltaPerPeriodo, value); }
+        }
+
+        #endregion
+        
+        public bool CanClear { get; set; }
 
         #endregion Getter&Setter
 
@@ -536,9 +595,8 @@ namespace FinanceManager.ViewModels
                     break;
                 case "DeltaAnni":
                 case "DeltaMese":
-                    bool IsYear = ReportSelezionato == "DeltaAnni" ? true : false;
-                    ReportDeltaSplitMeseViewModel viewModel = new ReportDeltaSplitMeseViewModel(_reportServices, _selectedOwners, SelectedYears, IsYear,
-                        (bool)((ToggleButton)userControl.FindName("switchBTN")).IsChecked);
+                    DataDeltaPerPeriodo = _reportServices.GetDeltaPeriod(_selectedOwners, SelectedYears, IsTotalYear, (bool)((ToggleButton)userControl.FindName("switchBTN")).IsChecked);
+                    ReportDeltaSplitMeseViewModel viewModel = new ReportDeltaSplitMeseViewModel(DataDeltaPerPeriodo);
                     ReportDeltaSplitMeseView reportDeltaSplitMese = new ReportDeltaSplitMeseView(viewModel);
                     border.Child = reportDeltaSplitMese;
                     ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
@@ -620,6 +678,10 @@ namespace FinanceManager.ViewModels
                         break;
                     case "Guadagni":
                         Exports.ManagerWorkbooks.ExportDataInXlsx(AddGuadagni());
+                        break;
+                    case "DeltaAnni":
+                    case "DeltaMese":
+                        Exports.ManagerWorkbooks.ExportDataInXlsx(DataDeltaPerPeriodo);
                         break;
                     default:
                         break;
