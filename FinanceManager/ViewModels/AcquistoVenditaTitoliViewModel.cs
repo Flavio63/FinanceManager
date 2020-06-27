@@ -705,7 +705,7 @@ namespace FinanceManager.ViewModels
                             double _valoreAcquisto;
                             double _valoreVendita;
                             _valoreAcquisto = valoreAcquisto / numeroAzioni * portafoglio.N_titoli * -1; //valore medio di acquisto delle azioni che si vendono
-                            _valoreVendita = portafoglio.Importo_totale + (portafoglio.Commissioni_totale + portafoglio.TobinTax + portafoglio.Disaggio_anticipo_cedole) * -1;
+                            _valoreVendita = portafoglio.Importo_totale + (portafoglio.Commissioni_totale + portafoglio.TobinTax + portafoglio.Disaggio_anticipo_cedole + portafoglio.RitenutaFiscale) * -1;
                             ContoCorrenteList CCs = _liquidAssetServices.GetContoCorrenteByIdPortafoglio(portafoglio.Id_portafoglio);
                             ContoCorrente CCcapitale;
                             ContoCorrente CCprofitloss;
@@ -722,12 +722,14 @@ namespace FinanceManager.ViewModels
                                     _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale));
                                 CCprofitloss = new ContoCorrente(pt, (_valoreAcquisto + _valoreVendita), TipologiaSoldi.Utili,
                                     _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento,(int)TipologiaSoldi.Utili));
+
                                 if (CCs[0].Id_Tipo_Soldi == (int)TipologiaSoldi.Capitale)
                                 {
                                     CCcapitale.Id_RowConto = CCs[0].Id_RowConto;
                                     CCcapitale.Causale = RecordPortafoglioTitoli.Note;
                                     _liquidAssetServices.UpdateRecordContoCorrente(CCcapitale, TipologiaIDContoCorrente.IdContoCorrente);
                                     CCprofitloss.Id_RowConto = CCs[1].Id_RowConto;
+                                    CCprofitloss.Causale = RecordPortafoglioTitoli.Note;
                                     _liquidAssetServices.UpdateRecordContoCorrente(CCprofitloss, TipologiaIDContoCorrente.IdContoCorrente);
                                     _liquidAssetServices.ModifySingoloGuadagno(CCprofitloss);
                                 }
@@ -741,8 +743,10 @@ namespace FinanceManager.ViewModels
                                 if (CCs[0].Id_Tipo_Soldi == (int)TipologiaSoldi.Capitale)
                                 {
                                     CCcapitale.Id_RowConto = CCs[0].Id_RowConto;
+                                    CCcapitale.Causale = RecordPortafoglioTitoli.Note;
                                     _liquidAssetServices.UpdateRecordContoCorrente(CCprofitloss, TipologiaIDContoCorrente.IdContoCorrente);
                                     CCprofitloss.Id_RowConto = CCs[1].Id_RowConto;
+                                    CCprofitloss.Causale = RecordPortafoglioTitoli.Note;
                                     _liquidAssetServices.UpdateRecordContoCorrente(CCprofitloss, TipologiaIDContoCorrente.IdContoCorrente);
                                 }
                             }
