@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using FinanceManager.Models;
-using FinanceManager.Models.Enum;
+using FinanceManager.Models.Enumeratori;
 using FinanceManager.Services.SQL;
 using MySql.Data.MySqlClient;
 
@@ -743,7 +743,7 @@ namespace FinanceManager.Services
                         quote.Id_Quota = (int)dataRow.Field<uint>("id_quota");
                         quote.Id_Gestione = (int)dataRow.Field<uint>("id_gestione");
                         quote.Nome_Gestione = dataRow.Field<string>("nome_gestione");
-                        quote.Id_Tipo_Soldi = (int)dataRow.Field<uint>("id_tipo_soldi");
+                        quote.Id_Tipo_Soldi = (int)dataRow.Field<uint>("id_aggregazione");
                         quote.Desc_Tipo_Soldi = dataRow.Field<string>("desc_tipo_soldi");
                         quote.Id_Quote_Periodi = (int)dataRow.Field<uint>("id_quote_periodi");
                         quote.Data_Inizio = dataRow.Field<DateTime>("data_inizio");

@@ -1,5 +1,5 @@
 ﻿using FinanceManager.Models;
-using FinanceManager.Models.Enum;
+using FinanceManager.Models.Enumeratori;
 using System;
 using System.Collections.Generic;
 

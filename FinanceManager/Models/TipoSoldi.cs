@@ -1,5 +1,5 @@
 ﻿using FinanceManager.Events;
-using FinanceManager.Models.Enum;
+using FinanceManager.Models.Enumeratori;
 
 namespace FinanceManager.Models
 {
@@ -8,10 +8,12 @@ namespace FinanceManager.Models
         public TipoSoldi (TipologiaSoldi tipologiaSoldi)
         {
             Id_Tipo_Soldi = (int)tipologiaSoldi;
-            Desc_Tipo_Soldi = tipologiaSoldi.ToString();
+            Short_Desc_Tipo_Soldi = tipologiaSoldi.ToString();
+            Desc_Tipo_Soldi = tipologiaSoldi.GetDisplayName();
         }
 
         public int Id_Tipo_Soldi { get; set; }
         public string Desc_Tipo_Soldi { get; set; }
+        public string Short_Desc_Tipo_Soldi { get; set; }
     }
 }

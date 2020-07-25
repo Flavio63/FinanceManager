@@ -197,8 +197,9 @@
     <Compile Include="Exports\CellsTableBorderStyle.cs" />
     <Compile Include="Exports\ManagerWorkbooks.cs" />
     <Compile Include="Models\AnalisiPortafoglio.cs" />
-    <Compile Include="Models\Enum\TipologiaIDContoCorrente.cs" />
-    <Compile Include="Models\Enum\TipologiaMovimento.cs" />
+    <Compile Include="Models\Enumeratori\TipologiaIDContoCorrente.cs" />
+    <Compile Include="Models\Enumeratori\TipologiaMovimento.cs" />
+    <Compile Include="Models\Enumeratori\EnumExtensions.cs" />
     <Compile Include="Models\GuadagnoPerPeriodo.cs" />
     <Compile Include="Models\GuadagnoPerPeriodoList.cs" />
     <Compile Include="Models\PeriodiDiValidita.cs" />
@@ -217,7 +218,7 @@
     <Compile Include="Models\SintesiSoldiList.cs" />
     <Compile Include="Models\TipoSoldi.cs" />
     <Compile Include="Models\TipoSoldiList.cs" />
-    <Compile Include="Models\Enum\TipologiaSoldi.cs" />
+    <Compile Include="Models\Enumeratori\TipologiaSoldi.cs" />
     <Compile Include="ViewModels\AnalisiPortafoglioViewModel.cs" />
     <Compile Include="ViewModels\GestioneContoCorrenteViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />

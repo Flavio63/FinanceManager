@@ -1,6 +1,6 @@
 ﻿using FinanceManager.Events;
 using FinanceManager.Models;
-using FinanceManager.Models.Enum;
+using FinanceManager.Models.Enumeratori;
 using FinanceManager.Services;
 using FinanceManager.Views;
 using System;
@@ -60,7 +60,9 @@ namespace FinanceManager.ViewModels
                            where (movimento.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ||
                            movimento.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ||
                            movimento.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto) ||
-                           movimento.Id_tipo_movimento == (int)TipologiaMovimento.Costi
+                           movimento.Id_tipo_movimento == (int)TipologiaMovimento.Costi ||
+                           movimento.Id_tipo_movimento == (int)TipologiaMovimento.AcquistoTitoli ||
+                           movimento.Id_tipo_movimento == (int)TipologiaMovimento.VenditaTitoli
                            select movimento;
                 foreach (RegistryMovementType registry in RMTL)
                     ListMovimenti.Add(registry);
@@ -107,6 +109,7 @@ namespace FinanceManager.ViewModels
                 FiltroConto = "";
                 FiltroGestione = "";
                 FiltroTipoSoldi = "";
+                FiltroTipoMovimento = "";
             }
             catch (Exception err)
             {
@@ -343,33 +346,65 @@ namespace FinanceManager.ViewModels
                 }
                 else if (obj is ContoCorrente CConto)
                 {
-                    if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi))    // tutte e 3 i filtri
+                    if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && !string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // tutti e 4 i filtri
+                    {
+                        return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower()) && CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower()) && CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower()) && CConto.Desc_tipo_movimento.ToLower().Contains(FiltroTipoMovimento.ToLower());
+                    }
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 3 su 4 attivi
                     {
                         return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower()) && CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower()) && CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower());
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi)) // 2 filtri su 3
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) && !string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 3 su 4 attivi
+                    {
+                        return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower()) && CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower()) && CConto.Desc_tipo_movimento.ToLower().Contains(FiltroTipoMovimento.ToLower());
+                    }
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && !string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 3 su 4 attivi
+                    {
+                        return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower()) && CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower()) && CConto.Desc_tipo_movimento.ToLower().Contains(FiltroTipoMovimento.ToLower());
+                    }
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && !string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 3 su 4 attivi
+                    {
+                        return CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower()) && CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower()) && CConto.Desc_tipo_movimento.ToLower().Contains(FiltroTipoMovimento.ToLower());
+                    }
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) && string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 2 su 4 attivi
                     {
                         return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower()) && CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower());
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi)) // 2 filtri su 3
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 2 su 4 attivi
                     {
                         return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower()) && CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower());
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi)) // 2 filtri su 3
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 2 su 4 attivi
                     {
                         return CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower()) && CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower());
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi)) // 1 filtri su 3
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) && !string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 2 su 4 attivi
+                    {
+                        return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower()) && CConto.Desc_tipo_movimento.ToLower().Contains(FiltroTipoMovimento.ToLower());
+                    }
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) && !string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 2 su 4 attivi
+                    {
+                        return CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower()) &&  CConto.Desc_tipo_movimento.ToLower().Contains(FiltroTipoMovimento.ToLower());
+                    }
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && !string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 2 su 4 attivi
+                    {
+                        return CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower()) && CConto.Desc_tipo_movimento.ToLower().Contains(FiltroTipoMovimento.ToLower());
+                    }
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) && string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 1 su 4 attivi
                     {
                         return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower());
                     }
-                    if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi)) // 1 filtri su 3
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) && string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 1 su 4 attivi
                     {
                         return CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower());
                     }
-                    if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi)) // 1 filtri su 3
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 1 su 4 attivi
                     {
                         return CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower());
+                    }
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) && !string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 1 su 4 attivi
+                    {
+                        return CConto.Desc_tipo_movimento.ToLower().Contains(FiltroTipoMovimento.ToLower());
                     }
                 }
 
@@ -394,6 +429,12 @@ namespace FinanceManager.ViewModels
         {
             get { return _FiltroTipoSoldi; }
             set { _FiltroTipoSoldi = value; AccountCollectionView.Filter = _Filter; AccountCollectionView.Refresh(); }
+        }
+        private string _FiltroTipoMovimento;
+        private string FiltroTipoMovimento
+        {
+            get { return _FiltroTipoMovimento; }
+            set { _FiltroTipoMovimento = value; AccountCollectionView.Filter = _Filter; AccountCollectionView.Refresh(); }
         }
         #endregion
 
@@ -487,6 +528,7 @@ namespace FinanceManager.ViewModels
                     GirocontoEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ? true : false;
                     VolatiliEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ? true : false;
                     CanInsert = RMT.Id_tipo_movimento == (int)TipologiaMovimento.Costi ? true : false;
+                    FiltroTipoMovimento = RMT.Desc_tipo_movimento;
                 }
                 else if (e.AddedItems[0] is RegistryShare RS)
                 {
@@ -596,8 +638,8 @@ namespace FinanceManager.ViewModels
                         IdConto: RecordContoCorrente.Id_Conto, IdValuta: RecordContoCorrente.Id_Valuta)[0];
 
                     if (RecordContoCorrente.Ammontare > CurrencyAvailable.Disponibili && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Capitale ||
-                        RecordContoCorrente.Ammontare > CurrencyAvailable.Cedole && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Utili_Volatili ||
-                        RecordContoCorrente.Ammontare > CurrencyAvailable.Utili && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Utili)
+                        RecordContoCorrente.Ammontare > CurrencyAvailable.Cedole && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Utili_da_Cedole ||
+                        RecordContoCorrente.Ammontare > CurrencyAvailable.Utili && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Utili_da_Vendite)
                     {
                         MessageBox.Show(String.Format("Non hai abbastanza soldi in {0} per effettuare un {1} di {2}.{3}" +
                             "Ricontrollare i parametri inseriti.", RecordContoCorrente.Cod_Valuta, RecordContoCorrente.Desc_tipo_movimento, RecordContoCorrente.Desc_Tipo_Soldi,

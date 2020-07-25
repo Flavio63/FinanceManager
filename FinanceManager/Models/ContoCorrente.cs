@@ -1,5 +1,5 @@
 ﻿using FinanceManager.Events;
-using FinanceManager.Models.Enum;
+using FinanceManager.Models.Enumeratori;
 using System;
 
 namespace FinanceManager.Models

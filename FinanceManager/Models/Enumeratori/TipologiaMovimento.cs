@@ -1,5 +1,5 @@
 ﻿
-namespace FinanceManager.Models.Enum
+namespace FinanceManager.Models.Enumeratori
 {
     public enum TipologiaMovimento
     {

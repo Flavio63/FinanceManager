@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FinanceManager.Models.Enum
+namespace FinanceManager.Models.Enumeratori
 {
     public enum TipologiaIDContoCorrente
     {

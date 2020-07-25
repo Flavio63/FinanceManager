@@ -44,8 +44,8 @@ namespace FinanceManager.Services.SQL
         /// per c/c e per valuta
         /// </summary>
         private static readonly string GetCurrencyAvailable = "SELECT C.desc_conto, B.cod_valuta, " +
-            "ROUND(SUM(CASE WHEN A.id_tipo_movimento = 4 THEN ammontare ELSE 0 END), 2) AS Cedole, " +
-            "ROUND(SUM(CASE WHEN A.id_tipo_movimento <> 4 AND (A.id_tipo_soldi = 15 OR A.id_tipo_soldi = 16) THEN ammontare ELSE 0 END), 2) AS Utili, " +
+            "ROUND(SUM(CASE WHEN A.id_tipo_soldi = 17 THEN ammontare ELSE 0 END), 2) AS Cedole, " +
+            "ROUND(SUM(CASE WHEN A.id_tipo_soldi = 15 OR A.id_tipo_soldi = 16 THEN ammontare ELSE 0 END), 2) AS Utili, " +
             "ROUND(SUM(CASE WHEN id_tipo_soldi = 1 THEN ammontare ELSE 0 END), 2) AS Disponibili " +
             "FROM conto_corrente A, valuta B, conti C WHERE A.id_conto = C.id_conto and A.id_valuta = B.id_valuta ";
 
@@ -243,8 +243,8 @@ namespace FinanceManager.Services.SQL
         /// <summary>Trovo il codice dei record da ricalcolare con le nuove quote</summary>
         //public static readonly string GetIdPeriodoQuote = "SELECT * FROM quote_periodi A WHERE A.data_inizio = @data_movimento and A.id_tipo_soldi = @id_tipo_soldi;";
         /// <summary>Trovo il codice del periodo quote basandomi sulla data del movimento e sul tipo soldi</summary>
-        public static readonly string GetIdPeriodoQuote = "SELECT id_periodo_quote FROM quote_periodi A WHERE @data_movimento " +
-            "BETWEEN A.data_inizio AND A.data_fine AND A.id_tipo_soldi = @id_tipo_soldi";
+        public static readonly string GetIdPeriodoQuote = "SELECT id_periodo_quote FROM quote_periodi A, tipo_soldi B WHERE A.id_aggregazione = B.id_aggregazione AND @data_movimento " +
+            "BETWEEN A.data_inizio AND A.data_fine AND B.id_tipo_soldi = @id_tipo_soldi";
 
         public static readonly string GetLastPeriodoValiditaQuote = "SELECT id_periodo_quote FROM quote_periodi A ORDER BY A.id_periodo_quote DESC LIMIT 1";
 
@@ -252,8 +252,8 @@ namespace FinanceManager.Services.SQL
         /// Esporto tutti i record della tabella quote_guadagno aggiungendo le descrizioni
         /// di investitore e di tipologia investimento
         /// </summary>
-        public static readonly string GetAllRecordQuote_Guadagno = "SELECT A.id_quota, A.id_gestione, B.nome_gestione, D.id_tipo_soldi, C.desc_tipo_soldi, A.id_quote_periodi, D.data_inizio, D.data_fine, A.quota " +
-            "FROM quote_guadagno A, gestioni B, tipo_soldi C, quote_periodi D WHERE A.id_gestione = B.id_gestione AND D.id_tipo_soldi = C.id_tipo_soldi AND A.id_quote_periodi = D.id_periodo_quote " +
+        public static readonly string GetAllRecordQuote_Guadagno = "SELECT A.id_quota, A.id_gestione, B.nome_gestione, D.id_aggregazione, C.desc_tipo_soldi, A.id_quote_periodi, D.data_inizio, D.data_fine, A.quota " +
+            "FROM quote_guadagno A, gestioni B, tipo_soldi C, quote_periodi D WHERE A.id_gestione = B.id_gestione AND D.id_aggregazione = C.id_aggregazione AND A.id_quote_periodi = D.id_periodo_quote " +
             "ORDER BY data_fine DESC, id_gestione DESC ";
 
         /// <summary>

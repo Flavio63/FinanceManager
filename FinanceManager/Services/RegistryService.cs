@@ -980,9 +980,7 @@ namespace FinanceManager.Services
                     TipoSoldiList TSL = new TipoSoldiList();
                     foreach (DataRow dr in dt.Rows)
                     {
-                        TipoSoldi TS = new TipoSoldi((Models.Enum.TipologiaSoldi)dr.Field<uint>("id_tipo_soldi"));
-                        //TS.Id_Tipo_Soldi = (int)dr.Field<uint>("id_tipo_soldi");
-                        //TS.Desc_Tipo_Soldi = dr.Field<string>("desc_tipo_soldi");
+                        TipoSoldi TS = new TipoSoldi((Models.Enumeratori.TipologiaSoldi)dr.Field<uint>("id_tipo_soldi"));
                         TSL.Add(TS);
                     }
                     return TSL;
@@ -1011,7 +1009,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_tipo_soldi", id);
                     DataTable dataTable = new DataTable();
                     dbAdapter.Fill(dataTable);
-                    return new TipoSoldi((Models.Enum.TipologiaSoldi)dataTable.Rows[0].ItemArray[0]);
+                    return new TipoSoldi((Models.Enumeratori.TipologiaSoldi)dataTable.Rows[0].ItemArray[0]);
                     //{
                     //    Id_Tipo_Soldi = Convert.ToInt16(dataTable.Rows[0].ItemArray[0]),
                     //    Desc_Tipo_Soldi = dataTable.Rows[0].ItemArray[1].ToString()

@@ -585,7 +585,7 @@ namespace FinanceManager.ViewModels
                         ActualQuote.Ammontare = ActualQuote.Ammontare < 0 ? ActualQuote.Ammontare * -1 : ActualQuote.Ammontare;
                     ContoCorrenteSelected.Ammontare = ActualQuote.Ammontare * -1;
                     _managerLiquidServices.UpdateQuoteTab(ActualQuote);
-                    _managerLiquidServices.UpdateRecordContoCorrente(ContoCorrenteSelected, Models.Enum.TipologiaIDContoCorrente.IdContoCorrente);
+                    _managerLiquidServices.UpdateRecordContoCorrente(ContoCorrenteSelected, Models.Enumeratori.TipologiaIDContoCorrente.IdContoCorrente);
                 }
                 else if (((StackPanel)param).Name == "Bottoniera_2")
                 {
