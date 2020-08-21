@@ -486,29 +486,29 @@ namespace FinanceManager.ViewModels
             {
                 if (((StackPanel)param).Name == "Bottoniera_1" && TabVersPre && ActualQuote.IdQuote == 0)
                 {
-                    int Id_Tipo_Soldi = ActualQuote.IdGestione == 4 ? 16 : 15;
-                    int result = _managerLiquidServices.VerifyInvestmentDate(ActualQuote, Id_Tipo_Soldi); // verifico se alla stessa data c'è già un inserimento
+                    int Id_Aggregazione = ActualQuote.IdGestione == 4 ? 16 : 15;
+                    int result = _managerLiquidServices.VerifyInvestmentDate(ActualQuote, Id_Aggregazione); // verifico se alla stessa data c'è già un inserimento
                     if (result == -1)
                     {
                         if (ActualQuote.IdGestione != 4)
                         {
-                            ActualQuote.Id_Periodo_Quote = _managerLiquidServices.Update_InsertQuotePeriodi(ActualQuote.DataMovimento, Id_Tipo_Soldi);
+                            ActualQuote.Id_Periodo_Quote = _managerLiquidServices.Update_InsertQuotePeriodi(ActualQuote.DataMovimento, Id_Aggregazione);
                             _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il nuovo movimento di capitali
                             ActualQuote.IdGestione = ActualQuote.IdGestione == 3 ? 5 : 3;
                             ActualQuote.Ammontare = 0;
                             ActualQuote.Note = "Inserimento per Quote";
                             _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il movimento a 0 per effettuare le quote corrette.
-                            _managerLiquidServices.ComputesAndInsertQuoteGuadagno(Id_Tipo_Soldi, ActualQuote.Id_Periodo_Quote);
+                            _managerLiquidServices.ComputesAndInsertQuoteGuadagno(Id_Aggregazione, ActualQuote.Id_Periodo_Quote);
                         }
                         else if (ActualQuote.IdGestione == 4)
                         {
-                            ActualQuote.Id_Periodo_Quote = _managerLiquidServices.Update_InsertQuotePeriodi(ActualQuote.DataMovimento, Id_Tipo_Soldi);
+                            ActualQuote.Id_Periodo_Quote = _managerLiquidServices.Update_InsertQuotePeriodi(ActualQuote.DataMovimento, Id_Aggregazione);
                             _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il nuovo movimento di capitali
                             ActualQuote.IdGestione = 3; ActualQuote.Ammontare = 0; ActualQuote.Note = "Inserimento per Quote";
                             _managerLiquidServices.InsertInvestment(ActualQuote); // FLAVIO inserisco il movimento a 0 per effettuare le quote corrette.
                             ActualQuote.IdGestione = 5; ActualQuote.Ammontare = 0; ActualQuote.Note = "Inserimento per Quote";
                             _managerLiquidServices.InsertInvestment(ActualQuote); // DANIELA inserisco il movimento a 0 per effettuare le quote corrette.
-                            _managerLiquidServices.ComputesAndInsertQuoteGuadagno(Id_Tipo_Soldi, ActualQuote.Id_Periodo_Quote);
+                            _managerLiquidServices.ComputesAndInsertQuoteGuadagno(Id_Aggregazione, ActualQuote.Id_Periodo_Quote);
                         }
                     }
                     else
@@ -516,10 +516,10 @@ namespace FinanceManager.ViewModels
                         ActualQuote.Id_Periodo_Quote = result;
                         ActualQuote.IdQuote = _managerLiquidServices.GetIdQuoteTab(ActualQuote); // trovo il codice per modificare il record
                         _managerLiquidServices.UpdateQuoteTab(ActualQuote);     // modifico l'inserimento
-                        _managerLiquidServices.ComputesAndModifyQuoteGuadagno(Id_Tipo_Soldi);
+                        _managerLiquidServices.ComputesAndModifyQuoteGuadagno(Id_Aggregazione);
                     }
                     // aggiorno la tabella con i guadagni totali
-                    _managerLiquidServices.UpdateGuadagniTotaleAnno(ActualQuote.Id_Periodo_Quote, Id_Tipo_Soldi);
+                    _managerLiquidServices.UpdateGuadagniTotaleAnno(ActualQuote.Id_Periodo_Quote, Id_Aggregazione);
                     MessageBox.Show(string.Format("Ho effettuato l'operazione {0} correttamente.", ActualQuote.Desc_tipo_movimento),
                     Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
                 }

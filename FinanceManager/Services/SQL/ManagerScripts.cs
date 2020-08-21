@@ -279,7 +279,7 @@ namespace FinanceManager.Services.SQL
 
         /// <summary> Verifico se nella data di inserimento è già presente un investimento</summary>
         public static readonly string VerifyInvestmentDate = "SELECT IFNULL(SUM(A.id_periodo_quote), -1) AS result FROM quote_periodi A " +
-            "WHERE A.id_tipo_soldi = @id_tipo_soldi AND A.data_inizio = @data_inizio; ";
+            "WHERE A.id_aggregazione = @id_tipo_soldi AND A.data_inizio = @data_inizio; ";
 
         /// <summary>Inserisce un nuovo record nella tabella quote_investimenti</summary>
         public static readonly string InsertInvestment = "INSERT INTO quote_investimenti (id_quote_inv, id_gestione, id_tipo_movimento, id_periodo_quote, data_movimento, ammontare, note) " +
