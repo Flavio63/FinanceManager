@@ -7,7 +7,7 @@
              xmlns:iy="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:local="clr-namespace:FinanceManager.Views"
              mc:Ignorable="d" Name="_GestioneContoCorrente"
-             d:DesignHeight="550" d:DesignWidth="1000">
+             d:DesignHeight="800" d:DesignWidth="1000">
     <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
@@ -312,8 +312,11 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
-                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
             <!-- Per la registrazione utili / perdite volatili -->
             <Border Grid.Column="0" BorderBrush="Lime" BorderThickness="0.8" Margin="5" 
                 IsEnabled="{Binding VolatiliEnabled, UpdateSourceTrigger=PropertyChanged}">
@@ -348,6 +351,58 @@
                         </iy:Interaction.Triggers>
                     </ComboBox>
 
+                </Grid>
+            </Border>
+            <!-- di cambio valuta-->
+            <Border Grid.Column="0" Grid.Row="1" BorderBrush="LightCoral" BorderThickness="0.8" Margin="5" 
+                IsEnabled="{Binding CambioValutaEnabled, UpdateSourceTrigger=PropertyChanged}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="CAMBIO VALUTA" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20" 
+                   FontWeight="Bold" Grid.ColumnSpan="2"/>
+                    <StackPanel Grid.Row="1" Orientation="Vertical">
+                        <TextBlock Text="... a Valuta" FontSize="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <ComboBox Name="Valuta2" Grid.Row="4" Grid.Column="1" ItemsSource="{Binding ListValute, UpdateSourceTrigger=PropertyChanged}"
+                          SelectedValuePath="IdCurrency" DisplayMemberPath="DescCurrency" Margin="5" MinWidth="100"
+                          SelectedValue="{Binding Record2ContoCorrente.Id_Valuta}" HorizontalAlignment="Center">
+                            <iy:Interaction.Triggers>
+                                <iy:EventTrigger EventName="SelectionChanged">
+                                    <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                </iy:EventTrigger>
+                            </iy:Interaction.Triggers>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical">
+                        <TextBlock Text="Valore del cambio" FontSize="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBox Name="Valore_Cambio" Text="{Binding RecordContoCorrente.Valore_Cambio, 
+                            UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat={}{0:n8}, ConverterCulture=it-IT}"
+                             FontSize="16" VerticalAlignment="Center" HorizontalContentAlignment="Right" Margin="5">
+                            <iy:Interaction.Triggers>
+                                <iy:EventTrigger EventName="LostFocus">
+                                    <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                                </iy:EventTrigger>
+                            </iy:Interaction.Triggers>
+                        </TextBox>
+                    </StackPanel>
+                    <TextBlock Grid.Row="2" Text="Cifra cambiata" FontSize="16" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    <TextBox Name="Ammontare2" Grid.Row="2" Grid.Column="2" Text="{Binding AmountChangedValue, 
+                        UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ConverterCulture=it-IT}"
+                             FontSize="16" VerticalAlignment="Center" HorizontalContentAlignment="Right"
+                             IsEnabled="False" Margin="5">
+                        <iy:Interaction.Triggers>
+                            <iy:EventTrigger EventName="LostFocus">
+                                <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                            </iy:EventTrigger>
+                        </iy:Interaction.Triggers>
+                    </TextBox>
                 </Grid>
             </Border>
             <!-- Nel caso di REGISTRAZIONE CEDOLE-->
@@ -390,7 +445,7 @@
             </Border>
 
             <!-- Nel caso di Giroconto -->
-            <Border Grid.Column="2" BorderBrush="LightBlue" BorderThickness="0.8" Margin="5" 
+            <Border Grid.Column="1" Grid.Row="1" BorderBrush="LightBlue" BorderThickness="0.8" Margin="5" 
                 IsEnabled="{Binding GirocontoEnabled, UpdateSourceTrigger=PropertyChanged}">
                 <Grid>
                     <Grid.RowDefinitions>

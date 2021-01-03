@@ -61,6 +61,7 @@ namespace FinanceManager.ViewModels
                            movimento.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ||
                            movimento.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto) ||
                            movimento.Id_tipo_movimento == (int)TipologiaMovimento.Costi ||
+                           movimento.Id_tipo_movimento == (int)TipologiaMovimento.CambioValuta ||
                            movimento.Id_tipo_movimento == (int)TipologiaMovimento.AcquistoTitoli ||
                            movimento.Id_tipo_movimento == (int)TipologiaMovimento.VenditaTitoli
                            select movimento;
@@ -326,6 +327,15 @@ namespace FinanceManager.ViewModels
             private set { SetValue(() => VolatiliEnabled, value); }
         }
 
+        /// <summary>
+        /// Gestisce l'abilitazione a inserire i cambi valuta
+        /// </summary>
+        public bool CambioValutaEnabled
+        {
+            get { return GetValue(() => CambioValutaEnabled); }
+            private set { SetValue(() => CambioValutaEnabled, value); }
+        }
+
         #endregion
 
         #region Filtri per DataGrid
@@ -442,7 +452,7 @@ namespace FinanceManager.ViewModels
         #region Events
 
         /// <summary>
-        /// Levento al cambio di selezione del record nella griglia dell'investitore
+        /// Gli eventi al cambio di selezione del record nella griglia dell'investitore
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -527,6 +537,7 @@ namespace FinanceManager.ViewModels
                     CedoleEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ? true : false;
                     GirocontoEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ? true : false;
                     VolatiliEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ? true : false;
+                    CambioValutaEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.CambioValuta ? true : false;
                     CanInsert = RMT.Id_tipo_movimento == (int)TipologiaMovimento.Costi ? true : false;
                     FiltroTipoMovimento = RMT.Desc_tipo_movimento;
                 }
@@ -541,6 +552,7 @@ namespace FinanceManager.ViewModels
 
         /// <summary>
         /// Imposto i campi sopra la griglia quando viene selezionata una riga
+        /// nell'elenco sottostante
         /// </summary>
         /// <param name="sender">Grid dei dati</param>
         /// <param name="e">Cambio di selezione</param>
@@ -555,12 +567,14 @@ namespace FinanceManager.ViewModels
                 if (CC.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ||
                     CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ||
                     CC.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ||
+                    CC.Id_tipo_movimento == (int)TipologiaMovimento.CambioValuta ||
                     CC.Id_tipo_movimento == (int)TipologiaMovimento.Costi)
                 {
                     RecordContoCorrente = CC;
                     GirocontoFieldEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ? true : false;
                     CedoleEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ? true : false;
                     VolatiliEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ? true : false;
+                    CambioValutaEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.CambioValuta ? true : false;
                     CanUpdateDelete = true;
                 }
                 else
@@ -568,7 +582,9 @@ namespace FinanceManager.ViewModels
                     RecordContoCorrente = new ContoCorrente();
                     GirocontoEnabled = false;
                     CedoleEnabled = false;
-                    GirocontoFieldEnabled = true;
+                    VolatiliEnabled = false;
+                    CambioValutaEnabled = false;
+                    GirocontoFieldEnabled = false;
                     CanUpdateDelete = false;
                 }
                 CanInsert = false;
