@@ -570,6 +570,7 @@ namespace FinanceManager.Services
             conto.Causale = dataRow.Field<string>("causale");
             conto.Id_Tipo_Soldi = (int)dataRow.Field<uint>("id_tipo_soldi");
             conto.Desc_Tipo_Soldi = dataRow.Field<string>("desc_tipo_soldi");
+            conto.Modified = dataRow.Field<DateTime>("modified");
             return conto;
         }
 
@@ -595,6 +596,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("causale", contoCorrente.Causale);
                     dbComm.Parameters.AddWithValue("id_tipo_soldi", contoCorrente.Id_Tipo_Soldi);
                     dbComm.Parameters.AddWithValue("id_quote_periodi", contoCorrente.Id_Quote_Periodi);
+                    dbComm.Parameters.AddWithValue("modified", contoCorrente.Modified.ToString("yyyy-MM-dd HH:mm:ss"));
                     dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -1461,11 +1463,12 @@ namespace FinanceManager.Services
         }
 
         /// <summary>
-        /// Dato il codice di un movimento estrae tutti i record in ordine di data
+        /// Estrazione dei 2 record coinvolti nel giroconto interno o
+        /// nel cambio valuta.
         /// </summary>
-        /// <param name="idMovimento">Codice del movimento</param>
-        /// <returns>ObservableCollection con tutti i movimenti</returns>
-        public ContoCorrenteList GetContoCorrenteByMovement(int idMovimento)
+        /// <param name="modified">DateTime</param>
+        /// <returns>List ContoCorrente</returns>
+        public ContoCorrenteList Get2ContoCorrentes(DateTime modified)
         {
             try
             {
@@ -1474,8 +1477,8 @@ namespace FinanceManager.Services
                 {
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
-                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetContoCorrenteByMovement;
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_tipo_movimento", idMovimento);
+                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.Get2ContoCorrentes;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("modified", modified.ToString("yyyy-MM-dd HH:mm:ss"));
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
                     return contoCorrentes(DT);
@@ -1641,6 +1644,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("causale", contoCorrente.Causale);
                     dbComm.Parameters.AddWithValue("id_tipo_soldi", contoCorrente.Id_Tipo_Soldi);
                     dbComm.Parameters.AddWithValue("id_quote_periodi", contoCorrente.Id_Quote_Periodi);
+                    dbComm.Parameters.AddWithValue("modified", contoCorrente.Modified.ToString("yyyy-MM-dd HH:mm:ss"));
                     dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();

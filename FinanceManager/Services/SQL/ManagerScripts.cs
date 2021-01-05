@@ -9,7 +9,7 @@ namespace FinanceManager.Services.SQL
     public class ManagerScripts
     {
         private static readonly string DescLimit1 = " DESC LIMIT 1 ";
-        private static readonly string AndTipoMovimento = " AND A.id_tipo_movimento = @id_tipo_movimento ";
+        private static readonly string AndModified = " AND A.modified = @modified ";
         private static readonly string AndQuote = " AND A.id_quote_investimenti = @id_quote_investimenti ";
         private static readonly string AndGestione = " AND A.id_gestione = @id_gestione ";
         private static readonly string AndConto = " AND A.id_conto = @id_conto ";
@@ -159,14 +159,14 @@ namespace FinanceManager.Services.SQL
         /// Inserisce un movimento nel conto corrente
         /// </summary>
         public static readonly string InsertAccountMovement = "INSERT INTO conto_corrente (id_conto, id_quote_investimenti, id_valuta, id_portafoglio_titoli, id_tipo_movimento, " +
-            "id_gestione, id_titolo, data_movimento, ammontare, cambio, causale, id_tipo_soldi, id_quote_periodi) VALUE ( @id_conto, @id_quote_investimenti, @id_valuta, @id_portafoglio_titoli, @id_tipo_movimento, " +
-            "@id_gestione, @id_titolo, @data_movimento, @ammontare, @cambio, @causale, @id_tipo_soldi, @id_quote_periodi)";
+            "id_gestione, id_titolo, data_movimento, ammontare, cambio, causale, id_tipo_soldi, id_quote_periodi, modified) VALUE ( @id_conto, @id_quote_investimenti, @id_valuta, @id_portafoglio_titoli, @id_tipo_movimento, " +
+            "@id_gestione, @id_titolo, @data_movimento, @ammontare, @cambio, @causale, @id_tipo_soldi, @id_quote_periodi, @modified)";
 
         /// <summary>
         /// Estrae tutti i movimenti di tutti i conti correnti di tutte le gestioni
         /// </summary>
         protected static readonly string ContoCorrente = "SELECT id_fineco_euro, A.id_conto, B.desc_conto, id_quote_investimenti, A.id_valuta, C.cod_valuta, id_portafoglio_titoli, A.id_tipo_movimento, " +
-            "D.desc_movimento, A.id_gestione, E.nome_gestione, A.id_titolo, F.isin, F.desc_titolo, data_movimento, ammontare, cambio, causale, A.id_tipo_soldi, G.desc_tipo_soldi " +
+            "D.desc_movimento, A.id_gestione, E.nome_gestione, A.id_titolo, F.isin, F.desc_titolo, data_movimento, ammontare, cambio, causale, A.id_tipo_soldi, G.desc_tipo_soldi, modified " +
             "FROM conto_corrente A, conti B, valuta C, tipo_movimento D, gestioni E, titoli F, tipo_soldi G " +
             "WHERE A.id_conto = B.id_conto AND A.id_valuta = C.id_valuta AND A.id_tipo_movimento = D.id_tipo_movimento AND " +
             "A.id_gestione = E.id_gestione AND A.id_titolo = F.id_titolo AND A.id_tipo_soldi = G.id_tipo_soldi AND id_fineco_euro > 0 ";
@@ -174,7 +174,7 @@ namespace FinanceManager.Services.SQL
         public static readonly string GetContoCorrente = ContoCorrente + OrderBy + DataMovimentoDesc + Comma + AId_fineco_euro;
         public static readonly string GetContoCorrenteByIdCC = ContoCorrente + AndIdFinecoEuro;
         public static readonly string GetContoCorrenteByIdQuote = ContoCorrente + AndQuote + OrderBy + ADataMovimento;
-        public static readonly string GetContoCorrenteByMovement = ContoCorrente + AndTipoMovimento + OrderBy + ADataMovimento + Comma + AId_fineco_euro;
+        public static readonly string Get2ContoCorrentes = ContoCorrente + AndModified + OrderBy + ADataMovimento + Comma + AId_fineco_euro;
         public static readonly string GetContoCorrenteByIdPortafoglio = ContoCorrente + AndIdPortafoglioTitoli + OrderBy + AId_fineco_euro;
 
         // aggiorno un record conto corrente sulla base dell'ID QUOTE INVESTIMENTI//

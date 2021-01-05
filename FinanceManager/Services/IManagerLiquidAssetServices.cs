@@ -121,10 +121,35 @@ namespace FinanceManager.Services
         /// <param name="RecordContoCorrente">record conto corrente con i dati</param>
         void ModifySingoloGuadagno(ContoCorrente RecordContoCorrente);
 
-        ContoCorrenteList GetContoCorrenteList();                       // Prendo tutti i record della tabella ContoCorrente
-        ContoCorrente GetContoCorrenteByIdCC(int idRecord);             // Prendo un solo record dalla tabella ContoCorrente
-        ContoCorrente GetContoCorrenteByIdQuote(int idQuote);       // Il movimento del conto legato al giroconto selezionato
-        ContoCorrenteList GetContoCorrenteByMovement(int idMovimento);  // Tutti i movimenti di giroconto
+        /// <summary>
+        /// Estrae tutti i record della tabella ContoCorrente
+        /// </summary>
+        /// <returns>Lista di ContoCorrente</returns>
+        
+        ContoCorrenteList GetContoCorrenteList();
+        /// <summary>
+        /// Estrae il record della tabella ContoCorrente che corrisponde al parametro
+        /// </summary>
+        /// <param name="idRecord">Il numero del record da estrarre</param>
+        /// <returns>Record di ContoCorrente</returns>
+        ContoCorrente GetContoCorrenteByIdCC(int idRecord);
+        /// <summary>
+        /// Seleziona i record ContoCorrente sulla base dell'ID quote relativo
+        /// alla tabella quote_investimenti e utilizzato per il giroconto fra le
+        /// due tabelle
+        /// </summary>
+        /// <param name="idQuote">Il codice comune alle tabelle</param>
+        /// <returns>Il record trovato ContoCorrente</returns>
+        ContoCorrente GetContoCorrenteByIdQuote(int idQuote);
+
+        /// <summary>
+        /// Estrazione dei 2 record coinvolti nel giroconto interno o
+        /// nel cambio valuta.
+        /// </summary>
+        /// <param name="modified">DateTime</param>
+        /// <returns>List ContoCorrente</returns>
+        ContoCorrenteList Get2ContoCorrentes(DateTime modified);
+        
         ContoCorrenteList GetContoCorrenteByIdPortafoglio(int idPortafoglioTitoli); // I max 2 movimenti di ContoCorrente associati al trade
         /// <summary>
         /// Aggiorno la tabella conto_corrente

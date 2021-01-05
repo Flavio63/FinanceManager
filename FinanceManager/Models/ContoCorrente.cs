@@ -43,11 +43,16 @@ namespace FinanceManager.Models
         public int Id_Tipo_Soldi { set; get; }
         public string Desc_Tipo_Soldi { set; get; }
         public int Id_Quote_Periodi { set; get; }
+        public DateTime Modified { get; set; }
 
         /// <summary>
         /// Inizializza un record vuoto di ContoCorrente
+        /// e inserisco solo il date time della creazione
         /// </summary>
-        public ContoCorrente() { }
+        public ContoCorrente()
+        {
+            Modified = DateTime.Now;
+        }
 
         /// <summary>
         /// Inizializza un record di ContoCorrente prendendo
@@ -72,6 +77,7 @@ namespace FinanceManager.Models
             Causale = portafoglioTitoli.Note;
             Id_Tipo_Soldi = (int)idTipoSoldi;
             Id_Quote_Periodi = IdQuotePeriodi;
+            Modified = DateTime.Now;
         }
     }
 }

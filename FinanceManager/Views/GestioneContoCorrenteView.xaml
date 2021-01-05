@@ -218,7 +218,7 @@
                 <TextBlock Grid.Row="1" Text="Il conto" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
                 <ComboBox Name="Conto" Grid.Row="1" Grid.Column="1" ItemsSource="{Binding ListConti, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                           SelectedValuePath="Id_Conto" DisplayMemberPath="Desc_Conto" Margin="5, 2" MinWidth="100" 
-                          IsEnabled="{Binding GirocontoFieldEnabled, UpdateSourceTrigger=PropertyChanged}"
+                          IsEnabled="{Binding CommonFieldsEnabled, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValue="{Binding RecordContoCorrente.Id_Conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="SelectionChanged">
@@ -229,7 +229,7 @@
                 <TextBlock Grid.Row="2" Text="La gestione" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
                 <ComboBox Name="Gestione" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding ListGestioni, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                           SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione" Margin="5, 2" MinWidth="100" 
-                          IsEnabled="{Binding GirocontoFieldEnabled, UpdateSourceTrigger=PropertyChanged}"
+                          IsEnabled="{Binding CommonFieldsEnabled, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValue="{Binding RecordContoCorrente.Id_Gestione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="SelectionChanged">
@@ -240,6 +240,7 @@
                 <TextBlock Grid.Row="3" Text="Valuta" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
                 <ComboBox Name="Valuta" Grid.Row="3" Grid.Column="1" ItemsSource="{Binding ListValute, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValuePath="IdCurrency" DisplayMemberPath="DescCurrency" Margin="5, 2" MinWidth="100" 
+                          IsEnabled="{Binding CommonFieldsEnabled, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValue="{Binding RecordContoCorrente.Id_Valuta, UpdateSourceTrigger=PropertyChanged}" 
                           HorizontalAlignment="Center">
                     <iy:Interaction.Triggers>
@@ -264,7 +265,7 @@
                 <TextBlock Grid.Row="1" Grid.Column="2" Text="L'operazione" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
                 <ComboBox Grid.Row="1" Grid.Column="3" ItemsSource="{Binding ListMovimenti, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                           SelectedValuePath="Id_tipo_movimento" DisplayMemberPath="Desc_tipo_movimento" Margin="5, 2" MinWidth="100" 
-                          IsEnabled="{Binding GirocontoFieldEnabled, UpdateSourceTrigger=PropertyChanged}"
+                          IsEnabled="{Binding OperazioneEnabled, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValue="{Binding RecordContoCorrente.Id_tipo_movimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="SelectionChanged">
@@ -372,7 +373,7 @@
                         <TextBlock Text="... a Valuta" FontSize="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         <ComboBox Name="Valuta2" Grid.Row="4" Grid.Column="1" ItemsSource="{Binding ListValute, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValuePath="IdCurrency" DisplayMemberPath="DescCurrency" Margin="5" MinWidth="100"
-                          SelectedValue="{Binding Record2ContoCorrente.Id_Valuta}" HorizontalAlignment="Center">
+                          SelectedValue="{Binding Record2ContoCorrente.Id_Valuta, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" HorizontalAlignment="Center">
                             <iy:Interaction.Triggers>
                                 <iy:EventTrigger EventName="SelectionChanged">
                                     <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
@@ -382,26 +383,23 @@
                     </StackPanel>
                     <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical">
                         <TextBlock Text="Valore del cambio" FontSize="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <TextBox Name="Valore_Cambio" Text="{Binding RecordContoCorrente.Valore_Cambio, 
-                            UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat={}{0:n8}, ConverterCulture=it-IT}"
+                        <TextBox Name="Valore_Cambio" Text="{Binding RecordContoCorrente.Valore_Cambio, ConverterCulture=it-IT}"
                              FontSize="16" VerticalAlignment="Center" HorizontalContentAlignment="Right" Margin="5">
                             <iy:Interaction.Triggers>
                                 <iy:EventTrigger EventName="LostFocus">
                                     <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                                </iy:EventTrigger>
+                                <iy:EventTrigger EventName="PreviewKeyDown">
+                                    <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
                                 </iy:EventTrigger>
                             </iy:Interaction.Triggers>
                         </TextBox>
                     </StackPanel>
                     <TextBlock Grid.Row="2" Text="Cifra cambiata" FontSize="16" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                     <TextBox Name="Ammontare2" Grid.Row="2" Grid.Column="2" Text="{Binding AmountChangedValue, 
-                        UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ConverterCulture=it-IT}"
+                        UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT}"
                              FontSize="16" VerticalAlignment="Center" HorizontalContentAlignment="Right"
                              IsEnabled="False" Margin="5">
-                        <iy:Interaction.Triggers>
-                            <iy:EventTrigger EventName="LostFocus">
-                                <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
-                            </iy:EventTrigger>
-                        </iy:Interaction.Triggers>
                     </TextBox>
                 </Grid>
             </Border>
@@ -462,7 +460,8 @@
                     <TextBlock Grid.Row="1" Text="Il conto di destinazione" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                     <ComboBox Name="Conto2" Grid.Row="1" Grid.Column="1" ItemsSource="{Binding ListConti, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValuePath="Id_Conto" DisplayMemberPath="Desc_Conto" Margin="5, 2" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Left"
-                          SelectedValue="{Binding Record2ContoCorrente.Id_Conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                          SelectedValue="{Binding Record2ContoCorrente.Id_Conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                              IsEnabled="{Binding GirocontoEnabled, UpdateSourceTrigger=PropertyChanged}">
                         <iy:Interaction.Triggers>
                             <iy:EventTrigger EventName="SelectionChanged">
                                 <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
@@ -472,7 +471,8 @@
                     <TextBlock Grid.Row="2" Text="La gestione di destinazione" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                     <ComboBox Name="Gestione2" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding ListGestioni, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione" Margin="5, 2" MinWidth="100"
-                          SelectedValue="{Binding Record2ContoCorrente.Id_Gestione}" VerticalAlignment="Center" HorizontalAlignment="Left">
+                          SelectedValue="{Binding Record2ContoCorrente.Id_Gestione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Left"
+                              IsEnabled="{Binding GirocontoEnabled, UpdateSourceTrigger=PropertyChanged}">
                         <iy:Interaction.Triggers>
                             <iy:EventTrigger EventName="SelectionChanged">
                                 <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
@@ -554,6 +554,14 @@
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="{x:Type TextBlock}">
                             <Setter Property="HorizontalAlignment" Value="Right"/>
+                            <Setter Property="Margin" Value="5,0,5,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Valuta" Binding="{Binding Cod_Valuta, UpdateSourceTrigger=PropertyChanged}"
+                                        IsReadOnly="True" FontSize="14" FontWeight="Normal" MaxWidth="300">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
                             <Setter Property="Margin" Value="5,0,5,0"/>
                         </Style>
                     </DataGridTextColumn.ElementStyle>
