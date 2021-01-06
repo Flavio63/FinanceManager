@@ -254,7 +254,7 @@
                               ItemsSource="{Binding TipoSoldis, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                           SelectedValuePath="Id_Tipo_Soldi" DisplayMemberPath="Desc_Tipo_Soldi" Margin="5, 2" MinWidth="100"
                           SelectedValue="{Binding RecordContoCorrente.Id_Tipo_Soldi, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
-                          HorizontalAlignment="Center">
+                          HorizontalAlignment="Center" IsEnabled="{Binding CommonFieldsEnabled, UpdateSourceTrigger=PropertyChanged}">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="SelectionChanged">
                             <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>

@@ -418,7 +418,7 @@ namespace FinanceManager.ViewModels
                     }
                     else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) && !string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 2 su 4 attivi
                     {
-                        return CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower()) &&  CConto.Desc_tipo_movimento.ToLower().Contains(FiltroTipoMovimento.ToLower());
+                        return CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower()) && CConto.Desc_tipo_movimento.ToLower().Contains(FiltroTipoMovimento.ToLower());
                     }
                     else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && !string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 2 su 4 attivi
                     {
@@ -602,7 +602,7 @@ namespace FinanceManager.ViewModels
                     CambioValutaEnabled = false;
                     CanUpdateDelete = true;
                 }
-                else if (CC.Id_Quote_Investimenti == 0 & (CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto || CC.Id_tipo_movimento == (int)TipologiaMovimento.CambioValuta ) )
+                else if (CC.Id_Quote_Investimenti == 0 & (CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto || CC.Id_tipo_movimento == (int)TipologiaMovimento.CambioValuta))
                 {
                     // cerco il record corrispondente al giroconto o al cambio valuta utilizzando il campo
                     // modified (e poi aggiorno il campo stesso per entrambi - forse non serve)
@@ -617,7 +617,7 @@ namespace FinanceManager.ViewModels
                 else if (CC.Id_Quote_Investimenti > 0 & CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
                 {
 
-                    MessageBox.Show("Questo giroconto è stato gestito da `Quote investitori`" + Environment.NewLine + 
+                    MessageBox.Show("Questo giroconto è stato gestito da `Quote investitori`" + Environment.NewLine +
                         "Qua puoi solo vederlo, se vuoi modificarlo devi andare in `Quote investitori`.", "Gestione Conto Corrente", MessageBoxButton.OK, MessageBoxImage.Information);
                     GirocontoEnabled = false;
                     CedoleEnabled = false;
@@ -705,8 +705,8 @@ namespace FinanceManager.ViewModels
             try
             {
                 // In base all'operazione scelta decido:
-                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto || 
-                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.CambioValuta) 
+                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ||
+                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.CambioValuta)
                 {
                     CurrencyAvailable = _liquidAssetServices.GetCurrencyAvailable(IdGestione: RecordContoCorrente.Id_Gestione,
                         IdConto: RecordContoCorrente.Id_Conto, IdValuta: RecordContoCorrente.Id_Valuta)[0];
@@ -808,9 +808,9 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola || 
-                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili || 
-                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Costi )
+                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ||
+                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ||
+                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Costi)
                 {
                     // con il codice del record elimino anche le righe inserite nella tabella guadagno
                     _liquidAssetServices.DeleteRecordGuadagno_Totale_anno(RecordContoCorrente.Id_RowConto);
@@ -818,20 +818,9 @@ namespace FinanceManager.ViewModels
                 }
                 else
                 {
-                    // cerco il record corrispondente al giroconto o al cambio valuta
-                    Record2ContoCorrente = _liquidAssetServices.GetContoCorrenteByIdCC(RecordContoCorrente.Id_RowConto + 1);
-                    // verifico che il record abbia lo stesso tipo di movimento
-                    if (Record2ContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
-                    {
-                        _liquidAssetServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);
-                        _liquidAssetServices.DeleteRecordContoCorrente(Record2ContoCorrente.Id_RowConto);
-                    }
-                    else
-                    {
-                        Record2ContoCorrente = _liquidAssetServices.GetContoCorrenteByIdCC(RecordContoCorrente.Id_RowConto - 1);
-                        _liquidAssetServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);
-                        _liquidAssetServices.DeleteRecordContoCorrente(Record2ContoCorrente.Id_RowConto);
-                    }
+                    // Ho trovato i 2 record collegati quando ho fatto la selezione dalla griglia
+                    _liquidAssetServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);
+                    _liquidAssetServices.DeleteRecordContoCorrente(Record2ContoCorrente.Id_RowConto);
                 }
                 MessageBox.Show("Record eliminato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
                 Init();
