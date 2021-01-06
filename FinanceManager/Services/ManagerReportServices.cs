@@ -187,7 +187,7 @@ namespace FinanceManager.Services
                         GPP.GuadagnoAnno1 = DR.Field<double>("GuadagniAnno1");
                         GPP.GuadagnoAnno2 = DR.Field<double>("GuadagniAnno2");
                         GPP.Differenza = DR.Field<double>("Differenza");
-                        GPP.Delta = DR.ItemArray[6] == System.DBNull.Value ? 0 : DR.Field<double>("Delta");
+                        GPP.Delta = DR.ItemArray[5] == System.DBNull.Value ? 0 : DR.Field<double>("Delta");
                         GPPL.Add(GPP);
                     }
                 }
