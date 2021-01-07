@@ -22,7 +22,7 @@ namespace FinanceManager.ViewModels
         public ICommand ModifyCommand { get; set; }
         public ICommand EraseCommand { get; set; }
         public ICommand ClearCommand { get; set; }
-        private int[] typeOfShares = { 4, 13 };
+        private int[] typeOfShares = { 147 };
         Predicate<object> _Filter;
 
         public GestioneContoCorrenteViewModel(IRegistryServices registryServices, IManagerLiquidAssetServices managerLiquidServices)
@@ -80,7 +80,7 @@ namespace FinanceManager.ViewModels
                 SharesList = new ObservableCollection<RegistryShare>(_registryServices.GetRegistryShareList());
                 _Filter = new Predicate<object>(Filter);
 
-                BirdsListView = _registryServices.GetSharesByType(typeOfShares);
+                BirdsListView = _registryServices.GetSharesByFirms(typeOfShares);
             }
             catch (Exception err)
             {

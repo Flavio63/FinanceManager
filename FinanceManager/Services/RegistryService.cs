@@ -691,14 +691,14 @@ namespace FinanceManager.Services
             }
         }
 
-        public RegistryShareList GetSharesByType(int[] id_tipo_titolo)
+        public RegistryShareList GetSharesByFirms(int[] id_aziende)
         {
             try
             {
                 string where = "";
-                foreach(int x in id_tipo_titolo)
+                foreach(int x in id_aziende)
                 {
-                    where += string.Format(" id_tipo_titolo = {0} OR ", x);
+                    where += string.Format(" id_azienda = {0} OR ", x);
                 }
                 where = where.Remove(where.Length - 3, 3);
 
@@ -707,7 +707,7 @@ namespace FinanceManager.Services
                     dbAdaptar.SelectCommand = new MySqlCommand();
                     dbAdaptar.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdaptar.SelectCommand.CommandType = CommandType.Text;
-                    dbAdaptar.SelectCommand.CommandText = string.Format(SQL.RegistryScripts.GetSharesByType, where);
+                    dbAdaptar.SelectCommand.CommandText = string.Format(SQL.RegistryScripts.GetSharesByFirms, where);
                     DataTable dt = new DataTable();
                     dbAdaptar.Fill(dt);
                     RegistryShareList RSL = new RegistryShareList();

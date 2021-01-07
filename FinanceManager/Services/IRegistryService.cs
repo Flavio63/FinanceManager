@@ -55,7 +55,7 @@ namespace FinanceManager.Services
 
         #region Share
         RegistryShareList GetRegistryShareList();
-        RegistryShareList GetSharesByType(int[] id_tipo_titolo);
+        RegistryShareList GetSharesByFirms(int[] id_aziende);
         void UpdateShare(RegistryShare registryShare);
         void AddShare(RegistryShare registryShare);
         void DeleteShare(uint id);

@@ -69,7 +69,7 @@ namespace FinanceManager.Services.SQL
             "@EuropaOccNoEuro, @EuropaEst, @Africa, @MedioOriente, @Giappone, @Australasia, @AsiaSviluppati, @AsiaEmergenti, @RegioniND, @MateriePrime, @BeniConsCiclici, " +
             "@Finanza, @Immobiliare, @BeniConsDifensivi, @Salute, @ServiziPubbUtility, @ServiziComunic, @Energia, @BeniIndustriali, @Tecnologia, @SettoriND );";
 
-        public readonly static string GetSharesByType = "SELECT id_titolo, desc_titolo, isin, id_tipo_titolo, id_azienda, azioni, obbligazioni, liquidita, altro, " +
+        public readonly static string GetSharesByFirms = "SELECT id_titolo, desc_titolo, isin, id_tipo_titolo, id_azienda, azioni, obbligazioni, liquidita, altro, " +
             "USA, Canada, AmericaLatinaCentrale, RegnoUnito, EuropaOccEuro, EuropaOccNoEuro, EuropaEst, Africa, MedioOriente, Giappone, Australasia, AsiaSviluppati, " +
             "AsiaEmergenti, RegioniND, MateriePrime, BeniConsCiclici, Finanza, Immobiliare, BeniConsDifensivi, Salute, ServiziPubbUtility, ServiziComunic, Energia, " +
             "BeniIndustriali, Tecnologia, SettoriND, data_modifica " +
