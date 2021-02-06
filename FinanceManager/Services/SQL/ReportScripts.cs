@@ -4,34 +4,42 @@
     {
         public static readonly string GetAvailableYears = "SELECT YEAR(data_movimento) AS anni FROM conto_corrente WHERE (id_tipo_movimento = 4 or id_tipo_movimento = 6) GROUP BY anni ORDER BY anni DESC";
 
-        public static readonly string GetProfitLoss = "SELECT YEAR(data_movimento) AS Anno, B.nome_gestione, D.desc_tipo_soldi, " +
+        public static readonly string GetProfitLoss = "SELECT YEAR(data_movimento) AS Anno, E.cod_valuta, B.nome_gestione, D.desc_tipo_soldi, " +
             "ROUND(SUM(CASE WHEN C.id_tipo_titolo = 1 THEN ammontare ELSE 0 END), 2) AS Azioni, " +
             "round(sum(case when C.id_tipo_titolo = 2 THEN ammontare else 0 end), 2) AS Obbligazioni, " +
-            "round(sum(case when (C.id_tipo_titolo = 4 OR C.id_tipo_titolo = 5 OR C.id_tipo_titolo = 6 OR C.id_tipo_titolo = 8) AND A.id_gestione <> 7 THEN ammontare else 0 end), 2) AS ETF, " +
+            "round(sum(case when C.id_tipo_titolo = 4 THEN ammontare else 0 end), 2) AS Certificati, " +
+            "round(sum(case when C.id_tipo_titolo = 5 OR C.id_tipo_titolo = 6 OR C.id_tipo_titolo = 8 THEN ammontare else 0 end), 2) AS ETF_C_P, " +
             "round(sum(case when C.id_tipo_titolo = 7 THEN ammontare else 0 end), 2) AS Fondo, " +
-            "round(sum(case when C.id_tipo_titolo = 13 or C.id_tipo_titolo = 4 THEN ammontare else 0 end), 2) AS Volatili, " +
+            "round(sum(case when C.id_tipo_titolo = 13 THEN ammontare else 0 end), 2) AS Futures, " +
+            "round(sum(case when C.id_tipo_titolo = 15 THEN ammontare else 0 end), 2) AS Opzioni, " +
+            "round(sum(case when C.id_tipo_titolo = 16 THEN ammontare else 0 end), 2) AS Commodities, " +
             "round(sum(case when A.id_tipo_movimento = 8 THEN ammontare else 0 end), 2) AS Costi, " +
             "round(sum(case when (C.id_tipo_titolo >= 1 OR A.id_tipo_movimento = 8) THEN ammontare else 0 end), 2) AS Totale " +
-            "FROM conto_corrente A, gestioni B, titoli C, tipo_soldi D " +
-            "WHERE A.id_gestione = B.id_gestione AND A.id_titolo = C.id_titolo AND A.id_tipo_soldi = D.id_tipo_soldi AND " +
+            "FROM conto_corrente A, gestioni B, titoli C, tipo_soldi D, valuta E " +
+            "WHERE A.id_gestione = B.id_gestione AND A.id_titolo = C.id_titolo AND A.id_tipo_soldi = D.id_tipo_soldi AND A.id_valuta = E.id_valuta  AND " +
             "A.id_tipo_soldi > 1 AND {0} " +
-            "GROUP BY Anno, A.id_gestione, A.id_tipo_soldi " +
-            "ORDER BY Anno DESC, A.id_gestione, A.id_tipo_soldi DESC;";
+            "GROUP BY Anno, A.id_gestione, A.id_tipo_soldi, A.id_valuta " +
+            "ORDER BY Anno DESC, A.id_valuta, A.id_gestione, A.id_tipo_soldi DESC;";
 
-        public static readonly string GetDetailedProfitLoss = "SELECT Anno, nome_gestione, desc_tipo_soldi, desc_titolo, isin, Azioni, Obbligazioni, ETF, Fondo, Volatili, Costi, Totale FROM (" +
-            "SELECT YEAR(data_movimento) AS Anno, B.nome_gestione, D.desc_tipo_soldi, C.desc_titolo, C.isin, " +
+        public static readonly string GetDetailedProfitLoss = "SELECT Anno, cod_valuta, nome_gestione, desc_tipo_soldi, desc_titolo, isin, Azioni, Obbligazioni, Certificati, ETF_C_P, Fondo, Futures, Opzioni, Commodities, Costi, Totale " +
+            "FROM (" +
+            "SELECT YEAR(data_movimento) AS Anno, E.cod_valuta, B.nome_gestione, D.desc_tipo_soldi, C.desc_titolo, C.isin, " +
             "ROUND(SUM(CASE WHEN C.id_tipo_titolo = 1 THEN ammontare ELSE 0 END), 2) AS Azioni, " +
             "round(sum(case when C.id_tipo_titolo = 2 THEN ammontare else 0 end), 2) AS Obbligazioni, " +
-            "round(sum(case when (C.id_tipo_titolo = 4 OR C.id_tipo_titolo = 5 OR C.id_tipo_titolo = 6 OR C.id_tipo_titolo = 8) AND A.id_gestione <> 7 THEN ammontare else 0 end), 2) AS ETF, " +
+            "round(sum(case when C.id_tipo_titolo = 4 THEN ammontare else 0 end), 2) AS Certificati, " +
+            "round(sum(case when C.id_tipo_titolo = 5 OR C.id_tipo_titolo = 6 OR C.id_tipo_titolo = 8 THEN ammontare else 0 end), 2) AS ETF_C_P, " +
             "round(sum(case when C.id_tipo_titolo = 7 THEN ammontare else 0 end), 2) AS Fondo, " +
-            "round(sum(case when C.id_tipo_titolo = 13 or C.id_tipo_titolo = 4 THEN ammontare else 0 end), 2) AS Volatili, " +
+            "round(sum(case when C.id_tipo_titolo = 13 THEN ammontare else 0 end), 2) AS Futures, " +
+            "round(sum(case when C.id_tipo_titolo = 15 THEN ammontare else 0 end), 2) AS Opzioni, " +
+            "round(sum(case when C.id_tipo_titolo = 16 THEN ammontare else 0 end), 2) AS Commodities, " +
             "round(sum(case when A.id_tipo_movimento = 8 THEN ammontare else 0 end), 2) AS Costi, " +
             "round(sum(case when (C.id_tipo_titolo >= 1 OR A.id_tipo_movimento = 8) THEN ammontare else 0 end), 2) AS Totale " +
-            "FROM conto_corrente A, gestioni B, titoli C, tipo_soldi D " +
-            "WHERE A.id_gestione = B.id_gestione AND A.id_titolo = C.id_titolo AND A.id_tipo_soldi = D.id_tipo_soldi AND " +
+            "FROM conto_corrente A, gestioni B, titoli C, tipo_soldi D, valuta E " +
+            "WHERE A.id_gestione = B.id_gestione AND A.id_titolo = C.id_titolo AND A.id_tipo_soldi = D.id_tipo_soldi AND A.id_valuta = E.id_valuta AND " +
             "A.id_tipo_soldi > 1 AND {0} " +
-            "GROUP BY Anno, A.id_gestione, A.id_tipo_soldi, C.desc_titolo, C.isin " +
-            "ORDER BY Anno DESC, A.id_gestione, A.id_tipo_soldi DESC) AS AAA WHERE Totale <> 0;";
+            "GROUP BY Anno, A.id_valuta, A.id_gestione, A.id_tipo_soldi, C.desc_titolo, C.isin " +
+            "ORDER BY Anno DESC, A.id_valuta, A.id_gestione, A.id_tipo_soldi DESC) " +
+            "AS AAA WHERE Totale <> 0;";
 
         public static readonly string GetMovementDetailed = "SELECT G.nome_gestione, B.desc_conto, C.desc_movimento, E.desc_tipo_titolo, D.desc_titolo, D.isin, F.desc_tipo_soldi, " +
             "data_movimento, ROUND(case when ammontare < 0 then ammontare ELSE 0 END , 2) AS uscite, ROUND (case when ammontare > 0 then ammontare ELSE 0 END, 2) AS entrate, causale " +

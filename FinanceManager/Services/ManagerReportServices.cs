@@ -279,6 +279,7 @@ namespace FinanceManager.Services
                         RPL.Anno = dr.Field<int>("Anno");
                         RPL.Gestione = dr.Field<string>("nome_gestione");
                         RPL.TipoSoldi = dr.Field<string>("desc_tipo_soldi");
+                        RPL.Valuta = dr.Field<string>("cod_valuta");
                         if (!isSynthetic)
                         {
                             RPL.NomeTitolo = dr.Field<string>("desc_titolo");
@@ -291,9 +292,12 @@ namespace FinanceManager.Services
                         }
                         RPL.Azioni = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("Azioni") * -1 : dr.Field<double>("Azioni");
                         RPL.Obbligazioni = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("Obbligazioni") * -1 : dr.Field<double>("Obbligazioni");
-                        RPL.ETF = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("ETF") * -1 : dr.Field<double>("ETF");
+                        RPL.Certificati = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("Certificati") * -1 : dr.Field<double>("Certificati");
+                        RPL.ETF_C_P = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("ETF_C_P") * -1 : dr.Field<double>("ETF_C_P");
                         RPL.Fondo = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("Fondo") * -1 : dr.Field<double>("Fondo");
-                        RPL.Volatili = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("Volatili") * -1 : dr.Field<double>("Volatili");
+                        RPL.Futures = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("Futures") * -1 : dr.Field<double>("Futures");
+                        RPL.Opzioni = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("Opzioni") * -1 : dr.Field<double>("Opzioni");
+                        RPL.Commodities = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("Commodities") * -1 : dr.Field<double>("Commodities");
                         RPL.Costi = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("Costi") * -1 : dr.Field<double>("Costi");
                         RPL.Totale = RPL.TipoSoldi == "Perdita di Capitale" ? dr.Field<double>("Totale") * -1 : dr.Field<double>("Totale");
                         reportProfitLossList.Add(RPL);

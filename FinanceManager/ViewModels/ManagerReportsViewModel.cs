@@ -79,159 +79,198 @@ namespace FinanceManager.ViewModels
 
         private void DoTotals()
         {
-            double Azioni;
-            double Obbligazione;
-            double Etf;
-            double Fondo;
-            double Volatili;
-            double Costi;
-            double Totali;
-
             switch (ReportSelezionato)
             {
                 case "PL":
-                    for (int row = 0; row < ReportProfitLosses.Count; row++)
+                    for (int RowCicle = 0; RowCicle < ReportProfitLosses.Count;)
                     {
-                        int Rrow = row;
-                        int Anno = ReportProfitLosses[Rrow].Anno;
-                        Azioni = 0;
-                        Obbligazione = 0;
-                        Etf = 0;
-                        Fondo = 0;
-                        Volatili = 0;
-                        Costi = 0;
-                        Totali = 0;
-                        string gestione = ReportProfitLosses[Rrow].Gestione;
-                        do
+                        int Anno = ReportProfitLosses[RowCicle].Anno;
+                        while (Anno == ReportProfitLosses[RowCicle].Anno)    // ciclo anno
                         {
-                            Azioni += ReportProfitLosses[Rrow].Azioni;
-                            Obbligazione += ReportProfitLosses[Rrow].Obbligazioni;
-                            Etf += ReportProfitLosses[Rrow].ETF;
-                            Fondo += ReportProfitLosses[Rrow].Fondo;
-                            Volatili += ReportProfitLosses[Rrow].Volatili;
-                            Costi += ReportProfitLosses[Rrow].Costi;
-                            Totali += ReportProfitLosses[Rrow].Totale;
-                            Rrow++;
-                            if (Rrow >= ReportProfitLosses.Count) break;
-                        } while (ReportProfitLosses[Rrow].Gestione == gestione && ReportProfitLosses[Rrow].Anno == Anno);
-                        if (Rrow - 1 > row)
-                        {
-                            ReportProfitLoss TotalProfitLoss = new ReportProfitLoss();
-                            TotalProfitLoss.Anno = Anno;
-                            TotalProfitLoss.Gestione = gestione;
-                            TotalProfitLoss.TipoSoldi = "";
-                            TotalProfitLoss.NomeTitolo = string.Format("Totale {0} nel {1}.", gestione, Anno); ;
-                            TotalProfitLoss.ISIN = "";
-                            TotalProfitLoss.Azioni = Azioni;
-                            TotalProfitLoss.Obbligazioni = Obbligazione;
-                            TotalProfitLoss.ETF = Etf;
-                            TotalProfitLoss.Fondo = Fondo;
-                            TotalProfitLoss.Volatili = Volatili;
-                            TotalProfitLoss.Costi = Costi;
-                            TotalProfitLoss.Totale = Totali;
-                            ReportProfitLosses.Insert(Rrow, TotalProfitLoss);
-                            row = Rrow; // - 1;
+                            string Valuta = ReportProfitLosses[RowCicle].Valuta;
+                            ReportProfitLoss TotaleAnnoValuta = new ReportProfitLoss();
+                            int ContGestioni = 0;
+                            while (Anno == ReportProfitLosses[RowCicle].Anno && Valuta == ReportProfitLosses[RowCicle].Valuta) // ciclo anno/valuta
+                            {
+                                ReportProfitLoss TotaleGestione = new ReportProfitLoss();
+                                string Gestione = ReportProfitLosses[RowCicle].Gestione;
+                                int ContTipoSoldi = 0;
+                                while (Anno == ReportProfitLosses[RowCicle].Anno && Gestione == ReportProfitLosses[RowCicle].Gestione && 
+                                    Valuta == ReportProfitLosses[RowCicle].Valuta) // ciclo anno/valuta/gestione
+                                {
+                                    TotaleAnnoValuta.Azioni += ReportProfitLosses[RowCicle].Azioni;
+                                    TotaleAnnoValuta.Obbligazioni += ReportProfitLosses[RowCicle].Obbligazioni;
+                                    TotaleAnnoValuta.Certificati += ReportProfitLosses[RowCicle].Certificati;
+                                    TotaleAnnoValuta.ETF_C_P += ReportProfitLosses[RowCicle].ETF_C_P;
+                                    TotaleAnnoValuta.Fondo += ReportProfitLosses[RowCicle].Fondo;
+                                    TotaleAnnoValuta.Futures += ReportProfitLosses[RowCicle].Futures;
+                                    TotaleAnnoValuta.Opzioni += ReportProfitLosses[RowCicle].Opzioni;
+                                    TotaleAnnoValuta.Commodities += ReportProfitLosses[RowCicle].Commodities;
+                                    TotaleAnnoValuta.Costi += ReportProfitLosses[RowCicle].Costi;
+                                    TotaleAnnoValuta.Totale += ReportProfitLosses[RowCicle].Totale;
+
+                                    TotaleGestione.Azioni += ReportProfitLosses[RowCicle].Azioni;
+                                    TotaleGestione.Obbligazioni += ReportProfitLosses[RowCicle].Obbligazioni;
+                                    TotaleGestione.Certificati += ReportProfitLosses[RowCicle].Certificati;
+                                    TotaleGestione.ETF_C_P += ReportProfitLosses[RowCicle].ETF_C_P;
+                                    TotaleGestione.Fondo += ReportProfitLosses[RowCicle].Fondo;
+                                    TotaleGestione.Futures += ReportProfitLosses[RowCicle].Futures;
+                                    TotaleGestione.Opzioni += ReportProfitLosses[RowCicle].Opzioni;
+                                    TotaleGestione.Commodities += ReportProfitLosses[RowCicle].Commodities;
+                                    TotaleGestione.Costi += ReportProfitLosses[RowCicle].Costi;
+                                    TotaleGestione.Totale += ReportProfitLosses[RowCicle].Totale;
+                                    ContTipoSoldi++;
+                                    if (RowCicle + 1 >= ReportProfitLosses.Count)
+                                    {
+                                        RowCicle++;
+                                        break;
+                                    }
+                                    RowCicle++;
+                                }   // fine ciclo anno/valuta/gestione
+                                ContGestioni++;
+                                if (ContTipoSoldi > 1)
+                                {
+                                    TotaleGestione.ISIN = "TOTALE " + Gestione + " " + Valuta;
+                                    ReportProfitLosses.Insert(RowCicle, TotaleGestione);
+                                    RowCicle++;
+                                }
+                                else
+                                {
+                                    ReportProfitLosses[RowCicle - 1].ISIN += "TOTALE " + Gestione + " " + Valuta;
+                                }
+                                if (RowCicle + 1 > ReportProfitLosses.Count)
+                                {
+                                    break;
+                                }
+                            } // fine ciclo anno/valuta
+                            if (ContGestioni > 1)
+                            {
+                                TotaleAnnoValuta.ISIN = "TOTALE " + Valuta + " " + Anno;
+                                ReportProfitLosses.Insert(RowCicle, TotaleAnnoValuta);
+                                RowCicle++;
+                            }
+                            else
+                            {
+                                ReportProfitLosses[RowCicle -1].ISIN += " TOTALE " + Valuta + " " + Anno;
+                            }
+                            if (RowCicle + 1 > ReportProfitLosses.Count)
+                            {
+                                break;
+                            }
                         }
                     }
                     break;
                 case "DPL":
-                    for (int Rrow = 0; Rrow < ReportProfitLosses.Count;)
+                    for (int RowCicle = 0; RowCicle < ReportProfitLosses.Count;)
                     {
-                        int Anno = ReportProfitLosses[Rrow].Anno;
-                        ReportProfitLoss TotaleAnno = new ReportProfitLoss();
+                        int Anno = ReportProfitLosses[RowCicle].Anno;
                         int contAnno = 0;
-                        while (Anno == ReportProfitLosses[Rrow].Anno) // ciclo anno
+                        while (Anno == ReportProfitLosses[RowCicle].Anno) // ciclo anno
                         {
-                            ReportProfitLoss TotaleGestione = new ReportProfitLoss();
-                            string Gestione = ReportProfitLosses[Rrow].Gestione;
+                            string Valuta = ReportProfitLosses[RowCicle].Valuta;
+                            ReportProfitLoss TotaleAnnoValuta = new ReportProfitLoss();
                             int contGestione = 0;
-                            while (Anno == ReportProfitLosses[Rrow].Anno && Gestione == ReportProfitLosses[Rrow].Gestione)  // ciclo gestione
+                            while (Anno == ReportProfitLosses[RowCicle].Anno && Valuta == ReportProfitLosses[RowCicle].Valuta)  // ciclo anno/valuta
                             {
-                                ReportProfitLoss TotaleTipoSoldi = new ReportProfitLoss();
-                                string tipoSoldi = ReportProfitLosses[Rrow].TipoSoldi;
-                                int contTipoSoldi = 0;
-                                while (Anno == ReportProfitLosses[Rrow].Anno && Gestione == ReportProfitLosses[Rrow].Gestione
-                                    && tipoSoldi == ReportProfitLosses[Rrow].TipoSoldi) // ciclo tiposoldi
+                                ReportProfitLoss TotaleGestione = new ReportProfitLoss();
+                                string Gestione = ReportProfitLosses[RowCicle].Gestione;
+                                while (Anno == ReportProfitLosses[RowCicle].Anno && Gestione == ReportProfitLosses[RowCicle].Gestione
+                                    && Valuta == ReportProfitLosses[RowCicle].Valuta) // ciclo anno/valuta/gestione
                                 {
-                                    TotaleAnno.Azioni += ReportProfitLosses[Rrow].Azioni;
-                                    TotaleAnno.Obbligazioni += ReportProfitLosses[Rrow].Obbligazioni;
-                                    TotaleAnno.ETF += ReportProfitLosses[Rrow].ETF;
-                                    TotaleAnno.Fondo += ReportProfitLosses[Rrow].Fondo;
-                                    TotaleAnno.Volatili += ReportProfitLosses[Rrow].Volatili;
-                                    TotaleAnno.Costi += ReportProfitLosses[Rrow].Costi;
-                                    TotaleAnno.Totale += ReportProfitLosses[Rrow].Totale;
-                                    TotaleGestione.Azioni += ReportProfitLosses[Rrow].Azioni;
-                                    TotaleGestione.Obbligazioni += ReportProfitLosses[Rrow].Obbligazioni;
-                                    TotaleGestione.ETF += ReportProfitLosses[Rrow].ETF;
-                                    TotaleGestione.Fondo += ReportProfitLosses[Rrow].Fondo;
-                                    TotaleGestione.Volatili += ReportProfitLosses[Rrow].Volatili;
-                                    TotaleGestione.Costi += ReportProfitLosses[Rrow].Costi;
-                                    TotaleGestione.Totale += ReportProfitLosses[Rrow].Totale;
-                                    TotaleTipoSoldi.Azioni += ReportProfitLosses[Rrow].Azioni;
-                                    TotaleTipoSoldi.Obbligazioni += ReportProfitLosses[Rrow].Obbligazioni;
-                                    TotaleTipoSoldi.ETF += ReportProfitLosses[Rrow].ETF;
-                                    TotaleTipoSoldi.Fondo += ReportProfitLosses[Rrow].Fondo;
-                                    TotaleTipoSoldi.Volatili += ReportProfitLosses[Rrow].Volatili;
-                                    TotaleTipoSoldi.Costi += ReportProfitLosses[Rrow].Costi;
-                                    TotaleTipoSoldi.Totale += ReportProfitLosses[Rrow].Totale;
-                                    contTipoSoldi++;
-                                    if (Rrow + 1 >= ReportProfitLosses.Count) // verifico di non andare oltre
+
+                                    int contTipoSoldi = 0;
+                                    string tipoSoldi = ReportProfitLosses[RowCicle].TipoSoldi;
+                                    ReportProfitLoss TotaleTipoSoldi = new ReportProfitLoss();
+                                    while (Anno == ReportProfitLosses[RowCicle].Anno && Gestione == ReportProfitLosses[RowCicle].Gestione
+                                    && Valuta == ReportProfitLosses[RowCicle].Valuta && tipoSoldi == ReportProfitLosses[RowCicle].TipoSoldi) // ciclo anno/valuta/gestione/tipo_soldi
+                                        {
+                                        TotaleAnnoValuta.Azioni += ReportProfitLosses[RowCicle].Azioni;
+                                        TotaleAnnoValuta.Obbligazioni += ReportProfitLosses[RowCicle].Obbligazioni;
+                                        TotaleAnnoValuta.ETF_C_P += ReportProfitLosses[RowCicle].ETF_C_P;
+                                        TotaleAnnoValuta.Fondo += ReportProfitLosses[RowCicle].Fondo;
+                                        TotaleAnnoValuta.Futures += ReportProfitLosses[RowCicle].Futures;
+                                        TotaleAnnoValuta.Costi += ReportProfitLosses[RowCicle].Costi;
+                                        TotaleAnnoValuta.Totale += ReportProfitLosses[RowCicle].Totale;
+                                        TotaleGestione.Azioni += ReportProfitLosses[RowCicle].Azioni;
+                                        TotaleGestione.Obbligazioni += ReportProfitLosses[RowCicle].Obbligazioni;
+                                        TotaleGestione.ETF_C_P += ReportProfitLosses[RowCicle].ETF_C_P;
+                                        TotaleGestione.Fondo += ReportProfitLosses[RowCicle].Fondo;
+                                        TotaleGestione.Futures += ReportProfitLosses[RowCicle].Futures;
+                                        TotaleGestione.Costi += ReportProfitLosses[RowCicle].Costi;
+                                        TotaleGestione.Totale += ReportProfitLosses[RowCicle].Totale;
+                                        TotaleTipoSoldi.Azioni += ReportProfitLosses[RowCicle].Azioni;
+                                        TotaleTipoSoldi.Obbligazioni += ReportProfitLosses[RowCicle].Obbligazioni;
+                                        TotaleTipoSoldi.ETF_C_P += ReportProfitLosses[RowCicle].ETF_C_P;
+                                        TotaleTipoSoldi.Fondo += ReportProfitLosses[RowCicle].Fondo;
+                                        TotaleTipoSoldi.Futures += ReportProfitLosses[RowCicle].Futures;
+                                        TotaleTipoSoldi.Costi += ReportProfitLosses[RowCicle].Costi;
+                                        TotaleTipoSoldi.Totale += ReportProfitLosses[RowCicle].Totale;
+                                        contTipoSoldi++;
+                                        if (RowCicle + 1 >= ReportProfitLosses.Count) // verifico di non andare oltre
+                                        {
+                                            RowCicle++; // incremento comunque il contatore per avere la stessa situazione in uscita dal ciclo
+                                            break;
+                                        }
+                                        RowCicle++;
+                                    } // fine ciclo anno/valuta/gestione/tipo_soldi
+                                    if (contTipoSoldi > 1) // se il contatore è maggiore di 1 aggiungo riga x totali
                                     {
-                                        Rrow++; // incremento comunque il contatore per avere la stessa situazione in uscita dal ciclo
-                                        break;
+                                        TotaleTipoSoldi.ISIN = "TOTALE TIPO SOLDI";
+                                        TotaleTipoSoldi.NomeTitolo = "TOTALE TIPO SOLDI";
+                                        TotaleTipoSoldi.TipoSoldi = tipoSoldi;
+                                        TotaleTipoSoldi.Gestione = Gestione;
+                                        TotaleTipoSoldi.Valuta = Valuta;
+                                        TotaleTipoSoldi.Anno = Anno;
+                                        ReportProfitLosses.Insert(RowCicle, TotaleTipoSoldi);   // il contatore viene incrementato automaticamente
+                                        RowCicle++;                                                 // mi adeguo
                                     }
-                                    Rrow++;
-                                } // fine ciclo tipo soldi
+                                    else
+                                    {
+                                        ReportProfitLosses[RowCicle - 1].TipoSoldi += " TOTALE";
+                                    }
+                                    if (RowCicle >= ReportProfitLosses.Count)
+                                        break;
+                                }
                                 contGestione++;
-                                if (contTipoSoldi > 1) // se il contatore è maggiore di 1 aggiungo riga x totali
+                                contAnno++;
+                                if (contGestione > 1)
                                 {
-                                    TotaleTipoSoldi.ISIN = "TOTALE TIPO SOLDI";
-                                    TotaleTipoSoldi.NomeTitolo = "TOTALE TIPO SOLDI";
-                                    TotaleTipoSoldi.TipoSoldi = tipoSoldi;
-                                    TotaleTipoSoldi.Gestione = Gestione;
-                                    TotaleTipoSoldi.Anno = Anno;
-                                    ReportProfitLosses.Insert(Rrow, TotaleTipoSoldi);   // il contatore viene incrementato automaticamente
-                                    Rrow++;                                                 // mi adeguo
+                                    TotaleGestione.ISIN = "TOTALE GESTIONE";
+                                    TotaleGestione.NomeTitolo = "TOTALE GESTIONE";
+                                    TotaleGestione.TipoSoldi = "TOTALE GESTIONE";
+                                    TotaleGestione.Gestione = Gestione;
+                                    TotaleGestione.Valuta = Valuta;
+                                    TotaleGestione.Anno = Anno;
+                                    ReportProfitLosses.Insert(RowCicle, TotaleGestione);      // il contatore viene incrementato automaticamente
+                                    RowCicle++;                                                 // mi adeguo
                                 }
                                 else
                                 {
-                                    ReportProfitLosses[Rrow - 1].TipoSoldi += " TOTALE";
+                                    ReportProfitLosses[RowCicle - 1].Gestione += " TOTALE";
                                 }
-                                if (Rrow >= ReportProfitLosses.Count)
+                                if (RowCicle >= ReportProfitLosses.Count)
                                     break;
                             }   // fine ciclo gestione
-                            contAnno++;
-                            if (contGestione > 1)
+                            if (contAnno > 1)
                             {
-                                TotaleGestione.ISIN = "TOTALE GESTIONE";
-                                TotaleGestione.NomeTitolo = "TOTALE GESTIONE";
-                                TotaleGestione.TipoSoldi = "TOTALE GESTIONE";
-                                TotaleGestione.Gestione = Gestione;
-                                TotaleGestione.Anno = Anno;
-                                ReportProfitLosses.Insert(Rrow, TotaleGestione);      // il contatore viene incrementato automaticamente
-                                Rrow++;                                                 // mi adeguo
+                                TotaleAnnoValuta.ISIN = "TOTALE ANNO " + Valuta;
+                                TotaleAnnoValuta.NomeTitolo = "TOTALE ANNO " + Valuta;
+                                TotaleAnnoValuta.TipoSoldi = "TOTALE ANNO " + Valuta;
+                                TotaleAnnoValuta.Gestione = "TOTALE ANNO" + Valuta;
+                                TotaleAnnoValuta.Valuta = Valuta;
+                                TotaleAnnoValuta.Anno = Anno;
+                                ReportProfitLosses.Insert(RowCicle, TotaleAnnoValuta);
+                                RowCicle++;
                             }
                             else
                             {
-                                ReportProfitLosses[Rrow  - 1].Gestione += " TOTALE";
+                                ReportProfitLosses[RowCicle - 1].Gestione += " - TOTALE ANNO";
                             }
-                            if (Rrow >= ReportProfitLosses.Count)
+                            if (RowCicle >= ReportProfitLosses.Count)
+                            {
                                 break;
+                            }
                         } // fine ciclo anno
-                        if (contAnno > 1)
-                        {
-                            TotaleAnno.ISIN = "TOTALE ANNO";
-                            TotaleAnno.NomeTitolo = "TOTALE ANNO";
-                            TotaleAnno.TipoSoldi = "TOTALE ANNO";
-                            TotaleAnno.Gestione = "TOTALE ANNO";
-                            TotaleAnno.Anno = Anno;
-                            ReportProfitLosses.Insert(Rrow, TotaleAnno);
-                            Rrow++;
-                        }
-                        else
-                        {
-                            ReportProfitLosses[Rrow - 1].Gestione += " - TOTALE ANNO";
-                        }
                     }
                     break;
             }

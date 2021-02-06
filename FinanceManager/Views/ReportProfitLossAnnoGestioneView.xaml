@@ -25,6 +25,14 @@
                     </Style>
                 </DataGridTextColumn.ElementStyle>
             </DataGridTextColumn>
+            <DataGridTextColumn Header="VALUTA" IsReadOnly="True" Binding="{Binding Valuta, UpdateSourceTrigger=PropertyChanged}">
+                <DataGridTextColumn.ElementStyle>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                        <Setter Property="Margin" Value="5,0,5,0"/>
+                    </Style>
+                </DataGridTextColumn.ElementStyle>
+            </DataGridTextColumn>
             <DataGridTextColumn Header="GESTIONE" IsReadOnly="True" Binding="{Binding Gestione, UpdateSourceTrigger=PropertyChanged}">
                 <DataGridTextColumn.ElementStyle>
                     <Style TargetType="{x:Type TextBlock}">
@@ -73,7 +81,15 @@
                     </Style>
                 </DataGridTextColumn.ElementStyle>
             </DataGridTextColumn>
-            <DataGridTextColumn Header="ETF" IsReadOnly="True" Binding="{Binding ETF, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged}">
+            <DataGridTextColumn Header="CERTIFICATI" IsReadOnly="True" Binding="{Binding Certificati, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged}">
+                <DataGridTextColumn.ElementStyle>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                        <Setter Property="Margin" Value="5,0,10,0"/>
+                    </Style>
+                </DataGridTextColumn.ElementStyle>
+            </DataGridTextColumn>
+            <DataGridTextColumn Header="ETF-C-P" IsReadOnly="True" Binding="{Binding ETF_C_P, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged}">
                 <DataGridTextColumn.ElementStyle>
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -89,7 +105,23 @@
                     </Style>
                 </DataGridTextColumn.ElementStyle>
             </DataGridTextColumn>
-            <DataGridTextColumn Header="VOLATILI" IsReadOnly="True" Binding="{Binding Volatili, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged}">
+            <DataGridTextColumn Header="FUTURES" IsReadOnly="True" Binding="{Binding Futures, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged}">
+                <DataGridTextColumn.ElementStyle>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                        <Setter Property="Margin" Value="5,0,10,0"/>
+                    </Style>
+                </DataGridTextColumn.ElementStyle>
+            </DataGridTextColumn>
+            <DataGridTextColumn Header="OPZIONI" IsReadOnly="True" Binding="{Binding Opzioni, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged}">
+                <DataGridTextColumn.ElementStyle>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                        <Setter Property="Margin" Value="5,0,10,0"/>
+                    </Style>
+                </DataGridTextColumn.ElementStyle>
+            </DataGridTextColumn>
+            <DataGridTextColumn Header="COMMODITIES" IsReadOnly="True" Binding="{Binding Commodities, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged}">
                 <DataGridTextColumn.ElementStyle>
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="HorizontalAlignment" Value="Right"/>
