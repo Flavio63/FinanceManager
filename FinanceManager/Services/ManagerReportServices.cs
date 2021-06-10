@@ -142,6 +142,7 @@ namespace FinanceManager.Services
                         GuadagnoPerPeriodo GPP = new GuadagnoPerPeriodo();
                         GPP.IdGestione = Convert.ToInt32(DR.ItemArray[0]);
                         GPP.Gestione = DR.Field<string>("nome_gestione");
+                        GPP.Valuta = DR.Field<string>("cod_valuta");
                         if (!isYear)
                         {
                             switch ( DR.Field<int>("Mese") )
@@ -187,7 +188,7 @@ namespace FinanceManager.Services
                         GPP.GuadagnoAnno1 = DR.Field<double>("GuadagniAnno1");
                         GPP.GuadagnoAnno2 = DR.Field<double>("GuadagniAnno2");
                         GPP.Differenza = DR.Field<double>("Differenza");
-                        GPP.Delta = DR.ItemArray[5] == System.DBNull.Value ? 0 : DR.Field<double>("Delta");
+                        GPP.Delta = DR.ItemArray[!isYear? 7: 6] == System.DBNull.Value ? 0 : DR.Field<double>("Delta");
                         GPPL.Add(GPP);
                     }
                 }

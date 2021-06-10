@@ -63,10 +63,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>80811FA324C037DE09E800F2E7D393FFFCA25E4F</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>DB38FDA846A6163264355AF76AD9559DA34C4BE2</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>FinanceManagerKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>FinanceManager_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -434,6 +434,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="FinanceManagerKey.pfx" />
+    <None Include="FinanceManager_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

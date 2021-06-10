@@ -17,6 +17,7 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Mese" Width="110" DisplayMemberBinding="{Binding Mese}"/>
+                    <GridViewColumn Header="Valuta" Width="90" DisplayMemberBinding="{Binding Valuta}"/>
                     <GridViewColumn Header="Anno 0" Width="110" DisplayMemberBinding="{Binding GuadagnoAnno1, ConverterCulture=it-IT, StringFormat=C}"/>
                     <GridViewColumn Header="Anno 1" Width="110" DisplayMemberBinding="{Binding GuadagnoAnno2, ConverterCulture=it-IT, StringFormat=C}"/>
                     <GridViewColumn Header="Differenza" Width="100" DisplayMemberBinding="{Binding Differenza, ConverterCulture=it-IT, StringFormat=C}"/>

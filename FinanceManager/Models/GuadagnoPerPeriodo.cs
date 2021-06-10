@@ -7,6 +7,7 @@ namespace FinanceManager.Models
     {
         public int IdGestione { get; set; }
         public string Gestione { get; set; }
+        public string Valuta { get; set; }
         public string Mese { get; set; }
         public double GuadagnoAnno1 { get; set; }
         public double GuadagnoAnno2 { get; set; }
