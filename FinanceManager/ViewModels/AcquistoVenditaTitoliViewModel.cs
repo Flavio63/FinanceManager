@@ -140,6 +140,11 @@ namespace FinanceManager.ViewModels
                     RecordPortafoglioTitoli.Nome_Gestione = RO.Nome_Gestione;
                     Gestione = RO.Nome_Gestione;
                 }
+                if (e.AddedItems[0] is RegistryCurrency RC)
+                {
+                    RecordPortafoglioTitoli.Cod_valuta = RC.CodeCurrency;
+                    RecordPortafoglioTitoli.Id_valuta = RC.IdCurrency;
+                }
                 if (e.AddedItems[0] is RegistryShare RS)
                 {
                     RecordPortafoglioTitoli.Id_titolo = RS.id_titolo;
