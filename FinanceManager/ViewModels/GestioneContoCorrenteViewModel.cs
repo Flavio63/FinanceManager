@@ -524,7 +524,7 @@ namespace FinanceManager.ViewModels
                     }
                     FiltroGestione = RO.Nome_Gestione;
                 }
-                else if (e.AddedItems[0] is RegistryCurrency RC && RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.CambioValuta)
+                else if (e.AddedItems[0] is RegistryCurrency RC)
                 {
                     if (((ComboBox)e.OriginalSource).Name == "Valuta2")
                     {

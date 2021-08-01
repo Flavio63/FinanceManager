@@ -238,10 +238,10 @@
                     </iy:Interaction.Triggers>
                 </ComboBox>
                 <TextBlock Grid.Row="3" Text="Valuta" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
-                <ComboBox Name="Valuta" Grid.Row="3" Grid.Column="1" ItemsSource="{Binding ListValute, UpdateSourceTrigger=PropertyChanged}"
+                <ComboBox Name="Valuta" Grid.Row="3" Grid.Column="1" ItemsSource="{Binding ListValute, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                           SelectedValuePath="IdCurrency" DisplayMemberPath="DescCurrency" Margin="5, 2" MinWidth="100" 
                           IsEnabled="{Binding CommonFieldsEnabled, UpdateSourceTrigger=PropertyChanged}"
-                          SelectedValue="{Binding RecordContoCorrente.Id_Valuta, UpdateSourceTrigger=PropertyChanged}" 
+                          SelectedValue="{Binding RecordContoCorrente.Id_Valuta, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                           HorizontalAlignment="Center">
                     <iy:Interaction.Triggers>
                         <iy:EventTrigger EventName="SelectionChanged">
