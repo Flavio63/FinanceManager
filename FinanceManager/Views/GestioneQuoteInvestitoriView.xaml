@@ -170,8 +170,17 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
+                            <DataGridTextColumn Header="Valuta" Binding="{Binding Valuta, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                    IsReadOnly="True" FontSize="14">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="FontWeight" Value="Normal"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
                             <DataGridTextColumn Header="Guadagnato" Binding="{Binding Guadagno, 
-                                UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}"
+                                UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}"
                                                 IsReadOnly="True" FontSize="14">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="{x:Type TextBlock}">
@@ -182,7 +191,7 @@
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
                             <DataGridTextColumn Header="Prelevato" Binding="{Binding Preso, 
-                                UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}"
+                                UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}"
                                                 IsReadOnly="True" FontSize="14">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="{x:Type TextBlock}">
@@ -193,7 +202,7 @@
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
                             <DataGridTextColumn Header="Restante" Binding="{Binding In_Cassa, 
-                                UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}"
+                                UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}"
                                                 IsReadOnly="True" FontSize="14" FontWeight="Bold">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="{x:Type TextBlock}">
@@ -253,8 +262,17 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
+                            <DataGridTextColumn Header="Valuta" Binding="{Binding Valuta, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                    IsReadOnly="True" FontSize="14">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="FontWeight" Value="Normal"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
                             <DataGridTextColumn Header="Guadagnato" Binding="{Binding Guadagno, 
-                                UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}"
+                                UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}"
                                                 IsReadOnly="True" FontSize="14">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="{x:Type TextBlock}">
@@ -265,7 +283,7 @@
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
                             <DataGridTextColumn Header="Prelevato" Binding="{Binding Preso, 
-                                UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}"
+                                UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}"
                                                 IsReadOnly="True" FontSize="14">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="{x:Type TextBlock}">
@@ -349,8 +367,17 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
+                            <DataGridTextColumn Header="Valuta" Binding="{Binding Valuta, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                    IsReadOnly="True" FontSize="14">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="FontWeight" Value="Normal"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
                             <DataGridTextColumn Header="Guadagnato" Binding="{Binding Guadagno, 
-                                UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}"
+                                UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}"
                                                 IsReadOnly="True" FontSize="14">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="{x:Type TextBlock}">
@@ -361,7 +388,7 @@
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
                             <DataGridTextColumn Header="Prelevato" Binding="{Binding Preso, 
-                                UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}"
+                                UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}"
                                                 IsReadOnly="True" FontSize="14">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="{x:Type TextBlock}">

@@ -1102,10 +1102,15 @@ namespace FinanceManager.Services
                 using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
                 {
                     dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.SelectCommand.Connection.Open();
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     switch (tipoReport)
                     {
                         case 0:
+                            MySqlCommand cmd = new MySqlCommand("SintesiGuadagniPerValute", dbAdapter.SelectCommand.Connection);
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.ExecuteNonQuery();
                             dbAdapter.SelectCommand.CommandText = ManagerScripts.GetQuoteGuadagno;
                             break;
                         case 1:
@@ -1115,7 +1120,6 @@ namespace FinanceManager.Services
                             dbAdapter.SelectCommand.CommandText = ManagerScripts.GetQuoteDettaglioGuadagno;
                             break;
                     }
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
                     GuadagnoPerQuoteList quotes = new GuadagnoPerQuoteList();
                     foreach (DataRow dataRow in DT.Rows)
@@ -1123,6 +1127,7 @@ namespace FinanceManager.Services
                         GuadagnoPerQuote quote = new GuadagnoPerQuote();
                         quote.Anno = dataRow.Field<int>("anno");
                         quote.Nome = dataRow.Field<string>("nome_gestione");
+                        quote.Valuta = dataRow.Field<string>("cod_valuta");
                         if (tipoReport == 1 || tipoReport == 2)
                         {
                             quote.DescTipoSoldi = dataRow.Field<string>("desc_tipo_soldi");

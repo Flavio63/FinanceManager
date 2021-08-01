@@ -13,6 +13,7 @@ namespace FinanceManager.Models
         public int Anno { get; set; }
         public int IdGestione { get; set; }
         public string Nome { get; set; }
+        public string Valuta { get; set; }
         public int IdTipoMovimento { get; set; }
         public string DescTipoSoldi { get; set; }
         public DateTime DataOperazione 
