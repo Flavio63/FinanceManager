@@ -1888,6 +1888,7 @@ namespace FinanceManager.Services
                         PortafoglioTitoli PT = new PortafoglioTitoli();
                         PT.Nome_Gestione = DR.Field<string>("nome_gestione");
                         PT.Desc_Conto = DR.Field<string>("desc_conto");
+                        PT.Id_tipo_titolo = DR.Field<uint>("id_tipo_titolo");
                         PT.Desc_tipo_titolo = DR.Field<string>("desc_tipo_titolo");
                         PT.Desc_titolo = DR.Field<string>("desc_titolo");
                         PT.Isin = DR.Field<string>("isin");

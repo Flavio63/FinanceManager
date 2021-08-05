@@ -111,6 +111,7 @@ namespace FinanceManager.ViewModels
             Conto = "";
             Gestione = "";
             ISIN = "";
+            IdTipoTitolo = 0;
         }
 
         #region events
@@ -155,7 +156,7 @@ namespace FinanceManager.ViewModels
                 }
                 if (e.AddedItems[0] is RegistryShareType RST)
                 {
-                    TipoTitolo = RST.desc_tipo_titolo;
+                    IdTipoTitolo = (int)RST.id_tipo_titolo;
                 }
                 if (e.AddedItems[0] is DateTime DT)
                 {
@@ -314,18 +315,6 @@ namespace FinanceManager.ViewModels
                 AmountChangedValue = RecordPortafoglioTitoli.Valore_di_cambio == 0 ? 0 : (TotaleContabile / RecordPortafoglioTitoli.Valore_di_cambio);
         }
 
-        private bool FilterCostiMedi(object obj)
-        {
-            if (obj != null)
-            {
-                if (obj is PortafoglioTitoli Ptf)
-                {
-                    if (!string.IsNullOrWhiteSpace(TipoTitolo))
-                        return Ptf.Desc_tipo_titolo.ToLower() == (TipoTitolo.ToLower());
-                }
-            }
-            return true;
-        }
         /// <summary>
         /// E' il filtro da applicare all'elenco delle azioni
         /// e contestualmente al datagrid sottostante
@@ -342,31 +331,63 @@ namespace FinanceManager.ViewModels
                 }
                 else if (obj is PortafoglioTitoli Ptf)
                 {
-                    if (!string.IsNullOrWhiteSpace(Conto) && !string.IsNullOrWhiteSpace(Gestione) && !string.IsNullOrWhiteSpace(ISIN))    // tutte e 3 i filtri
+                    if (!string.IsNullOrWhiteSpace(Conto) && !string.IsNullOrWhiteSpace(Gestione) && IdTipoTitolo > 0 && !string.IsNullOrWhiteSpace(ISIN)) // 4 filtri su 4
+                    {
+                        return Ptf.Desc_Conto.ToLower().Contains(Conto.ToLower()) && Ptf.Nome_Gestione.ToLower().Contains(Gestione.ToLower()) && Ptf.Id_tipo_titolo == IdTipoTitolo && Ptf.Isin.ToLower().Contains(ISIN.ToLower());
+                    }
+                    else if (!string.IsNullOrWhiteSpace(Conto) && !string.IsNullOrWhiteSpace(Gestione) && IdTipoTitolo > 0 && string.IsNullOrWhiteSpace(ISIN)) // 3 filtri su 4
+                    {
+                        return Ptf.Desc_Conto.ToLower().Contains(Conto.ToLower()) && Ptf.Nome_Gestione.ToLower().Contains(Gestione.ToLower()) && Ptf.Id_tipo_titolo == IdTipoTitolo;
+                    }
+                    else if (!string.IsNullOrWhiteSpace(Conto) && string.IsNullOrWhiteSpace(Gestione) && IdTipoTitolo > 0 && !string.IsNullOrWhiteSpace(ISIN)) // 3 filtri su 4
+                    {
+                        return Ptf.Desc_Conto.ToLower().Contains(Conto.ToLower()) && Ptf.Id_tipo_titolo == IdTipoTitolo && Ptf.Isin.ToLower().Contains(ISIN.ToLower());
+                    }
+                    else if (!string.IsNullOrWhiteSpace(Conto) && !string.IsNullOrWhiteSpace(Gestione) && IdTipoTitolo == 0 && !string.IsNullOrWhiteSpace(ISIN)) // 3 filtri su 4
                     {
                         return Ptf.Desc_Conto.ToLower().Contains(Conto.ToLower()) && Ptf.Nome_Gestione.ToLower().Contains(Gestione.ToLower()) && Ptf.Isin.ToLower().Contains(ISIN.ToLower());
                     }
-                    else if (!string.IsNullOrWhiteSpace(Conto) && !string.IsNullOrWhiteSpace(Gestione) && string.IsNullOrWhiteSpace(ISIN)) // 2 filtri su 3
+                    else if (string.IsNullOrWhiteSpace(Conto) && !string.IsNullOrWhiteSpace(Gestione) && IdTipoTitolo > 0 && !string.IsNullOrWhiteSpace(ISIN)) // 3 filtri su 4
+                    {
+                        return Ptf.Nome_Gestione.ToLower().Contains(Gestione.ToLower()) && Ptf.Id_tipo_titolo == IdTipoTitolo && Ptf.Isin.ToLower().Contains(ISIN.ToLower());
+                    }
+                    else if (!string.IsNullOrWhiteSpace(Conto) && !string.IsNullOrWhiteSpace(Gestione) && IdTipoTitolo == 0 && string.IsNullOrWhiteSpace(ISIN)) // 2 filtri su 4
                     {
                         return Ptf.Desc_Conto.ToLower().Contains(Conto.ToLower()) && Ptf.Nome_Gestione.ToLower().Contains(Gestione.ToLower());
                     }
-                    else if (!string.IsNullOrWhiteSpace(Conto) && string.IsNullOrWhiteSpace(Gestione) && !string.IsNullOrWhiteSpace(ISIN)) // 2 filtri su 3
+                    else if (!string.IsNullOrWhiteSpace(Conto) && string.IsNullOrWhiteSpace(Gestione) && IdTipoTitolo > 0 && string.IsNullOrWhiteSpace(ISIN)) // 2 filtri su 4
+                    {
+                        return Ptf.Desc_Conto.ToLower().Contains(Conto.ToLower()) && Ptf.Id_tipo_titolo == IdTipoTitolo;
+                    }
+                    else if (string.IsNullOrWhiteSpace(Conto) && !string.IsNullOrWhiteSpace(Gestione) && IdTipoTitolo > 0 && string.IsNullOrWhiteSpace(ISIN)) // 2 filtri su 4
+                    {
+                        return Ptf.Nome_Gestione.ToLower().Contains(Gestione.ToLower()) && Ptf.Id_tipo_titolo == IdTipoTitolo;
+                    }
+                    else if (!string.IsNullOrWhiteSpace(Conto) && string.IsNullOrWhiteSpace(Gestione) && IdTipoTitolo == 0 && !string.IsNullOrWhiteSpace(ISIN)) // 2 filtri su 4
                     {
                         return Ptf.Desc_Conto.ToLower().Contains(Conto.ToLower()) && Ptf.Isin.ToLower().Contains(ISIN.ToLower());
                     }
-                    else if (string.IsNullOrWhiteSpace(Conto) && !string.IsNullOrWhiteSpace(Gestione) && !string.IsNullOrWhiteSpace(ISIN)) // 2 filtri su 3
+                    else if (string.IsNullOrWhiteSpace(Conto) && !string.IsNullOrWhiteSpace(Gestione) && IdTipoTitolo == 0 && !string.IsNullOrWhiteSpace(ISIN)) // 2 filtri su 4
                     {
                         return Ptf.Nome_Gestione.ToLower().Contains(Gestione.ToLower()) && Ptf.Isin.ToLower().Contains(ISIN.ToLower());
                     }
-                    else if (!string.IsNullOrWhiteSpace(Conto) && string.IsNullOrWhiteSpace(Gestione) && string.IsNullOrWhiteSpace(ISIN)) // 1 filtri su 3
+                    else if (string.IsNullOrWhiteSpace(Conto) && string.IsNullOrWhiteSpace(Gestione) && IdTipoTitolo > 0 && !string.IsNullOrWhiteSpace(ISIN)) // 2 filtri su 4
+                    {
+                        return Ptf.Id_tipo_titolo == IdTipoTitolo && Ptf.Isin.ToLower().Contains(ISIN.ToLower());
+                    }
+                    else if (!string.IsNullOrWhiteSpace(Conto) && string.IsNullOrWhiteSpace(Gestione) && IdTipoTitolo == 0 && string.IsNullOrWhiteSpace(ISIN)) // 1 filtri su 4
                     {
                         return Ptf.Desc_Conto.ToLower().Contains(Conto.ToLower());
                     }
-                    if (string.IsNullOrWhiteSpace(Conto) && !string.IsNullOrWhiteSpace(Gestione) && string.IsNullOrWhiteSpace(ISIN)) // 1 filtri su 3
+                    if (string.IsNullOrWhiteSpace(Conto) && !string.IsNullOrWhiteSpace(Gestione) && IdTipoTitolo == 0 && string.IsNullOrWhiteSpace(ISIN)) // 1 filtri su 4
                     {
                         return Ptf.Nome_Gestione.ToLower().Contains(Gestione.ToLower());
                     }
-                    if (string.IsNullOrWhiteSpace(Conto) && string.IsNullOrWhiteSpace(Gestione) && !string.IsNullOrWhiteSpace(ISIN)) // 1 filtri su 3
+                    if (string.IsNullOrWhiteSpace(Conto) && string.IsNullOrWhiteSpace(Gestione) && IdTipoTitolo > 0 && string.IsNullOrWhiteSpace(ISIN)) // 1 filtri su 4
+                    {
+                        return Ptf.Id_tipo_titolo == IdTipoTitolo;
+                    }
+                    if (string.IsNullOrWhiteSpace(Conto) && string.IsNullOrWhiteSpace(Gestione) && IdTipoTitolo == 0 && !string.IsNullOrWhiteSpace(ISIN)) // 1 filtri su 4
                     {
                         return Ptf.Isin.ToLower().Contains(ISIN.ToLower());
                     }
@@ -382,25 +403,53 @@ namespace FinanceManager.ViewModels
         private string Conto
         {
             get { return _conto; }
-            set { _conto = value; PtfCollectionView.Filter = _Filter; PtfCollectionView.Refresh(); }
+            set
+            {
+                _conto = value;
+                PtfCollectionView.Filter = _Filter;
+                PtfCollectionView.Refresh();
+                CollectionCostiMedi.Filter = _Filter;
+                CollectionCostiMedi.Refresh();
+            }
         }
         private string _gestione;
         private string Gestione
         {
             get { return _gestione; }
-            set { _gestione = value; PtfCollectionView.Filter = _Filter; PtfCollectionView.Refresh(); }
+            set
+            {
+                _gestione = value;
+                PtfCollectionView.Filter = _Filter;
+                PtfCollectionView.Refresh();
+                CollectionCostiMedi.Filter = _Filter;
+                CollectionCostiMedi.Refresh();
+            }
         }
         private string _isin;
         private string ISIN
         {
             get { return _isin; }
-            set { _isin = value; PtfCollectionView.Filter = _Filter; PtfCollectionView.Refresh(); }
+            set
+            {
+                _isin = value;
+                PtfCollectionView.Filter = _Filter;
+                PtfCollectionView.Refresh();
+                CollectionCostiMedi.Filter = _Filter;
+                CollectionCostiMedi.Refresh();
+            }
         }
-        private string _TipoTitolo;
-        private string TipoTitolo
+        private int _IdTipoTitolo;
+        private int IdTipoTitolo
         {
-            get { return _TipoTitolo; }
-            set { _TipoTitolo = value; CollectionCostiMedi.Filter = FilterCostiMedi; CollectionCostiMedi.Refresh(); }
+            get { return _IdTipoTitolo; }
+            set
+            {
+                _IdTipoTitolo = value;
+                PtfCollectionView.Filter = _Filter;
+                PtfCollectionView.Refresh();
+                CollectionCostiMedi.Filter = _Filter;
+                CollectionCostiMedi.Refresh();
+            }
         }
         #endregion
 
