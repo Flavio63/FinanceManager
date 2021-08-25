@@ -30,7 +30,7 @@ namespace FinanceManager.ViewModels
         Predicate<object> _Filter;
 
         private IList<RegistryOwner> _selectedOwners;
-        private IList<int> _selectedAccount;
+        private IList<RegistryLocation> _selectedAccount;
 
         public ManagerReportsViewModel(IRegistryServices registryServices, IManagerReportServices managerReportServices, IManagerLiquidAssetServices managerLiquidAssetServices)
         {
@@ -40,7 +40,7 @@ namespace FinanceManager.ViewModels
             CloseMeCommand = new CommandHandler(CloseMe);
             ViewCommand = new CommandHandler(ViewReport, CanDoReport);
             ClearCommand = new CommandHandler(ClearReport, CanClearReport);
-            DownloadCommand = new CommandHandler(ExportReport, CanClearReport);
+            DownloadCommand = new CommandHandler(ExportReport, CanExportReport);
             SetUpViewModel();
         }
 
@@ -51,6 +51,8 @@ namespace FinanceManager.ViewModels
             try
             {
                 OwnerList = new RegistryOwnersList();
+                CurrenciesList = _services.GetRegistryCurrencyList();
+
                 RegistryOwnersList ListaOriginale = new RegistryOwnersList();
                 ListaOriginale = _services.GetGestioneList();
                 var LO = from risultato in ListaOriginale
@@ -59,10 +61,9 @@ namespace FinanceManager.ViewModels
                 foreach (RegistryOwner registryOwner in LO)
                     OwnerList.Add(registryOwner);
 
-                //OwnerList = _services.GetGestioneList();
                 AccountList = _services.GetRegistryLocationList();
                 _selectedOwners = new List<RegistryOwner>();
-                _selectedAccount = new List<int>();
+                _selectedAccount = new List<RegistryLocation>();
                 AvailableYears = _reportServices.GetAvailableYears();
                 SelectedYears = new List<int>();
                 SharesList = new ObservableCollection<RegistryShare>(_services.GetRegistryShareList());
@@ -70,6 +71,11 @@ namespace FinanceManager.ViewModels
                 ReportSelezionato = "";
                 TitoloSelezionato = 0;
                 CanClear = false;
+                CanExport = false;
+                AttivaContoCorrente = false;
+                AttivaGestioni = false;
+                YearsIsEnable = false;
+
             }
             catch (Exception err)
             {
@@ -294,7 +300,7 @@ namespace FinanceManager.ViewModels
                     case "Conto":
                         _selectedAccount.Clear();
                         foreach (RegistryLocation registryLocation in LB.SelectedItems)
-                            _selectedAccount.Add(registryLocation.Id_Conto);
+                            _selectedAccount.Add(registryLocation);
                         break;
                     case "Anni":
                         SelectedYears.Clear();
@@ -303,10 +309,16 @@ namespace FinanceManager.ViewModels
                             SelectedYears.Add(y);
                         }
                         break;
+                    case "Valute":
+                        if (e.AddedItems.Count > 0)
+                            if (e.AddedItems[0] is RegistryCurrency RC)
+                                SelectedCurrency = RC.IdCurrency;
+                        break;
                 }
             }
             if (sender is ComboBox CB)
                 TitoloSelezionato = (int)(((RegistryShare)CB.SelectedItem).id_titolo);
+            CanClear = true;
         }
 
         public void IsChecked(object sender, RoutedEventArgs e)
@@ -315,28 +327,45 @@ namespace FinanceManager.ViewModels
             switch (ReportSelezionato)
             {
                 case "AnalisiPortafoglio":
+                    AttivaGestioni = true;
                     AggregateIsEnabled = true;
                     IsTotalYear = false;
                     break;
                 case "PL":
                 case "DPL":
                     IsTotalYear = false;
+                    AttivaGestioni = true;
                     YearsIsEnable = true;
                     AggregateIsEnabled = false;
+                    AttivaContoCorrente = false;
                     break;
                 case "DeltaAnni":
+                    AttivaGestioni = true;
                     IsTotalYear = true;
                     YearsIsEnable = true;
                     AggregateIsEnabled = true;
                     break;
                 case "DeltaMese":
+                    AttivaGestioni = true;
                     IsTotalYear = false;
                     YearsIsEnable = true;
                     AggregateIsEnabled = true;
                     break;
+                case "MovimentiContoGestione":
+                    AttivaContoCorrente = true;
+                    AttivaGestioni = true;
+                    YearsIsEnable = true;
+                    AggregateIsEnabled = false;
+                    break;
+                case "ElencoTitoliAttivi":
+                    AttivaContoCorrente = true;
+                    AttivaGestioni = true;
+                    break;
                 default:
                     YearsIsEnable = false;
                     AggregateIsEnabled = false;
+                    AttivaGestioni = false;
+                    AttivaContoCorrente = false;
                     IsTotalYear = false;
                     break;
             }
@@ -363,6 +392,12 @@ namespace FinanceManager.ViewModels
         #endregion events
 
         #region Getter&Setter
+
+        public bool AttivaContoCorrente
+        {
+            get { return GetValue(() => AttivaContoCorrente); }
+            private set { SetValue(() => AttivaContoCorrente, value); }
+        }
 
         #region Titoli
         /// <summary>
@@ -411,6 +446,14 @@ namespace FinanceManager.ViewModels
         #endregion
 
         #region Gestioni
+        /// <summary>
+        /// Gestisce l'attivazione delle gestioni
+        /// </summary>
+        public bool AttivaGestioni
+        {
+            get { return GetValue(() => AttivaGestioni); }
+            private set { SetValue(() => AttivaGestioni, value); }
+        }
         /// <summary>
         /// La lista di tutte le gestioni selezionabili
         /// </summary>
@@ -479,6 +522,21 @@ namespace FinanceManager.ViewModels
 
         private bool IsTotalYear { get; set; }
         #endregion
+        
+        #region Currencies
+        public RegistryCurrencyList CurrenciesList
+        {
+            get { return GetValue(() => CurrenciesList); }
+            set { SetValue(() => CurrenciesList, value); }
+        }
+
+        public int SelectedCurrency
+        {
+            get { return GetValue(() => SelectedCurrency); }
+            private set { SetValue(() => SelectedCurrency, value); }
+        }
+
+        #endregion
 
         #region Reports
         /// <summary>
@@ -531,6 +589,15 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => GuadagnoPerQuote); }
             set { SetValue(() => GuadagnoPerQuote, value); }
         }
+        /// <summary>
+        /// Sono i movimenti di un dato conto per una data
+        /// gestione ordinati per data decrescente
+        /// </summary>
+        public MovimentiContoList MovimentiContos
+        {
+            get { return GetValue(() => MovimentiContos); }
+            set { SetValue(() => MovimentiContos, value); }
+        }
 
         /// <summary>
         /// I dati per ottenere la tabella con i delta per periodo
@@ -544,7 +611,8 @@ namespace FinanceManager.ViewModels
 
         #endregion
         
-        public bool CanClear { get; set; }
+        private bool CanClear { get; set; }
+        private bool CanExport { get; set; }
 
         #endregion Getter&Setter
 
@@ -587,11 +655,21 @@ namespace FinanceManager.ViewModels
                     if (_selectedOwners.Count() > 0 && SelectedYears.Count() == 2)
                         return true;
                     return false;
+                case "MovimentiContoGestione":
+                    if (_selectedAccount.Count() == 1 && _selectedOwners.Count() == 1 && SelectedYears.Count() == 1 && SelectedCurrency != 0)
+                        return true;
+                    return false;
                 default:
                     return false;
             }
         }
 
+        private bool CanExportReport(object param)
+        {
+            if (CanExport)
+                return true;
+            return false;
+        }
         public bool CanClearReport(object param)
         {
             if (CanClear)
@@ -605,6 +683,15 @@ namespace FinanceManager.ViewModels
             ((Border)userControl.FindName("BorderReport")).Child = null;
             ((ListBox)userControl.FindName("Anni")).SelectedIndex = -1;
             ((ListBox)userControl.FindName("Gestione")).SelectedIndex = -1;
+            ((RadioButton)userControl.FindName("PL")).IsChecked = false;
+            ((RadioButton)userControl.FindName("DPL")).IsChecked = false;
+            ((RadioButton)userControl.FindName("Titolo")).IsChecked = false;
+            ((RadioButton)userControl.FindName("ElencoTitoliAttivi")).IsChecked = false;
+            ((RadioButton)userControl.FindName("MovimentiContoGestione")).IsChecked = false;
+            ((RadioButton)userControl.FindName("DeltaAnni")).IsChecked = false;
+            ((RadioButton)userControl.FindName("DeltaMese")).IsChecked = false;
+            ((RadioButton)userControl.FindName("Guadagni")).IsChecked = false;
+            ((RadioButton)userControl.FindName("AnalisiPortafoglio")).IsChecked = false;
             SetUpViewModel();
         }
 
@@ -621,7 +708,7 @@ namespace FinanceManager.ViewModels
                     ReportProfitLossAnnoGestioneView report1 = new ReportProfitLossAnnoGestioneView(ProfitLossData);
                     border.Child = report1;
                     ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
-                    CanClear = true;
+                    CanExport = true;
                     break;
                 case "DPL":
                     ReportProfitLosses = _reportServices.GetReport1(_selectedOwners, SelectedYears, false);
@@ -630,7 +717,7 @@ namespace FinanceManager.ViewModels
                     ReportProfitLossAnnoGestioneView report1_1 = new ReportProfitLossAnnoGestioneView(ProfitLossDetailedData);
                     border.Child = report1_1;
                     ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
-                    CanClear = true;
+                    CanExport = true;
                     break;
                 case "DeltaAnni":
                 case "DeltaMese":
@@ -639,7 +726,7 @@ namespace FinanceManager.ViewModels
                     ReportDeltaSplitMeseView reportDeltaSplitMese = new ReportDeltaSplitMeseView(viewModel);
                     border.Child = reportDeltaSplitMese;
                     ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
-                    CanClear = true;
+                    CanExport = true;
                     break;
                 case "Titolo":
                     ReportMovementDetaileds = _reportServices.GetMovementDetailed(_selectedOwners[0].Id_gestione, TitoloSelezionato);
@@ -647,7 +734,7 @@ namespace FinanceManager.ViewModels
                     ReportMovementDetailedView report2 = new ReportMovementDetailedView(TitoloData);
                     border.Child = report2;
                     ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
-                    CanClear = true;
+                    CanExport = true;
                     break;
                 case "ElencoTitoliAttivi":
                     ReportTitoliAttivis = _reportServices.GetActiveAssets(_selectedOwners, _selectedAccount);
@@ -655,7 +742,7 @@ namespace FinanceManager.ViewModels
                     ReportTitoliAttiviView report3 = new ReportTitoliAttiviView(AssetsData);
                     border.Child = report3;
                     ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
-                    CanClear = true;
+                    CanExport = true;
                     break;
                 case "AnalisiPortafoglio":
                     GetAnalisiPortafoglio = new ObservableCollection<AnalisiPortafoglio>();
@@ -682,14 +769,22 @@ namespace FinanceManager.ViewModels
                         border.Child = dockPanel;
                     }
                     ((RadioButton)userControl.FindName(ReportSelezionato)).IsChecked = false;
-                    CanClear = true;
+                    CanExport = true;
                     break;
                 case "Guadagni":
                     GuadagnoPerQuoteDettagliato = _assetServices.GetQuoteGuadagno(2);
                     GuadagnoPerQuoteSintesi = _assetServices.GetQuoteGuadagno(1);
                     GuadagnoPerQuote = _assetServices.GetQuoteGuadagno(0);
                     border.Child = new ReportGuadagniView(new ReportGuadagniViewModel(GuadagnoPerQuoteDettagliato, GuadagnoPerQuoteSintesi, GuadagnoPerQuote));
+                    CanExport = true;
                     CanClear = true;
+                    break;
+                case "MovimentiContoGestione":
+                    MovimentiContos = _assetServices.GetMovimentiContoGestioneValuta(_selectedAccount[0].Id_Conto, _selectedOwners[0].Id_gestione, SelectedYears[0], SelectedCurrency);
+                    ReportMovimentiContoViewModel reportMovimentiContoViewModel = new ReportMovimentiContoViewModel(MovimentiContos);
+                    ReportMovimentiContoView report5 = new ReportMovimentiContoView(reportMovimentiContoViewModel);
+                    border.Child = report5;
+                    CanExport = true;
                     break;
                 default:
                     break;

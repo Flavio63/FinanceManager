@@ -347,5 +347,22 @@ namespace FinanceManager.Services.SQL
             "WHERE A.id_gestione<> 0 AND attivo > 0 AND A.id_tipo_movimento <> 6 AND A.id_titolo = B.id_titolo AND A.id_gestione = C.id_gestione AND A.id_conto = D.id_conto AND B.id_tipo_titolo = E.id_tipo_titolo " +
             "GROUP BY A.id_gestione, A.id_conto, E.id_tipo_titolo, A.id_titolo " +
             "ORDER BY A.id_gestione, A.id_conto, E.desc_tipo_titolo, B.desc_titolo";
+
+        public static readonly string GetMovimentiContoGestioneValuta = "DROP TEMPORARY TABLE if EXISTS movimenti_conto; " +
+            "CREATE TEMPORARY TABLE movimenti_conto (`id_fineco_euro` int(10) unsigned NOT NULL DEFAULT 0, `desc_conto` VARCHAR(50) DEFAULT NULL, `nome_gestione` VARCHAR(100) DEFAULT NULL," +
+            "`desc_movimento` VARCHAR(50) DEFAULT NULL, `desc_tipo_titolo` VARCHAR(100) DEFAULT NULL, `desc_titolo` VARCHAR(100) DEFAULT NULL, `isin` VARCHAR(25) DEFAULT NULL, `id_valuta` int(10) unsigned NOT NULL DEFAULT 0, " +
+            "`data_movimento` date NOT NULL, `ammontare` double NOT NULL, `causale` varchar(250) DEFAULT NULL, `desc_tipo_soldi` VARCHAR(50) DEFAULT NULL); " +
+            "INSERT INTO movimenti_conto (id_fineco_euro, desc_conto, nome_gestione, desc_movimento, desc_tipo_titolo, desc_titolo, isin, id_valuta, data_movimento, ammontare, causale, desc_tipo_soldi) " +
+            "SELECT 0 as id_fineco_euro, B.desc_conto, C.nome_gestione, 'Totale' as desc_movimento, '' as desc_tipo_titolo, 'Riporto al:' as desc_titolo, '' as isin, A.id_valuta, data_movimento, " +
+            "SUM(ammontare) OVER(ORDER BY A.data_movimento, A.id_fineco_euro)  AS ammontare, '' as causale, '' as desc_tipo_soldi FROM conto_corrente A, conti B, gestioni C, tipo_movimento D, titoli E, tipo_titoli F, tipo_soldi G " +
+            "WHERE A.id_conto = B.id_conto AND A.id_gestione = C.id_gestione AND A.id_tipo_movimento = D.id_tipo_movimento AND A.id_titolo = E.id_titolo AND E.id_tipo_titolo = F.id_tipo_titolo AND A.id_tipo_soldi = G.id_tipo_soldi " +
+            "AND A.id_tipo_soldi <> 11 AND A.id_conto = @IdConto AND A.id_gestione = @IdGestione AND A.id_valuta = @IdValuta AND year(A.data_movimento) <= @Year_1 ORDER BY A.data_movimento DESC, A.id_fineco_euro DESC LIMIT 1; " +
+            "INSERT INTO movimenti_conto SELECT A.id_fineco_euro, B.desc_conto, C.nome_gestione, D.desc_movimento, F.desc_tipo_titolo, E.desc_titolo, E.isin, A.id_valuta, data_movimento, ammontare, causale, G.desc_tipo_soldi " +
+            "FROM conto_corrente A, conti B, gestioni C, tipo_movimento D, titoli E, tipo_titoli F, tipo_soldi G WHERE A.id_conto = B.id_conto AND A.id_gestione = C.id_gestione AND A.id_tipo_movimento = D.id_tipo_movimento " +
+            "AND A.id_titolo = E.id_titolo  AND E.id_tipo_titolo = F.id_tipo_titolo AND A.id_tipo_soldi = G.id_tipo_soldi AND A.id_tipo_soldi <> 11 AND A.id_conto = @IdConto AND A.id_gestione = @IdGestione AND A.id_valuta = @IdValuta " +
+            "AND year(A.data_movimento) = @Year ORDER BY A.id_conto, A.id_gestione, A.data_movimento DESC, A.id_fineco_euro DESC; " +
+            "SELECT A.id_fineco_euro, desc_conto, nome_gestione, desc_movimento, desc_tipo_titolo, desc_titolo, isin, B.desc_valuta, data_movimento, CASE WHEN ammontare > 0 THEN ammontare ELSE 0 END AS ENTRATE, " +
+            "CASE WHEN ammontare < 0 THEN ammontare ELSE 0 END AS USCITE, SUM(ammontare) OVER(ORDER BY A.data_movimento, A.id_fineco_euro)  AS CUMULATO, causale, desc_tipo_soldi FROM `movimenti_conto` A, valuta B " +
+            "WHERE A.id_valuta = B.id_valuta ORDER BY A.data_movimento DESC, A.id_fineco_euro DESC;";
     }
 }

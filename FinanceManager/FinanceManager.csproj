@@ -37,7 +37,7 @@
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>3.6.0.0</ApplicationVersion>
+    <ApplicationVersion>3.6.1.0</ApplicationVersion>
     <UseApplicationTrust>true</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -202,6 +202,8 @@
     <Compile Include="Models\Enumeratori\EnumExtensions.cs" />
     <Compile Include="Models\GuadagnoPerPeriodo.cs" />
     <Compile Include="Models\GuadagnoPerPeriodoList.cs" />
+    <Compile Include="Models\MovimentiConto.cs" />
+    <Compile Include="Models\MovimentiContoList.cs" />
     <Compile Include="Models\PeriodiDiValidita.cs" />
     <Compile Include="Models\PeriodiDiValiditaList.cs" />
     <Compile Include="Models\Ptf_CC.cs" />
@@ -268,10 +270,10 @@
     <Compile Include="ViewModels\ReportDeltaSplitMeseViewModel.cs" />
     <Compile Include="ViewModels\ReportGuadagniViewModel.cs" />
     <Compile Include="ViewModels\ReportMovementDetailedViewModel.cs" />
+    <Compile Include="ViewModels\ReportMovimentiContoViewModel.cs" />
     <Compile Include="ViewModels\ReportPorfitLossAnnoGestioniViewModel.cs" />
     <Compile Include="ViewModels\ReportTitoliAttiviViewModel.cs" />
     <Compile Include="ViewModels\SchedeTitoliViewModel.cs" />
-    <Compile Include="ViewModels\TabDiSintesiViewModel.cs" />
     <Compile Include="Views\AcquistoVenditaTitoliView.xaml.cs">
       <DependentUpon>AcquistoVenditaTitoliView.xaml</DependentUpon>
     </Compile>
@@ -319,6 +321,9 @@
     <Compile Include="Views\ReportMovementDetailedView.xaml.cs">
       <DependentUpon>ReportMovementDetailedView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ReportMovimentiContoView.xaml.cs">
+      <DependentUpon>ReportMovimentiContoView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ReportProfitLossAnnoGestioneView.xaml.cs">
       <DependentUpon>ReportProfitLossAnnoGestioneView.xaml</DependentUpon>
     </Compile>
@@ -327,9 +332,6 @@
     </Compile>
     <Compile Include="Views\SchedeTitoliView.xaml.cs">
       <DependentUpon>SchedeTitoliView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\TabDiSintesiView.xaml.cs">
-      <DependentUpon>TabDiSintesiView.xaml</DependentUpon>
     </Compile>
     <Page Include="Views\AnalisiPortafoglioView.xaml">
       <SubType>Designer</SubType>
@@ -406,6 +408,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ReportMovimentiContoView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ReportProfitLossAnnoGestioneView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -415,10 +421,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SchedeTitoliView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\TabDiSintesiView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

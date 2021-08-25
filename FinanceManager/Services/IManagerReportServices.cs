@@ -12,7 +12,7 @@ namespace FinanceManager.Services
 
         ReportMovementDetailedList GetMovementDetailed(int IdGestione, int IdTitolo);
 
-        ReportTitoliAttiviList GetActiveAssets(IList<RegistryOwner> _selectedOwners, IList<int> _selectedAccount);
+        ReportTitoliAttiviList GetActiveAssets(IList<RegistryOwner> _selectedOwners, IList<RegistryLocation> _selectedAccount);
 
         AnalisiPortafoglio QuoteInvGeoSettori(IList<RegistryOwner> _selectedOwners);
 

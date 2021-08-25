@@ -1909,5 +1909,65 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
+
+        /// <summary>
+        /// Estrae tutti i movimenti di un dato conto per una data gestione di un anno per una valuta
+        /// e Costruisce il dato cumulato partendo dal primo giorno inserito nel database
+        /// </summary>
+        /// <param name="IdConto">E' il conto corrente</param>
+        /// <param name="IdGestione">E' la gestione nel conto</param>
+        /// <param name="AnnoSelezionato">l'anno di cui si vuole il dettaglio</param>
+        /// <param name="IdValuta">la valuta</param>
+        /// <returns></returns>
+        public MovimentiContoList GetMovimentiContoGestioneValuta(int IdConto, int IdGestione, int AnnoSelezionato, int IdValuta)
+        {
+            try
+            {
+                DataTable DT = new DataTable();
+                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new MySqlCommand();
+                    dbAdapter.SelectCommand.CommandType = System.Data.CommandType.Text;
+                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetMovimentiContoGestioneValuta;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("IdGestione", IdGestione);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("IdConto", IdConto);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("IdValuta", IdValuta);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("Year_1", AnnoSelezionato-1);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("Year", AnnoSelezionato);
+                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.Fill(DT);
+                    MovimentiContoList MCL = new MovimentiContoList();
+                    foreach (DataRow row in DT.Rows)
+                    {
+                        MovimentiConto MC = new MovimentiConto();
+                        MC.Id_Riga_Conto = (int)row.Field<uint>("id_fineco_euro");
+                        MC.Desc_Conto = row.Field<string>("desc_conto");
+                        MC.Nome_Gestione = row.Field<string>("nome_gestione");
+                        MC.Desc_Movimento = row.Field<string>("desc_movimento");
+                        MC.Desc_TipoTitolo = row.Field<string>("desc_tipo_titolo");
+                        MC.Desc_Titolo = row.Field<string>("desc_titolo");
+                        MC.Isin = row.Field<string>("isin");
+                        MC.Desc_Valuta = row.Field<string>("desc_valuta");
+                        MC.DataMovimento = row.Field<DateTime>("data_movimento");
+                        MC.Entrate = row.Field<double>("ENTRATE");
+                        MC.Uscite = row.Field<double>("USCITE");
+                        MC.Cumulato = row.Field<double>("CUMULATO");
+                        MC.Causale = row.Field<string>("causale");
+                        MC.Desc_Tipo_Soldi = row.Field<string>("desc_tipo_soldi");
+                        MCL.Add(MC);
+                    }
+                    return MCL;
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+
+        }
     }
 }

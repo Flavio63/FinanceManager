@@ -38,6 +38,16 @@ namespace FinanceManager.Services
         /// <param name="tipoReport">se 0 genera estrama sintesi, se 1 sintesi, se 2 il dettaglio</param>
         /// <returns>Observable Collection</returns>
         GuadagnoPerQuoteList GetQuoteGuadagno(int sintetico);
+        /// <summary>
+        /// Estrae tutti i movimenti di un dato conto per una data gestione di un anno per una valuta
+        /// e Costruisce il dato cumulato partendo dal primo giorno inserito nel database
+        /// </summary>
+        /// <param name="IdConto">E' il conto corrente</param>
+        /// <param name="IdGestione">E' la gestione nel conto</param>
+        /// <param name="AnnoSelezionato">l'anno di cui si vuole il dettaglio</param>
+        /// <param name="IdValuta">la valuta</param>
+        /// <returns></returns>
+        MovimentiContoList GetMovimentiContoGestioneValuta(int IdConto, int IdGestione, int AnnoSelezionato, int IdValuta);
 
         /// <summary>Estraggo gli anni dalla tabella guadagni_totale_anno</summary>
         List<int> GetAnniFromGuadagni();

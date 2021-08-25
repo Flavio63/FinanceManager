@@ -15,7 +15,7 @@ namespace FinanceManager.Services
             DAFconnection = iDAFconnection ?? throw new ArgumentNullException("Manca la stringa di connessione al db");
         }
 
-        public ReportTitoliAttiviList GetActiveAssets(IList<RegistryOwner> _selectedOwners, IList<int> _selectedAccount)
+        public ReportTitoliAttiviList GetActiveAssets(IList<RegistryOwner> _selectedOwners, IList<RegistryLocation> _selectedAccount)
         {
             try
             {
@@ -25,8 +25,8 @@ namespace FinanceManager.Services
                 owners = owners.Substring(0, owners.Length - 4);
                 owners += ") ";
                 string accounts = " (";
-                foreach (int a in _selectedAccount)
-                    accounts += " A.id_conto = " + a + " or ";
+                foreach (RegistryLocation a in _selectedAccount)
+                    accounts += " A.id_conto = " + a.Id_Conto + " or ";
                 accounts = accounts.Substring(0, accounts.Length - 4);
                 accounts += ") ";
 
