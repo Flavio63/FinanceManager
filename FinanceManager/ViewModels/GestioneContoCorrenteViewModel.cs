@@ -25,6 +25,8 @@ namespace FinanceManager.ViewModels
         private int[] typeOfShares = { 147 };
         Predicate<object> _Filter;
 
+        private TabControl _TabControl = new TabControl();
+
         public GestioneContoCorrenteViewModel(IRegistryServices registryServices, IManagerLiquidAssetServices managerLiquidServices)
         {
             _registryServices = registryServices ?? throw new ArgumentNullException("Registry Services in Gestione Conto Corrente");
@@ -73,8 +75,16 @@ namespace FinanceManager.ViewModels
                 var ROL = from gestione in ListaInvestitoreOriginale
                           where (gestione.Tipologia == "Gestore")
                           select gestione;
+                _TabControl.TabStripPlacement = Dock.Left;
                 foreach (RegistryOwner registryOwner in ROL)
+                {
+                    // per ogni gestione acquisisco i dati per la sintesi soldi
+                    TabItem tabItem = new TabItem();
+                    tabItem.Header = registryOwner.Nome_Gestione;
+                    tabItem.Content = new TabControlSintesiView(new TabControlSintesiViewModel(_liquidAssetServices.GetCurrencyAvailable(registryOwner.Id_gestione)));
+                    _TabControl.Items.Add(tabItem);
                     ListGestioni.Add(registryOwner);
+                }
                 ListConti = _registryServices.GetRegistryLocationList();
                 TipoSoldis = _registryServices.GetTipoSoldiList();
                 SharesList = new ObservableCollection<RegistryShare>(_registryServices.GetRegistryShareList());
@@ -97,9 +107,6 @@ namespace FinanceManager.ViewModels
                 RecordContoCorrente = new ContoCorrente();
                 TwoRecordConto = new ContoCorrenteList();
                 AmountChangedValue = 0;
-                SintesiSoldiR = _liquidAssetServices.GetCurrencyAvailable(1);
-                SintesiSoldiDF = _liquidAssetServices.GetCurrencyAvailable(2);
-                SintesiSoldiDFV = _liquidAssetServices.GetCurrencyAvailable(7);
                 SrchShares = "";
                 ListContoCorrente = _liquidAssetServices.GetContoCorrenteList();
                 CommonFieldsEnabled = true;
@@ -122,33 +129,6 @@ namespace FinanceManager.ViewModels
         }
 
         #region Getter&Setter
-        /// <summary>
-        /// il riepilogo dei soldi per la gestione Dany&Fla
-        /// </summary>
-        public SintesiSoldiList SintesiSoldiDF
-        {
-            get { return GetValue(() => SintesiSoldiDF); }
-            private set { SetValue(() => SintesiSoldiDF, value); }
-        }
-
-        /// <summary>
-        /// il riepilogo dei soldi per la gestione Rubiu
-        /// </summary>
-        public SintesiSoldiList SintesiSoldiR
-        {
-            get { return GetValue(() => SintesiSoldiR); }
-            private set { SetValue(() => SintesiSoldiR, value); }
-        }
-
-        /// <summary>
-        /// il riepilogo dei soldi per la gestione Dany&Fla_Volatili
-        /// </summary>
-        public SintesiSoldiList SintesiSoldiDFV
-        {
-            get { return GetValue(() => SintesiSoldiDFV); }
-            private set { SetValue(() => SintesiSoldiDFV, value); }
-        }
-
         /// <summary>
         /// Combo box con i movimenti
         /// </summary>
@@ -696,6 +676,11 @@ namespace FinanceManager.ViewModels
                 }
         }
 
+        public void TabControlLoaded(object sender, System.EventArgs e)
+        {
+            Border MyTabControl = sender as Border;
+            MyTabControl.Child = _TabControl;
+        }
 
         #endregion
 

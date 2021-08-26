@@ -274,6 +274,7 @@
     <Compile Include="ViewModels\ReportPorfitLossAnnoGestioniViewModel.cs" />
     <Compile Include="ViewModels\ReportTitoliAttiviViewModel.cs" />
     <Compile Include="ViewModels\SchedeTitoliViewModel.cs" />
+    <Compile Include="ViewModels\TabControlSintesiViewModel.cs" />
     <Compile Include="Views\AcquistoVenditaTitoliView.xaml.cs">
       <DependentUpon>AcquistoVenditaTitoliView.xaml</DependentUpon>
     </Compile>
@@ -332,6 +333,9 @@
     </Compile>
     <Compile Include="Views\SchedeTitoliView.xaml.cs">
       <DependentUpon>SchedeTitoliView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TabControlSintesiView.xaml.cs">
+      <DependentUpon>TabControlSintesiView.xaml</DependentUpon>
     </Compile>
     <Page Include="Views\AnalisiPortafoglioView.xaml">
       <SubType>Designer</SubType>
@@ -421,6 +425,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SchedeTitoliView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TabControlSintesiView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

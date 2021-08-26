@@ -27,6 +27,8 @@ namespace FinanceManager.ViewModels
         public ICommand ClearCommand { get; set; }
         Predicate<object> _Filter;
 
+        private TabControl _TabControl = new TabControl();
+
         public AcquistoVenditaTitoliViewModel
             (IRegistryServices services, IManagerLiquidAssetServices liquidAssetServices)
         {
@@ -71,8 +73,16 @@ namespace FinanceManager.ViewModels
                 var ROL = from gestione in ListaInvestitoreOriginale
                           where (gestione.Tipologia == "Gestore")
                           select gestione;
+                _TabControl.TabStripPlacement = Dock.Left;
                 foreach (RegistryOwner registryOwner in ROL)
+                {
+                    // per ogni gestione acquisisco i dati per la sintesi soldi
+                    TabItem tabItem = new TabItem();
+                    tabItem.Header = registryOwner.Nome_Gestione;
+                    tabItem.Content = new TabControlSintesiView(new TabControlSintesiViewModel(_liquidAssetServices.GetCurrencyAvailable(registryOwner.Id_gestione)));
+                    _TabControl.Items.Add(tabItem);
                     ListGestioni.Add(registryOwner);
+                }                
                 ListConti = _registryServices.GetRegistryLocationList();
                 ListTipoTitoli = _registryServices.GetRegistryShareTypeList();
                 SharesList = new ObservableCollection<RegistryShare>(_registryServices.GetRegistryShareList());
@@ -96,9 +106,6 @@ namespace FinanceManager.ViewModels
             AmountChangedValue = 0;
             try
             {
-                SintesiSoldiR = _liquidAssetServices.GetCurrencyAvailable(1);
-                SintesiSoldiDF = _liquidAssetServices.GetCurrencyAvailable(2);
-                SintesiSoldiDFV = _liquidAssetServices.GetCurrencyAvailable(7);
                 RecordPortafoglioTitoli = new PortafoglioTitoli();
                 ListPortafoglioTitoli = _liquidAssetServices.GetManagerLiquidAssetListByOwnerAndLocation();
                 ListCostiMediTitoli = _liquidAssetServices.GetCostiMediPerTitolo();
@@ -394,6 +401,12 @@ namespace FinanceManager.ViewModels
                 }
             }
             return true;
+        }
+
+        public void TabControlLoaded(object sender, System.EventArgs e)
+        {
+            Border MyTabControl = sender as Border;
+            MyTabControl.Child = _TabControl;
         }
 
         #endregion
