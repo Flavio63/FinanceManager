@@ -317,7 +317,10 @@ namespace FinanceManager.ViewModels
                 }
             }
             if (sender is ComboBox CB)
-                TitoloSelezionato = (int)(((RegistryShare)CB.SelectedItem).id_titolo);
+            {
+                if (CB.Items.Count > 0)
+                    TitoloSelezionato = (int)(((RegistryShare)CB.SelectedItem).id_titolo);
+            }
             CanClear = true;
         }
 
@@ -359,6 +362,9 @@ namespace FinanceManager.ViewModels
                     break;
                 case "ElencoTitoliAttivi":
                     AttivaContoCorrente = true;
+                    AttivaGestioni = true;
+                    break;
+                case "Titolo":
                     AttivaGestioni = true;
                     break;
                 default:
