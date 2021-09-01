@@ -201,7 +201,17 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Restante" Binding="{Binding In_Cassa, 
+                            <DataGridTextColumn Header="Risparmio Annuo" Binding="{Binding RisparmioAnno, 
+                                UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}"
+                                                IsReadOnly="True" FontSize="14" FontWeight="Bold">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                                        <Setter Property="Margin" Value="5,0,5,0"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Risparmio Cumulato" Binding="{Binding RisparmioCumulato, 
                                 UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}"
                                                 IsReadOnly="True" FontSize="14" FontWeight="Bold">
                                 <DataGridTextColumn.ElementStyle>

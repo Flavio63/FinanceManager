@@ -312,20 +312,20 @@ namespace FinanceManager.Exports
                                 if (Riga < report5.Count)
                                 {
                                     if (Colonna == 0) cell.CellStyle = RXC0;
-                                    else if (Colonna < 5) cell.CellStyle = RXCX;
-                                    else if (Colonna == 5) cell.CellStyle = RXCData;
-                                    else if (Colonna == 6) cell.CellStyle = RXCPerc;
-                                    else if (Colonna > 6 && Colonna < 10) cell.CellStyle = RXCValuta;
-                                    else if (Colonna == 10) cell.CellStyle = RXCF;
+                                    else if (Colonna < 6) cell.CellStyle = RXCX;
+                                    else if (Colonna == 6) cell.CellStyle = RXCData;
+                                    else if (Colonna == 7) cell.CellStyle = RXCPerc;
+                                    else if (Colonna > 7 && Colonna < 12) cell.CellStyle = RXCValuta;
+                                    else if (Colonna == 12) cell.CellStyle = RXCF;
                                 }
                                 else if (Riga == report5.Count)
                                 {
                                     if (Colonna == 0) cell.CellStyle = RFC0;
-                                    else if (Colonna < 5) cell.CellStyle = RFCX;
-                                    else if (Colonna == 5) cell.CellStyle = RFCData;
-                                    else if (Colonna == 6) cell.CellStyle = RFCPerc;
-                                    else if (Colonna > 6 && Colonna < 10) cell.CellStyle = RFCValuta;
-                                    else if (Colonna == 10) cell.CellStyle = RFCF;
+                                    else if (Colonna < 6) cell.CellStyle = RFCX;
+                                    else if (Colonna == 6) cell.CellStyle = RFCData;
+                                    else if (Colonna == 7) cell.CellStyle = RFCPerc;
+                                    else if (Colonna > 7 && Colonna < 12) cell.CellStyle = RFCValuta;
+                                    else if (Colonna == 12) cell.CellStyle = RFCF;
                                 }
                                 if (isDbl)
                                 {

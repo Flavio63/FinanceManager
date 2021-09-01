@@ -34,7 +34,8 @@ namespace FinanceManager.Models
         public double QuotaInv { get; set; }
         public double Guadagno { get; set; }
         public double Preso { get; set; }
-        public double In_Cassa { get; set; }
+        public double RisparmioAnno { get; set; }
+        public double RisparmioCumulato { get; set; }
         public string Causale { get; set; }
     }
 }
