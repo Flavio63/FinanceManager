@@ -45,13 +45,68 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Investitori" Binding="{Binding NomeInvestitore, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 IsReadOnly="True" FontSize="14" Width="100"/>
-                        <DataGridTextColumn Header="Immesso" Binding="{Binding CapitaleImmesso, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}"
+                        <DataGridTextColumn Header="Versato" Binding="{Binding CapitaleVersato, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}"
                                                 IsReadOnly="True" FontSize="14" Width="100">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="{x:Type TextBlock}">
                                     <Setter Property="HorizontalAlignment" Value="Right"/>
                                     <Setter Property="FontWeight" Value="Normal"/>
                                     <Setter Property="Margin" Value="5, 0"/>
+                                    <Setter Property="Padding" Value="3, 0, 0, 0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Quota" Binding="{Binding QuotaVersato, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=P2}"
+                                                IsReadOnly="True" FontSize="14" Width="75">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    <Setter Property="FontWeight" Value="Normal"/>
+                                    <Setter Property="Margin" Value="5, 0"/>
+                                    <Setter Property="Padding" Value="3, 0, 0, 0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Investito" Binding="{Binding CapitaleInvestito, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}"
+                                                IsReadOnly="True" FontSize="14" Width="100">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    <Setter Property="FontWeight" Value="Normal"/>
+                                    <Setter Property="Margin" Value="5, 0"/>
+                                    <Setter Property="Padding" Value="3, 0, 0, 0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Quota" Binding="{Binding QuotaInvestito, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=P2}"
+                                                IsReadOnly="True" FontSize="14" Width="75">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    <Setter Property="FontWeight" Value="Normal"/>
+                                    <Setter Property="Margin" Value="5, 0"/>
+                                    <Setter Property="Padding" Value="3, 0, 0, 0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Disinvestito" Binding="{Binding CapitaleDisinvestito, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}"
+                                                IsReadOnly="True" FontSize="14" Width="100">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    <Setter Property="FontWeight" Value="Normal"/>
+                                    <Setter Property="Margin" Value="5, 0"/>
+                                    <Setter Property="Padding" Value="3, 0, 0, 0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Quota" Binding="{Binding QuotaDisinvestito, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=P2}"
+                                                IsReadOnly="True" FontSize="14" Width="75">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    <Setter Property="FontWeight" Value="Normal"/>
+                                    <Setter Property="Margin" Value="5,0"/>
                                     <Setter Property="Padding" Value="3, 0, 0, 0"/>
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
@@ -67,30 +122,8 @@
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="Attivo" Binding="{Binding CapitaleAttivo, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}"
-                                                IsReadOnly="True" FontSize="14" Width="100">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                                    <Setter Property="FontWeight" Value="Normal"/>
-                                    <Setter Property="Margin" Value="5, 0"/>
-                                    <Setter Property="Padding" Value="3, 0, 0, 0"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="Quota" Binding="{Binding QuotaInv, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=P2}"
+                        <DataGridTextColumn Header="Quota" Binding="{Binding QuotaPrelevato, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=P2}"
                                                 IsReadOnly="True" FontSize="14" Width="75">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                                    <Setter Property="FontWeight" Value="Normal"/>
-                                    <Setter Property="Margin" Value="5,0"/>
-                                    <Setter Property="Padding" Value="3, 0, 0, 0"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="Assegnato" Binding="{Binding CapitaleAssegnato, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}"
-                                                IsReadOnly="True" FontSize="14" Width="100">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="{x:Type TextBlock}">
                                     <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -111,23 +144,42 @@
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
+                        <DataGridTextColumn Header="Quota" Binding="{Binding QuotaDisponibile, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=P2}"
+                                                IsReadOnly="True" FontSize="14" Width="75">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    <Setter Property="FontWeight" Value="Normal"/>
+                                    <Setter Property="Margin" Value="5, 0"/>
+                                    <Setter Property="Padding" Value="3, 0, 0, 0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
                 <StackPanel Orientation="Horizontal" Grid.Row="2">
                     <TextBlock Text="Totale" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" Width="100" Margin="5, 0" 
                                Padding="5,0,0,0" Foreground="DarkGray"/>
-                    <TextBlock Text="{Binding ListQuoteInv[0].TotaleImmesso, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}" 
+                    <TextBlock Text="{Binding ListQuoteInv[3].TotaleVersato, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}" 
                            FontSize="14" FontWeight="Bold" Margin="5, 0" Width="100" Padding="3, 0, 0, 0" HorizontalAlignment="Right" Foreground="DarkGray"/>
-                    <TextBlock Text="{Binding ListQuoteInv[0].TotalePrelevato, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}" 
+                    <TextBlock Text="100%" FontSize="14" FontWeight="Bold" Margin="15, 0, 10, 0" Padding="3, 0, 0, 0" HorizontalAlignment="Right" 
+                               Foreground="DarkGray"/>
+                    <TextBlock Text="{Binding ListQuoteInv[3].TotaleInvestito, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}" 
                            FontSize="14" FontWeight="Bold" Margin="0, 0" Width="100" Padding="3, 0, 0, 0" HorizontalAlignment="Right" Foreground="DarkGray"/>
-                    <TextBlock Text="{Binding ListQuoteInv[0].TotaleAttivo, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}" 
+                    <TextBlock Text="100%" FontSize="14" FontWeight="Bold" Margin="20, 0, 20, 0" Padding="3, 0, 0, 0" HorizontalAlignment="Right" 
+                               Foreground="DarkGray"/>
+                    <TextBlock Text="{Binding ListQuoteInv[3].TotaleDisinvestito, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}" 
                            FontSize="14" FontWeight="Bold" Margin="0, 0, 5, 0" Width="100" Padding="3, 0, 0, 0" HorizontalAlignment="Right" Foreground="DarkGray"/>
                     <TextBlock Text="100%" FontSize="14" FontWeight="Bold" Margin="15, 0, 5, 0" Padding="3, 0, 0, 0" HorizontalAlignment="Right" 
                                Foreground="DarkGray"/>
-                    <TextBlock Text="{Binding ListQuoteInv[0].TotaleAssegnato, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}" 
+                    <TextBlock Text="{Binding ListQuoteInv[3].TotalePrelevato, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}" 
                            FontSize="14" FontWeight="Bold" Margin="10, 0, 0, 0" Width="100" Padding="3, 0, 0, 0" HorizontalAlignment="Right" Foreground="DarkGray"/>
-                    <TextBlock Text="{Binding ListQuoteInv[0].TotaleDisponibile, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}" 
+                    <TextBlock Text="100%" FontSize="14" FontWeight="Bold" Margin="20, 0, 20, 0" Padding="3, 0, 0, 0" HorizontalAlignment="Right" 
+                               Foreground="DarkGray"/>
+                    <TextBlock Text="{Binding ListQuoteInv[3].TotaleDisponibile, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=C2}" 
                                FontSize="14" FontWeight="Bold" Margin="5, 0" Width="100" Padding="3, 0, 0, 0" HorizontalAlignment="Right" Foreground="DarkGray"/>
+                    <TextBlock Text="100%" FontSize="14" FontWeight="Bold" Margin="15, 0, 5, 0" Padding="3, 0, 0, 0" HorizontalAlignment="Right" 
+                               Foreground="DarkGray"/>
                 </StackPanel>
             </Grid>
         </Border>

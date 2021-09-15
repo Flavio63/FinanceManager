@@ -198,18 +198,10 @@ namespace FinanceManager.Services.SQL
         /// <summary>
         /// calcola le quote per investitore
         /// </summary>
-        public static readonly string GetQuoteInv = "SELECT AA.nome_gestione, ROUND(SUM(CASE WHEN id_tipo_movimento = 1 THEN ammontare ELSE 0 END), 2) AS CapitaleImmesso, " +
-            "TotaleImmesso, ROUND(SUM(CASE WHEN id_tipo_movimento = 2 THEN ammontare ELSE 0 END), 2) AS CapitalePrelevato, TotalePrelevato, " +
-            "ROUND(SUM(CASE WHEN id_tipo_movimento = 1 OR id_tipo_movimento = 2 THEN ammontare ELSE 0 END), 2) AS CapitaleAttivo, TotaleAttivo, " +
-            "ROUND(SUM(CASE WHEN id_tipo_movimento = 1 OR id_tipo_movimento = 2 THEN ammontare ELSE 0 END) / TotaleAttivo, 6) AS QuotaInv, " +
-            "ROUND(SUM(CASE WHEN id_tipo_movimento = 12 THEN ammontare ELSE 0 END), 2) * -1 AS CapitaleAssegnato, TotaleAssegnato, " +
-            "ROUND(SUM(CASE WHEN id_tipo_movimento = 1 OR id_tipo_movimento = 2 THEN ammontare ELSE 0 END), 2) + ROUND(SUM(CASE WHEN id_tipo_movimento = 12 THEN ammontare ELSE 0 END), 2) AS CapitaleDisponibile, " +
-            "TotaleDisponibile FROM quote_investimenti BB, gestioni AA, (SELECT ROUND(SUM(CASE WHEN id_tipo_movimento = 1 THEN ammontare ELSE 0 END), 2) AS TotaleImmesso, " +
-            "ROUND(SUM(CASE WHEN id_tipo_movimento = 2 THEN ammontare ELSE 0 END), 2) AS TotalePrelevato, " +
-            "ROUND(SUM(CASE WHEN id_tipo_movimento = 1 OR id_tipo_movimento = 2 THEN ammontare ELSE 0 END), 2) AS TotaleAttivo, " +
-            "ROUND(SUM(CASE WHEN id_tipo_movimento = 12 THEN ammontare ELSE 0 END), 2) * -1 AS TotaleAssegnato, " +
-            "ROUND(SUM(CASE WHEN id_tipo_movimento = 1 OR id_tipo_movimento = 2 THEN ammontare ELSE 0 END), 2) + ROUND(SUM(CASE WHEN id_tipo_movimento = 12 THEN ammontare ELSE 0 END), 2) AS TotaleDisponibile " +
-            "FROM quote_investimenti) AS A WHERE BB.id_gestione = AA.id_gestione AND BB.id_gestione > 0 GROUP BY BB.id_gestione ORDER BY BB.id_gestione DESC";
+        public static readonly string GetQuoteInv = "SELECT B.nome_gestione, sum(case when A.id_tipo_movimento = 1 then ammontare ELSE 0 END) AS Versato, " +
+            "sum(case when A.id_tipo_movimento = 12 AND ammontare < 0 then ammontare ELSE 0 END) AS Investito, sum(case when A.id_tipo_movimento = 12 AND ammontare > 0 then ammontare ELSE 0 END) AS Disinvestito, " +
+            "sum(case when A.id_tipo_movimento = 2 then ammontare ELSE 0 END) AS Prelevato, SUM(ammontare) AS Disponibile FROM quote_investimenti A, gestioni B " +
+            "WHERE A.id_gestione = B.id_gestione AND A.id_tipo_movimento<> 0 GROUP BY A.id_gestione;";
 
         /// <summary>
         /// calcola le quote per investitore del guadagno

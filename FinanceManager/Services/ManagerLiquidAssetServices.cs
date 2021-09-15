@@ -693,23 +693,47 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
                     QuoteInvList quotes = new QuoteInvList();
+                    double versato = 0;
+                    double prelevato = 0;
+                    double disinvestito = 0;
+                    double investito = 0;
+                    double disponibile = 0;
+                    QuoteInv quoteInv = new QuoteInv();
+                    foreach (DataRow dataRow in DT.Rows)
+                    {
+                        if (quoteInv.NomeInvestitore != "Aury")
+                        {
+                            versato = versato + dataRow.Field<double>("Versato");
+                            prelevato = prelevato + dataRow.Field<double>("Prelevato");
+                            disinvestito = disinvestito + dataRow.Field<double>("Disinvestito");
+                            investito = investito + dataRow.Field<double>("Investito");
+                            disponibile = disponibile + dataRow.Field<double>("Disponibile");
+                        }
+                    }
+                    quoteInv.TotaleVersato = versato;
+                    quoteInv.TotalePrelevato = prelevato;
+                    quoteInv.TotaleDisinvestito = disinvestito;
+                    //quote.QuotaDisinvestito = dataRow.Field<double>("QuotaDisinvestito");
+                    quoteInv.TotaleInvestito = investito;
+                    quoteInv.TotaleDisponibile = disponibile;
+
                     foreach (DataRow dataRow in DT.Rows)
                     {
                         QuoteInv quote = new QuoteInv();
                         quote.NomeInvestitore = dataRow.Field<string>("nome_gestione");
-                        quote.CapitaleImmesso = dataRow.Field<double>("CapitaleImmesso");
-                        quote.TotaleImmesso = dataRow.Field<double>("TotaleImmesso");
-                        quote.CapitalePrelevato = dataRow.Field<double>("CapitalePrelevato");
-                        quote.TotalePrelevato = dataRow.Field<double>("TotalePrelevato");
-                        quote.CapitaleAttivo = dataRow.Field<double>("CapitaleAttivo");
-                        quote.TotaleAttivo = dataRow.Field<double>("TotaleAttivo");
-                        quote.QuotaInv = dataRow.Field<double>("QuotaInv");
-                        quote.CapitaleAssegnato = dataRow.Field<double>("CapitaleAssegnato");
-                        quote.TotaleAssegnato = dataRow.Field<double>("TotaleAssegnato");
-                        quote.CapitaleDisponibile = dataRow.Field<double>("CapitaleDisponibile");
-                        quote.TotaleDisponibile = dataRow.Field<double>("TotaleDisponibile");
+                        quote.CapitaleVersato = dataRow.Field<double>("Versato");
+                        quote.QuotaVersato = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("Versato") / versato : 0;
+                        quote.CapitalePrelevato = dataRow.Field<double>("Prelevato");
+                        quote.QuotaPrelevato = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("Prelevato") / prelevato : 0;
+                        quote.CapitaleDisinvestito = dataRow.Field<double>("Disinvestito");
+                        quote.QuotaDisinvestito = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("disinvestito") / disinvestito : 0;
+                        quote.CapitaleInvestito = dataRow.Field<double>("Investito");
+                        quote.QuotaInvestito = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("Investito") / investito : 0;
+                        quote.CapitaleDisponibile = dataRow.Field<double>("Disponibile");
+                        quote.QuotaDisponibile = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("Disponibile") / disponibile : 0;
                         quotes.Add(quote);
                     }
+                    quotes.Add(quoteInv);
                     return quotes;
                 }
             }
