@@ -24,5 +24,8 @@ namespace FinanceManager.Models
         public double CapitaleDisponibile { get; set; }
         public double TotaleDisponibile { get; set; }
         public double QuotaDisponibile { get; set; }
+        public double Patrimonio { get; set; }
+        public double TotalePatrimonio { get; set; }
+        public double QuotaPatrimonio { get; set; }
     }
 }

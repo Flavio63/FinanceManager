@@ -698,16 +698,18 @@ namespace FinanceManager.Services
                     double disinvestito = 0;
                     double investito = 0;
                     double disponibile = 0;
+                    double patrimonio = 0;
                     QuoteInv quoteInv = new QuoteInv();
                     foreach (DataRow dataRow in DT.Rows)
                     {
-                        if (quoteInv.NomeInvestitore != "Aury")
+                        if (dataRow.Field<string>("nome_gestione") != "Aury")
                         {
                             versato = versato + dataRow.Field<double>("Versato");
                             prelevato = prelevato + dataRow.Field<double>("Prelevato");
                             disinvestito = disinvestito + dataRow.Field<double>("Disinvestito");
                             investito = investito + dataRow.Field<double>("Investito");
                             disponibile = disponibile + dataRow.Field<double>("Disponibile");
+                            patrimonio = patrimonio + dataRow.Field<double>("Disponibile") + dataRow.Field<double>("Investito") * -1 - dataRow.Field<double>("Disinvestito");
                         }
                     }
                     quoteInv.TotaleVersato = versato;
@@ -716,6 +718,7 @@ namespace FinanceManager.Services
                     //quote.QuotaDisinvestito = dataRow.Field<double>("QuotaDisinvestito");
                     quoteInv.TotaleInvestito = investito;
                     quoteInv.TotaleDisponibile = disponibile;
+                    quoteInv.TotalePatrimonio = patrimonio;
 
                     foreach (DataRow dataRow in DT.Rows)
                     {
@@ -731,6 +734,10 @@ namespace FinanceManager.Services
                         quote.QuotaInvestito = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("Investito") / investito : 0;
                         quote.CapitaleDisponibile = dataRow.Field<double>("Disponibile");
                         quote.QuotaDisponibile = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("Disponibile") / disponibile : 0;
+                        quote.Patrimonio = dataRow.Field<double>("Disponibile") + dataRow.Field<double>("Investito") * -1 - dataRow.Field<double>("Disinvestito");
+                        quote.QuotaPatrimonio = quote.NomeInvestitore != "Aury" ?
+                            (dataRow.Field<double>("Disponibile") + dataRow.Field<double>("Investito") * -1 - dataRow.Field<double>("Disinvestito")) / patrimonio :
+                            0;
                         quotes.Add(quote);
                     }
                     quotes.Add(quoteInv);
