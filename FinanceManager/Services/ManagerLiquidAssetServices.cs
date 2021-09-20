@@ -1158,7 +1158,8 @@ namespace FinanceManager.Services
                         GuadagnoPerQuote quote = new GuadagnoPerQuote();
                         quote.Anno = dataRow.Field<int>("anno");
                         quote.Nome = dataRow.Field<string>("nome_gestione");
-                        quote.Valuta = dataRow.Field<string>("cod_valuta");
+                        quote.IdCurrency = tipoReport == 0 ? dataRow.Field<int>("id_valuta") : (int)dataRow.Field<uint>("id_valuta");
+                        quote.CodeCurrency = dataRow.Field<string>("cod_valuta");
                         if (tipoReport == 1 || tipoReport == 2)
                         {
                             quote.DescTipoSoldi = dataRow.Field<string>("desc_tipo_soldi");
@@ -1810,9 +1811,9 @@ namespace FinanceManager.Services
         /// Estraggo la quantità di utile disponibile
         /// sulla base dell'anno e della gestione
         /// </summary>
-        /// <param name="gudadagnoQuote">Il record con i dati da verificare</param>
+        /// <param name="guadagnoQuote">Il record con i dati da verificare</param>
         /// <returns>Disponibilità di utili</returns>
-        public double VerifyDisponibilitaUtili(GuadagnoPerQuote gudadagnoQuote)
+        public double VerifyDisponibilitaUtili(GuadagnoPerQuote guadagnoQuote)
         {
             try
             {
@@ -1822,9 +1823,10 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand = new MySqlCommand();
                     dbAdapter.SelectCommand.CommandType = CommandType.Text;
                     dbAdapter.SelectCommand.CommandText = ManagerScripts.VerifyDisponibilitaUtili;
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", gudadagnoQuote.IdGestione);
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("anno", gudadagnoQuote.Anno);
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("daInserire", gudadagnoQuote.Preso);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", guadagnoQuote.IdGestione);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("anno", guadagnoQuote.Anno);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("daInserire", guadagnoQuote.Preso);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_valuta", guadagnoQuote.IdCurrency);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
                     return DT.Rows[0].ItemArray[0] is DBNull ? -1.0 : Convert.ToDouble(DT.Rows[0].ItemArray[0]);
@@ -1855,6 +1857,7 @@ namespace FinanceManager.Services
                     dbComm.CommandText = SQL.ManagerScripts.InsertPrelievoUtili;
                     dbComm.Parameters.AddWithValue("id_gestione", gudadagnoQuote.IdGestione);
                     dbComm.Parameters.AddWithValue("id_tipo_movimento", gudadagnoQuote.IdTipoMovimento);
+                    dbComm.Parameters.AddWithValue("id_valuta", gudadagnoQuote.IdCurrency);
                     dbComm.Parameters.AddWithValue("anno", gudadagnoQuote.Anno);
                     dbComm.Parameters.AddWithValue("ammontare", gudadagnoQuote.Preso);
                     dbComm.Parameters.AddWithValue("data_operazione", gudadagnoQuote.DataOperazione.ToString("yyyy-MM-dd"));
@@ -1881,6 +1884,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("id_prelievo", result);
                     dbComm.Parameters.AddWithValue("id_gestione", gudadagnoQuote.IdGestione);
                     dbComm.Parameters.AddWithValue("id_tipo_movimento", gudadagnoQuote.IdTipoMovimento);
+                    dbComm.Parameters.AddWithValue("id_valuta", gudadagnoQuote.IdCurrency);
                     dbComm.Parameters.AddWithValue("anno", gudadagnoQuote.Anno);
                     dbComm.Parameters.AddWithValue("ammontare", gudadagnoQuote.Preso);
                     dbComm.Parameters.AddWithValue("data_operazione", gudadagnoQuote.DataOperazione.ToString("yyyy-MM-dd"));
@@ -1966,7 +1970,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetMovimentiContoGestioneValuta;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("IdGestione", IdGestione);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("IdConto", IdConto);
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("IdValuta", IdValuta);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("IdCurrency", IdValuta);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("Year_1", AnnoSelezionato-1);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("Year", AnnoSelezionato);
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());

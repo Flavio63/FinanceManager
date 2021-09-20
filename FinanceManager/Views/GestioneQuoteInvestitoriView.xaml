@@ -781,15 +781,16 @@
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto"/>
-                            <RowDefinition Height="40"/>
-                            <RowDefinition Height="20"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
                             <RowDefinition Height="25"/>
-                            <RowDefinition Height="40"/>
+                            <RowDefinition Height="30"/>
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
                         <TextBlock Text="Prelievo Utili" Margin="2" Grid.ColumnSpan="4" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold"/>
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="La data" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
-                        <DatePicker Name="DataUtili" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Height="25" FontSize="14" 
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Data" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
+                        <DatePicker Name="DataUtili" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Height="25" FontSize="14" Margin="5,2"
                                     SelectedDate="{Binding RecordQuoteGuadagno.DataOperazione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                     DisplayDate="{Binding RecordQuoteGuadagno.DataOperazione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                             <iy:Interaction.Triggers>
@@ -798,9 +799,9 @@
                                 </iy:EventTrigger>
                             </iy:Interaction.Triggers>
                         </DatePicker>
-                        <TextBlock Grid.Row="1" Grid.Column="2" Text="Cifra" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
-                        <TextBox x:Name="CifraUtili" Grid.Row="1" Grid.Column="3" Margin="5, 2" Padding="0,0,5,0" Height="25" HorizontalContentAlignment="Right"
-                                Text="{Binding RecordQuoteGuadagno.Preso, ConverterCulture=it-IT}" FontSize="16" ToolTip="La cifra DEVE essere negativa">
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Cifra" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
+                        <TextBox x:Name="CifraUtili" Grid.Row="2" Grid.Column="1" Margin="5, 2" Padding="0,0,5,0" Height="25" HorizontalContentAlignment="Right"
+                                Text="{Binding RecordQuoteGuadagno.Preso, StringFormat=N, ConverterCulture=IT-it}" FontSize="16" ToolTip="La cifra DEVE essere negativa">
                             <iy:Interaction.Triggers>
                                 <iy:EventTrigger EventName="LostFocus">
                                     <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
@@ -810,14 +811,20 @@
                                 </iy:EventTrigger>
                             </iy:Interaction.Triggers>
                         </TextBox>
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Causale" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                        <TextBox x:Name="CausaleUtili" Grid.Row="2" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="3" FontSize="16" Margin="5, 2, 5, 2" 
-                                    VerticalAlignment="Stretch" AcceptsReturn="True" TextWrapping="Wrap"
-                                    Text="{Binding RecordQuoteGuadagno.Causale, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
-                        </TextBox>
-                        <TextBlock Grid.Row="4" VerticalAlignment="Center" FontSize="14" Text="Chi preleva" Margin="5, 5, 0, 5"/>
-                        <ComboBox Name="GestioneUtili" Grid.Row="4" Grid.Column="1" Margin="5" ItemsSource="{Binding ListInvestitori2, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                          SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione" FontWeight="Normal" VerticalAlignment="Center"
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Valuta" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
+                        <ComboBox x:Name="ValutaUtili" Grid.Row="3" Grid.Column="1" Margin="5, 2" Padding="0,0,5,0" Height="25" HorizontalContentAlignment="Right"
+                                FontSize="16"  ItemsSource="{Binding ListValute, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                SelectedValuePath="IdCurrency" DisplayMemberPath="CodeCurrency" 
+                                SelectedValue="{Binding RecordQuoteGuadagno.IdCurrency, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                            <iy:Interaction.Triggers>
+                                <iy:EventTrigger EventName="SelectionChanged">
+                                    <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                </iy:EventTrigger>
+                            </iy:Interaction.Triggers>
+                        </ComboBox>
+                        <TextBlock Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" FontSize="14" Text="Chi preleva" Margin="5, 5, 0, 5"/>
+                        <ComboBox Name="GestioneUtili" Grid.Row="1" Grid.Column="3" Margin="5, 2" ItemsSource="{Binding ListInvestitori2, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                          SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione" FontWeight="Normal" VerticalAlignment="Center" FontSize="16"
                                           SelectedValue="{Binding RecordQuoteGuadagno.IdGestione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                             <iy:Interaction.Triggers>
                                 <iy:EventTrigger EventName="SelectionChanged">
@@ -825,17 +832,22 @@
                                 </iy:EventTrigger>
                             </iy:Interaction.Triggers>
                         </ComboBox>
-                        <TextBlock Grid.Row="4" Grid.Column="2" VerticalAlignment="Center" FontSize="14" Text="Su quale Anno" Margin="5, 5, 0, 5"/>
-                        <ComboBox Name="AnnoUtili" Grid.Row="4" Grid.Column="3" VerticalAlignment="Center" Margin="5" ItemsSource="{Binding ListAnni, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                  SelectedValue="{Binding RecordQuoteGuadagno.Anno, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                        <TextBlock Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" FontSize="14" Text="Su quale Anno" Margin="5, 5, 0, 5"/>
+                        <ComboBox Name="AnnoUtili" Grid.Row="2" Grid.Column="3" VerticalAlignment="Center" Margin="5, 2" ItemsSource="{Binding ListAnni, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                  SelectedValue="{Binding RecordQuoteGuadagno.Anno, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" FontSize="16">
                             <iy:Interaction.Triggers>
                                 <iy:EventTrigger EventName="SelectionChanged">
                                     <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
                                 </iy:EventTrigger>
                             </iy:Interaction.Triggers>
                         </ComboBox>
+                        <TextBlock Grid.Row="3" Grid.Column="2" Text="Causale" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                        <TextBox x:Name="CausaleUtili" Grid.Row="4" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="4" FontSize="16" Margin="5, 2, 5, 2" 
+                                    VerticalAlignment="Stretch" AcceptsReturn="True" TextWrapping="Wrap"
+                                    Text="{Binding RecordQuoteGuadagno.Causale, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                        </TextBox>
                         <!-- Bottoniera -->
-                        <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" x:Name="Bottoniera_2" Orientation="Vertical" HorizontalAlignment="Center">
+                        <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4" x:Name="Bottoniera_2" Orientation="Vertical" HorizontalAlignment="Center">
                             <StackPanel Orientation="Horizontal">
                                 <Button Content="Registra" Margin="10" Width="75" Height="25" Command="{Binding InsertQuotaCommand}" CommandParameter="{Binding ElementName=Bottoniera_2}"/>
                                 <Button Content="Modifica" Margin="10" Width="75" Height="25" Command="{Binding ModifyQuotaCommand}" CommandParameter="{Binding ElementName=Bottoniera_2}"/>

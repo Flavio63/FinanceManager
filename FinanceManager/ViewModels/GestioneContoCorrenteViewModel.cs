@@ -277,7 +277,7 @@ namespace FinanceManager.ViewModels
         }
 
         /// <summary>
-        /// Singolo record del portafoglio da usare nel caso di Cambio Valuta
+        /// Singolo record del portafoglio da usare nel caso di Cambio CodeCurrency
         /// o nel caso di Giroconto per duplicare le info di RecordContoCorrente
         /// modificando solo i campi di destinazione
         /// </summary>

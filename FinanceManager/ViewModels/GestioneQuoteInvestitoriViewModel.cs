@@ -61,6 +61,7 @@ namespace FinanceManager.ViewModels
                 ListLocation = new RegistryLocationList();
                 ListQuoteGuadagno = new QuotePerPeriodoList();
                 ListTipoSoldi = new TipoSoldiList();
+                ListValute = new RegistryCurrencyList();
                 ListAnni = _managerLiquidServices.GetAnniFromGuadagni();
 
                 #endregion
@@ -118,6 +119,7 @@ namespace FinanceManager.ViewModels
                 ListQuoteSuperSintesiGuadagno = _managerLiquidServices.GetQuoteGuadagno(0);
                 ListLocation = _registryServices.GetRegistryLocationList();
                 ListTipoSoldi = _registryServices.GetTipoSoldiList();
+                ListValute = _registryServices.GetRegistryCurrencyList();
             }
             catch (Exception err)
             {
@@ -126,6 +128,13 @@ namespace FinanceManager.ViewModels
         }
 
         #region Getter&Setter
+
+        public RegistryCurrencyList ListValute
+        {
+            get { return GetValue(() => ListValute); }
+            set { SetValue(() => ListValute, value); }
+        }
+
         /// <summary>
         /// E' la causale da utilizzare per la gestione dei capitali
         /// sia con ActualQuote che con contoCorrenteSelected
@@ -391,8 +400,8 @@ namespace FinanceManager.ViewModels
                         ActualQuote.DataMovimento = (DateTime)e.AddedItems[0];
                         ContoCorrenteSelected.DataMovimento = (DateTime)e.AddedItems[0];
                     }
-                    else
-                        RecordQuoteGuadagno.DataOperazione = (DateTime)e.AddedItems[0];
+                    //else
+                    //    RecordQuoteGuadagno.DataOperazione = (DateTime)e.AddedItems[0];
                 }
                 else
                 {
@@ -431,6 +440,11 @@ namespace FinanceManager.ViewModels
                         }
                         if (e.AddedItems[0] is Int32)
                             RecordQuoteGuadagno.Anno = (Int32)e.AddedItems[0];
+                        if (e.AddedItems[0] is RegistryCurrency)
+                        {
+                            RecordQuoteGuadagno.IdCurrency = ((RegistryCurrency)e.AddedItems[0]).IdCurrency;
+                            RecordQuoteGuadagno.CodeCurrency = ((RegistryCurrency)e.AddedItems[0]).CodeCurrency;
+                        }
                     }
                 }
             }
