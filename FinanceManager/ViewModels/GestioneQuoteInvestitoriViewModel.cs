@@ -564,8 +564,8 @@ namespace FinanceManager.ViewModels
                             return;
                     }
                     _managerLiquidServices.InsertPrelievoUtili(RecordQuoteGuadagno); // in questo script inserisco il prelievo anche nella tabella prelievi
-                    MessageBox.Show(string.Format("Ho effettuato il prelievo di {0} €. dal conto di {1} per l'anno {2}.",
-                        RecordQuoteGuadagno.Preso, RecordQuoteGuadagno.Nome, RecordQuoteGuadagno.Anno),
+                    MessageBox.Show(string.Format("Ho effettuato il prelievo di {0} {1} dal conto di {2} per l'anno {3}.",
+                        RecordQuoteGuadagno.Preso, RecordQuoteGuadagno.CodeCurrency, RecordQuoteGuadagno.Nome, RecordQuoteGuadagno.Anno),
                         Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 // aggiorna la maschera
@@ -642,9 +642,13 @@ namespace FinanceManager.ViewModels
             {
                 try
                 {
+                    _managerLiquidServices.DeletePrelievoUtili(RecordQuoteGuadagno);
+                    UpdateCollection();
                 }
-                catch (Exception)
+                catch (Exception err)
                 {
+                    MessageBox.Show("Problemi nell'eliminare il record" + Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(),
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
 

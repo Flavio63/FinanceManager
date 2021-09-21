@@ -1845,8 +1845,8 @@ namespace FinanceManager.Services
         /// <summary>
         /// Registro il prelievo di utili
         /// </summary>
-        /// <param name="gudadagnoQuote">Il record da inserire</param>
-        public void InsertPrelievoUtili(GuadagnoPerQuote gudadagnoQuote)
+        /// <param name="guadagnoQuote">Il record da inserire</param>
+        public void InsertPrelievoUtili(GuadagnoPerQuote guadagnoQuote)
         {
             try
             {
@@ -1855,13 +1855,13 @@ namespace FinanceManager.Services
                 {
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = SQL.ManagerScripts.InsertPrelievoUtili;
-                    dbComm.Parameters.AddWithValue("id_gestione", gudadagnoQuote.IdGestione);
-                    dbComm.Parameters.AddWithValue("id_tipo_movimento", gudadagnoQuote.IdTipoMovimento);
-                    dbComm.Parameters.AddWithValue("id_valuta", gudadagnoQuote.IdCurrency);
-                    dbComm.Parameters.AddWithValue("anno", gudadagnoQuote.Anno);
-                    dbComm.Parameters.AddWithValue("ammontare", gudadagnoQuote.Preso);
-                    dbComm.Parameters.AddWithValue("data_operazione", gudadagnoQuote.DataOperazione.ToString("yyyy-MM-dd"));
-                    dbComm.Parameters.AddWithValue("causale", gudadagnoQuote.Causale);
+                    dbComm.Parameters.AddWithValue("id_gestione", guadagnoQuote.IdGestione);
+                    dbComm.Parameters.AddWithValue("id_tipo_movimento", guadagnoQuote.IdTipoMovimento);
+                    dbComm.Parameters.AddWithValue("id_valuta", guadagnoQuote.IdCurrency);
+                    dbComm.Parameters.AddWithValue("anno", guadagnoQuote.Anno);
+                    dbComm.Parameters.AddWithValue("ammontare", guadagnoQuote.Preso);
+                    dbComm.Parameters.AddWithValue("data_operazione", guadagnoQuote.DataOperazione.ToString("yyyy-MM-dd"));
+                    dbComm.Parameters.AddWithValue("causale", guadagnoQuote.Causale);
                     dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -1882,13 +1882,63 @@ namespace FinanceManager.Services
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = ManagerScripts.InsertPrelievoUtiliBkd;
                     dbComm.Parameters.AddWithValue("id_prelievo", result);
-                    dbComm.Parameters.AddWithValue("id_gestione", gudadagnoQuote.IdGestione);
-                    dbComm.Parameters.AddWithValue("id_tipo_movimento", gudadagnoQuote.IdTipoMovimento);
-                    dbComm.Parameters.AddWithValue("id_valuta", gudadagnoQuote.IdCurrency);
-                    dbComm.Parameters.AddWithValue("anno", gudadagnoQuote.Anno);
-                    dbComm.Parameters.AddWithValue("ammontare", gudadagnoQuote.Preso);
-                    dbComm.Parameters.AddWithValue("data_operazione", gudadagnoQuote.DataOperazione.ToString("yyyy-MM-dd"));
-                    dbComm.Parameters.AddWithValue("causale", gudadagnoQuote.Causale);
+                    dbComm.Parameters.AddWithValue("id_gestione", guadagnoQuote.IdGestione);
+                    dbComm.Parameters.AddWithValue("id_tipo_movimento", guadagnoQuote.IdTipoMovimento);
+                    dbComm.Parameters.AddWithValue("id_valuta", guadagnoQuote.IdCurrency);
+                    dbComm.Parameters.AddWithValue("anno", guadagnoQuote.Anno);
+                    dbComm.Parameters.AddWithValue("ammontare", guadagnoQuote.Preso);
+                    dbComm.Parameters.AddWithValue("data_operazione", guadagnoQuote.DataOperazione.ToString("yyyy-MM-dd"));
+                    dbComm.Parameters.AddWithValue("causale", guadagnoQuote.Causale);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        /// <summary>
+        /// Elimino una registrazione di prelievo utili
+        /// </summary>
+        /// <param name="guadagnoPerQuote"></param>
+        public void DeletePrelievoUtili(GuadagnoPerQuote guadagnoPerQuote)
+        {
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = ManagerScripts.DeletePrelievoUtiliBKd;
+                    dbComm.Parameters.AddWithValue("id_prelievo", guadagnoPerQuote.IdGuadagno);
+                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (MySqlException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+            try
+            {
+                using (MySqlCommand dbComm = new MySqlCommand())
+                {
+                    dbComm.CommandType = CommandType.Text;
+                    dbComm.CommandText = ManagerScripts.DeletePrelievoUtili;
+                    dbComm.Parameters.AddWithValue("id_guadagno", guadagnoPerQuote.IdGuadagno);
                     dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();

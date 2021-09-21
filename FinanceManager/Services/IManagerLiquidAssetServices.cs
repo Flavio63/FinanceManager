@@ -198,15 +198,21 @@ namespace FinanceManager.Services
         /// Estraggo la quantità di utile disponibile
         /// sulla base dell'anno e della gestione
         /// </summary>
-        /// <param name="gudadagnoQuote">Il record con i dati da verificare</param>
+        /// <param name="guadagnoQuote">Il record con i dati da verificare</param>
         /// <returns>Disponibilità di utili</returns>
-        double VerifyDisponibilitaUtili(GuadagnoPerQuote gudadagnoQuote);
+        double VerifyDisponibilitaUtili(GuadagnoPerQuote guadagnoQuote);
 
         /// <summary>
         /// Registro il prelievo di utili
         /// </summary>
-        /// <param name="gudadagnoQuote">Il record da inserire</param>
-        void InsertPrelievoUtili(GuadagnoPerQuote gudadagnoQuote);
+        /// <param name="guadagnoQuote">Il record da inserire</param>
+        void InsertPrelievoUtili(GuadagnoPerQuote guadagnoQuote);
+
+        /// <summary>
+        /// Elimino una registrazione di prelievo utili
+        /// </summary>
+        /// <param name="guadagnoPerQuote"></param>
+        void DeletePrelievoUtili(GuadagnoPerQuote guadagnoPerQuote);
 
     }
 }

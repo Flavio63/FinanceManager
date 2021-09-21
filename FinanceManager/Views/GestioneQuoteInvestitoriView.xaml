@@ -248,7 +248,7 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Valuta" Binding="{Binding Valuta, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                            <DataGridTextColumn Header="Valuta" Binding="{Binding CodeCurrency, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                     IsReadOnly="True" FontSize="14">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="{x:Type TextBlock}">
@@ -350,7 +350,7 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Valuta" Binding="{Binding Valuta, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                            <DataGridTextColumn Header="Valuta" Binding="{Binding CodeCurrency, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                     IsReadOnly="True" FontSize="14">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="{x:Type TextBlock}">
@@ -455,7 +455,7 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Valuta" Binding="{Binding Valuta, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                            <DataGridTextColumn Header="Valuta" Binding="{Binding CodeCurrency, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                     IsReadOnly="True" FontSize="14">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="{x:Type TextBlock}">
@@ -852,7 +852,7 @@
                                 <Button Content="Registra" Margin="10" Width="75" Height="25" Command="{Binding InsertQuotaCommand}" CommandParameter="{Binding ElementName=Bottoniera_2}"/>
                                 <Button Content="Modifica" Margin="10" Width="75" Height="25" Command="{Binding ModifyQuotaCommand}" CommandParameter="{Binding ElementName=Bottoniera_2}"/>
                                 <Button Content="Pulisci" Margin="10" Width="75" Height="25" Command="{Binding ClearCommand}" CommandParameter="{Binding ElementName=Bottoniera_2}"/>
-                                <Button IsEnabled="False" Content="Elimina" Margin="10" Width="75" Height="25" Command="{Binding EraseQuotaCommand}" CommandParameter="{Binding ElementName=Bottoniera_2}"/>
+                                <Button Content="Elimina" Margin="10" Width="75" Height="25" Command="{Binding EraseQuotaCommand}" CommandParameter="{Binding ElementName=Bottoniera_2}"/>
                             </StackPanel>
                         </StackPanel>
                     </Grid>

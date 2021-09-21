@@ -315,6 +315,11 @@ namespace FinanceManager.Services.SQL
         public static readonly string UpdatePrelievoUtiliBkd = "UPDATE prelievi SET id_gestione = @id_gestione, anno = @anno, prelevato = @prelevato, data_operazione = @data, " +
             "causale = @causale WHERE id_prelievo = @id_prelievo ";
 
+        /// <summary> Elimino un recordo di prelievo utili </summary>
+        public static readonly string DeletePrelievoUtiliBKd = "DELETE FROM prelievi WHERE id_prelievo = @id_prelievo;";
+        public static readonly string DeletePrelievoUtili = "DELETE FROM guadagni_totale_anno WHERE id_guadagno = @id_guadagno;";
+
+
         /// <summary>Dopo l'inserimento sul conto corrente, registro il guadagno</summary>
         public static readonly string AddSingoloGuadagno = "INSERT INTO guadagni_totale_anno (id_gestione, id_tipo_soldi, id_tipo_movimento, anno, quota, guadagnato, id_valuta, data_operazione, " +
             "causale, id_quote_periodi, id_conto_corrente) ( SELECT B.id_gestione, id_tipo_soldi, id_tipo_movimento, YEAR(data_movimento) AS anno, " +
