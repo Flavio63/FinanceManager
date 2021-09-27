@@ -1221,7 +1221,11 @@ namespace FinanceManager.Services
                         quote.Id_tipo_movimento = (int)dataRow.Field<uint>("id_tipo_movimento");
                         quote.Desc_tipo_movimento = dataRow.Field<string>("desc_movimento");
                         quote.DataMovimento = dataRow.Field<DateTime>("data_movimento");
-                        quote.Ammontare = dataRow.Field<double>("ammontare");
+                        quote.AmmontareEuro = dataRow.Field<double>("ammontare");
+                        quote.IdCurrency = (int)dataRow.Field<uint>("id_valuta");
+                        quote.CodeCurrency = dataRow.Field<string>("cod_valuta");
+                        quote.AmmontareValuta = dataRow.Field<double>("valuta_base");
+                        quote.ChangeValue = dataRow.Field<double>("valore_cambio");
                         quote.Note = dataRow.Field<string>("note");
                         quotes.Add(quote);
                     }
@@ -1254,7 +1258,10 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("id_gestione", ActualQuote.IdGestione);
                     dbComm.Parameters.AddWithValue("id_tipo_movimento", ActualQuote.Id_tipo_movimento);
                     dbComm.Parameters.AddWithValue("data_movimento", ActualQuote.DataMovimento.ToString("yyyy-MM-dd"));
-                    dbComm.Parameters.AddWithValue("ammontare", ActualQuote.Ammontare);
+                    dbComm.Parameters.AddWithValue("ammontare", ActualQuote.AmmontareEuro);
+                    dbComm.Parameters.AddWithValue("id_valuta", ActualQuote.IdCurrency);
+                    dbComm.Parameters.AddWithValue("valuta_base", ActualQuote.AmmontareValuta);
+                    dbComm.Parameters.AddWithValue("valore_cambio", ActualQuote.ChangeValue);
                     dbComm.Parameters.AddWithValue("note", ActualQuote.Note);
                     dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
@@ -1386,7 +1393,10 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("id_tipo_movimento", ActualQuote.Id_tipo_movimento);
                     dbComm.Parameters.AddWithValue("id_periodo_quote", ActualQuote.Id_Periodo_Quote);
                     dbComm.Parameters.AddWithValue("data_movimento", ActualQuote.DataMovimento.ToString("yyyy-MM-dd"));
-                    dbComm.Parameters.AddWithValue("ammontare", ActualQuote.Ammontare);
+                    dbComm.Parameters.AddWithValue("id_valuta", ActualQuote.IdCurrency);
+                    dbComm.Parameters.AddWithValue("valuta_base", ActualQuote.AmmontareValuta);
+                    dbComm.Parameters.AddWithValue("valore_cambio", ActualQuote.ChangeValue);
+                    dbComm.Parameters.AddWithValue("ammontare", ActualQuote.AmmontareEuro);
                     dbComm.Parameters.AddWithValue("note", ActualQuote.Note);
                     dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
@@ -1424,44 +1434,6 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
                     return DT.Rows[0].Field<double>("totale");
-                }
-            }
-            catch (MySqlException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-        }
-
-        /// <summary>
-        /// Ritorna i dati dell'ultimo movimento di capitali effettuato
-        /// </summary>
-        /// <returns>Record con i dati</returns>
-        public QuoteTab GetLastQuoteTab()
-        {
-            try
-            {
-                DataTable DT = new DataTable();
-                QuoteTab quote = new QuoteTab();
-                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
-                {
-                    dbAdapter.SelectCommand = new MySqlCommand();
-                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
-                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetLastQuoteTab;
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbAdapter.Fill(DT);
-                    quote.IdQuote = (int)DT.Rows[0].Field<uint>("id_quote_inv");
-                    quote.IdGestione = (int)DT.Rows[0].Field<uint>("id_investitore");
-                    quote.NomeInvestitore = DT.Rows[0].Field<string>("Nome");
-                    quote.Id_tipo_movimento = (int)DT.Rows[0].Field<uint>("id_tipo_movimento");
-                    quote.Desc_tipo_movimento = DT.Rows[0].Field<string>("desc_movimento");
-                    quote.DataMovimento = DT.Rows[0].Field<DateTime>("data_movimento");
-                    quote.Ammontare = DT.Rows[0].Field<double>("ammontare");
-                    quote.Note = DT.Rows[0].Field<string>("note");
-                    return quote;
                 }
             }
             catch (MySqlException err)

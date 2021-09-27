@@ -115,8 +115,6 @@ namespace FinanceManager.Services
         void UpdateQuoteTab(QuoteTab ActualQuote);                      // aggiorna i movimenti della tabella AndQuote
         void DeleteRecordQuoteTab(int idQuote);                         // elimina una scrittura dal database
 
-        QuoteTab GetLastQuoteTab();                                     // Prendo l'ultimo record della tabella perchè nel caso di giroconto devo conoscere il nuovo ID
-
         void InsertAccountMovement(ContoCorrente contoCorrente);        // inserisco il movimento nella tabella conto_corrente
         /// <summary>
         /// Tramite l'ultimo record conto_corrente inserito

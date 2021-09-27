@@ -29,8 +29,9 @@ namespace FinanceManager.Services.SQL
         private static readonly string ADataMovimento = " A.data_movimento ";
         private static readonly string AId_fineco_euro = " A.id_fineco_euro";
 
-        private static readonly string GetTableQuote = "SELECT id_quote_inv, A.id_gestione, B.nome_gestione, A.id_tipo_movimento, C.desc_movimento, data_movimento, ammontare, A.note " +
-            "FROM quote_investimenti A, gestioni B, tipo_movimento C WHERE A.id_gestione = B.id_gestione AND A.id_tipo_movimento = C.id_tipo_movimento AND id_quote_inv > 0 ";
+        private static readonly string GetTableQuote = "SELECT id_quote_inv, A.id_gestione, B.nome_gestione, A.id_tipo_movimento, C.desc_movimento, data_movimento, ammontare, A.id_valuta, " +
+            "D.cod_valuta, A.valuta_base, A.valore_cambio, A.note FROM quote_investimenti A, gestioni B, tipo_movimento C, valuta D " +
+            "WHERE A.id_gestione = B.id_gestione AND A.id_tipo_movimento = C.id_tipo_movimento AND A.id_valuta = D.id_valuta AND id_quote_inv > 0 ";
 
         private static readonly string GetManagerLiquidAssetList = "SELECT id_portafoglio_titoli, B.id_gestione, nome_gestione, C.id_conto, desc_conto, D.id_valuta, cod_valuta, " +
             "E.id_tipo_movimento, desc_Movimento, G.id_tipo_titolo, G.desc_tipo_titolo, H.id_azienda, H.desc_azienda, A.id_titolo, F.desc_titolo, F.isin, data_movimento, " +
@@ -269,8 +270,8 @@ namespace FinanceManager.Services.SQL
             "WHERE A.id_aggregazione = @id_tipo_soldi AND A.data_inizio = @data_inizio; ";
 
         /// <summary>Inserisce un nuovo record nella tabella quote_investimenti</summary>
-        public static readonly string InsertInvestment = "INSERT INTO quote_investimenti (id_quote_inv, id_gestione, id_tipo_movimento, id_periodo_quote, data_movimento, ammontare, note) " +
-            "VALUES (null, @id_gestione, @id_tipo_movimento, @id_periodo_quote, @data_movimento, @ammontare, @note)";
+        public static readonly string InsertInvestment = "INSERT INTO quote_investimenti (id_quote_inv, id_gestione, id_tipo_movimento, id_periodo_quote, data_movimento, id_valuta, " +
+            "valuta_base, valore_cambio, ammontare, note) VALUES (null, @id_gestione, @id_tipo_movimento, @id_periodo_quote, @data_movimento, @id_valuta, @valuta_base, @valore_cambio, @ammontare, @note)";
 
         /// <summary>
         /// Calcola e restituisce il totale (somma algebrica) di quanto investito da un soggetto
@@ -284,7 +285,7 @@ namespace FinanceManager.Services.SQL
         /// Modifica un record nella tabella quote_investimenti
         /// </summary>
         public static readonly string UpdateQuoteTab = "UPDATE quote_investimenti SET id_gestione = @id_gestione, id_tipo_movimento = @id_tipo_movimento, data_movimento = @data_movimento, " +
-            "ammontare = @ammontare, note = @note WHERE id_quote_inv = @id_quote_inv";
+            "ammontare = @ammontare, id_valuta = @id_valuta, valuta_base = @valuta_base, valore_cambio = @valore_cambio, note = @note WHERE id_quote_inv = @id_quote_inv";
 
         /// <summary>
         /// Elimina un record nella tabella quote_investimenti

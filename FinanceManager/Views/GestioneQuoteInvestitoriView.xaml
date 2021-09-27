@@ -5,9 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:is="http://schemas.microsoft.com/expression/2010/interactions"
              xmlns:iy="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:local="clr-namespace:FinanceManager.Views"
+             xmlns:local="clr-namespace:FinanceManager.Events"
              mc:Ignorable="d" Name="_GestioneQuoteInvestitoriView"
              d:DesignHeight="850" d:DesignWidth="1100">
+    <UserControl.Resources>
+        <local:ComboboxDisableConverter x:Key="Inverter"/>
+    </UserControl.Resources>
     <Grid Margin="20, 5">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
@@ -548,8 +551,35 @@
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="Ammontare" Binding="{Binding Ammontare, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay,
+                        <DataGridTextColumn Header="Ammontare" Binding="{Binding AmmontareEuro, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay,
                                         ConverterCulture=it-IT, StringFormat=C2}" IsReadOnly="True" FontSize="14" FontWeight="Normal">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    <Setter Property="Margin" Value="5,0,5,0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Valuta" Binding="{Binding CodeCurrency, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                        IsReadOnly="True" FontSize="14" FontWeight="Normal">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="Margin" Value="5,0,5,0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Cambio" Binding="{Binding ChangeValue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay,
+                                        ConverterCulture=it-IT, StringFormat=N4}" IsReadOnly="True" FontSize="14" FontWeight="Normal">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="Margin" Value="5,0,5,0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Valuta" Binding="{Binding AmmontareValuta, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay,
+                                        ConverterCulture=it-IT, StringFormat=N2}" IsReadOnly="True" FontSize="14" FontWeight="Normal">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="{x:Type TextBlock}">
                                     <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -587,8 +617,8 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="35"/>
-                            <RowDefinition Height="40"/>
-                            <RowDefinition Height="20"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
                             <RowDefinition Height="25"/>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="auto"/>
@@ -601,33 +631,75 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Gestione Investimenti" Grid.ColumnSpan="4" FontSize="18" FontWeight="Bold" 
                                     HorizontalAlignment="Center" Margin="3, 2, 3, 7"/>
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="La data" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
-                        <DatePicker Name="DataCapitali" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Height="25" FontSize="14" 
-                                    SelectedDate="{Binding ActualQuote.DataMovimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                    DisplayDate="{Binding ActualQuote.DataMovimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
-                            <iy:Interaction.Triggers>
-                                <iy:EventTrigger EventName="SelectedDateChanged">
-                                    <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                                </iy:EventTrigger>
-                            </iy:Interaction.Triggers>
-                        </DatePicker>
-                        <TextBlock Grid.Row="1" Grid.Column="2" Text="Cifra" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
-                        <TextBox Name="CifraCapitali" Grid.Row="1" Grid.Column="3" Margin="5, 2" Padding="0,0,5,0" Height="25" HorizontalContentAlignment="Right"
-                                Text="{Binding ActualQuote.Ammontare, ConverterCulture=it-IT}" FontSize="16">
-                            <iy:Interaction.Triggers>
-                                <iy:EventTrigger EventName="LostFocus">
-                                    <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
-                                </iy:EventTrigger>
-                                <iy:EventTrigger EventName="PreviewKeyDown">
-                                    <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                                </iy:EventTrigger>
-                            </iy:Interaction.Triggers>
-                        </TextBox>
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Causale" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                        <TextBox Name="CausaleCapitali" Grid.Row="2" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="3" FontSize="16" Margin="5, 2, 5, 2" 
+                        <StackPanel Orientation="Vertical" Margin="10,2,5,2" Grid.Row="2" Grid.ColumnSpan="4">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Data" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
+                                <DatePicker Name="DataCapitali" VerticalAlignment="Center" Width="115" Height="25" FontSize="14" 
+                                        SelectedDate="{Binding ActualQuote.DataMovimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                        DisplayDate="{Binding ActualQuote.DataMovimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                    <iy:Interaction.Triggers>
+                                        <iy:EventTrigger EventName="SelectedDateChanged">
+                                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                        </iy:EventTrigger>
+                                    </iy:Interaction.Triggers>
+                                </DatePicker>
+                                <TextBlock Text="Euri Caricati" FontSize="16"  Margin="75, 2, 0, 2"  VerticalAlignment="Center"/>
+                                <TextBox Name="ValutaCambiata" Margin="5, 2, 0, 2" Width="95" Padding="0,0,5,0" Height="25" HorizontalContentAlignment="Right"
+                                    Text="{Binding ValoreInEuro, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=N2, ConverterCulture=it-IT}" 
+                                         FontSize="16" IsEnabled="{Binding TabVersPre, Converter={StaticResource Inverter}}">
+                                    <iy:Interaction.Triggers>
+                                        <iy:EventTrigger EventName="LostFocus">
+                                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                                        </iy:EventTrigger>
+                                        <iy:EventTrigger EventName="PreviewKeyDown">
+                                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                                        </iy:EventTrigger>
+                                    </iy:Interaction.Triggers>
+                                </TextBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Cifra" FontSize="16"  Margin="0, 2, 0, 2"  VerticalAlignment="Center"/>
+                                <TextBox Name="CifraCapitali" Margin="5, 2, 0, 2" Width="115" Padding="0,0,5,0" Height="25" HorizontalContentAlignment="Right"
+                                    Text="{Binding ActualQuote.AmmontareValuta, StringFormat=N2, ConverterCulture=it-IT}" IsEnabled="{Binding TabVersPre}" FontSize="16">
+                                    <iy:Interaction.Triggers>
+                                        <iy:EventTrigger EventName="LostFocus">
+                                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                                        </iy:EventTrigger>
+                                        <iy:EventTrigger EventName="PreviewKeyDown">
+                                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                                        </iy:EventTrigger>
+                                    </iy:Interaction.Triggers>
+                                </TextBox>
+                                <TextBlock Text="Val." FontSize="16"  Margin="5, 2, 0, 2"  VerticalAlignment="Center"/>
+                                <ComboBox x:Name="ValutaCapitali" Margin="5, 2, 0, 2" Height="25" HorizontalContentAlignment="Left" Width="65"
+                                    FontSize="16"  ItemsSource="{Binding ListValuteVersGiro, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                    SelectedValuePath="IdCurrency" DisplayMemberPath="CodeCurrency" 
+                                    SelectedValue="{Binding ActualQuote.IdCurrency, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                    <iy:Interaction.Triggers>
+                                        <iy:EventTrigger EventName="SelectionChanged">
+                                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                        </iy:EventTrigger>
+                                    </iy:Interaction.Triggers>
+                                </ComboBox>
+                                <TextBlock Text="Cambio" FontSize="16"  Margin="5, 2, 0, 2"  VerticalAlignment="Center"/>
+                                <TextBox Name="CambioValutaCapitali" Margin="5, 2, 0, 2" Width="95" Padding="0,0,5,0" Height="25" HorizontalContentAlignment="Right"
+                                    Text="{Binding ActualQuote.ChangeValue, StringFormat=N6, ConverterCulture=it-IT}" FontSize="16" IsEnabled="{Binding TabVersPre}">
+                                    <iy:Interaction.Triggers>
+                                        <iy:EventTrigger EventName="LostFocus">
+                                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                                        </iy:EventTrigger>
+                                        <iy:EventTrigger EventName="PreviewKeyDown">
+                                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                                        </iy:EventTrigger>
+                                    </iy:Interaction.Triggers>
+                                </TextBox>
+                            </StackPanel>
+                        </StackPanel>
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Causale" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                        <TextBox Name="CausaleCapitali" Grid.Row="3" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="3" FontSize="16" Margin="5, 2, 5, 2" 
                          VerticalAlignment="Stretch" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding Causale, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                         </TextBox>
-                        <StackPanel Orientation="Vertical" Grid.Row="4" Grid.ColumnSpan="4" Margin="5">
+                        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.ColumnSpan="4" Margin="5">
                             <TabControl>
                                 <TabItem Header="Versamento / Prelievo Capitale" FontSize="14" FontWeight="Bold"
                                  IsSelected="{Binding TabVersPre, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
@@ -765,8 +837,6 @@
                             <Button Content="Inserisci" Margin="10" Width="75" Height="25" Command="{Binding InsertCommand}" CommandParameter="{Binding ElementName=Bottoniera_1}"/>
                             <Button Content="Modifica" Margin="10" Width="75" Height="25" Command="{Binding ModifyCommand}" CommandParameter="{Binding ElementName=Bottoniera_1}"/>
                             <Button Content="Pulisci" Margin="10" Width="75" Height="25" Command="{Binding ClearCommand}" CommandParameter="{Binding ElementName=Bottoniera_1}"/>
-                            <Button Visibility="Collapsed" Content="Elimina" Margin="10" Width="75" Height="25" Command="{Binding EraseCommand}" 
-                                    CommandParameter="{Binding ElementName=Bottoniera_1}"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -812,8 +882,8 @@
                             </iy:Interaction.Triggers>
                         </TextBox>
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="Valuta" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
-                        <ComboBox x:Name="ValutaUtili" Grid.Row="3" Grid.Column="1" Margin="5, 2" Padding="0,0,5,0" Height="25" HorizontalContentAlignment="Right"
-                                FontSize="16"  ItemsSource="{Binding ListValute, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                        <ComboBox x:Name="ValutaUtili" Grid.Row="3" Grid.Column="1" Margin="5, 2" Padding="0,0,5,0" Height="25" HorizontalContentAlignment="Left"
+                                FontSize="16"  ItemsSource="{Binding ListValutePrelievo, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                                 SelectedValuePath="IdCurrency" DisplayMemberPath="CodeCurrency" 
                                 SelectedValue="{Binding RecordQuoteGuadagno.IdCurrency, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                             <iy:Interaction.Triggers>

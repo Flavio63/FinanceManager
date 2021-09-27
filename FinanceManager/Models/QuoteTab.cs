@@ -31,7 +31,11 @@ namespace FinanceManager.Models
                 _MovementDate = value;
             }
         }
-        public double Ammontare { get; set; }
+        public int IdCurrency { get; set; }
+        public string CodeCurrency { get; set; }
+        public double ChangeValue { get; set; }
+        public double AmmontareEuro { get; set; }
+        public double AmmontareValuta { get; set; }
         public string Note { get; set; }
     }
 }

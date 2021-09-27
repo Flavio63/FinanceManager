@@ -21,7 +21,6 @@ namespace FinanceManager.ViewModels
         private QuoteTabComparator quoteTabComparator = new QuoteTabComparator();
         public ICommand InsertCommand { get; set; }
         public ICommand ModifyCommand { get; set; }
-        public ICommand EraseCommand { get; set; }
         public ICommand InsertQuotaCommand { get; set; }
         public ICommand ModifyQuotaCommand { get; set; }
         public ICommand EraseQuotaCommand { get; set; }
@@ -41,10 +40,9 @@ namespace FinanceManager.ViewModels
             CloseMeCommand = new CommandHandler(CloseMe);
             InsertCommand = new CommandHandler(SaveCommand, CanSave);
             ModifyCommand = new CommandHandler(UpdateCommand, CanModify);
-            EraseCommand = new CommandHandler(DeleteCommand, CanModify);
             InsertQuotaCommand = new CommandHandler(SaveCommand, CanSaveQuota);
             ModifyQuotaCommand = new CommandHandler(UpdateCommand, CanModifyQuota);
-            EraseQuotaCommand = new CommandHandler(DeleteCommand, CanModifyQuota);
+            EraseQuotaCommand = new CommandHandler(DeleteCommand, CanModify);
             ClearCommand = new CommandHandler(CleanCommand);
             #endregion
 
@@ -61,7 +59,8 @@ namespace FinanceManager.ViewModels
                 ListLocation = new RegistryLocationList();
                 ListQuoteGuadagno = new QuotePerPeriodoList();
                 ListTipoSoldi = new TipoSoldiList();
-                ListValute = new RegistryCurrencyList();
+                ListValutePrelievo = new RegistryCurrencyList();
+                ListValuteVersGiro = new RegistryCurrencyList();
                 ListAnni = _managerLiquidServices.GetAnniFromGuadagni();
 
                 #endregion
@@ -108,6 +107,7 @@ namespace FinanceManager.ViewModels
 
                 ContoCorrenteSelected = new ContoCorrente();
                 ActualQuote = new QuoteTab();
+                ValoreInEuro = 0;
                 RecordQuoteGuadagno = new GuadagnoPerQuote();
 
                 Causale = "";
@@ -119,7 +119,8 @@ namespace FinanceManager.ViewModels
                 ListQuoteSuperSintesiGuadagno = _managerLiquidServices.GetQuoteGuadagno(0);
                 ListLocation = _registryServices.GetRegistryLocationList();
                 ListTipoSoldi = _registryServices.GetTipoSoldiList();
-                ListValute = _registryServices.GetRegistryCurrencyList();
+                ListValutePrelievo = _registryServices.GetRegistryCurrencyList();
+                ListValuteVersGiro = _registryServices.GetRegistryCurrencyList();
             }
             catch (Exception err)
             {
@@ -128,11 +129,20 @@ namespace FinanceManager.ViewModels
         }
 
         #region Getter&Setter
-
-        public RegistryCurrencyList ListValute
+        /// <summary>
+        /// Riempiono i combo box con le valute sia
+        /// per la parte di prelievo utili sia per 
+        /// la parte di versamento e giroconto
+        /// </summary>
+        public RegistryCurrencyList ListValuteVersGiro
         {
-            get { return GetValue(() => ListValute); }
-            set { SetValue(() => ListValute, value); }
+            get { return GetValue(() => ListValuteVersGiro); }
+            set { SetValue(() => ListValuteVersGiro, value); }
+        }
+        public RegistryCurrencyList ListValutePrelievo
+        {
+            get { return GetValue(() => ListValutePrelievo); }
+            set { SetValue(() => ListValutePrelievo, value); }
         }
 
         /// <summary>
@@ -329,6 +339,12 @@ namespace FinanceManager.ViewModels
             private set { SetValue(() => RegistryOwner, value); }
         }
 
+        public double ValoreInEuro
+        {
+            get { return GetValue(() => ValoreInEuro); }
+            set { SetValue(() => ValoreInEuro, value); }
+        }
+
         #endregion
 
         /// <summary>
@@ -337,13 +353,13 @@ namespace FinanceManager.ViewModels
         /// <returns>True or False</returns>
         private bool VerifyQuoteTabOperation()
         {
-            if (ActualQuote.Id_tipo_movimento == 2 && ActualQuote.Ammontare > 0)
+            if (ActualQuote.Id_tipo_movimento == 2 && ActualQuote.AmmontareEuro > 0)
             {
                 MessageBox.Show("Attenzione devi inserire una cifra negativa se vuoi prelevare",
                     "Gestione AndQuote", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
-            if (ActualQuote.Id_tipo_movimento == 1 && ActualQuote.Ammontare < 0)
+            if (ActualQuote.Id_tipo_movimento == 1 && ActualQuote.AmmontareEuro < 0)
             {
                 MessageBox.Show("Attenzione devi inserire una cifra positiva se vuoi versare",
                     "Gestione AndQuote", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -364,7 +380,11 @@ namespace FinanceManager.ViewModels
         {
             if (e.AddedItems.Count > 0 && e.AddedItems[0] is QuoteTab quoteTab)
             {
+                TabVersPre = quoteTab.Id_tipo_movimento == 12 ? false : true;
+                TabGiroconto = !TabVersPre;
                 ActualQuote = quoteTab;
+                ValoreInEuro = ActualQuote.AmmontareEuro;
+                Causale = ActualQuote.Note;
                 if (ActualQuote.Id_tipo_movimento == 12)
                 {
                     // estraggo solo il record corrispondente alla selezione nella griglia quote
@@ -375,12 +395,12 @@ namespace FinanceManager.ViewModels
                     TabVersPre = !TabGiroconto;
                     Causale = ActualQuote.Note;
                 }
-                else if (ActualQuote.Id_tipo_movimento != 12)
-                {
-                    // Attivo il tabControl dei Ver
-                    TabVersPre = true;
-                    TabGiroconto = !TabVersPre;
-                }
+                //else if (ActualQuote.Id_tipo_movimento != 12)
+                //{
+                //    // Attivo il tabControl dei Ver
+                //    TabVersPre = true;
+                //    TabGiroconto = !TabVersPre;
+                //}
             }
             else if (e.AddedItems.Count > 0 && e.AddedItems[0] is GuadagnoPerQuote guadagnoPerQuote)
             {
@@ -419,6 +439,16 @@ namespace FinanceManager.ViewModels
                             {
                                 ActualQuote.IdGestione = ((RegistryOwner)e.AddedItems[0]).Id_gestione;
                                 ActualQuote.NomeInvestitore = ((RegistryOwner)e.AddedItems[0]).Nome_Gestione;
+                                if (TabVersPre == false)
+                                {
+                                    ActualQuote.IdCurrency = 1;
+                                    ActualQuote.CodeCurrency = "EUR";
+                                }
+                            }
+                            if (e.AddedItems[0] is RegistryCurrency)
+                            {
+                                ActualQuote.IdCurrency = ((RegistryCurrency)e.AddedItems[0]).IdCurrency;
+                                ActualQuote.CodeCurrency = ((RegistryCurrency)e.AddedItems[0]).CodeCurrency;
                             }
                         }
                         else if (namae.Contains("Giro") && TabGiroconto)
@@ -459,13 +489,26 @@ namespace FinanceManager.ViewModels
         public void LostFocus(object sender, EventArgs e)
         {
             if (((TextBox)sender).Text != "")
-                if (((TextBox)sender).Name.Contains("Capitali"))
+            {
+                if (((TextBox)sender).Name == "CambioValutaCapitali")
                 {
-                    ActualQuote.Ammontare = Convert.ToDouble(((TextBox)sender).Text);
-                    VerifyQuoteTabOperation();
+                    ActualQuote.ChangeValue = Convert.ToDouble(((TextBox)sender).Text);
+                    ActualQuote.AmmontareEuro = ActualQuote.AmmontareValuta * ActualQuote.ChangeValue;
+                    ValoreInEuro = ActualQuote.AmmontareEuro;
                 }
-                else
+                if (((TextBox)sender).Name == "ValutaCambiata")
+                {
+                    ActualQuote.AmmontareEuro = Convert.ToDouble(((TextBox)sender).Text.Replace(" €", ""));
+                }
+                if (((TextBox)sender).Name == "CifraCapitali")
+                {
+                    ActualQuote.AmmontareValuta = Convert.ToDouble(((TextBox)sender).Text);
+                    ActualQuote.AmmontareEuro = ActualQuote.AmmontareValuta * ActualQuote.ChangeValue;
+                    ValoreInEuro = ActualQuote.AmmontareEuro;
+                }
+                if (((TextBox)sender).Name == "CifraUtili")
                     RecordQuoteGuadagno.Preso = Convert.ToDouble(((TextBox)sender).Text);
+            }
         }
 
         /// <summary>
@@ -475,7 +518,7 @@ namespace FinanceManager.ViewModels
         /// <param name="e">Pressione del tasto</param>
         public void PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (sender is TextBox textBox && textBox.Name.Contains("Cifra"))
+            if (sender is TextBox textBox && (textBox.Name.Contains("Cifra") || (textBox.Name.Contains("Capitali"))))
                 if (e.Key == Key.Decimal || e.Key == Key.OemPeriod)
                 {
                     var pos = textBox.SelectionStart;
@@ -509,7 +552,11 @@ namespace FinanceManager.ViewModels
                             ActualQuote.Id_Periodo_Quote = _managerLiquidServices.Update_InsertQuotePeriodi(ActualQuote.DataMovimento, Id_Aggregazione);
                             _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il nuovo movimento di capitali
                             ActualQuote.IdGestione = ActualQuote.IdGestione == 3 ? 5 : 3;
-                            ActualQuote.Ammontare = 0;
+                            ActualQuote.AmmontareEuro = 0;
+                            ActualQuote.AmmontareValuta = 0;
+                            ActualQuote.ChangeValue = 0;
+                            ActualQuote.IdCurrency = 0;
+                            ActualQuote.CodeCurrency = "";
                             ActualQuote.Note = "Inserimento per Quote";
                             _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il movimento a 0 per effettuare le quote corrette.
                             _managerLiquidServices.ComputesAndInsertQuoteGuadagno(Id_Aggregazione, ActualQuote.Id_Periodo_Quote);
@@ -518,9 +565,9 @@ namespace FinanceManager.ViewModels
                         {
                             ActualQuote.Id_Periodo_Quote = _managerLiquidServices.Update_InsertQuotePeriodi(ActualQuote.DataMovimento, Id_Aggregazione);
                             _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il nuovo movimento di capitali
-                            ActualQuote.IdGestione = 3; ActualQuote.Ammontare = 0; ActualQuote.Note = "Inserimento per Quote";
+                            ActualQuote.IdGestione = 3; ActualQuote.AmmontareEuro = 0; ActualQuote.Note = "Inserimento per Quote";
                             _managerLiquidServices.InsertInvestment(ActualQuote); // FLAVIO inserisco il movimento a 0 per effettuare le quote corrette.
-                            ActualQuote.IdGestione = 5; ActualQuote.Ammontare = 0; ActualQuote.Note = "Inserimento per Quote";
+                            ActualQuote.IdGestione = 5; ActualQuote.AmmontareEuro = 0; ActualQuote.Note = "Inserimento per Quote";
                             _managerLiquidServices.InsertInvestment(ActualQuote); // DANIELA inserisco il movimento a 0 per effettuare le quote corrette.
                             _managerLiquidServices.ComputesAndInsertQuoteGuadagno(Id_Aggregazione, ActualQuote.Id_Periodo_Quote);
                         }
@@ -540,10 +587,10 @@ namespace FinanceManager.ViewModels
                 else if (((StackPanel)param).Name == "Bottoniera_1" && TabGiroconto && ActualQuote.IdQuote == 0)
                 {
                     if (CheckDa && !CheckA)
-                        ActualQuote.Ammontare = ActualQuote.Ammontare > 0 ? ActualQuote.Ammontare * -1 : ActualQuote.Ammontare;
+                        ActualQuote.AmmontareEuro = ActualQuote.AmmontareEuro > 0 ? ActualQuote.AmmontareEuro * -1 : ActualQuote.AmmontareEuro;
                     else if (!CheckDa && CheckA)
-                        ActualQuote.Ammontare = ActualQuote.Ammontare < 0 ? ActualQuote.Ammontare * -1 : ActualQuote.Ammontare;
-                    ContoCorrenteSelected.Ammontare = ActualQuote.Ammontare * -1;
+                        ActualQuote.AmmontareEuro = ActualQuote.AmmontareEuro < 0 ? ActualQuote.AmmontareEuro * -1 : ActualQuote.AmmontareEuro;
+                    ContoCorrenteSelected.Ammontare = ActualQuote.AmmontareEuro * -1;
                     _managerLiquidServices.InsertInvestment(ActualQuote);
                     ContoCorrenteSelected.Id_Quote_Investimenti = _managerLiquidServices.GetIdQuoteTab(ActualQuote);
                     ContoCorrenteSelected.Id_Tipo_Soldi = 1;
@@ -594,10 +641,10 @@ namespace FinanceManager.ViewModels
                 else if (((StackPanel)param).Name == "Bottoniera_1" && TabGiroconto && ActualQuote.IdQuote > 0)
                 {
                     if (CheckDa && !CheckA)
-                        ActualQuote.Ammontare = ActualQuote.Ammontare > 0 ? ActualQuote.Ammontare * -1 : ActualQuote.Ammontare;
+                        ActualQuote.AmmontareEuro = ActualQuote.AmmontareEuro > 0 ? ActualQuote.AmmontareEuro * -1 : ActualQuote.AmmontareEuro;
                     else if (!CheckDa && CheckA)
-                        ActualQuote.Ammontare = ActualQuote.Ammontare < 0 ? ActualQuote.Ammontare * -1 : ActualQuote.Ammontare;
-                    ContoCorrenteSelected.Ammontare = ActualQuote.Ammontare * -1;
+                        ActualQuote.AmmontareEuro = ActualQuote.AmmontareEuro < 0 ? ActualQuote.AmmontareEuro * -1 : ActualQuote.AmmontareEuro;
+                    ContoCorrenteSelected.Ammontare = ActualQuote.AmmontareEuro * -1;
                     _managerLiquidServices.UpdateQuoteTab(ActualQuote);
                     _managerLiquidServices.UpdateRecordContoCorrente(ContoCorrenteSelected, Models.Enumeratori.TipologiaIDContoCorrente.IdContoCorrente);
                 }
@@ -626,19 +673,7 @@ namespace FinanceManager.ViewModels
         public void DeleteCommand(object param)
         {
 
-            if (((StackPanel)param).Name == "Bottoniera_1")
-            {
-                try
-                {
-
-                }
-                catch (Exception err)
-                {
-                    MessageBox.Show("Problemi nell'eliminare il record" + Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(),
-                        MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            else if (((StackPanel)param).Name == "Bottoniera_2")
+            if (((StackPanel)param).Name == "Bottoniera_2")
             {
                 try
                 {
@@ -674,7 +709,7 @@ namespace FinanceManager.ViewModels
         /// <returns></returns>
         public bool CanSave(object param)
         {
-            if (ActualQuote.IdQuote == 0 && ActualQuote.Ammontare != 0 && ActualQuote.IdGestione > 0 && ActualQuote.Id_tipo_movimento > 0 && ActualQuote.Id_tipo_movimento < 13)
+            if (ActualQuote.IdQuote == 0 && ActualQuote.AmmontareEuro != 0 && ActualQuote.IdGestione > 0 && ActualQuote.Id_tipo_movimento > 0 && ActualQuote.Id_tipo_movimento < 13)
             {
                 return true;
             }
@@ -708,7 +743,6 @@ namespace FinanceManager.ViewModels
                 return true;
             return false;
         }
-
         #endregion
     }
 }
