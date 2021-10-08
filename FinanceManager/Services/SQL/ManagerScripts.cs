@@ -300,7 +300,7 @@ namespace FinanceManager.Services.SQL
         /// <summary>
         /// Trovo quanta disponibilità di utili ci sono
         /// </summary>
-        public static readonly string VerifyDisponibilitaUtili = "SELECT SUM(guadagnato + prelevato) + @daInserire FROM guadagni_totale_anno WHERE id_valuta = @id_valuta AND id_gestione = @id_gestione AND anno = @anno";
+        public static readonly string VerifyDisponibilitaUtili = "SELECT SUM(guadagnato + prelevato) + @daInserire FROM guadagni_totale_anno WHERE id_tipo_soldi <> 11 AND id_valuta = @id_valuta AND id_gestione = @id_gestione AND anno = @anno";
         /// <summary>
         /// Registro la cifra prelevata
         /// </summary>
