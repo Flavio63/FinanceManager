@@ -42,7 +42,7 @@ namespace FinanceManager.ViewModels
             ModifyCommand = new CommandHandler(UpdateCommand, CanModify);
             InsertQuotaCommand = new CommandHandler(SaveCommand, CanSaveQuota);
             ModifyQuotaCommand = new CommandHandler(UpdateCommand, CanModifyQuota);
-            EraseQuotaCommand = new CommandHandler(DeleteCommand, CanModify);
+            EraseQuotaCommand = new CommandHandler(DeleteCommand, CanDelete);
             ClearCommand = new CommandHandler(CleanCommand);
             #endregion
 
@@ -734,6 +734,15 @@ namespace FinanceManager.ViewModels
         {
             if (ActualQuote.IdQuote > 0)
                 return true;
+            return false;
+        }
+
+        public bool CanDelete(object param)
+        {
+            if (RecordQuoteGuadagno.IdGuadagno > 0)
+            {
+                return true;
+            }
             return false;
         }
 
