@@ -84,7 +84,7 @@
             "Energia * ammontare / 100 * -1 AS Energia, BeniIndustriali * ammontare / 100 * -1 AS BeniIndustriali, Tecnologia * ammontare / 100 * -1 AS Tecnologia, " +
             "SettoriND * ammontare / 100 * -1 AS GlobaleSettori " +
             "FROM portafoglio_titoli A, titoli B, tipo_titoli E, gestioni F " +
-            "WHERE A.id_titolo = B.id_titolo AND B.id_tipo_titolo = E.id_tipo_titolo AND A.id_gestione = F.id_gestione AND ({0}) ) AS XYZ " +
+            "WHERE A.id_titolo = B.id_titolo AND B.id_tipo_titolo = E.id_tipo_titolo AND A.id_gestione = F.id_gestione AND ({0}) AND A.attivo = 1 ) AS XYZ " +
             " ) AS ABC";
 
         public static readonly string GetDeltaPerYear = "SELECT id_gestione, nome_gestione, cod_valuta, GuadagniAnno1, GuadagniAnno2, GuadagniAnno2 - GuadagniAnno1 AS Differenza, " +
