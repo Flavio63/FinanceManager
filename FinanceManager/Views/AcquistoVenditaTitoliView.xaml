@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:is="http://schemas.microsoft.com/expression/2010/interactions"
-             xmlns:iy="http://schemas.microsoft.com/expression/2010/interactivity"
+             
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:conv="clr-namespace:FinanceManager.Events"
              xmlns:local="clr-namespace:FinanceManager.Views"
              x:Name="_AcquistoVenditaTitoliView"        
@@ -35,13 +35,12 @@
                 HorizontalContentAlignment="Center" Grid.Column="5" HorizontalAlignment="Right"
                     VerticalContentAlignment="Center" Width="20" Height="20" Background="Red" Foreground="Yellow" FontWeight="Bold" 
                 Margin="0,0, 15, 0"/>
-        <Border Grid.Row="1" BorderBrush="BlueViolet" BorderThickness="0.8" Margin="5"
-                Name="TabSintesi">
-            <iy:Interaction.Triggers>
-                <iy:EventTrigger EventName="Loaded">
-                    <is:CallMethodAction TargetObject="{Binding}" MethodName="TabControlLoaded"/>
-                </iy:EventTrigger>
-            </iy:Interaction.Triggers>
+        <Border Grid.Row="1" BorderBrush="BlueViolet" BorderThickness="0.8" Margin="5" Name="TabSintesi">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Loaded">
+                    <i:CallMethodAction TargetObject="{Binding}" MethodName="TabControlLoaded"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
         </Border>
 
         <!-- Bottoniera colonna 1-->
@@ -75,43 +74,43 @@
                           SelectedValuePath="Id_Conto" DisplayMemberPath="Desc_Conto" Margin="5, 2" MinWidth="100" 
                           IsEnabled="{Binding CanModifyBaseParameters, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                           SelectedValue="{Binding RecordPortafoglioTitoli.Id_Conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="SelectionChanged">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </ComboBox>
                 <TextBlock Grid.Row="2" Text="La gestione" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
                 <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding ListGestioni, UpdateSourceTrigger=PropertyChanged}"
                           IsEnabled="{Binding CanModifyBaseParameters, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                           SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione" Margin="5, 2" MinWidth="100"
                           SelectedValue="{Binding RecordPortafoglioTitoli.Id_gestione}">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="SelectionChanged">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </ComboBox>
                 <TextBlock Grid.Row="3" Text="L'operazione" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
                 <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding ListMovimenti, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValuePath="Id_tipo_movimento" DisplayMemberPath="Desc_tipo_movimento" Margin="5, 2" MinWidth="100"
                           IsEnabled="{Binding CanModifyBaseParameters, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                           SelectedValue="{Binding RecordPortafoglioTitoli.Id_tipo_movimento}">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="SelectionChanged">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </ComboBox>
                 <TextBlock Grid.Row="4" Text="La valuta" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
                 <ComboBox Grid.Row="4" Grid.Column="1" ItemsSource="{Binding ListValute, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                           SelectedValuePath="IdCurrency" DisplayMemberPath="DescCurrency" Margin="5, 2" MinWidth="100"
                           SelectedValue="{Binding RecordPortafoglioTitoli.Id_valuta}" >
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="SelectionChanged">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </ComboBox>
                 <TextBlock Grid.Row="1" Grid.Column="2" Text="Filtro ISIN" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
                 <TextBox Grid.Row="1" Grid.Column="3"  Text="{Binding SrchShares, UpdateSourceTrigger=PropertyChanged}" 
@@ -129,30 +128,30 @@
                             </StackPanel>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="SelectionChanged">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </ComboBox>
                 <TextBlock Grid.Row="3" Grid.Column="2" Text="La data" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
                 <DatePicker Grid.Row="3" Grid.Column="3" Name="MovementDate" Margin="10, 2, 5, 2" SelectedDate="{Binding RecordPortafoglioTitoli.Data_Movimento, 
                     UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Center" 
                         DisplayDate="{Binding RecordPortafoglioTitoli.Data_Movimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="SelectedDateChanged">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectedDateChanged">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </DatePicker>
                 <TextBlock Grid.Row="4" Grid.Column="2" Text="Filtro TIPO" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
                 <ComboBox Grid.Row="4" Grid.Column="3" x:Name="cbTipo" Margin="10, 2, 5, 2" ItemsSource="{Binding ListTipoTitoli, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                            SelectedValuePath="id_tipo_titolo" DisplayMemberPath="desc_tipo_titolo">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="SelectionChanged">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </ComboBox>
             </Grid>
         </Border>
@@ -179,101 +178,101 @@
                 <TextBlock Grid.Row="1" Text="Il cambio" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
                 <TextBox Grid.Row="1" Name="doubleValore_di_cambio" Grid.Column="1" Text="{Binding RecordPortafoglioTitoli.Valore_di_cambio, ConverterCulture=it-IT}" 
                          HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="0, 2" Padding="0, 0, 5, 0" MinWidth="70">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="LostFocus">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
-                        </iy:EventTrigger>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="LostFocus">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="2" Text="Costo Unitario" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
                 <TextBox Grid.Row="2" Grid.Column="1" Name="doubleUnityLocalAmount" Text="{Binding RecordPortafoglioTitoli.Costo_unitario_in_valuta, 
                     ConverterCulture=it-IT}" 
                          HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="0, 2" Padding="0, 0, 5, 0" MinWidth="70">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="LostFocus">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
-                        </iy:EventTrigger>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="LostFocus">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="3" Text="N. Titoli" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
                 <TextBox Grid.Row="3" Grid.Column="1" Name="doubleNShares" Text="{Binding RecordPortafoglioTitoli.N_titoli, ConverterCulture=it-IT}" 
                          HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="0, 2" Padding="0, 0, 5, 0" MinWidth="70">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="LostFocus">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
-                        </iy:EventTrigger>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="LostFocus">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="4" Text="Tot. Commissioni" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
                 <TextBox Grid.Row="4" Grid.Column="1" Name="doubleCommissionValue" Text="{Binding RecordPortafoglioTitoli.Commissioni_totale, ConverterCulture=it-IT}"
                      HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="0, 2" Padding="0, 0, 5, 0" MinWidth="70" >
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="LostFocus">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
-                        </iy:EventTrigger>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="LostFocus">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="1" Grid.Column="2" Text="TobinTax in €" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
                 <TextBox Grid.Row="1" Grid.Column="3" Name="doubleTobinTaxValue" Text="{Binding RecordPortafoglioTitoli.TobinTax, ConverterCulture=it-IT}" 
                          HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="0, 2" Padding="0, 0, 5, 0" MinWidth="70" IsEnabled="{Binding TobinOk}">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="LostFocus">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
-                        </iy:EventTrigger>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="LostFocus">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="2" Grid.Column="2" Text="Anticipo Ced." FontSize="16" Margin="10, 2, 5, 2" 
                            VerticalAlignment="Center" ToolTip="Inserire la cifra complessiva fra disaggio e anticipo cedole"/>
                 <TextBox Grid.Row="2" Grid.Column="3" Name="doubleDisaggioValue" Text="{Binding RecordPortafoglioTitoli.Disaggio_anticipo_cedole, ConverterCulture=it-IT}"
                              HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="0, 2" Padding="0, 0, 5, 0" MinWidth="70"  IsEnabled="{Binding DisaggioOk}">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="LostFocus">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
-                        </iy:EventTrigger>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="LostFocus">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="3" Grid.Column="2" Text="Ritenuta F." FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
                 <TextBox Grid.Row="3" Grid.Column="3" Name="doubleRitenutaFiscale" Text="{Binding RecordPortafoglioTitoli.RitenutaFiscale, ConverterCulture=it-IT}"
                              HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="0, 2" Padding="0, 0, 5, 0" MinWidth="70"  IsEnabled="{Binding RitenutaOk}">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="LostFocus">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
-                        </iy:EventTrigger>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="LostFocus">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="5" Grid.Column="0" Text="Note" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
                 <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" TextWrapping="Wrap" Text="{Binding RecordPortafoglioTitoli.Note}" 
                      Margin="5" VerticalContentAlignment="Top" HorizontalContentAlignment="Left" 
                      FontSize="14">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="LostFocus">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
-                        </iy:EventTrigger>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="LostFocus">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
             </Grid>
         </Border>
@@ -422,11 +421,11 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
-                <iy:Interaction.Triggers>
-                    <iy:EventTrigger EventName="SelectionChanged">
-                        <is:CallMethodAction TargetObject="{Binding}" MethodName="GridSelectionChanged"/>
-                    </iy:EventTrigger>
-                </iy:Interaction.Triggers>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <i:CallMethodAction TargetObject="{Binding}" MethodName="GridSelectionChanged"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
             </DataGrid>
             </TabItem>
             <TabItem Header="Valori Medi di Carico" Margin="5,0" FontWeight="Bold" Width="200">

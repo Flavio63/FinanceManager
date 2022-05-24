@@ -139,7 +139,7 @@ namespace FinanceManager.ViewModels
         }
 
         /// <summary>
-        /// Combo box con i titoli da selezionare filtrato da SrchShares
+        /// Combo box con is titoli da selezionare filtrato da SrchShares
         /// </summary>
         public ListCollectionView SharesListView
         {
