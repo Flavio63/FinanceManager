@@ -78,7 +78,7 @@ namespace FinanceManager.ViewModels
                 _TabControl.TabStripPlacement = Dock.Left;
                 foreach (RegistryOwner registryOwner in ROL)
                 {
-                    // per ogni gestione acquisisco i dati per la sintesi soldi
+                    // per ogni gestione acquisisco is dati per la sintesi soldi
                     TabItem tabItem = new TabItem();
                     tabItem.Header = registryOwner.Nome_Gestione;
                     tabItem.Content = new TabControlSintesiView(new TabControlSintesiViewModel(_liquidAssetServices.GetCurrencyAvailable(registryOwner.Id_gestione)));
@@ -130,7 +130,7 @@ namespace FinanceManager.ViewModels
 
         #region Getter&Setter
         /// <summary>
-        /// Combo box con i movimenti
+        /// Combo box con is movimenti
         /// </summary>
         public RegistryMovementTypeList ListMovimenti
         {
@@ -166,7 +166,7 @@ namespace FinanceManager.ViewModels
         }
 
         /// <summary>
-        /// Elenco con tutti i movimenti del conto corrente
+        /// Elenco con tutti is movimenti del conto corrente
         /// </summary>
         public ContoCorrenteList ListContoCorrente
         {
@@ -175,7 +175,7 @@ namespace FinanceManager.ViewModels
         }
 
         /// <summary>
-        /// Lista con i 2 record coinvolti nel giroconto
+        /// Lista con is 2 record coinvolti nel giroconto
         /// o nel cambia valuta
         /// </summary>
         public ContoCorrenteList TwoRecordConto
@@ -184,7 +184,7 @@ namespace FinanceManager.ViewModels
             private set { SetValue(() => TwoRecordConto, value); }
         }
         /// <summary>
-        /// E' la lista di tutti i record Conto corrente usata per i filtri della griglia
+        /// E' la lista di tutti is record Conto corrente usata per is filtri della griglia
         /// </summary>
         public System.ComponentModel.ICollectionView AccountCollectionView
         {
@@ -193,7 +193,7 @@ namespace FinanceManager.ViewModels
         }
 
         /// <summary>
-        /// Elenco con i tipo soldi
+        /// Elenco con is tipo soldi
         /// </summary>
         public TipoSoldiList TipoSoldis
         {
@@ -236,7 +236,7 @@ namespace FinanceManager.ViewModels
         }
 
         /// <summary>
-        /// Elenco con i titoli disponibili
+        /// Elenco con is titoli disponibili
         /// </summary>
         public ObservableCollection<RegistryShare> SharesList
         {
@@ -249,7 +249,7 @@ namespace FinanceManager.ViewModels
         }
 
         /// <summary>
-        /// Elenco con i titoli disponibili da verificare se serve
+        /// Elenco con is titoli disponibili da verificare se serve
         /// </summary>
         public ListCollectionView SharesListView
         {
@@ -258,7 +258,7 @@ namespace FinanceManager.ViewModels
         }
 
         /// <summary>
-        /// Elenco con i titoli disponibili filtrato per la tipologia 
+        /// Elenco con is titoli disponibili filtrato per la tipologia 
         /// certificati e futures
         /// </summary>
         public RegistryShareList BirdsListView
@@ -279,7 +279,7 @@ namespace FinanceManager.ViewModels
         /// <summary>
         /// Singolo record del portafoglio da usare nel caso di Cambio CodeCurrency
         /// o nel caso di Giroconto per duplicare le info di RecordContoCorrente
-        /// modificando solo i campi di destinazione
+        /// modificando solo is campi di destinazione
         /// </summary>
         public ContoCorrente Record2ContoCorrente
         {
@@ -297,7 +297,7 @@ namespace FinanceManager.ViewModels
         }
 
         ///<summary>
-        /// Abilita / disabilita la possibilità di modificare i campi nei parametri comuni
+        /// Abilita / disabilita la possibilità di modificare is campi nei parametri comuni
         ///</summary>
         public bool CommonFieldsEnabled
         {
@@ -315,7 +315,7 @@ namespace FinanceManager.ViewModels
         }
 
         /// <summary>
-        /// Gestisce l'abilitazione a inserire i profit/loss delle azioni volatili
+        /// Gestisce l'abilitazione a inserire is profit/loss delle azioni volatili
         /// </summary>
         public bool VolatiliEnabled
         {
@@ -324,7 +324,7 @@ namespace FinanceManager.ViewModels
         }
 
         /// <summary>
-        /// Gestisce l'abilitazione a inserire i cambi valuta
+        /// Gestisce l'abilitazione a inserire is cambi valuta
         /// </summary>
         public bool CambioValutaEnabled
         {
@@ -344,7 +344,7 @@ namespace FinanceManager.ViewModels
 
         #region Filtri per DataGrid
         /// <summary>
-        /// Il filtro per i titoli
+        /// Il filtro per is titoli
         /// </summary>
         /// <param name="obj"> Il tipo di voce nell'elenco da filtrare </param>
         /// <returns> La voce filtrata </returns>
@@ -360,7 +360,7 @@ namespace FinanceManager.ViewModels
                 }
                 else if (obj is ContoCorrente CConto)
                 {
-                    if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && !string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // tutti e 4 i filtri
+                    if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && !string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // tutti e 4 is filtri
                     {
                         return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower()) && CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower()) && CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower()) && CConto.Desc_tipo_movimento.ToLower().Contains(FiltroTipoMovimento.ToLower());
                     }
@@ -557,7 +557,7 @@ namespace FinanceManager.ViewModels
         }
 
         /// <summary>
-        /// Imposto i campi sopra la griglia quando viene selezionata una riga
+        /// Imposto is campi sopra la griglia quando viene selezionata una riga
         /// nell'elenco sottostante
         /// </summary>
         /// <param name="sender">Grid dei dati</param>
@@ -702,7 +702,7 @@ namespace FinanceManager.ViewModels
                         RecordContoCorrente.Ammontare > CurrencyAvailable.Utili && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Utili_da_Vendite)
                     {
                         MessageBox.Show(String.Format("Non hai abbastanza soldi in {0} per effettuare un {1} di {2}.{3}" +
-                            "Ricontrollare i parametri inseriti.", RecordContoCorrente.Cod_Valuta, RecordContoCorrente.Desc_tipo_movimento, RecordContoCorrente.Desc_Tipo_Soldi,
+                            "Ricontrollare is parametri inseriti.", RecordContoCorrente.Cod_Valuta, RecordContoCorrente.Desc_tipo_movimento, RecordContoCorrente.Desc_Tipo_Soldi,
                             Environment.NewLine), "Gestione Conto Corrente", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
@@ -719,7 +719,7 @@ namespace FinanceManager.ViewModels
                     // Inserisco il codice del periodo quote_guadagno
                     RecordContoCorrente.Id_Quote_Periodi = _liquidAssetServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Tipo_Soldi);
                     _liquidAssetServices.InsertAccountMovement(RecordContoCorrente);
-                    // Inserisco il guadagno ripartito per i soci
+                    // Inserisco il guadagno ripartito per is soci
                     _liquidAssetServices.AddSingoloGuadagno(RecordContoCorrente);
                 }
 
@@ -745,7 +745,7 @@ namespace FinanceManager.ViewModels
                     // nel caso si sia cambiata la data nella modifica
                     RecordContoCorrente.Id_Quote_Periodi = _liquidAssetServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Tipo_Soldi);
                     _liquidAssetServices.UpdateRecordContoCorrente(RecordContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);    //registro la modifica in conto corrente
-                    _liquidAssetServices.ModifySingoloGuadagno(RecordContoCorrente); // modifico di conseguenza i record del guadagno totale anno
+                    _liquidAssetServices.ModifySingoloGuadagno(RecordContoCorrente); // modifico di conseguenza is record del guadagno totale anno
                 }
                 else
                 {
@@ -803,7 +803,7 @@ namespace FinanceManager.ViewModels
                 }
                 else
                 {
-                    // Ho trovato i 2 record collegati quando ho fatto la selezione dalla griglia
+                    // Ho trovato is 2 record collegati quando ho fatto la selezione dalla griglia
                     _liquidAssetServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);
                     _liquidAssetServices.DeleteRecordContoCorrente(Record2ContoCorrente.Id_RowConto);
                 }

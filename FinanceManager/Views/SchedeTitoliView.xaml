@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:is="http://schemas.microsoft.com/expression/2010/interactions"
-             xmlns:iy="http://schemas.microsoft.com/expression/2010/interactivity"
+             
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              x:Name="_SchedeTitoliView"
              xmlns:local="clr-namespace:FinanceManager.Views"
              mc:Ignorable="d" >
@@ -73,11 +73,11 @@
                             </StackPanel>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="SelectionChanged">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </ComboBox>
                 <Button Grid.Row="2" Name="btnExportReport" Content="Modifica" Margin="5, 10, 5, 10" Width="110" FontSize="14" FontWeight="Bold"
                              Command="{Binding ModifyCommand}" CommandParameter="{Binding ElementName=_SchedeTitoliView}"/>
@@ -120,21 +120,21 @@
                 <ComboBox Name="CBAziende" Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Firms}"
                           SelectedValuePath="id_azienda" DisplayMemberPath="desc_azienda" Margin="5" VerticalAlignment="Center" 
                           SelectedValue="{Binding ActualRecord.id_azienda}">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="SelectionChanged">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </ComboBox>
                 <TextBlock Grid.Row="2" Text="... il tipo Titolo" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <ComboBox Name="CBTipologia" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding TipoTitoli}"
                           SelectedValuePath="id_tipo_titolo" DisplayMemberPath="desc_tipo_titolo" Margin="5" VerticalAlignment="Center"
                           SelectedValue="{Binding ActualRecord.id_tipo_titolo}">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="SelectionChanged">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </ComboBox>
                 <TextBlock Grid.Row="3" Text="... la descrizione" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Text="{Binding ActualRecord.desc_titolo, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Row="3" Grid.Column="1" Margin="5" MinWidth="120" Padding="5" HorizontalAlignment="Left"/>
@@ -164,38 +164,38 @@
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="% Azioni" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblAzi" Grid.Row="1" Grid.Column="1" Text="{Binding ActualRecord.Azioni, ConverterCulture=it-IT}" 
                          HorizontalContentAlignment="Right" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="2" Text="% Obbligazioni" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblObb" Grid.Row="2" Grid.Column="1" Text="{Binding ActualRecord.Obbligazioni, ConverterCulture=it-IT}" 
                          HorizontalContentAlignment="Right" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="3" Text="% Liquidità" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblLiq" Grid.Row="3" Grid.Column="1" Text="{Binding ActualRecord.Liquidita, ConverterCulture=it-IT}" 
                     HorizontalContentAlignment="Right" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="4" Text="% Altro" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblAlt" Grid.Row="4" Grid.Column="1" Text="{Binding ActualRecord.Altro, ConverterCulture=it-IT}" 
                     HorizontalContentAlignment="Right" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
             </Grid>
         </Border>
@@ -232,141 +232,141 @@
                 <TextBox Name="dblUsa" Grid.Row="1" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.USA, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="2" Text="% Canada" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblCan" Grid.Row="2" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.Canada, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="3" Text="% America Latina e Centrale" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblALat" Grid.Row="3" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.AmericaLatinaCentrale, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="4" Text="% Regno Unito" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblUK" Grid.Row="4" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.RegnoUnito, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="5" Text="% Europa Occidentale - Euro" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblEuro" Grid.Row="5" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.EuropaOccEuro, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="6" Text="% Europa Occidentale - No Euro" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblEOc" Grid.Row="6" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.EuropaOccNoEuro, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="7" Text="% Europa dell'Est" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblEEs" Grid.Row="7" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.EuropaEst, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="8" Text="% Africa" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblAfr" Grid.Row="8" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.Africa, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="9" Text="% Medio Oriente" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblMOr" Grid.Row="9" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.MedioOriente, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="10" Text="% Giappone" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblGia" Grid.Row="10" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.Giappone, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="11" Text="% Australasia" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblAus" Grid.Row="11" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.Australasia, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="12" Text="% Asia Sviluppati" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblASv" Grid.Row="12" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.AsiaSviluppati, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="13" Text="% Asia Emergenti" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblAEm" Grid.Row="13" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.AsiaEmergenti, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="14" Text="% Globale" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblReg" Grid.Row="14" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.RegioniND, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
             </Grid>
         </Border>
@@ -401,121 +401,121 @@
                 <TextBox Name="dblMaPr" Grid.Row="1" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.MateriePrime, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="2" Text="% Beni di Consumo Ciclici" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblBCC" Grid.Row="2" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.BeniConsCiclici, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="3" Text="% Finanza" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblFina" Grid.Row="3" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.Finanza, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="4" Text="% Immobiliare" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblImm" Grid.Row="4" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.Immobiliare, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="5" Text="% Beni di Consumo Difensivi" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblBCD" Grid.Row="5" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.BeniConsDifensivi, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="6" Text="% Salute" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblSal" Grid.Row="6" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.Salute, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="7" Text="% Servizi Pubblica Utilità" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblSPU" Grid.Row="7" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.ServiziPubbUtility, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="8" Text="% Servizi di Comunicazione" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblServ" Grid.Row="8" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.ServiziComunic, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="9" Text="% Energia" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblEner" Grid.Row="9" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.Energia, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="10" Text="% Beni Industriali" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblBInd" Grid.Row="10" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.BeniIndustriali, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="11" Text="% Tecnologia" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblTec" Grid.Row="11" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.Tecnologia, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
                 <TextBlock Grid.Row="12" Text="% Globale" FontWeight="Bold" Margin="5" Padding="5" HorizontalAlignment="Right"/>
                 <TextBox Name="dblSett" Grid.Row="12" Grid.Column="1" Margin="5" Width="75" Padding="5" HorizontalAlignment="Left"
                          Text="{Binding ActualRecord.SettoriND, ConverterCulture=id-IT}"
                          HorizontalContentAlignment="Right">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="PreviewKeyDown">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </TextBox>
             </Grid>
         </Border>

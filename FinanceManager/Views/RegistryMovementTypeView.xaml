@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:is="http://schemas.microsoft.com/expression/2010/interactions"
-             xmlns:iy="http://schemas.microsoft.com/expression/2010/interactivity"
+             
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:local="clr-namespace:FinanceManager.Views"
              mc:Ignorable="d" Name="_RegistryMovementTypeView" >
     <Grid MaxWidth="450" Background="Beige" Margin="5,25">
@@ -29,14 +29,14 @@
                   CanUserDeleteRows="True" AutoGenerateColumns="False" RowHeaderWidth="16"
                   SelectionMode="Single" FontSize="14" ItemsSource="{Binding MovementTypeList, UpdateSourceTrigger=PropertyChanged}" 
                   Width="365" HorizontalAlignment="Center" AlternatingRowBackground="#FFAEFF90">
-            <iy:Interaction.Triggers>
-                <iy:EventTrigger EventName="CellEditEnding">
-                    <is:CallMethodAction TargetObject="{Binding}" MethodName="CellChanged"/>
-                </iy:EventTrigger>
-                <iy:EventTrigger EventName="PreviewKeyDown">
-                    <is:CallMethodAction TargetObject="{Binding}" MethodName="DeleteRow"/>
-                </iy:EventTrigger>
-            </iy:Interaction.Triggers>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="CellEditEnding">
+                    <i:CallMethodAction TargetObject="{Binding}" MethodName="CellChanged"/>
+                </i:EventTrigger>
+                <i:EventTrigger EventName="PreviewKeyDown">
+                    <i:CallMethodAction TargetObject="{Binding}" MethodName="DeleteRow"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" IsReadOnly="True" Binding="{Binding Id_tipo_movimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                                     Width="40"/>

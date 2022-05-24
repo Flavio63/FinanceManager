@@ -127,7 +127,7 @@ namespace FinanceManager.Events
         {
             get
             {
-                throw new NotSupportedException("IDataErrorInfo.Error is not supported, use IDataErrorInfo.this[propertyName] instead.");
+                throw new NotSupportedException("IDataErrorInfo.Error i not supported, use IDataErrorInfo.this[propertyName] instead.");
             }
         }
         string IDataErrorInfo.this[string propertyName]
@@ -190,9 +190,9 @@ namespace FinanceManager.Events
             }
         }
         /// <summary>
-        /// Returns whether an exception is thrown, or if a Debug.Fail() is used
-        /// when an invalid property name is passed to the VerifyPropertyName method.
-        /// The default value is false, but subclasses used by unit tests might
+        /// Returns whether an exception i thrown, or if a Debug.Fail() i used
+        /// when an invalid property name i passed to the VerifyPropertyName method.
+        /// The default value i false, but subclasses used by unit tests might
         /// override this property's getter to return true.
         /// </summary>
         protected virtual bool ThrowOnInvalidPropertyName { get; private set; }

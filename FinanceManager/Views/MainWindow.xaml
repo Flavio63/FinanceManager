@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:is="http://schemas.microsoft.com/expression/2010/interactions"
-             xmlns:iy="http://schemas.microsoft.com/expression/2010/interactivity"
+             
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:FinanceManager" WindowStartupLocation="CenterScreen"
         mc:Ignorable="d" x:Name="FinestraPrincipale" DataContext="{StaticResource ResourceKey=MainWindowViewModel}"
         Title="{Binding Titolo, UpdateSourceTrigger=PropertyChanged}"
@@ -43,39 +43,39 @@
                       Command="{Binding OnClickManagerReports}" CommandParameter="{Binding ElementName=mainGrid}"/>
             <MenuItem Header="Connessione DB" Margin="2,5" FontSize="16" FontWeight="Bold" IsSubmenuOpen="True">
                 <RadioButton GroupName="db" IsChecked="True" IsThreeState="False" Name="default" Content="Connessione da casa">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="Checked">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Checked">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </RadioButton>
                 <RadioButton GroupName="db" IsChecked="False" IsThreeState="False" Name="outdoor" Content="Connessione da fuori casa">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="Checked">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Checked">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </RadioButton>
                 <RadioButton GroupName="db" IsChecked="False" IsThreeState="False" Name="testServer" Content="Connessione DB-test su server">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="Checked">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Checked">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </RadioButton>
                 <RadioButton GroupName="db" IsChecked="False" IsThreeState="False" Name="outdoorTestServer" Content="Connessione DB-test da fuori casa">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="Checked">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Checked">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </RadioButton>
                 <RadioButton GroupName="db" IsChecked="False" IsThreeState="False" Name="localhost" Content="Connessione localhost">
-                    <iy:Interaction.Triggers>
-                        <iy:EventTrigger EventName="Checked">
-                            <is:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
-                        </iy:EventTrigger>
-                    </iy:Interaction.Triggers>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Checked">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </RadioButton>
             </MenuItem>
         </Menu>
