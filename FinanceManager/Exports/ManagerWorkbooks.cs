@@ -51,10 +51,10 @@ namespace FinanceManager.Exports
                 ICellStyle RXCFPerc = CellsTableBorderStyle.RightTable(workbook.CreateCellStyle());
                 ICellStyle RFCFPerc = CellsTableBorderStyle.BottomDx(workbook.CreateCellStyle());
                 IFont myBoldFont = workbook.CreateFont();
-                myBoldFont.Boldweight = (short)FontBoldWeight.Bold;
+                myBoldFont.IsBold = true;
                 myBoldFont.FontHeightInPoints = 14;
                 IFont myPlainFont = workbook.CreateFont();
-                myPlainFont.Boldweight = (short)FontBoldWeight.Normal;
+                myPlainFont.IsBold = false;
                 myPlainFont.FontHeightInPoints = 12;
                 #endregion
 

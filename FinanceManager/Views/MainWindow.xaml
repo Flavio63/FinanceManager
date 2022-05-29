@@ -77,6 +77,20 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </RadioButton>
+                <RadioButton GroupName="db" IsChecked="False" IsThreeState="False" Name="SqLiteServer" Content="SqLite da Casa">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Checked">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </RadioButton>
+                <RadioButton GroupName="db" IsChecked="False" IsThreeState="False" Name="SqLiteLocal" Content="SqLite fuori Casa">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Checked">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </RadioButton>
             </MenuItem>
         </Menu>
         <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">

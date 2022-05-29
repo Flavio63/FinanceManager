@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using MySql.Data.MySqlClient;
+using System.Data.SQLite;
 using FinanceManager.Models;
 using FinanceManager.Services.SQL;
 
@@ -257,113 +258,206 @@ namespace FinanceManager.Services
 
         public RegistryCurrencyList GetRegistryCurrencyList()
         {
-            try
+            DataTable dt = new DataTable();
+            RegistryCurrencyList RcL = new RegistryCurrencyList();
+
+            if (DAFconnection.GetConnectionType().Contains("sqlite"))
             {
-                using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
+                using (SQLiteConnection conn = new SQLiteConnection(DAFconnection.GetConnectionType()))
                 {
-                    dbAdaptar.SelectCommand = new MySqlCommand();
-                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbAdaptar.SelectCommand.CommandType = CommandType.Text;
-                    dbAdaptar.SelectCommand.CommandText = SQL.RegistryScripts.GetRegistryCurrencyList;
-                    DataTable dt = new DataTable();
-                    dbAdaptar.Fill(dt);
-                    RegistryCurrencyList RcL = new RegistryCurrencyList();
-                    foreach (DataRow dr in dt.Rows)
+                    try
                     {
-                        RegistryCurrency Rc = new RegistryCurrency();
-                        Rc.IdCurrency = (int)dr.Field<uint>("id_valuta");
-                        Rc.DescCurrency = dr.Field<string>("desc_valuta");
-                        Rc.CodeCurrency = dr.Field<string>("cod_valuta");
-                        RcL.Add(Rc);
+                        conn.Open();
+                        SQLiteCommand cmd = new SQLiteCommand(RegistryScripts.GetRegistryCurrencyList, conn);
+                        cmd.CommandType = CommandType.Text;
+                        SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
+                        da.Fill(dt);
                     }
-                    return RcL;
+                    catch (SQLiteException err)
+                    {
+                        throw new Exception(err.Message);
+                    }
+                    
                 }
             }
-            catch (MySqlException err)
+            else
             {
-                throw new Exception(err.Message);
+                try
+                {
+                    using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
+                    {
+                        dbAdaptar.SelectCommand = new MySqlCommand();
+                        dbAdaptar.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                        dbAdaptar.SelectCommand.CommandType = CommandType.Text;
+                        dbAdaptar.SelectCommand.CommandText = RegistryScripts.GetRegistryCurrencyList;
+                        dbAdaptar.Fill(dt);
+                    }
+                }
+                catch (MySqlException err)
+                {
+                    throw new Exception(err.Message);
+                }
+                catch (Exception err)
+                {
+                    throw new Exception(err.Message);
+                }
             }
-            catch (Exception err)
+            foreach (DataRow dr in dt.Rows)
             {
-                throw new Exception(err.Message);
+                RegistryCurrency Rc = new RegistryCurrency();
+                Rc.IdCurrency = DAFconnection.GetConnectionType().Contains("sqlite") ? (int)dr.Field<long>("id_valuta") : (int)dr.Field<uint>("id_valuta");
+                Rc.DescCurrency = dr.Field<string>("desc_valuta");
+                Rc.CodeCurrency = dr.Field<string>("cod_valuta");
+                RcL.Add(Rc);
             }
+            return RcL;
         }
 
         public void UpdateCurrency(RegistryCurrency registryCurrency)
         {
-            try
+            if (DAFconnection.GetConnectionType().Contains("sqlite"))
             {
-                using (MySqlCommand dbComm = new MySqlCommand())
+                try
                 {
-                    dbComm.CommandType = CommandType.Text;
-                    dbComm.CommandText = SQL.RegistryScripts.UpdateCurrency;
-                    dbComm.Parameters.AddWithValue("desc", registryCurrency.DescCurrency);
-                    dbComm.Parameters.AddWithValue("code", registryCurrency.CodeCurrency);
-                    dbComm.Parameters.AddWithValue("id", registryCurrency.IdCurrency);
-                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
+                    using (SQLiteCommand cmd = new SQLiteCommand())
+                    {
+                        cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                        cmd.CommandText = RegistryScripts.UpdateCurrency;
+                        cmd.Parameters.AddWithValue("desc", registryCurrency.DescCurrency);
+                        cmd.Parameters.AddWithValue("code", registryCurrency.CodeCurrency);
+                        cmd.Parameters.AddWithValue("id", registryCurrency.IdCurrency);
+                        cmd.Connection.Open();
+                        cmd.ExecuteNonQuery();
+                        cmd.Connection.Close();
+                    }
+                }
+                catch(SQLiteException err)
+                {
+                    throw new Exception(err.Message);
                 }
             }
-            catch (MySqlException err)
+            else
             {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
+                try
+                {
+                    using (MySqlCommand dbComm = new MySqlCommand())
+                    {
+                        dbComm.CommandType = CommandType.Text;
+                        dbComm.CommandText = SQL.RegistryScripts.UpdateCurrency;
+                        dbComm.Parameters.AddWithValue("desc", registryCurrency.DescCurrency);
+                        dbComm.Parameters.AddWithValue("code", registryCurrency.CodeCurrency);
+                        dbComm.Parameters.AddWithValue("id", registryCurrency.IdCurrency);
+                        dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                        dbComm.Connection.Open();
+                        dbComm.ExecuteNonQuery();
+                        dbComm.Connection.Close();
+                    }
+                }
+                catch (MySqlException err)
+                {
+                    throw new Exception(err.Message);
+                }
+                catch (Exception err)
+                {
+                    throw new Exception(err.Message);
+                }
             }
         }
 
         public void AddCurrency(RegistryCurrency registryCurrency)
         {
-            try
+            if (DAFconnection.GetConnectionType().Contains("sqlite"))
             {
-                using (MySqlCommand dbComm = new MySqlCommand())
+                try
                 {
-                    dbComm.CommandType = CommandType.Text;
-                    dbComm.CommandText = SQL.RegistryScripts.AddCurrency;
-                    dbComm.Parameters.AddWithValue("desc", registryCurrency.DescCurrency);
-                    dbComm.Parameters.AddWithValue("code", registryCurrency.CodeCurrency);
-                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
+                    using (SQLiteCommand cmd = new SQLiteCommand())
+                    {
+                        cmd.CommandText = SQL.RegistryScripts.AddCurrency;
+                        cmd.Parameters.AddWithValue("desc", registryCurrency.DescCurrency);
+                        cmd.Parameters.AddWithValue("code", registryCurrency.CodeCurrency);
+                        cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                        cmd.Connection.Open();
+                        cmd.ExecuteNonQuery();
+                        cmd.Connection.Close();
+                    }
+                }
+                catch(SQLiteException err)
+                {
+                    throw new Exception(err.Message);
                 }
             }
-            catch (MySqlException err)
+            else
             {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
+                try
+                {
+                    using (MySqlCommand dbComm = new MySqlCommand())
+                    {
+                        dbComm.CommandType = CommandType.Text;
+                        dbComm.CommandText = SQL.RegistryScripts.AddCurrency;
+                        dbComm.Parameters.AddWithValue("desc", registryCurrency.DescCurrency);
+                        dbComm.Parameters.AddWithValue("code", registryCurrency.CodeCurrency);
+                        dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                        dbComm.Connection.Open();
+                        dbComm.ExecuteNonQuery();
+                        dbComm.Connection.Close();
+                    }
+                }
+                catch (MySqlException err)
+                {
+                    throw new Exception(err.Message);
+                }
+                catch (Exception err)
+                {
+                    throw new Exception(err.Message);
+                }
             }
         }
 
         public void DeleteCurrency(int id)
         {
-            try
+            if (DAFconnection.GetConnectionType().Contains("sqlite"))
             {
-                using (MySqlCommand dbComm = new MySqlCommand())
+                try
                 {
-                    dbComm.CommandType = CommandType.Text;
-                    dbComm.CommandText = SQL.RegistryScripts.DeleteCurrency;
-                    dbComm.Parameters.AddWithValue("id", id);
-                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
+                    using(SQLiteCommand cmd = new SQLiteCommand())
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.CommandText = RegistryScripts.DeleteCurrency;
+                        cmd.Parameters.AddWithValue("id", id);
+                        cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                        cmd.Connection.Open();
+                        cmd.ExecuteNonQuery();
+                        cmd.Connection.Close();
+                    }
+                }
+                catch(SQLiteException err)
+                {
+                    throw new Exception(err.Message);
                 }
             }
-            catch (MySqlException err)
+            else
             {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
+                try
+                {
+                    using (MySqlCommand dbComm = new MySqlCommand())
+                    {
+                        dbComm.CommandType = CommandType.Text;
+                        dbComm.CommandText = SQL.RegistryScripts.DeleteCurrency;
+                        dbComm.Parameters.AddWithValue("id", id);
+                        dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                        dbComm.Connection.Open();
+                        dbComm.ExecuteNonQuery();
+                        dbComm.Connection.Close();
+                    }
+                }
+                catch (MySqlException err)
+                {
+                    throw new Exception(err.Message);
+                }
+                catch (Exception err)
+                {
+                    throw new Exception(err.Message);
+                }
             }
         }
         #endregion

@@ -26,7 +26,7 @@ namespace FinanceManager.Services.SQL
         public readonly static string GetRegistryCurrencyList = "SELECT id_valuta, desc_valuta, cod_valuta FROM valuta WHERE id_valuta > 0 ORDER BY id_valuta;";
         public readonly static string UpdateCurrency = "UPDATE valuta SET desc_valuta = @desc, cod_valuta = @code WHERE id_valuta = @id;";
         public readonly static string DeleteCurrency = "DELETE FROM valuta WHERE id_valuta = @id";
-        public readonly static string AddCurrency = "INSERT INTO valuta (id_valuta, desc_valuta, cod_valuta) VALUE (null, @desc, @code);";
+        public readonly static string AddCurrency = "INSERT INTO valuta (id_valuta, desc_valuta, cod_valuta) VALUES (null, @desc, @code);";
         #endregion
         
         #region conti

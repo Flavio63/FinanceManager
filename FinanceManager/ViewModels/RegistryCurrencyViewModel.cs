@@ -64,9 +64,11 @@ namespace FinanceManager.ViewModels
                     }
                     else
                     {
-                        _services.AddCurrency(Currency);
-                        CurrencyList = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
-
+                        if (Currency.CodeCurrency != null && Currency.DescCurrency != null)
+                        {
+                            _services.AddCurrency(Currency);
+                            CurrencyList = new ObservableCollection<RegistryCurrency>(_services.GetRegistryCurrencyList());
+                        }
                     }
                 }
             }
