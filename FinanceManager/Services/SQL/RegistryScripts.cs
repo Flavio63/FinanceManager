@@ -11,7 +11,7 @@ namespace FinanceManager.Services.SQL
         #region Gestione
         public readonly static string GetGestioneList = "SELECT id_gestione, nome_gestione, tipologia FROM gestioni WHERE id_gestione > 0 ORDER BY id_gestione";
         public readonly static string UpdateGestioneName = "UPDATE gestioni SET nome_gestione = @nome, tipologia = @tipologia WHERE id_gestione = @id";
-        public readonly static string AddGestione = "INSERT INTO gestioni (id_gestione, nome_gestione, tipologia) VALUE (null, @nome, @tipologia)";
+        public readonly static string AddGestione = "INSERT INTO gestioni (id_gestione, nome_gestione, tipologia) VALUES (null, @nome, @tipologia)";
         public readonly static string DeleteGestione = "DELETE FROM gestioni WHERE id_gestione = @id";
         #endregion
 
@@ -19,7 +19,7 @@ namespace FinanceManager.Services.SQL
         public readonly static string GetRegistryShareTypeList = "SELECT id_tipo_titolo, desc_tipo_titolo FROM tipo_titoli WHERE id_tipo_titolo > 0 ORDER BY id_tipo_titolo;";
         public readonly static string UpdateShareType = "UPDATE tipo_titoli SET desc_tipo_titolo = @desc WHERE id_tipo_titolo = @id;";
         public readonly static string DeleteShareType = "DELETE FROM tipo_titoli WHERE id_tipo_titolo = @id";
-        public readonly static string AddShareType = "INSERT INTO tipo_titoli (id_tipo_titolo, desc_tipo_titolo) VALUE (null, @desc);";
+        public readonly static string AddShareType = "INSERT INTO tipo_titoli (id_tipo_titolo, desc_tipo_titolo) VALUES (null, @desc);";
         #endregion
         
         #region Valuta
@@ -33,7 +33,7 @@ namespace FinanceManager.Services.SQL
         public readonly static string GetRegistryLocationList = "SELECT id_conto, desc_conto, note FROM conti WHERE id_conto > 0 ORDER BY id_conto;";
         public readonly static string UpdateLocation = "UPDATE conti SET desc_conto = @desc, note = @note WHERE id_conto = @id;";
         public readonly static string DeleteLocation = "DELETE FROM conti WHERE id_conto = @id";
-        public readonly static string AddLocation = "INSERT INTO conti (id_conto, desc_conto, note) VALUE (null, @desc, @note);";
+        public readonly static string AddLocation = "INSERT INTO conti (id_conto, desc_conto, note) VALUES (null, @desc, @note);";
         public readonly static string GetLocation = "SELECT id_conto, desc_conto, note FROM conti WHERE id_conto = @id";
         #endregion
 
@@ -41,7 +41,7 @@ namespace FinanceManager.Services.SQL
         public readonly static string GetRegistryFirmList = "SELECT id_azienda, desc_azienda FROM aziende WHERE id_azienda > 0 ORDER BY desc_azienda;";
         public readonly static string UpdateFirm = "UPDATE aziende SET desc_azienda = @desc WHERE id_azienda = @id;";
         public readonly static string DeleteFirm = "DELETE FROM aziende WHERE id_azienda = @id";
-        public readonly static string AddFirm = "INSERT INTO aziende (id_azienda, desc_azienda) VALUE (null, @desc);";
+        public readonly static string AddFirm = "INSERT INTO aziende (id_azienda, desc_azienda) VALUES (null, @desc);";
         #endregion
         
         #region titoli
@@ -65,7 +65,7 @@ namespace FinanceManager.Services.SQL
             "USA, Canada, AmericaLatinaCentrale, RegnoUnito, EuropaOccEuro, EuropaOccNoEuro, EuropaEst, Africa, MedioOriente, Giappone, Australasia, AsiaSviluppati, " +
             "AsiaEmergenti, RegioniND, MateriePrime, BeniConsCiclici, Finanza, Immobiliare, BeniConsDifensivi, Salute, ServiziPubbUtility, ServiziComunic, Energia, " +
             "BeniIndustriali, Tecnologia, SettoriND) " +
-            "VALUE (@id_titolo, @desc_titolo, @isin, @id_tipo_titolo, @id_azienda, @azioni, @obbligazioni, @liquidita, @altro, @USA, @Canada, @AmericaLatinaCentrale, @RegnoUnito, @EuropaOccEuro, " +
+            "VALUES (@id_titolo, @desc_titolo, @isin, @id_tipo_titolo, @id_azienda, @azioni, @obbligazioni, @liquidita, @altro, @USA, @Canada, @AmericaLatinaCentrale, @RegnoUnito, @EuropaOccEuro, " +
             "@EuropaOccNoEuro, @EuropaEst, @Africa, @MedioOriente, @Giappone, @Australasia, @AsiaSviluppati, @AsiaEmergenti, @RegioniND, @MateriePrime, @BeniConsCiclici, " +
             "@Finanza, @Immobiliare, @BeniConsDifensivi, @Salute, @ServiziPubbUtility, @ServiziComunic, @Energia, @BeniIndustriali, @Tecnologia, @SettoriND );";
 
@@ -86,7 +86,7 @@ namespace FinanceManager.Services.SQL
         public readonly static string GetRegistryMovementTypeList = "SELECT id_tipo_movimento, desc_Movimento FROM tipo_movimento WHERE id_tipo_movimento > 0 ORDER BY id_tipo_movimento;";
         public readonly static string UpdateMovementType = "UPDATE tipo_movimento SET desc_Movimento = @desc WHERE id_tipo_movimento = @id;";
         public readonly static string DeleteMovementType = "DELETE FROM tipo_movimento WHERE id_tipo_movimento = @id;";
-        public readonly static string AddMovementType = "INSERT INTO tipo_movimento (id_tipo_movimento, desc_Movimento) VALUE (null, @desc);";
+        public readonly static string AddMovementType = "INSERT INTO tipo_movimento (id_tipo_movimento, desc_Movimento) VALUES (null, @desc);";
         public readonly static string GetMovementType = "SELECT id_tipo_movimento, desc_Movimento FROM tipo_movimento WHERE id_tipo_movimento = @id";
         #endregion
 

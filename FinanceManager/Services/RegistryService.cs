@@ -24,52 +24,99 @@ namespace FinanceManager.Services
         /// <param name="tipologia">La tipologia</param>
         public void AddGestione(string name, string tipologia)
         {
-            try
+            if (DAFconnection.GetConnectionType().Contains("sqlite"))
             {
-                using (MySqlCommand dbComm = new MySqlCommand())
+                try
                 {
-                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbComm.CommandType = CommandType.Text;
-                    dbComm.CommandText = SQL.RegistryScripts.AddGestione;
-                    dbComm.Parameters.AddWithValue("nome", name);
-                    dbComm.Parameters.AddWithValue("tipologia", tipologia);
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
+                    using (SQLiteCommand cmd = new SQLiteCommand())
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.CommandText = RegistryScripts.AddGestione;
+                        cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                        cmd.Parameters.AddWithValue("nome", name);
+                        cmd.Parameters.AddWithValue("tipologia", tipologia);
+                        cmd.Connection.Open();
+                        cmd.ExecuteNonQuery();
+                        cmd.Connection.Close();
+                    }
+                }
+                catch (SQLiteException err)
+                {
+                    throw new Exception(err.Message);
                 }
             }
-            catch (MySqlException err)
+            else
             {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
+                try
+                {
+                    using (MySqlCommand dbComm = new MySqlCommand())
+                    {
+                        dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                        dbComm.CommandType = CommandType.Text;
+                        dbComm.CommandText = SQL.RegistryScripts.AddGestione;
+                        dbComm.Parameters.AddWithValue("nome", name);
+                        dbComm.Parameters.AddWithValue("tipologia", tipologia);
+                        dbComm.Connection.Open();
+                        dbComm.ExecuteNonQuery();
+                        dbComm.Connection.Close();
+                    }
+                }
+                catch (MySqlException err)
+                {
+                    throw new Exception(err.Message);
+                }
+                catch (Exception err)
+                {
+                    throw new Exception(err.Message);
+                }
             }
         }
 
         public void DeleteGestione(int id)
         {
-            try
+            if (DAFconnection.GetConnectionType().Contains("sqlite"))
             {
-                using (MySqlCommand dbComm = new MySqlCommand())
+                try
                 {
-                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbComm.CommandType = CommandType.Text;
-                    dbComm.CommandText = SQL.RegistryScripts.DeleteGestione;
-                    dbComm.Parameters.AddWithValue("id", id);
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
+                    using(SQLiteCommand cmd = new SQLiteCommand())
+                    {
+                        cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                        cmd.CommandType = CommandType.Text;
+                        cmd.CommandText = SQL.RegistryScripts.DeleteGestione;
+                        cmd.Parameters.AddWithValue("id", id);
+                        cmd.Connection.Open();
+                        cmd.ExecuteNonQuery();
+                        cmd.Connection.Close();
+                    }
+                }
+                catch(SQLiteException err)
+                {
+                    throw new Exception(err.Message);
                 }
             }
-            catch (MySqlException err)
+            else
             {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
+                try
+                {
+                    using (MySqlCommand dbComm = new MySqlCommand())
+                    {
+                        dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                        dbComm.CommandType = CommandType.Text;
+                        dbComm.CommandText = SQL.RegistryScripts.DeleteGestione;
+                        dbComm.Parameters.AddWithValue("id", id);
+                        dbComm.Connection.Open();
+                        dbComm.ExecuteNonQuery();
+                        dbComm.Connection.Close();
+                    }
+                }
+                catch (MySqlException err)
+                {
+                    throw new Exception(err.Message);
+                }
+                catch (Exception err)
+                {
+                    throw new Exception(err.Message);
+                }
             }
         }
         /// <summary>
@@ -78,36 +125,57 @@ namespace FinanceManager.Services
         /// <returns>Observable Collection</returns>
         public RegistryOwnersList GetGestioneList()
         {
-            try
+            DataTable dataTable = new DataTable();
+            RegistryOwnersList ROL = new RegistryOwnersList();
+            if (DAFconnection.GetConnectionType().Contains("sqlite"))
             {
-                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                try
                 {
-                    dbAdapter.SelectCommand = new MySqlCommand();
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
-                    dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetGestioneList;
-                    DataTable dataTable = new DataTable();
-                    dbAdapter.Fill(dataTable);
-                    RegistryOwnersList ROL = new RegistryOwnersList();
-                    foreach (DataRow dr in dataTable.Rows)
+                    using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
                     {
-                        RegistryOwner RO = new RegistryOwner();
-                        RO.Id_gestione = (int)dr.Field<uint>("id_gestione");
-                        RO.Nome_Gestione = dr.Field<string>("nome_gestione");
-                        RO.Tipologia = dr.Field<string>("tipologia");
-                        ROL.Add(RO);
+                        dataAdapter.SelectCommand = new SQLiteCommand();
+                        dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                        dataAdapter.SelectCommand.CommandType = CommandType.Text;
+                        dataAdapter.SelectCommand.CommandText = RegistryScripts.GetGestioneList;
+                        dataAdapter.Fill(dataTable);
                     }
-                    return ROL;
+                }
+                catch (SQLiteException err)
+                {
+                    throw new Exception(err.Message);
                 }
             }
-            catch (MySqlException err)
+            else
             {
-                throw new Exception("GetGestioneList " + err.Message);
+                try
+                {
+                    using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                    {
+                        dbAdapter.SelectCommand = new MySqlCommand();
+                        dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                        dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                        dbAdapter.SelectCommand.CommandText = SQL.RegistryScripts.GetGestioneList;
+                        dbAdapter.Fill(dataTable);
+                    }
+                }
+                catch (MySqlException err)
+                {
+                    throw new Exception("GetGestioneList " + err.Message);
+                }
+                catch (Exception err)
+                {
+                    throw new Exception("GetGestioneList " + err.Message);
+                }
             }
-            catch (Exception err)
+            foreach (DataRow dr in dataTable.Rows)
             {
-                throw new Exception("GetGestioneList " + err.Message);
+                RegistryOwner RO = new RegistryOwner();
+                RO.Id_gestione = DAFconnection.GetConnectionType().Contains("sqlite") ? (int)dr.Field<long>("id_gestione") : (int)dr.Field<uint>("id_gestione");
+                RO.Nome_Gestione = dr.Field<string>("nome_gestione");
+                RO.Tipologia = dr.Field<string>("tipologia");
+                ROL.Add(RO);
             }
+            return ROL;
         }
         /// <summary>
         /// Aggiorna i dati di una persona
@@ -115,28 +183,53 @@ namespace FinanceManager.Services
         /// <param name="owner">Il record da aggiornare</param>
         public void UpdateGestioneName(RegistryOwner owner)
         {
-            try
+            if (DAFconnection.GetConnectionType().Contains("sqlite"))
             {
-                using (MySqlCommand dbComm = new MySqlCommand())
+                try
                 {
-                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbComm.CommandType = CommandType.Text;
-                    dbComm.CommandText = SQL.RegistryScripts.UpdateGestioneName;
-                    dbComm.Parameters.AddWithValue("nome", owner.Nome_Gestione);
-                    dbComm.Parameters.AddWithValue("tipologia", owner.Tipologia);
-                    dbComm.Parameters.AddWithValue("id", owner.Id_gestione);
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
+                    using (SQLiteCommand cmd = new SQLiteCommand())
+                    {
+                        cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                        cmd.CommandType = CommandType.Text;
+                        cmd.CommandText = RegistryScripts.UpdateGestioneName;
+                        cmd.Parameters.AddWithValue("nome", owner.Nome_Gestione);
+                        cmd.Parameters.AddWithValue("tipologia", owner.Tipologia);
+                        cmd.Parameters.AddWithValue("id", owner.Id_gestione);
+                        cmd.Connection.Open();
+                        cmd.ExecuteNonQuery();
+                        cmd.Connection.Close();
+                    }
+                }
+                catch (SQLiteException err)
+                {
+                    throw new Exception(err.Message);
                 }
             }
-            catch (MySqlException err)
+            else
             {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
+                try
+                {
+                    using (MySqlCommand dbComm = new MySqlCommand())
+                    {
+                        dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                        dbComm.CommandType = CommandType.Text;
+                        dbComm.CommandText = SQL.RegistryScripts.UpdateGestioneName;
+                        dbComm.Parameters.AddWithValue("nome", owner.Nome_Gestione);
+                        dbComm.Parameters.AddWithValue("tipologia", owner.Tipologia);
+                        dbComm.Parameters.AddWithValue("id", owner.Id_gestione);
+                        dbComm.Connection.Open();
+                        dbComm.ExecuteNonQuery();
+                        dbComm.Connection.Close();
+                    }
+                }
+                catch (MySqlException err)
+                {
+                    throw new Exception(err.Message);
+                }
+                catch (Exception err)
+                {
+                    throw new Exception(err.Message);
+                }
             }
         }
 
