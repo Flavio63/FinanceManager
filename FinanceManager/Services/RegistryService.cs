@@ -240,16 +240,36 @@ namespace FinanceManager.Services
         {
             try
             {
-                using (MySqlCommand dbComm = new MySqlCommand())
+                if (DAFconnection.GetConnectionType().Contains("sqlite"))
                 {
-                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbComm.CommandType = CommandType.Text;
-                    dbComm.CommandText = SQL.RegistryScripts.AddShareType;
-                    dbComm.Parameters.AddWithValue("desc", description);
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
+                    using (SQLiteCommand dbComm = new SQLiteCommand())
+                    {
+                        dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                        dbComm.CommandType = CommandType.Text;
+                        dbComm.CommandText = RegistryScripts.AddShareType;
+                        dbComm.Parameters.AddWithValue("desc", description);
+                        dbComm.Connection.Open();
+                        dbComm.ExecuteNonQuery();
+                        dbComm.Connection.Close();
+                    }
                 }
+                else
+                {
+                    using (MySqlCommand dbComm = new MySqlCommand())
+                    {
+                        dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                        dbComm.CommandType = CommandType.Text;
+                        dbComm.CommandText = SQL.RegistryScripts.AddShareType;
+                        dbComm.Parameters.AddWithValue("desc", description);
+                        dbComm.Connection.Open();
+                        dbComm.ExecuteNonQuery();
+                        dbComm.Connection.Close();
+                    }
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception(err.Message);
             }
             catch (MySqlException err)
             {
@@ -265,16 +285,36 @@ namespace FinanceManager.Services
         {
             try
             {
-                using (MySqlCommand dbComm = new MySqlCommand())
+                if (DAFconnection.GetConnectionType().Contains("sqlite"))
                 {
-                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbComm.CommandType = CommandType.Text;
-                    dbComm.CommandText = SQL.RegistryScripts.DeleteShareType;
-                    dbComm.Parameters.AddWithValue("id", id);
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
+                    using (SQLiteCommand cmd = new SQLiteCommand())
+                    {
+                        cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                        cmd.CommandType = CommandType.Text;
+                        cmd.CommandText = RegistryScripts.DeleteShareType;
+                        cmd.Parameters.AddWithValue("id", id);
+                        cmd.Connection.Open();
+                        cmd.ExecuteNonQuery();
+                        cmd.Connection.Close();
+                    }
                 }
+                else
+                {
+                    using (MySqlCommand dbComm = new MySqlCommand())
+                    {
+                        dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                        dbComm.CommandType = CommandType.Text;
+                        dbComm.CommandText = SQL.RegistryScripts.DeleteShareType;
+                        dbComm.Parameters.AddWithValue("id", id);
+                        dbComm.Connection.Open();
+                        dbComm.ExecuteNonQuery();
+                        dbComm.Connection.Close();
+                    }
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception(err.Message);
             }
             catch (MySqlException err)
             {
@@ -288,26 +328,34 @@ namespace FinanceManager.Services
 
         public RegistryShareTypeList GetRegistryShareTypeList()
         {
+            DataTable dt = new DataTable();
             try
             {
-                using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
+                if (DAFconnection.GetConnectionType().Contains("sqlite"))
                 {
-                    dbAdaptar.SelectCommand = new MySqlCommand();
-                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbAdaptar.SelectCommand.CommandType = CommandType.Text;
-                    dbAdaptar.SelectCommand.CommandText = SQL.RegistryScripts.GetRegistryShareTypeList;
-                    DataTable dt = new DataTable();
-                    dbAdaptar.Fill(dt);
-                    RegistryShareTypeList RSTL = new RegistryShareTypeList();
-                    foreach (DataRow dr in dt.Rows)
+                    using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
                     {
-                        RegistryShareType RST = new RegistryShareType();
-                        RST.id_tipo_titolo = dr.Field<uint>("id_tipo_titolo");
-                        RST.desc_tipo_titolo = dr.Field<string>("desc_tipo_titolo");
-                        RSTL.Add(RST);
+                        dataAdapter.SelectCommand = new SQLiteCommand();
+                        dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                        dataAdapter.SelectCommand.CommandText = RegistryScripts.GetRegistryShareTypeList;
+                        dataAdapter.Fill(dt);
                     }
-                    return RSTL;
                 }
+                else
+                {
+                    using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
+                    {
+                        dbAdaptar.SelectCommand = new MySqlCommand();
+                        dbAdaptar.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                        dbAdaptar.SelectCommand.CommandType = CommandType.Text;
+                        dbAdaptar.SelectCommand.CommandText = SQL.RegistryScripts.GetRegistryShareTypeList;
+                        dbAdaptar.Fill(dt);
+                    }
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception(err.Message);
             }
             catch (MySqlException err)
             {
@@ -317,23 +365,52 @@ namespace FinanceManager.Services
             {
                 throw new Exception(err.Message);
             }
+            RegistryShareTypeList RSTL = new RegistryShareTypeList();
+            foreach (DataRow dr in dt.Rows)
+            {
+                RegistryShareType RST = new RegistryShareType();
+                RST.id_tipo_titolo = DAFconnection.GetConnectionType().Contains("sqlite") ? (uint) dr.Field<long>("id_tipo_titolo") : dr.Field<uint>("id_tipo_titolo");
+                RST.desc_tipo_titolo = dr.Field<string>("desc_tipo_titolo");
+                RSTL.Add(RST);
+            }
+            return RSTL;
         }
 
         public void UpdateShareType(RegistryShareType registryShareType)
         {
             try
             {
-                using (MySqlCommand dbComm = new MySqlCommand())
+                if (DAFconnection.GetConnectionType().Contains("sqlite"))
                 {
-                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbComm.CommandType = CommandType.Text;
-                    dbComm.CommandText = SQL.RegistryScripts.UpdateShareType;
-                    dbComm.Parameters.AddWithValue("id", registryShareType.id_tipo_titolo);
-                    dbComm.Parameters.AddWithValue("desc", registryShareType.desc_tipo_titolo);
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
+                    using (SQLiteCommand cmd = new SQLiteCommand())
+                    {
+                        cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                        cmd.CommandText = RegistryScripts.UpdateShareType;
+                        cmd.Parameters.AddWithValue("id", registryShareType.id_tipo_titolo);
+                        cmd.Parameters.AddWithValue("desc", registryShareType.desc_tipo_titolo);
+                        cmd.Connection.Open();
+                        cmd.ExecuteNonQuery();
+                        cmd.Connection.Close();
+                    }
                 }
+                else
+                {
+                    using (MySqlCommand dbComm = new MySqlCommand())
+                    {
+                        dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                        dbComm.CommandType = CommandType.Text;
+                        dbComm.CommandText = SQL.RegistryScripts.UpdateShareType;
+                        dbComm.Parameters.AddWithValue("id", registryShareType.id_tipo_titolo);
+                        dbComm.Parameters.AddWithValue("desc", registryShareType.desc_tipo_titolo);
+                        dbComm.Connection.Open();
+                        dbComm.ExecuteNonQuery();
+                        dbComm.Connection.Close();
+                    }
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception(err.Message);
             }
             catch (MySqlException err)
             {

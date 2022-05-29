@@ -63,7 +63,7 @@ namespace FinanceManager.ViewModels
                     {
                         _services.UpdateGestioneName(Owner);
                     }
-                    else
+                    else if (owner.Nome_Gestione != null && Owner.Tipologia != null)
                     {
                         _services.AddGestione(Owner.Nome_Gestione, Owner.Tipologia);
                         OwnerList = new ObservableCollection<RegistryOwner>(_services.GetGestioneList());
