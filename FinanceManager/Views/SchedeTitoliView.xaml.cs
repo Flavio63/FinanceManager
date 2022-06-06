@@ -10,6 +10,9 @@ namespace FinanceManager.Views
     {
         public SchedeTitoliView(SchedeTitoliViewModel schedeTitoliViewModel)
         {
+#if DEBUG
+            System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
+#endif
             InitializeComponent();
             DataContext = schedeTitoliViewModel;
         }

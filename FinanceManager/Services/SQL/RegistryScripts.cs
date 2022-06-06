@@ -34,7 +34,6 @@ namespace FinanceManager.Services.SQL
         public readonly static string UpdateLocation = "UPDATE conti SET desc_conto = @desc, note = @note WHERE id_conto = @id;";
         public readonly static string DeleteLocation = "DELETE FROM conti WHERE id_conto = @id";
         public readonly static string AddLocation = "INSERT INTO conti (id_conto, desc_conto, note) VALUES (null, @desc, @note);";
-        public readonly static string GetLocation = "SELECT id_conto, desc_conto, note FROM conti WHERE id_conto = @id";
         #endregion
 
         #region Azienda
@@ -87,11 +86,9 @@ namespace FinanceManager.Services.SQL
         public readonly static string UpdateMovementType = "UPDATE tipo_movimento SET desc_Movimento = @desc WHERE id_tipo_movimento = @id;";
         public readonly static string DeleteMovementType = "DELETE FROM tipo_movimento WHERE id_tipo_movimento = @id;";
         public readonly static string AddMovementType = "INSERT INTO tipo_movimento (id_tipo_movimento, desc_Movimento) VALUES (null, @desc);";
-        public readonly static string GetMovementType = "SELECT id_tipo_movimento, desc_Movimento FROM tipo_movimento WHERE id_tipo_movimento = @id";
         #endregion
 
         public static readonly string GetTipoSoldiList = "SELECT id_tipo_soldi, desc_tipo_soldi FROM tipo_soldi WHERE id_tipo_soldi > 0";
 
-        public static readonly string GetTipoSoldiById = "SELECT id_tipo_soldi, desc_tipo_soldi FROM tipo_soldi WHERE id_tipo_soldi = @id_tipo_soldi";
     }
 }
