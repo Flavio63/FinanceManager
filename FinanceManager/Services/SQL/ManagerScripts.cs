@@ -242,7 +242,7 @@ namespace FinanceManager.Services.SQL
         /// </summary>
         public static readonly string GetAllRecordQuote_Guadagno = "SELECT A.id_quota, A.id_gestione, B.nome_gestione, D.id_aggregazione, C.desc_tipo_soldi, A.id_quote_periodi, D.data_inizio, D.data_fine, A.quota " +
             "FROM quote_guadagno A, gestioni B, tipo_soldi C, quote_periodi D WHERE A.id_gestione = B.id_gestione AND D.id_aggregazione = C.id_aggregazione AND A.id_quote_periodi = D.id_periodo_quote " +
-            "ORDER BY data_fine DESC, id_gestione DESC ";
+            "ORDER BY data_fine DESC, A.id_gestione DESC ";
 
         /// <summary>
         /// Inserisco un record nuovo nella tabella quote_guadagno

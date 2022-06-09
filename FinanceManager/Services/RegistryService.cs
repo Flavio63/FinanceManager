@@ -164,7 +164,7 @@ namespace FinanceManager.Services
             foreach (DataRow dr in dataTable.Rows)
             {
                 RegistryOwner RO = new RegistryOwner();
-                RO.Id_gestione = DAFconnection.GetConnectionType().Contains("sqlite") ? (int)dr.Field<long>("id_gestione") : (int)dr.Field<uint>("id_gestione");
+                RO.Id_gestione = DAFconnection.GetConnectionType().Contains("sqlite") ? dr.Field<int>("id_gestione") : (int)dr.Field<uint>("id_gestione");
                 RO.Nome_Gestione = dr.Field<string>("nome_gestione");
                 RO.Tipologia = dr.Field<string>("tipologia");
                 ROL.Add(RO);
@@ -363,7 +363,7 @@ namespace FinanceManager.Services
             foreach (DataRow dr in dt.Rows)
             {
                 RegistryShareType RST = new RegistryShareType();
-                RST.id_tipo_titolo = DAFconnection.GetConnectionType().Contains("sqlite") ? (uint)dr.Field<long>("id_tipo_titolo") : dr.Field<uint>("id_tipo_titolo");
+                RST.id_tipo_titolo = DAFconnection.GetConnectionType().Contains("sqlite") ? (uint)dr.Field<int>("id_tipo_titolo") : dr.Field<uint>("id_tipo_titolo");
                 RST.desc_tipo_titolo = dr.Field<string>("desc_tipo_titolo");
                 RSTL.Add(RST);
             }
@@ -469,7 +469,7 @@ namespace FinanceManager.Services
             foreach (DataRow dr in dt.Rows)
             {
                 RegistryCurrency Rc = new RegistryCurrency();
-                Rc.IdCurrency = DAFconnection.GetConnectionType().Contains("sqlite") ? (int)dr.Field<long>("id_valuta") : (int)dr.Field<uint>("id_valuta");
+                Rc.IdCurrency = DAFconnection.GetConnectionType().Contains("sqlite") ? dr.Field<int>("id_valuta") : (int)dr.Field<uint>("id_valuta");
                 Rc.DescCurrency = dr.Field<string>("desc_valuta");
                 Rc.CodeCurrency = dr.Field<string>("cod_valuta");
                 RcL.Add(Rc);
@@ -670,7 +670,7 @@ namespace FinanceManager.Services
             foreach (DataRow dr in dt.Rows)
             {
                 RegistryLocation RL = new RegistryLocation();
-                RL.Id_Conto = DAFconnection.GetConnectionType().Contains("sqlite") ? Convert.ToInt32(dr.Field<long>("id_conto")) : (int)dr.Field<uint>("id_conto");
+                RL.Id_Conto = DAFconnection.GetConnectionType().Contains("sqlite") ? dr.Field<int>("id_conto") : (int)dr.Field<uint>("id_conto");
                 RL.Desc_Conto = dr.Field<string>("desc_conto");
                 RL.Note = dr.Field<string>("note");
                 RLL.Add(RL);
@@ -865,7 +865,7 @@ namespace FinanceManager.Services
             foreach (DataRow dr in dt.Rows)
             {
                 RegistryFirm RF = new RegistryFirm();
-                RF.id_azienda = DAFconnection.GetConnectionType().Contains("sqlite") ? Convert.ToUInt32(dr.Field<long>("id_azienda")) : dr.Field<uint>("id_azienda");
+                RF.id_azienda = DAFconnection.GetConnectionType().Contains("sqlite") ? (uint)dr.Field<int>("id_azienda") : dr.Field<uint>("id_azienda");
                 RF.desc_azienda = dr.Field<string>("desc_azienda");
                 RFL.Add(RF);
             }
@@ -1390,7 +1390,7 @@ namespace FinanceManager.Services
             foreach (DataRow dr in dt.Rows)
             {
                 RegistryMovementType RMT = new RegistryMovementType();
-                RMT.Id_tipo_movimento = DAFconnection.GetConnectionType().Contains("sqlite") ? Convert.ToInt32(dr.Field<long>("id_tipo_movimento")) : (int)dr.Field<uint>("id_tipo_movimento");
+                RMT.Id_tipo_movimento = DAFconnection.GetConnectionType().Contains("sqlite") ? dr.Field<int>("id_tipo_movimento") : (int)dr.Field<uint>("id_tipo_movimento");
                 RMT.Desc_tipo_movimento = dr.Field<string>("desc_Movimento");
                 RMTL.Add(RMT);
             }
@@ -1579,7 +1579,7 @@ namespace FinanceManager.Services
             foreach (DataRow dr in dt.Rows)
             {
                 TipoSoldi TS = DAFconnection.GetConnectionType().Contains("sqlite") ?
-                    new TipoSoldi((Models.Enumeratori.TipologiaSoldi)dr.Field<long>("id_tipo_soldi")) :
+                    new TipoSoldi((Models.Enumeratori.TipologiaSoldi)dr.Field<int>("id_tipo_soldi")) :
                     new TipoSoldi((Models.Enumeratori.TipologiaSoldi)dr.Field<uint>("id_tipo_soldi"));
                 TSL.Add(TS);
             }

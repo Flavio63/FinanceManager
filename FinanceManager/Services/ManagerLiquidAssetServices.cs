@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SQLite;
 using FinanceManager.Models;
 using FinanceManager.Models.Enumeratori;
 using FinanceManager.Services.SQL;
@@ -682,67 +683,34 @@ namespace FinanceManager.Services
         /// <returns>Una lista con le quote per investitore</returns>
         public QuoteInvList GetQuoteInv()
         {
+            DataTable DT = new DataTable();
             try
             {
-                DataTable DT = new DataTable();
-                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                if (DAFconnection.GetConnectionType().Contains("sqlite"))
                 {
-                    dbAdapter.SelectCommand = new MySqlCommand();
-                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
-                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetQuoteInv;
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbAdapter.Fill(DT);
-                    QuoteInvList quotes = new QuoteInvList();
-                    double versato = 0;
-                    double prelevato = 0;
-                    double disinvestito = 0;
-                    double investito = 0;
-                    double disponibile = 0;
-                    double patrimonio = 0;
-                    QuoteInv quoteInv = new QuoteInv();
-                    foreach (DataRow dataRow in DT.Rows)
+                    using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
                     {
-                        if (dataRow.Field<string>("nome_gestione") != "Aury")
-                        {
-                            versato = versato + dataRow.Field<double>("Versato");
-                            prelevato = prelevato + dataRow.Field<double>("Prelevato");
-                            disinvestito = disinvestito + dataRow.Field<double>("Disinvestito");
-                            investito = investito + dataRow.Field<double>("Investito");
-                            disponibile = disponibile + dataRow.Field<double>("Disponibile");
-                            patrimonio = patrimonio + dataRow.Field<double>("Disponibile") + dataRow.Field<double>("Investito") * -1 - dataRow.Field<double>("Disinvestito");
-                        }
+                        dataAdapter.SelectCommand = new SQLiteCommand();
+                        dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                        dataAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetQuoteInv;
+                        dataAdapter.Fill(DT);
                     }
-                    quoteInv.TotaleVersato = versato;
-                    quoteInv.TotalePrelevato = prelevato;
-                    quoteInv.TotaleDisinvestito = disinvestito;
-                    //quote.QuotaDisinvestito = dataRow.Field<double>("QuotaDisinvestito");
-                    quoteInv.TotaleInvestito = investito;
-                    quoteInv.TotaleDisponibile = disponibile;
-                    quoteInv.TotalePatrimonio = patrimonio;
-
-                    foreach (DataRow dataRow in DT.Rows)
-                    {
-                        QuoteInv quote = new QuoteInv();
-                        quote.NomeInvestitore = dataRow.Field<string>("nome_gestione");
-                        quote.CapitaleVersato = dataRow.Field<double>("Versato");
-                        quote.QuotaVersato = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("Versato") / versato : 0;
-                        quote.CapitalePrelevato = dataRow.Field<double>("Prelevato");
-                        quote.QuotaPrelevato = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("Prelevato") / prelevato : 0;
-                        quote.CapitaleDisinvestito = dataRow.Field<double>("Disinvestito");
-                        quote.QuotaDisinvestito = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("disinvestito") / disinvestito : 0;
-                        quote.CapitaleInvestito = dataRow.Field<double>("Investito");
-                        quote.QuotaInvestito = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("Investito") / investito : 0;
-                        quote.CapitaleDisponibile = dataRow.Field<double>("Disponibile");
-                        quote.QuotaDisponibile = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("Disponibile") / disponibile : 0;
-                        quote.Patrimonio = dataRow.Field<double>("Disponibile") + dataRow.Field<double>("Investito") * -1 - dataRow.Field<double>("Disinvestito");
-                        quote.QuotaPatrimonio = quote.NomeInvestitore != "Aury" ?
-                            (dataRow.Field<double>("Disponibile") + dataRow.Field<double>("Investito") * -1 - dataRow.Field<double>("Disinvestito")) / patrimonio :
-                            0;
-                        quotes.Add(quote);
-                    }
-                    quotes.Add(quoteInv);
-                    return quotes;
                 }
+                else
+                {
+                    using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                    {
+                        dbAdapter.SelectCommand = new MySqlCommand();
+                        dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                        dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetQuoteInv;
+                        dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                        dbAdapter.Fill(DT);
+                    }
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception(err.Message);
             }
             catch (MySqlException err)
             {
@@ -752,6 +720,56 @@ namespace FinanceManager.Services
             {
                 throw new Exception(err.Message);
             }
+            QuoteInvList quotes = new QuoteInvList();
+            double versato = 0;
+            double prelevato = 0;
+            double disinvestito = 0;
+            double investito = 0;
+            double disponibile = 0;
+            double patrimonio = 0;
+            QuoteInv quoteInv = new QuoteInv();
+            foreach (DataRow dataRow in DT.Rows)
+            {
+                if (dataRow.Field<string>("nome_gestione") != "Aury")
+                {
+                    versato = versato + dataRow.Field<double>("Versato");
+                    prelevato = prelevato + dataRow.Field<double>("Prelevato");
+                    disinvestito = disinvestito + dataRow.Field<double>("Disinvestito");
+                    investito = investito + dataRow.Field<double>("Investito");
+                    disponibile = disponibile + dataRow.Field<double>("Disponibile");
+                    patrimonio = patrimonio + dataRow.Field<double>("Disponibile") + dataRow.Field<double>("Investito") * -1 - dataRow.Field<double>("Disinvestito");
+                }
+            }
+            quoteInv.TotaleVersato = versato;
+            quoteInv.TotalePrelevato = prelevato;
+            quoteInv.TotaleDisinvestito = disinvestito;
+            quoteInv.TotaleInvestito = investito;
+            quoteInv.TotaleDisponibile = disponibile;
+            quoteInv.TotalePatrimonio = patrimonio;
+
+            foreach (DataRow dataRow in DT.Rows)
+            {
+                QuoteInv quote = new QuoteInv();
+                quote.NomeInvestitore = dataRow.Field<string>("nome_gestione");
+                quote.CapitaleVersato = dataRow.Field<double>("Versato");
+                quote.QuotaVersato = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("Versato") / versato : 0;
+                quote.CapitalePrelevato = dataRow.Field<double>("Prelevato");
+                quote.QuotaPrelevato = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("Prelevato") / prelevato : 0;
+                quote.CapitaleDisinvestito = dataRow.Field<double>("Disinvestito");
+                quote.QuotaDisinvestito = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("disinvestito") / disinvestito : 0;
+                quote.CapitaleInvestito = dataRow.Field<double>("Investito");
+                quote.QuotaInvestito = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("Investito") / investito : 0;
+                quote.CapitaleDisponibile = dataRow.Field<double>("Disponibile");
+                quote.QuotaDisponibile = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("Disponibile") / disponibile : 0;
+                quote.Patrimonio = dataRow.Field<double>("Disponibile") + dataRow.Field<double>("Investito") * -1 - dataRow.Field<double>("Disinvestito");
+                quote.QuotaPatrimonio = quote.NomeInvestitore != "Aury" ?
+                    (dataRow.Field<double>("Disponibile") + dataRow.Field<double>("Investito") * -1 - dataRow.Field<double>("Disinvestito")) / patrimonio :
+                    0;
+                quotes.Add(quote);
+            }
+            quotes.Add(quoteInv);
+            return quotes;
+
         }
 
         /// <summary>
@@ -759,33 +777,34 @@ namespace FinanceManager.Services
         /// </summary>
         public QuotePerPeriodoList GetAllRecordQuote_Guadagno()
         {
+            DataTable DT = new DataTable();
             try
             {
-                DataTable DT = new DataTable();
-                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                if (DAFconnection.GetConnectionType().Contains("sqlite"))
                 {
-                    dbAdapter.SelectCommand = new MySqlCommand();
-                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
-                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetAllRecordQuote_Guadagno;
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbAdapter.Fill(DT);
-                    QuotePerPeriodoList quotes = new QuotePerPeriodoList();
-                    foreach (DataRow dataRow in DT.Rows)
+                    using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
                     {
-                        QuotePerPeriodo quote = new QuotePerPeriodo();
-                        quote.Id_Quota = (int)dataRow.Field<uint>("id_quota");
-                        quote.Id_Gestione = (int)dataRow.Field<uint>("id_gestione");
-                        quote.Nome_Gestione = dataRow.Field<string>("nome_gestione");
-                        quote.Id_Tipo_Soldi = (int)dataRow.Field<uint>("id_aggregazione");
-                        quote.Desc_Tipo_Soldi = dataRow.Field<string>("desc_tipo_soldi");
-                        quote.Id_Quote_Periodi = (int)dataRow.Field<uint>("id_quote_periodi");
-                        quote.Data_Inizio = dataRow.Field<DateTime>("data_inizio");
-                        quote.Data_Fine = dataRow.Field<DateTime>("data_fine");
-                        quote.Quota = dataRow.Field<double>("quota");
-                        quotes.Add(quote);
+                        dataAdapter.SelectCommand = new SQLiteCommand();
+                        dataAdapter.SelectCommand.CommandText = ManagerScripts.GetAllRecordQuote_Guadagno;
+                        dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                        dataAdapter.Fill(DT);
                     }
-                    return quotes;
                 }
+                else
+                {
+                    using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                    {
+                        dbAdapter.SelectCommand = new MySqlCommand();
+                        dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                        dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetAllRecordQuote_Guadagno;
+                        dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                        dbAdapter.Fill(DT);
+                    }
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception(err.Message);
             }
             catch (MySqlException err)
             {
@@ -795,6 +814,22 @@ namespace FinanceManager.Services
             {
                 throw new Exception(err.Message);
             }
+            QuotePerPeriodoList quotes = new QuotePerPeriodoList();
+            foreach (DataRow dataRow in DT.Rows)
+            {
+                QuotePerPeriodo quote = new QuotePerPeriodo();
+                quote.Id_Quota = DAFconnection.GetConnectionType().Contains("sqlite") ? dataRow.Field<int>("id_quota") : (int)dataRow.Field<uint>("id_quota");
+                quote.Id_Gestione = DAFconnection.GetConnectionType().Contains("sqlite") ? dataRow.Field<int>("id_gestione") : (int)dataRow.Field<uint>("id_gestione");
+                quote.Nome_Gestione = dataRow.Field<string>("nome_gestione");
+                quote.Id_Tipo_Soldi = DAFconnection.GetConnectionType().Contains("sqlite") ? dataRow.Field<int>("id_aggregazione") : (int)dataRow.Field<uint>("id_aggregazione");
+                quote.Desc_Tipo_Soldi = dataRow.Field<string>("desc_tipo_soldi");
+                quote.Id_Quote_Periodi = DAFconnection.GetConnectionType().Contains("sqlite") ? dataRow.Field<int>("id_quote_periodi") : (int)dataRow.Field<uint>("id_quote_periodi");
+                quote.Data_Inizio = dataRow.Field<DateTime>("data_inizio");
+                quote.Data_Fine = dataRow.Field<DateTime>("data_fine");
+                quote.Quota = dataRow.Field<double>("quota");
+                quotes.Add(quote);
+            }
+            return quotes;
         }
 
         /// <summary>
@@ -1023,21 +1058,35 @@ namespace FinanceManager.Services
         /// <summary>Estraggo gli anni dalla tabella guadagni_totale_anno</summary>
         public List<int> GetAnniFromGuadagni()
         {
+            DataTable DT = new DataTable();
             try
             {
-                DataTable DT = new DataTable();
-                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                if (DAFconnection.GetConnectionType().Contains("sqlite"))
                 {
-                    dbAdapter.SelectCommand = new MySqlCommand();
-                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
-                    dbAdapter.SelectCommand.CommandText = ManagerScripts.GetAnniFromGuadagni;
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbAdapter.Fill(DT);
-                    List<int> anni = new List<int>();
-                    foreach (DataRow row in DT.Rows)
-                        anni.Add(row.Field<int>("anno"));
-                    return anni;
+                    using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
+                    {
+                        dataAdapter.SelectCommand = new SQLiteCommand();
+                        dataAdapter.SelectCommand.CommandText = ManagerScripts.GetAnniFromGuadagni;
+                        dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                        dataAdapter.Fill(DT);
+                    }
                 }
+                else
+                {
+                    using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                    {
+                        dbAdapter.SelectCommand = new MySqlCommand();
+                        dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                        dbAdapter.SelectCommand.CommandText = ManagerScripts.GetAnniFromGuadagni;
+                        dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                        dbAdapter.Fill(DT);
+                    }
+
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception(err.Message);
             }
             catch (MySqlException err)
             {
@@ -1047,6 +1096,10 @@ namespace FinanceManager.Services
             {
                 throw new Exception(err.Message);
             }
+            List<int> anni = new List<int>();
+            foreach (DataRow row in DT.Rows)
+                anni.Add(row.Field<int>("anno"));
+            return anni;
         }
 
         /// <summary>
@@ -1127,63 +1180,149 @@ namespace FinanceManager.Services
         /// <returns>Una lista con i dati per investitore</returns>
         public GuadagnoPerQuoteList GetQuoteGuadagno(int tipoReport)
         {
+            DataTable dt = new DataTable();
             try
             {
-                DataTable DT = new DataTable();
-                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                if (DAFconnection.GetConnectionType().Contains("sqlite"))
                 {
-                    dbAdapter.SelectCommand = new MySqlCommand();
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbAdapter.SelectCommand.Connection.Open();
-                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
-                    switch (tipoReport)
+                    using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
                     {
-                        case 0:
-                            MySqlCommand cmd = new MySqlCommand("SintesiGuadagniPerValute", dbAdapter.SelectCommand.Connection);
-                            cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.ExecuteNonQuery();
-                            dbAdapter.SelectCommand.CommandText = ManagerScripts.GetQuoteGuadagno;
-                            break;
-                        case 1:
-                            dbAdapter.SelectCommand.CommandText = ManagerScripts.GetQuoteSintesiGuadagno;
-                            break;
-                        case 2:
-                            dbAdapter.SelectCommand.CommandText = ManagerScripts.GetQuoteDettaglioGuadagno;
-                            break;
-                    }
-                    dbAdapter.Fill(DT);
-                    GuadagnoPerQuoteList quotes = new GuadagnoPerQuoteList();
-                    foreach (DataRow dataRow in DT.Rows)
-                    {
-                        GuadagnoPerQuote quote = new GuadagnoPerQuote();
-                        quote.Anno = dataRow.Field<int>("anno");
-                        quote.Nome = dataRow.Field<string>("nome_gestione");
-                        quote.IdCurrency = tipoReport == 0 ? dataRow.Field<int>("id_valuta") : (int)dataRow.Field<uint>("id_valuta");
-                        quote.CodeCurrency = dataRow.Field<string>("cod_valuta");
-                        if (tipoReport == 1 || tipoReport == 2)
+                        dataAdapter.SelectCommand = new SQLiteCommand();
+                        dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                        switch (tipoReport)
                         {
-                            quote.DescTipoSoldi = dataRow.Field<string>("desc_tipo_soldi");
-                            if (tipoReport == 2)
+                            case 2:
+                                dataAdapter.SelectCommand.CommandText = SintesiGuadagniPerValute.dettagliato;
+                                dataAdapter.Fill(dt);
+                                break;
+                            case 1:
+                                dataAdapter.SelectCommand.CommandText = SintesiGuadagniPerValute.sintesi_tipologia;
+                                dataAdapter.Fill(dt);
+                                break;
+                            case 0:
+                                dataAdapter.SelectCommand.CommandText = SintesiGuadagniPerValute.sintesi;
+                                dataAdapter.Fill(dt);
+                                int idxVal;
+                                for (int r = 0; r < dt.Rows.Count;)
+                                {
+                                    Dictionary<int, double> keyValuePairs = new Dictionary<int, double>();
+                                    string name = dt.Rows[r].Field<string>("nome_gestione");
+                                    while (name == dt.Rows[r].Field<string>("nome_gestione"))
+                                    {
+                                        idxVal = dt.Rows[r].Field<int>("id_valuta");
+                                        if (keyValuePairs.ContainsKey(idxVal))
+                                        {
+                                            keyValuePairs[idxVal] += dt.Rows[r].Field<double>("RisparmioAnno");
+                                        }
+                                        else
+                                        {
+                                            keyValuePairs.Add(idxVal, dt.Rows[r].Field<double>("RisparmioAnno") );
+                                        }
+                                        DataRow dr = dt.Rows[r];
+                                        dr["RisparmioCumulato"] = keyValuePairs[idxVal];
+                                        r++;
+                                        if (r == dt.Rows.Count)
+                                            break;
+                                    }
+                                }
+                                dt.DefaultView.Sort = "anno DESC";
+                                dt = dt.DefaultView.ToTable();
+                                break;
+                        }
+                        GuadagnoPerQuoteList quotes = new GuadagnoPerQuoteList();
+                        foreach (DataRow dataRow in dt.Rows)
+                        {
+                            GuadagnoPerQuote quote = new GuadagnoPerQuote();
+                            quote.Anno = dataRow.Field<int>("anno");
+                            quote.Nome = dataRow.Field<string>("nome_gestione");
+                            quote.IdCurrency = dataRow.Field<int>("id_valuta");
+                            quote.CodeCurrency = dataRow.Field<string>("cod_valuta");
+                            if (tipoReport == 1 || tipoReport == 2)
                             {
-                                quote.IdGuadagno = (int)dataRow.Field<uint>("id_guadagno");
-                                quote.IdGestione = (int)dataRow.Field<uint>("id_gestione");
-                                quote.IdTipoMovimento = (int)dataRow.Field<uint>("id_tipo_movimento");
-                                quote.DataOperazione = dataRow.Field<DateTime>("data_operazione");
-                                quote.QuotaInv = dataRow.Field<double>("quota");
-                                quote.Causale = dataRow.Field<string>("causale");
+                                quote.DescTipoSoldi = dataRow.Field<string>("desc_tipo_soldi");
+                                if (tipoReport == 2)
+                                {
+                                    quote.IdGuadagno = dataRow.Field<int>("id_guadagno");
+                                    quote.IdGestione = dataRow.Field<int>("id_gestione");
+                                    quote.IdTipoMovimento = dataRow.Field<int>("id_tipo_movimento");
+                                    quote.DataOperazione = dataRow.Field<DateTime>("data_operazione");
+                                    quote.QuotaInv = dataRow.Field<double>("quota");
+                                    quote.Causale = dataRow.Field<string>("causale");
+                                }
                             }
+                            else
+                            {
+                                quote.RisparmioCumulato = dataRow.Field<double>("RisparmioCumulato");
+                                quote.RisparmioAnno = dataRow.Field<double>("RisparmioAnno");
+                            }
+                            quote.Guadagno = dataRow.Field<double>("GuadagnoAnno1");
+                            quote.Preso = dataRow.Field<double>("Preso");
+                            quotes.Add(quote);
                         }
-                        else
-                        {
-                            quote.RisparmioCumulato = dataRow.Field<double>("RisparmioCumulato");
-                            quote.RisparmioAnno = dataRow.Field<double>("RisparmioAnno");
-                        }
-                        quote.Guadagno = dataRow.Field<double>("GuadagnoAnno1");
-                        quote.Preso = dataRow.Field<double>("Preso");
-                        quotes.Add(quote);
+                        return quotes;
                     }
-                    return quotes;
                 }
+                else
+                {
+                    using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                    {
+                        dbAdapter.SelectCommand = new MySqlCommand();
+                        dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                        dbAdapter.SelectCommand.Connection.Open();
+                        dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                        switch (tipoReport)
+                        {
+                            case 0:
+                                MySqlCommand cmd = new MySqlCommand("SintesiGuadagniPerValute", dbAdapter.SelectCommand.Connection);
+                                cmd.CommandType = CommandType.StoredProcedure;
+                                cmd.ExecuteNonQuery();
+                                dbAdapter.SelectCommand.CommandText = ManagerScripts.GetQuoteGuadagno;
+                                break;
+                            case 1:
+                                dbAdapter.SelectCommand.CommandText = ManagerScripts.GetQuoteSintesiGuadagno;
+                                break;
+                            case 2:
+                                dbAdapter.SelectCommand.CommandText = ManagerScripts.GetQuoteDettaglioGuadagno;
+                                break;
+                        }
+                        dbAdapter.Fill(dt);
+                        GuadagnoPerQuoteList quotes = new GuadagnoPerQuoteList();
+                        foreach (DataRow dataRow in dt.Rows)
+                        {
+                            GuadagnoPerQuote quote = new GuadagnoPerQuote();
+                            quote.Anno = dataRow.Field<int>("anno");
+                            quote.Nome = dataRow.Field<string>("nome_gestione");
+                            quote.IdCurrency = tipoReport == 0 ? dataRow.Field<int>("id_valuta") : (int)dataRow.Field<uint>("id_valuta");
+                            quote.CodeCurrency = dataRow.Field<string>("cod_valuta");
+                            if (tipoReport == 1 || tipoReport == 2)
+                            {
+                                quote.DescTipoSoldi = dataRow.Field<string>("desc_tipo_soldi");
+                                if (tipoReport == 2)
+                                {
+                                    quote.IdGuadagno = (int)dataRow.Field<uint>("id_guadagno");
+                                    quote.IdGestione = (int)dataRow.Field<uint>("id_gestione");
+                                    quote.IdTipoMovimento = (int)dataRow.Field<uint>("id_tipo_movimento");
+                                    quote.DataOperazione = dataRow.Field<DateTime>("data_operazione");
+                                    quote.QuotaInv = dataRow.Field<double>("quota");
+                                    quote.Causale = dataRow.Field<string>("causale");
+                                }
+                            }
+                            else
+                            {
+                                quote.RisparmioCumulato = dataRow.Field<double>("RisparmioCumulato");
+                                quote.RisparmioAnno = dataRow.Field<double>("RisparmioAnno");
+                            }
+                            quote.Guadagno = dataRow.Field<double>("GuadagnoAnno1");
+                            quote.Preso = dataRow.Field<double>("Preso");
+                            quotes.Add(quote);
+                        }
+                        return quotes;
+                    }
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception(err.Message);
             }
             catch (MySqlException err)
             {
@@ -1201,36 +1340,34 @@ namespace FinanceManager.Services
         /// <returns>Una lista con i movimenti per data degli investimenti</returns>
         public QuoteTabList GetQuoteTab()
         {
+            DataTable DT = new DataTable();
             try
             {
-                DataTable DT = new DataTable();
-                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                if (DAFconnection.GetConnectionType().Contains("sqlite"))
                 {
-                    dbAdapter.SelectCommand = new MySqlCommand();
-                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
-                    dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetQuoteTab;
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
-                    dbAdapter.Fill(DT);
-                    QuoteTabList quotes = new QuoteTabList();
-                    foreach (DataRow dataRow in DT.Rows)
+                    using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
                     {
-                        QuoteTab quote = new QuoteTab();
-                        quote.IdQuote = (int)dataRow.Field<uint>("id_quote_inv");
-                        quote.IdGestione = (int)dataRow.Field<uint>("id_gestione");
-                        quote.NomeInvestitore = dataRow.Field<string>("nome_gestione");
-                        quote.Id_tipo_movimento = (int)dataRow.Field<uint>("id_tipo_movimento");
-                        quote.Desc_tipo_movimento = dataRow.Field<string>("desc_movimento");
-                        quote.DataMovimento = dataRow.Field<DateTime>("data_movimento");
-                        quote.AmmontareEuro = dataRow.Field<double>("ammontare");
-                        quote.IdCurrency = (int)dataRow.Field<uint>("id_valuta");
-                        quote.CodeCurrency = dataRow.Field<string>("cod_valuta");
-                        quote.AmmontareValuta = dataRow.Field<double>("valuta_base");
-                        quote.ChangeValue = dataRow.Field<double>("valore_cambio");
-                        quote.Note = dataRow.Field<string>("note");
-                        quotes.Add(quote);
+                        dataAdapter.SelectCommand = new SQLiteCommand();
+                        dataAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetQuoteTab;
+                        dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                        dataAdapter.Fill(DT);
                     }
-                    return quotes;
                 }
+                else
+                {
+                    using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                    {
+                        dbAdapter.SelectCommand = new MySqlCommand();
+                        dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                        dbAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetQuoteTab;
+                        dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                        dbAdapter.Fill(DT);
+                    }
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception(err.Message);
             }
             catch (MySqlException err)
             {
@@ -1240,6 +1377,25 @@ namespace FinanceManager.Services
             {
                 throw new Exception(err.Message);
             }
+            QuoteTabList quotes = new QuoteTabList();
+            foreach (DataRow dataRow in DT.Rows)
+            {
+                QuoteTab quote = new QuoteTab();
+                quote.IdQuote = DAFconnection.GetConnectionType().Contains("sqlite") ? dataRow.Field<int>("id_quote_inv") : (int)dataRow.Field<uint>("id_quote_inv");
+                quote.IdGestione = DAFconnection.GetConnectionType().Contains("sqlite") ? dataRow.Field<int>("id_gestione") : (int)dataRow.Field<uint>("id_gestione");
+                quote.NomeInvestitore = dataRow.Field<string>("nome_gestione");
+                quote.Id_tipo_movimento = DAFconnection.GetConnectionType().Contains("sqlite") ? dataRow.Field<int>("id_tipo_movimento") : (int)dataRow.Field<uint>("id_tipo_movimento");
+                quote.Desc_tipo_movimento = dataRow.Field<string>("desc_movimento");
+                quote.DataMovimento = dataRow.Field<DateTime>("data_movimento");
+                quote.AmmontareEuro = dataRow.Field<double>("ammontare");
+                quote.IdCurrency = DAFconnection.GetConnectionType().Contains("sqlite") ? dataRow.Field<int>("id_valuta") : (int)dataRow.Field<uint>("id_valuta");
+                quote.CodeCurrency = dataRow.Field<string>("cod_valuta");
+                quote.AmmontareValuta = dataRow.Field<double>("valuta_base");
+                quote.ChangeValue = dataRow.Field<double>("valore_cambio");
+                quote.Note = dataRow.Field<string>("note");
+                quotes.Add(quote);
+            }
+            return quotes;
         }
 
         /// <summary>
