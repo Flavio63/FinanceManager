@@ -237,6 +237,7 @@
     <Compile Include="Models\TipoSoldiList.cs" />
     <Compile Include="Models\Enumeratori\TipologiaSoldi.cs" />
     <Compile Include="Services\SQL\SintesiGuadagniPerValute.cs" />
+    <Compile Include="Services\SQL\UpdateQuotePeriodi.cs" />
     <Compile Include="ViewModels\AnalisiPortafoglioViewModel.cs" />
     <Compile Include="ViewModels\GestioneContoCorrenteViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />

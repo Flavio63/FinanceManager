@@ -56,35 +56,7 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </RadioButton>
-                <RadioButton GroupName="db" IsChecked="False" IsThreeState="False" Name="testServer" Content="Connessione DB-test su server">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="Checked">
-                            <i:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </RadioButton>
-                <RadioButton GroupName="db" IsChecked="False" IsThreeState="False" Name="outdoorTestServer" Content="Connessione DB-test da fuori casa">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="Checked">
-                            <i:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </RadioButton>
-                <RadioButton GroupName="db" IsChecked="False" IsThreeState="False" Name="localhost" Content="Connessione localhost">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="Checked">
-                            <i:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </RadioButton>
-                <RadioButton GroupName="db" IsChecked="False" IsThreeState="False" Name="SqLiteServer" Content="SqLite da Casa">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="Checked">
-                            <i:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </RadioButton>
-                <RadioButton GroupName="db" IsChecked="False" IsThreeState="False" Name="SqLiteLocal" Content="SqLite fuori Casa">
+                <RadioButton GroupName="db" IsChecked="False" IsThreeState="False" Name="ConnessioneTest" Content="Connessione per test">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Checked">
                             <i:CallMethodAction TargetObject="{Binding}" MethodName="IsChecked"/>

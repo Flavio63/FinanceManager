@@ -271,7 +271,7 @@ namespace FinanceManager.Services.SQL
 
         /// <summary>Inserisce un nuovo record nella tabella quote_investimenti</summary>
         public static readonly string InsertInvestment = "INSERT INTO quote_investimenti (id_quote_inv, id_gestione, id_tipo_movimento, id_periodo_quote, data_movimento, id_valuta, " +
-            "valuta_base, valore_cambio, ammontare, note) VALUES (null, @id_gestione, @id_tipo_movimento, @id_periodo_quote, @data_movimento, @id_valuta, @valuta_base, @valore_cambio, @ammontare, @note)";
+            "valuta_base, valore_cambio, ammontare, note) VALUES (null, @id_gestione, @id_tipo_movimento, @id_periodo_quote, @data_movimento, @id_valuta, @valuta_base, @valore_cambio, @ammontare, @note);";
 
         /// <summary>
         /// Calcola e restituisce il totale (somma algebrica) di quanto investito da un soggetto

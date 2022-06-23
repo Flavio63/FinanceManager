@@ -8,15 +8,11 @@ namespace FinanceManager.Services
     public interface IManagerLiquidAssetServices
     {
         PortafoglioTitoliList GetManagerLiquidAssetListByOwnerAndLocation(int IdOwner = 0, int idLocation = 0);
-        PortafoglioTitoliList GetManagerLiquidAssetListByOwnerLocationAndMovementType(int IdOwner, int IdLocation, int[] IdMovement);
-        PortafoglioTitoliList GetManagerSharesMovementByOwnerAndLocation(int IdOwner, int IdLocation);
-        PortafoglioTitoliList GetManagerLiquidAssetListByOwnerLocationAndTitolo(int idGestione, int idConto, int idTitolo);
         PortafoglioTitoliList GetManagerLiquidAssetListByLinkMovimenti(DateTime link_movimenti);
         PortafoglioTitoli GetLastShareMovementByOwnerAndLocation(int IdOwner, int IdLocation);
         PortafoglioTitoli GetPortafoglioTitoliById(int IdPortafoglioTitoli);
         Ptf_CCList GetShareActiveAndAccountMovement(int id_gestione, int id_conto, int id_titolo);
         SintesiSoldiList GetCurrencyAvailable(int IdGestione = 0, int IdConto = 0, int IdValuta = 0);
-        PortafoglioTitoliList GetShareMovements(int IdOwner, int IdLocation, uint id_titolo);
         double GetSharesQuantity(int IdOwner, int IdLocation, uint id_titolo);
         /// <summary>
         /// Prelevo le info per i costi medi dei titoli attivi
@@ -24,7 +20,6 @@ namespace FinanceManager.Services
         /// <returns></returns>
         PortafoglioTitoliList GetCostiMediPerTitolo();
 
-        double GetProfitLossByCurrency(int IdOwner, int IdLocation, int IdCurrency);
         void AddManagerLiquidAsset(PortafoglioTitoli managerLiquidAsset);
         void UpdateManagerLiquidAsset(PortafoglioTitoli managerLiquidAsset);
         void DeleteManagerLiquidAsset(int id);
@@ -95,25 +90,10 @@ namespace FinanceManager.Services
         /// <param name="RecordQuoteGuadagno">il record da modificare</param>
         void UpdateGuadagniTotaleAnno(GuadagnoPerQuote RecordQuoteGuadagno);
 
-        /// <summary>
-        /// Recupero l'ultimo id delle coppie di date inserite
-        /// </summary>
-        /// <returns>Identificativo</returns>
-        int GetLastPeriodoValiditaQuote();
-
         QuoteTabList GetQuoteTab();                                     //Prendo tutti i record della tabella AndQuote
         void InsertInvestment(QuoteTab ActualQuote);                    // Inserisce nuovo movimento nella tabella anche il movimento 12
 
-        /// <summary>
-        /// Calcola il totale degli investimenti di
-        /// un investitore (somma algebrica)
-        /// </summary>
-        /// <param name="IdGestione">Identificativo</param>
-        /// <returns>double</returns>
-        double GetInvestmentByIdGestione(int IdGestione);
-
         void UpdateQuoteTab(QuoteTab ActualQuote);                      // aggiorna i movimenti della tabella AndQuote
-        void DeleteRecordQuoteTab(int idQuote);                         // elimina una scrittura dal database
 
         void InsertAccountMovement(ContoCorrente contoCorrente);        // inserisco il movimento nella tabella conto_corrente
         /// <summary>
@@ -135,12 +115,6 @@ namespace FinanceManager.Services
         /// <returns>Lista di ContoCorrente</returns>
         
         ContoCorrenteList GetContoCorrenteList();
-        /// <summary>
-        /// Estrae il record della tabella ContoCorrente che corrisponde al parametro
-        /// </summary>
-        /// <param name="idRecord">Il numero del record da estrarre</param>
-        /// <returns>Record di ContoCorrente</returns>
-        ContoCorrente GetContoCorrenteByIdCC(int idRecord);
         /// <summary>
         /// Seleziona i record ContoCorrente sulla base dell'ID quote relativo
         /// alla tabella quote_investimenti e utilizzato per il giroconto fra le
@@ -174,7 +148,6 @@ namespace FinanceManager.Services
         /// <param name="idCC">id del record da eliminare</param>
         void DeleteRecordContoCorrente(int idCC);
         QuotePerPeriodoList GetAllRecordQuote_Guadagno();
-        void InsertRecordQuote_Guadagno(QuotePerPeriodo record_quote_guadagno);
         void DeleteRecordGuadagno_Totale_anno(int id_quota);
 
         /// <summary>

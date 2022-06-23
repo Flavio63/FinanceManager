@@ -565,9 +565,9 @@ namespace FinanceManager.ViewModels
                         {
                             ActualQuote.Id_Periodo_Quote = _managerLiquidServices.Update_InsertQuotePeriodi(ActualQuote.DataMovimento, Id_Aggregazione);
                             _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il nuovo movimento di capitali
-                            ActualQuote.IdGestione = 3; ActualQuote.AmmontareEuro = 0; ActualQuote.Note = "Inserimento per Quote";
+                            ActualQuote.IdGestione = 3; ActualQuote.AmmontareEuro = 0; ActualQuote.AmmontareValuta = 0; ActualQuote.Note = "Inserimento per Quote";
                             _managerLiquidServices.InsertInvestment(ActualQuote); // FLAVIO inserisco il movimento a 0 per effettuare le quote corrette.
-                            ActualQuote.IdGestione = 5; ActualQuote.AmmontareEuro = 0; ActualQuote.Note = "Inserimento per Quote";
+                            ActualQuote.IdGestione = 5; 
                             _managerLiquidServices.InsertInvestment(ActualQuote); // DANIELA inserisco il movimento a 0 per effettuare le quote corrette.
                             _managerLiquidServices.ComputesAndInsertQuoteGuadagno(Id_Aggregazione, ActualQuote.Id_Periodo_Quote);
                         }
