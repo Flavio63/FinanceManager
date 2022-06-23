@@ -118,7 +118,7 @@ namespace FinanceManager.Services.SQL
         public static readonly string AddManagerLiquidAsset = "INSERT INTO portafoglio_titoli (id_portafoglio_titoli, id_gestione, id_conto, id_valuta, id_tipo_movimento, " +
             "id_titolo, data_movimento, ammontare, shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ritenuta_fiscale, " +
             "valore_cambio, note, attivo, link_movimenti) " +
-            "VALUE (null, @id_gestione, @id_conto, @id_valuta, @id_tipo_movimento, @id_titolo, @data_movimento, @ammontare, @shares_quantity, " +
+            "VALUES (null, @id_gestione, @id_conto, @id_valuta, @id_tipo_movimento, @id_titolo, @data_movimento, @ammontare, @shares_quantity, " +
             "@unity_local_value, @total_commission, @tobin_tax, @disaggio_cedole, @ritenuta_fiscale, @valore_cambio, @note, @attivo, @link_movimenti);";
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace FinanceManager.Services.SQL
         /// Inserisce un movimento nel conto corrente
         /// </summary>
         public static readonly string InsertAccountMovement = "INSERT INTO conto_corrente (id_conto, id_quote_investimenti, id_valuta, id_portafoglio_titoli, id_tipo_movimento, " +
-            "id_gestione, id_titolo, data_movimento, ammontare, cambio, causale, id_tipo_soldi, id_quote_periodi, modified) VALUE ( @id_conto, @id_quote_investimenti, @id_valuta, @id_portafoglio_titoli, @id_tipo_movimento, " +
+            "id_gestione, id_titolo, data_movimento, ammontare, cambio, causale, id_tipo_soldi, id_quote_periodi, modified) VALUES ( @id_conto, @id_quote_investimenti, @id_valuta, @id_portafoglio_titoli, @id_tipo_movimento, " +
             "@id_gestione, @id_titolo, @data_movimento, @ammontare, @cambio, @causale, @id_tipo_soldi, @id_quote_periodi, @modified)";
 
         /// <summary>
@@ -323,20 +323,21 @@ namespace FinanceManager.Services.SQL
 
         /// <summary>Dopo l'inserimento sul conto corrente, registro il guadagno</summary>
         public static readonly string AddSingoloGuadagno = "INSERT INTO guadagni_totale_anno (id_gestione, id_tipo_soldi, id_tipo_movimento, anno, quota, guadagnato, id_valuta, data_operazione, " +
-            "causale, id_quote_periodi, id_conto_corrente) ( SELECT B.id_gestione, id_tipo_soldi, id_tipo_movimento, YEAR(data_movimento) AS anno, " +
+            "causale, id_quote_periodi, id_conto_corrente) SELECT B.id_gestione, id_tipo_soldi, id_tipo_movimento, strftime('%Y', data_movimento) AS anno, " +
             "case when B.id_gestione = 4 AND A.id_tipo_movimento = 8 then 0 ELSE (case when A.id_tipo_movimento = 8 then 0.5 ELSE B.quota END) END AS quota, " +
             "case when B.id_gestione = 4 AND A.id_tipo_movimento = 8 then 0 ELSE (case when A.id_tipo_movimento = 8 then 0.5 * A.ammontare ELSE (case when id_tipo_soldi = 11 then A.ammontare* B.quota * -1 ELSE A.ammontare*B.quota END) END) END AS guadagnato, " +
             "id_valuta, data_movimento, causale, A.id_quote_periodi, A.id_fineco_euro FROM conto_corrente A, quote_guadagno B WHERE A.id_quote_periodi = B.id_quote_periodi AND A.id_fineco_euro = " +
             "(SELECT id_fineco_euro FROM conto_corrente C WHERE C.id_tipo_movimento = @id_tipo_movimento AND id_tipo_soldi = @id_tipo_soldi AND id_quote_periodi = @id_quote_periodi " +
-            "ORDER BY id_fineco_euro DESC LIMIT 1) GROUP BY B.id_gestione); ";
+            "ORDER BY id_fineco_euro DESC LIMIT 1) GROUP BY B.id_gestione; ";
 
         /// <summary>Dopo la modifica sul conto corrente, registro la modifica sul guadagno totale anno</summary>
-        public static readonly string ModifySingoloGuadagno = " UPDATE guadagni_totale_anno AA, (SELECT B.id_gestione, id_tipo_soldi, id_tipo_movimento, YEAR(data_movimento) AS anno, " +
-            "case when B.id_gestione = 4 AND A.id_tipo_movimento = 8 then 0 ELSE(case when A.id_tipo_movimento = 8 then 0.5 ELSE B.quota END) END AS quota, " +
-            "case when B.id_gestione = 4 AND A.id_tipo_movimento = 8 then 0 ELSE(case when A.id_tipo_movimento = 8 then 0.5 * A.ammontare ELSE A.ammontare* B.quota END) END AS guadagnato, " +
-            "id_valuta, data_movimento, causale, A.id_quote_periodi, A.id_fineco_euro FROM conto_corrente A, quote_guadagno B WHERE A.id_quote_periodi = B.id_quote_periodi AND A.id_fineco_euro = @id_fineco_euro GROUP BY B.id_gestione ) BB " +
-            "SET AA.anno = BB.anno, AA.guadagnato = BB.guadagnato, AA.data_operazione = BB.data_movimento, AA.causale = BB.causale, AA.id_quote_periodi = BB.id_quote_periodi, AA.id_tipo_soldi = BB.id_tipo_soldi, AA.id_valuta = BB.id_valuta " +
-            "WHERE AA.id_gestione = BB.id_gestione AND AA.id_conto_corrente = BB.id_fineco_euro;";
+        public static readonly string ModifySingoloGuadagno = " UPDATE guadagni_totale_anno SET guadagni_totale_anno.anno = BB.anno, guadagni_totale_anno.guadagnato = BB.guadagnato, " +
+            "guadagni_totale_anno.data_operazione = BB.data_movimento, guadagni_totale_anno.causale = BB.causale, guadagni_totale_anno.id_quote_periodi = BB.id_quote_periodi, " +
+            "guadagni_totale_anno.id_tipo_soldi = BB.id_tipo_soldi, guadagni_totale_anno.id_valuta = BB.id_valuta FROM (SELECT B.id_gestione, id_tipo_soldi, id_tipo_movimento, strftime('%Y', data_movimento) AS anno, " +
+            "CASE WHEN B.id_gestione = 4 AND A.id_tipo_movimento = 8 THEN 0 ELSE (CASE WHEN A.id_tipo_movimento = 8 THEN 0.5 ELSE B.quota END) END AS quota, CASE WHEN B.id_gestione = 4 AND A.id_tipo_movimento = 8 " +
+            "THEN 0 ELSE (CASE WHEN A.id_tipo_movimento = 8 THEN 0.5 * A.ammontare ELSE A.ammontare* B.quota END) END AS guadagnato, id_valuta, data_movimento, causale, A.id_quote_periodi, A.id_fineco_euro " +
+            "FROM conto_corrente A, quote_guadagno B WHERE A.id_quote_periodi = B.id_quote_periodi AND A.id_fineco_euro = @id_fineco_euro GROUP BY B.id_gestione ) AS BB WHERE guadagni_totale_anno.id_gestione = " +
+            "BB.id_gestione AND guadagni_totale_anno.id_conto_corrente = BB.id_fineco_euro;";
 
         public static readonly string GetCostiMediPerTitolo = "SELECT C.nome_gestione, D.desc_conto, B.id_tipo_titolo, E.desc_tipo_titolo, B.desc_titolo, B.isin, " +
             "SUM(ammontare +(total_commission + tobin_tax + disaggio_cedole + ritenuta_fiscale)*-1) AS CostoMedio, SUM(shares_quantity) AS TitoliAttivi, " +
