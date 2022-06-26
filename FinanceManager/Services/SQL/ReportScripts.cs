@@ -2,9 +2,9 @@
 {
     public class ReportScripts
     {
-        public static readonly string GetAvailableYears = "SELECT YEAR(data_movimento) AS anni FROM conto_corrente WHERE (id_tipo_movimento = 4 or id_tipo_movimento = 6) GROUP BY anni ORDER BY anni DESC";
+        public static readonly string GetAvailableYears = "SELECT strftime('%Y', data_movimento) AS anni FROM conto_corrente WHERE (id_tipo_movimento = 4 or id_tipo_movimento = 6) GROUP BY anni ORDER BY anni DESC";
 
-        public static readonly string GetProfitLoss = "SELECT YEAR(data_movimento) AS Anno, E.cod_valuta, B.nome_gestione, D.desc_tipo_soldi, " +
+        public static readonly string GetProfitLoss = "SELECT strftime('%Y', data_movimento) AS Anno, E.cod_valuta, B.nome_gestione, D.desc_tipo_soldi, " +
             "ROUND(SUM(CASE WHEN C.id_tipo_titolo = 1 THEN ammontare ELSE 0 END), 2) AS Azioni, " +
             "round(sum(case when C.id_tipo_titolo = 2 THEN ammontare else 0 end), 2) AS Obbligazioni, " +
             "round(sum(case when C.id_tipo_titolo = 4 THEN ammontare else 0 end), 2) AS Certificati, " +
@@ -23,7 +23,7 @@
 
         public static readonly string GetDetailedProfitLoss = "SELECT Anno, cod_valuta, nome_gestione, desc_tipo_soldi, desc_titolo, isin, Azioni, Obbligazioni, Certificati, ETF_C_P, Fondo, Futures, Opzioni, Commodities, Costi, Totale " +
             "FROM (" +
-            "SELECT YEAR(data_movimento) AS Anno, E.cod_valuta, B.nome_gestione, D.desc_tipo_soldi, C.desc_titolo, C.isin, " +
+            "SELECT strftime('%Y', data_movimento) AS Anno, E.cod_valuta, B.nome_gestione, D.desc_tipo_soldi, C.desc_titolo, C.isin, " +
             "ROUND(SUM(CASE WHEN C.id_tipo_titolo = 1 THEN ammontare ELSE 0 END), 2) AS Azioni, " +
             "round(sum(case when C.id_tipo_titolo = 2 THEN ammontare else 0 end), 2) AS Obbligazioni, " +
             "round(sum(case when C.id_tipo_titolo = 4 THEN ammontare else 0 end), 2) AS Certificati, " +
@@ -89,32 +89,32 @@
 
         public static readonly string GetDeltaPerYear = "SELECT id_gestione, nome_gestione, cod_valuta, GuadagniAnno1, GuadagniAnno2, GuadagniAnno2 - GuadagniAnno1 AS Differenza, " +
             "(GuadagniAnno2 - GuadagniAnno1)/GuadagniAnno1 AS Delta FROM ( SELECT A.id_gestione, B.nome_gestione, C.cod_valuta, " +
-            "SUM(CASE WHEN YEAR(A.data_movimento) = @Anno1 THEN CASE WHEN A.id_tipo_soldi = 11 THEN A.ammontare * -1 ELSE A.ammontare END ELSE 0 END) AS GuadagniAnno1, " +
-            "SUM(CASE WHEN YEAR(A.data_movimento) = @Anno2 THEN CASE WHEN A.id_tipo_soldi = 11 THEN A.ammontare * -1 ELSE A.ammontare END ELSE 0 END) AS GuadagniAnno2 " +
+            "SUM(CASE WHEN strftime('%Y', A.data_movimento) = @Anno1 THEN CASE WHEN A.id_tipo_soldi = 11 THEN A.ammontare * -1 ELSE A.ammontare END ELSE 0 END) AS GuadagniAnno1, " +
+            "SUM(CASE WHEN strftime('%Y', A.data_movimento) = @Anno2 THEN CASE WHEN A.id_tipo_soldi = 11 THEN A.ammontare * -1 ELSE A.ammontare END ELSE 0 END) AS GuadagniAnno2 " +
             "FROM conto_corrente A, gestioni B, valuta C WHERE A.id_gestione = B.id_gestione AND (A.id_tipo_soldi = 11 OR A.id_tipo_soldi = 15 OR A.id_tipo_soldi = 16) AND A.id_valuta = C.id_valuta " +
             "{0} " +
             "GROUP BY A.id_gestione, A.id_valuta ORDER BY nome_gestione, A.id_valuta) A;";
 
         public static readonly string GetDeltaPerMonth = "SELECT id_gestione, nome_gestione, cod_valuta, Mese, GuadagniAnno1, GuadagniAnno2, GuadagniAnno2 - GuadagniAnno1 AS Differenza, " +
             "(GuadagniAnno2 - GuadagniAnno1)/GuadagniAnno1 AS Delta FROM ( SELECT A.id_gestione, B.nome_gestione, C.cod_valuta,  MONTH(A.data_movimento) AS Mese, " +
-            "SUM(CASE WHEN YEAR(A.data_movimento) = @Anno1 THEN CASE WHEN A.id_tipo_soldi = 11 THEN A.ammontare * -1 ELSE A.ammontare END ELSE 0 END) AS GuadagniAnno1, " +
-            "SUM(CASE WHEN YEAR(A.data_movimento) = @Anno2 THEN CASE WHEN A.id_tipo_soldi = 11 THEN A.ammontare * -1 ELSE A.ammontare END ELSE 0 END) AS GuadagniAnno2 " +
+            "SUM(CASE WHEN strftime('%Y', A.data_movimento) = @Anno1 THEN CASE WHEN A.id_tipo_soldi = 11 THEN A.ammontare * -1 ELSE A.ammontare END ELSE 0 END) AS GuadagniAnno1, " +
+            "SUM(CASE WHEN strftime('%Y', A.data_movimento) = @Anno2 THEN CASE WHEN A.id_tipo_soldi = 11 THEN A.ammontare * -1 ELSE A.ammontare END ELSE 0 END) AS GuadagniAnno2 " +
             "FROM conto_corrente A, gestioni B, valuta C WHERE A.id_gestione = B.id_gestione AND A.id_valuta = C.id_valuta AND (A.id_tipo_soldi = 11 OR A.id_tipo_soldi = 15 OR A.id_tipo_soldi = 16) " +
             "{0} " +
             "GROUP BY A.id_gestione, C.cod_valuta, Mese ORDER BY nome_gestione, C.cod_valuta, Mese) A;";
 
         public static readonly string GetDeltaPerYearTot = "SELECT id_gestione, nome_gestione, cod_valuta, GuadagniAnno1, GuadagniAnno2, GuadagniAnno2 - GuadagniAnno1 AS Differenza, " +
             "(GuadagniAnno2 - GuadagniAnno1)/GuadagniAnno1 AS Delta FROM ( SELECT 0 as id_gestione, 'Totale' as nome_gestione, C.cod_valuta, " +
-            "SUM(CASE WHEN YEAR(A.data_movimento) = @Anno1 THEN CASE WHEN A.id_tipo_soldi = 11 THEN A.ammontare * -1 ELSE A.ammontare END ELSE 0 END) AS GuadagniAnno1, " +
-            "SUM(CASE WHEN YEAR(A.data_movimento) = @Anno2 THEN CASE WHEN A.id_tipo_soldi = 11 THEN A.ammontare * -1 ELSE A.ammontare END ELSE 0 END) AS GuadagniAnno2 " +
+            "SUM(CASE WHEN strftime('%Y', A.data_movimento) = @Anno1 THEN CASE WHEN A.id_tipo_soldi = 11 THEN A.ammontare * -1 ELSE A.ammontare END ELSE 0 END) AS GuadagniAnno1, " +
+            "SUM(CASE WHEN strftime('%Y', A.data_movimento) = @Anno2 THEN CASE WHEN A.id_tipo_soldi = 11 THEN A.ammontare * -1 ELSE A.ammontare END ELSE 0 END) AS GuadagniAnno2 " +
             "FROM conto_corrente A, valuta C WHERE A.id_valuta = C.id_valuta AND (A.id_tipo_soldi = 11 OR A.id_tipo_soldi = 15 OR A.id_tipo_soldi = 16) " +
             "{0} " +
             "GROUP BY C.cod_valuta ORDER BY C.cod_valuta) A; ";
 
         public static readonly string GetDeltaPerMonthTot = "SELECT id_gestione, nome_gestione, cod_valuta, Mese, GuadagniAnno1, GuadagniAnno2, GuadagniAnno2 - GuadagniAnno1 AS Differenza, " +
             "IF (GuadagniAnno1 = 0 , 0 , (GuadagniAnno2 - GuadagniAnno1)/GuadagniAnno1) AS Delta FROM ( SELECT 0 as id_gestione, 'Totale' as nome_gestione, C.cod_valuta,  MONTH(A.data_movimento) AS Mese, " +
-            "SUM(CASE WHEN YEAR(A.data_movimento) = @Anno1 THEN CASE WHEN A.id_tipo_soldi = 11 THEN A.ammontare * -1 ELSE A.ammontare END ELSE 0 END) AS GuadagniAnno1, " +
-            "SUM(CASE WHEN YEAR(A.data_movimento) = @Anno2 THEN CASE WHEN A.id_tipo_soldi = 11 THEN A.ammontare * -1 ELSE A.ammontare END ELSE 0 END) AS GuadagniAnno2 " +
+            "SUM(CASE WHEN strftime('%Y', A.data_movimento) = @Anno1 THEN CASE WHEN A.id_tipo_soldi = 11 THEN A.ammontare * -1 ELSE A.ammontare END ELSE 0 END) AS GuadagniAnno1, " +
+            "SUM(CASE WHEN strftime('%Y', A.data_movimento) = @Anno2 THEN CASE WHEN A.id_tipo_soldi = 11 THEN A.ammontare * -1 ELSE A.ammontare END ELSE 0 END) AS GuadagniAnno2 " +
             "FROM conto_corrente A, valuta C WHERE A.id_valuta = C.id_valuta AND (A.id_tipo_soldi = 11 OR A.id_tipo_soldi = 15 OR A.id_tipo_soldi = 16) " +
             "{0} " +
             "GROUP BY C.cod_valuta, Mese ORDER BY C.cod_valuta, Mese) A;";

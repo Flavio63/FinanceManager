@@ -22,7 +22,7 @@ namespace FinanceManager.Services.SQL
         private static readonly string OrderBy = " ORDER BY ";
         private static readonly string GroupBy = " GROUP BY ";
         private static readonly string Comma = ", ";
-        private static readonly string TipoMovimento = " id_tipo_movimento ";
+        private static readonly string TipoMovimento = " A.id_tipo_movimento ";
         private static readonly string AIdConto = " A.id_conto ";
         private static readonly string AIdValuta = " A.id_valuta ";
         private static readonly string AIdQuoteInv = " A.id_quote_inv ";

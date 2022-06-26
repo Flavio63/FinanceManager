@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using MySql.Data.MySqlClient;
+using System.Data.SQLite;
 using FinanceManager.Models;
 using System.Data;
 using FinanceManager.Services.SQL;
@@ -32,12 +32,11 @@ namespace FinanceManager.Services
 
                 ReportTitoliAttiviList RTAL = new ReportTitoliAttiviList();
                 DataTable table = new DataTable();
-                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
                 {
-                    dbAdapter.SelectCommand = new MySqlCommand();
-                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand = new SQLiteCommand();
                     dbAdapter.SelectCommand.CommandText = string.Format(SQL.ReportScripts.GetActiveAsset, owners, accounts);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(table);
                     foreach (DataRow dataRow in table.Rows)
                     {
@@ -56,7 +55,7 @@ namespace FinanceManager.Services
                     return RTAL;
                 }
             }
-            catch (MySqlException err)
+            catch (SQLiteException err)
             {
                 throw new Exception(err.Message);
             }
@@ -70,25 +69,24 @@ namespace FinanceManager.Services
         {
             try
             {
-                using (MySqlCommand dbComm = new MySqlCommand())
+                using (SQLiteCommand dbComm = new SQLiteCommand())
                 {
-                    dbComm.CommandType = System.Data.CommandType.Text;
                     dbComm.CommandText = SQL.ReportScripts.GetAvailableYears;
-                    dbComm.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     IList<int> anni = new List<int>();
-                    using (MySqlDataReader dbReader = dbComm.ExecuteReader())
+                    using (SQLiteDataReader dbReader = dbComm.ExecuteReader())
                     {
                         while (dbReader.Read())
                         {
-                            anni.Add((int)dbReader.GetValue(0));
+                            anni.Add(Convert.ToInt32(dbReader.GetValue(0)));
                         }
                     }
                     dbComm.Connection.Close();
                     return anni;
                 }
             }
-            catch (MySqlException err)
+            catch (SQLiteException err)
             {
                 throw new Exception(err.Message);
             }
@@ -120,10 +118,9 @@ namespace FinanceManager.Services
 
             try
             {
-                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
                 {
-                    dbAdapter.SelectCommand = new MySqlCommand();
-                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand = new SQLiteCommand();
                     if (isYear && isAggregated)
                         dbAdapter.SelectCommand.CommandText = string.Format(ReportScripts.GetDeltaPerYearTot, query);
                     else if(isYear && !isAggregated)
@@ -134,7 +131,7 @@ namespace FinanceManager.Services
                         dbAdapter.SelectCommand.CommandText = string.Format(ReportScripts.GetDeltaPerMonth, query);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("Anno1", _selectedYears[0] > _selectedYears[1] ? _selectedYears[1] : _selectedYears[0]);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("Anno2", _selectedYears[1] < _selectedYears[0] ? _selectedYears[0] : _selectedYears[1]);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     DataTable dataTable = new DataTable();
                     dbAdapter.Fill(dataTable);
                     foreach(DataRow DR in dataTable.Rows)
@@ -194,7 +191,7 @@ namespace FinanceManager.Services
                 }
                 return GPPL;
             }
-            catch (MySqlException err)
+            catch (SQLiteException err)
             {
                 throw new Exception(err.Message);
             }
@@ -209,14 +206,13 @@ namespace FinanceManager.Services
             try
             {
                 ReportMovementDetailedList RMDL = new ReportMovementDetailedList();
-                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
                 {
-                    dbAdapter.SelectCommand = new MySqlCommand();
-                    dbAdapter.SelectCommand.CommandType = CommandType.Text;
+                    dbAdapter.SelectCommand = new SQLiteCommand();
                     dbAdapter.SelectCommand.CommandText = SQL.ReportScripts.GetMovementDetailed;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", IdGestione);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_titolo", IdTitolo);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     DataTable dataTable = new DataTable();
                     dbAdapter.Fill(dataTable);
                     foreach (DataRow dr in dataTable.Rows)
@@ -238,7 +234,7 @@ namespace FinanceManager.Services
                 }
                 return RMDL;
             }
-            catch (MySqlException err)
+            catch (SQLiteException err)
             {
                 throw new Exception(err.Message);
             }
@@ -258,7 +254,7 @@ namespace FinanceManager.Services
             owners += ") ";
             string anni = " (";
             foreach (int i in _selectedYears)
-                anni += " year(data_movimento) = " + i + " or ";
+                anni += " strftime('%Y', data_movimento) = '" + i + "' or ";
             anni = anni.Substring(0, anni.Length - 4);
             anni += ") ";
             string query = owners + " and " + anni;
@@ -266,18 +262,17 @@ namespace FinanceManager.Services
             {
                 ReportProfitLossList reportProfitLossList = new ReportProfitLossList();
                 DataTable data = new DataTable();
-                using (MySqlDataAdapter dbAdapter = new MySqlDataAdapter())
+                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
                 {
-                    dbAdapter.SelectCommand = new MySqlCommand();
-                    dbAdapter.SelectCommand.CommandType = System.Data.CommandType.Text;
+                    dbAdapter.SelectCommand = new SQLiteCommand();
                     dbAdapter.SelectCommand.CommandText = isSynthetic == true ? string.Format(SQL.ReportScripts.GetProfitLoss, query) :
                          string.Format(SQL.ReportScripts.GetDetailedProfitLoss, query);
-                    dbAdapter.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(data);
                     foreach (DataRow dr in data.Rows)
                     {
                         ReportProfitLoss RPL = new ReportProfitLoss();
-                        RPL.Anno = dr.Field<int>("Anno");
+                        RPL.Anno = Convert.ToInt32(dr.Field<string>("Anno"));
                         RPL.Gestione = dr.Field<string>("nome_gestione");
                         RPL.TipoSoldi = dr.Field<string>("desc_tipo_soldi");
                         RPL.Valuta = dr.Field<string>("cod_valuta");
@@ -306,7 +301,7 @@ namespace FinanceManager.Services
                 }
                 return reportProfitLossList;
             }
-            catch (MySqlException err)
+            catch (SQLiteException err)
             {
                 throw new Exception(err.Message);
             }
@@ -331,10 +326,10 @@ namespace FinanceManager.Services
             gestioni = gestioni.Substring(0, gestioni.Length - 20);
             try
             {
-                using (MySqlDataAdapter dbAdaptar = new MySqlDataAdapter())
+                using (SQLiteDataAdapter dbAdaptar = new SQLiteDataAdapter())
                 {
-                    dbAdaptar.SelectCommand = new MySqlCommand();
-                    dbAdaptar.SelectCommand.Connection = new MySqlConnection(DAFconnection.GetConnectionType());
+                    dbAdaptar.SelectCommand = new SQLiteCommand();
+                    dbAdaptar.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     dbAdaptar.SelectCommand.CommandType = CommandType.Text;
                     dbAdaptar.SelectCommand.CommandText = string.Format(SQL.ReportScripts.QuoteInvGeoSettori, gestioni);
                     DataTable dt = new DataTable();
@@ -361,7 +356,7 @@ namespace FinanceManager.Services
                     return RS;
                 }
             }
-            catch (MySqlException err)
+            catch (SQLiteException err)
             {
                 throw new Exception(err.Message);
             }
