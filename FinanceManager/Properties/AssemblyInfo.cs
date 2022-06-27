@@ -11,7 +11,7 @@ using System.Windows;
 [assembly: AssemblyDescription("Software per la gestione degli investimenti finanziari")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Palozza & Villa")]
-[assembly: AssemblyProduct("FinanceManager")]
+[assembly: AssemblyProduct("Piggybank")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -51,6 +51,6 @@ using System.Windows;
 // È possibile specificare tutti i valori oppure impostare valori predefiniti per i numeri relativi alla revisione e alla build
 // usando l'asterisco '*' come illustrato di seguito:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.7.2.*")]
-[assembly: AssemblyFileVersion("3.7.2.0")]
+[assembly: AssemblyVersion("4.0.0.*")]
+[assembly: AssemblyFileVersion("4.0.0.0")]
 [assembly: NeutralResourcesLanguage("it-SM")]
