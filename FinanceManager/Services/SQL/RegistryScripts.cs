@@ -63,10 +63,10 @@ namespace FinanceManager.Services.SQL
         public readonly static string AddShare = "INSERT INTO titoli (id_titolo, desc_titolo, isin, id_tipo_titolo, id_azienda, azioni, obbligazioni, liquidita, altro, " +
             "USA, Canada, AmericaLatinaCentrale, RegnoUnito, EuropaOccEuro, EuropaOccNoEuro, EuropaEst, Africa, MedioOriente, Giappone, Australasia, AsiaSviluppati, " +
             "AsiaEmergenti, RegioniND, MateriePrime, BeniConsCiclici, Finanza, Immobiliare, BeniConsDifensivi, Salute, ServiziPubbUtility, ServiziComunic, Energia, " +
-            "BeniIndustriali, Tecnologia, SettoriND) " +
+            "BeniIndustriali, Tecnologia, SettoriND, data_modifica) " +
             "VALUES (@id_titolo, @desc_titolo, @isin, @id_tipo_titolo, @id_azienda, @azioni, @obbligazioni, @liquidita, @altro, @USA, @Canada, @AmericaLatinaCentrale, @RegnoUnito, @EuropaOccEuro, " +
             "@EuropaOccNoEuro, @EuropaEst, @Africa, @MedioOriente, @Giappone, @Australasia, @AsiaSviluppati, @AsiaEmergenti, @RegioniND, @MateriePrime, @BeniConsCiclici, " +
-            "@Finanza, @Immobiliare, @BeniConsDifensivi, @Salute, @ServiziPubbUtility, @ServiziComunic, @Energia, @BeniIndustriali, @Tecnologia, @SettoriND );";
+            "@Finanza, @Immobiliare, @BeniConsDifensivi, @Salute, @ServiziPubbUtility, @ServiziComunic, @Energia, @BeniIndustriali, @Tecnologia, @SettoriND, @Data_Modifica );";
 
         public readonly static string GetSharesByFirms = "SELECT id_titolo, desc_titolo, isin, id_tipo_titolo, id_azienda, azioni, obbligazioni, liquidita, altro, " +
             "USA, Canada, AmericaLatinaCentrale, RegnoUnito, EuropaOccEuro, EuropaOccNoEuro, EuropaEst, Africa, MedioOriente, Giappone, Australasia, AsiaSviluppati, " +
