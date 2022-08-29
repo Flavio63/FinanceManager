@@ -7,10 +7,19 @@ namespace FinanceManager.Views
     /// </summary>
     public partial class MainWindow : Window
     {
+        private double _Altezza;
+
         public MainWindow()
         {
             InitializeComponent();
         }
+
+        public double Altezza
+        {
+            get { return _Altezza; }
+            set { _Altezza = value; }
+        }
+
 
     }
 }

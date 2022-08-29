@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:viewModels="clr-namespace:FinanceManager.ViewModels"
-             xmlns:Events="clr-namespace:FinanceManager.Events"
              StartupUri="Views/MainWindow.xaml">
     <Application.Resources>
         <viewModels:MainWindowViewModel x:Key="MainWindowViewModel"/>

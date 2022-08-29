@@ -62,6 +62,7 @@ namespace FinanceManager.Models
         /// <param name="portafoglioTitoli">Record di PortafoglioTitoli</param>
         /// <param name="valoreInCC">Valore da registrare in c/c</param>
         /// <param name="idTipoSoldi">Destinazione d'uso dei soldi</param>
+        /// <param name="IdQuotePeriodi">Identifica il periodo di appartenenza delle quote di attribuzione guadagni</param>
         public ContoCorrente(PortafoglioTitoli portafoglioTitoli, double valoreInCC, TipologiaSoldi idTipoSoldi, int IdQuotePeriodi)
         {
             Id_Conto = portafoglioTitoli.Id_Conto;

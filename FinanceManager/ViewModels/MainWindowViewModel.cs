@@ -6,6 +6,7 @@ using System.Deployment.Application;
 using System.Windows.Controls;
 using System.Windows.Input;
 using FinanceManager.Services.SQL;
+using System.Windows;
 
 namespace FinanceManager.ViewModels
 {
@@ -27,7 +28,8 @@ namespace FinanceManager.ViewModels
         public ICommand OnClickOpenContoCorrente { get; set; }
         public ICommand OnClickPortafoglioTitoli { get; set; }
         public ICommand OnClickManagerReports { get; set; }
-
+        public ICommand OnClickOpenGiroconto { get; set; }
+        public ICommand OnClickOpenCapitali { get; set; }
         public ICommand OnClickOpenSchedaTitoli { get; set; }
 
         RegistryOwnerViewModel ownerViewModel;
@@ -55,6 +57,12 @@ namespace FinanceManager.ViewModels
         GestioneQuoteInvestitoriView gestioneQuoteInvestitoriView;
         AcquistoVenditaTitoliViewModel acquistoVenditaTitoliViewModel;
         AcquistoVenditaTitoliView acquistoVenditaTitoliView;
+
+        GiroContoView giroContoView;
+        GiroContoViewModel giroContoViewModel;
+
+        CapitalsRegisterView capitalsRegisterView;
+        CapitalsRegisterViewModel capitalsRegisterViewModel;
         #endregion
 
         public MainWindowViewModel()
@@ -86,6 +94,8 @@ namespace FinanceManager.ViewModels
             OnClickPortafoglioTitoli = new CommandHandler(PortafoglioTitoli);
             OnClickOpenContoCorrente = new CommandHandler(OpenContoCorrente);
             OnClickManagerReports = new CommandHandler(OpenReports);
+            OnClickOpenGiroconto = new CommandHandler(OpenGiroconto);
+            OnClickOpenCapitali = new CommandHandler(OpenCapitali);
         }
 
         #region Anagrafica
@@ -241,6 +251,54 @@ namespace FinanceManager.ViewModels
                 mainGrid.Children.Remove(gestioneQuoteInvestitoriView);
                 gestioneQuoteInvestitoriView = null;
                 gestioneQuoteInvestitoriViewModel = null;
+            }
+        }
+
+        private void OpenGiroconto(object param)
+        {
+            DockPanel mainGrid = param as DockPanel;
+            if (giroContoView == null || !mainGrid.Children.Contains(giroContoView))
+            {
+                try
+                {
+                    giroContoViewModel = new GiroContoViewModel(_registryServices, _managerLiquidServices);
+                    giroContoView = new GiroContoView(giroContoViewModel);
+                    mainGrid.Children.Add(giroContoView);
+                }
+                catch (System.Exception err)
+                {
+                    System.Windows.MessageBox.Show("Errore in apertura: " + err, "DAF - PROGRAM", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                mainGrid.Children.Remove(giroContoView);
+                giroContoView = null;
+                giroContoViewModel = null;
+            }
+        }
+
+        private void OpenCapitali(object param)
+        {
+            DockPanel mainGrid = param as DockPanel;
+            if (capitalsRegisterView == null || !mainGrid.Children.Contains(capitalsRegisterView))
+            {
+                try
+                {
+                    capitalsRegisterViewModel = new CapitalsRegisterViewModel(_registryServices, _managerLiquidServices);
+                    capitalsRegisterView = new CapitalsRegisterView(capitalsRegisterViewModel);
+                    mainGrid.Children.Add(capitalsRegisterView);
+                }
+                catch (System.Exception err)
+                {
+                    System.Windows.MessageBox.Show("Errore in apertura: " + err, "DAF - PROGRAM", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                mainGrid.Children.Remove(capitalsRegisterView);
+                capitalsRegisterView = null;
+                capitalsRegisterViewModel = null;
             }
         }
 

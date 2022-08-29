@@ -10,8 +10,8 @@ namespace FinanceManager.Models
     {
         private DateTime _MovementDate;
 
-        public int IdQuote { get; set; }
-        public int IdGestione { get; set; }
+        public int Id_Quote_Investimenti { get; set; }
+        public int Id_Gestione { get; set; }
         public string NomeInvestitore { get; set; }
         public int Id_tipo_movimento { get; set; }
         public string Desc_tipo_movimento { get; set; }
@@ -31,7 +31,7 @@ namespace FinanceManager.Models
                 _MovementDate = value;
             }
         }
-        public int IdCurrency { get; set; }
+        public int Id_Valuta { get; set; }
         public string CodeCurrency { get; set; }
         public double ChangeValue { get; set; }
         public double AmmontareEuro { get; set; }

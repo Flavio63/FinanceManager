@@ -220,8 +220,7 @@ namespace FinanceManager.ViewModels
         public void LostFocus(object sender, EventArgs e)
         {
             TextBox TB = sender as TextBox;
-            double converted;
-            if (!string.IsNullOrEmpty(TB.Text) && double.TryParse(TB.Text, out converted))
+            if (!string.IsNullOrEmpty(TB.Text) && double.TryParse(TB.Text, out _))
             {
                 switch (TB.Name)
                 {

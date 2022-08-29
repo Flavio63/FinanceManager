@@ -372,7 +372,7 @@ namespace FinanceManager.Exports
                         Colonna = 0;
                         foreach (var prop in GPP.GetType().GetProperties())
                         {
-                            if (prop.Name != "IdGestione")
+                            if (prop.Name != "Id_Gestione")
                             {
                                 ICell cell;
                                 string fieldValue = prop.GetValue(GPP) == null ? "" : prop.GetValue(GPP).ToString();

@@ -16,8 +16,8 @@ namespace FinanceManager.Comparators
                 return false;
             }
             return
-                x.IdQuote == y.IdQuote &&
-                x.IdGestione == y.IdGestione &&
+                x.Id_Quote_Investimenti == y.Id_Quote_Investimenti &&
+                x.Id_Gestione == y.Id_Gestione &&
                 x.Id_tipo_movimento == y.Id_tipo_movimento &&
                 x.AmmontareEuro == y.AmmontareEuro &&
                 x.DataMovimento == y.DataMovimento &&
@@ -27,8 +27,8 @@ namespace FinanceManager.Comparators
         public override int GetHashCode(QuoteTab obj)
         {
             return
-                obj.IdQuote.GetHashCode() ^
-                obj.IdGestione.GetHashCode() ^
+                obj.Id_Quote_Investimenti.GetHashCode() ^
+                obj.Id_Gestione.GetHashCode() ^
                 obj.Id_tipo_movimento.GetHashCode() ^
                 obj.AmmontareEuro.GetHashCode() ^
                 obj.DataMovimento.GetHashCode() ^

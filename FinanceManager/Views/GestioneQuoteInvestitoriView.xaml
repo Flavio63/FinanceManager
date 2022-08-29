@@ -701,7 +701,7 @@
                         </TextBox>
                         <StackPanel Orientation="Vertical" Grid.Row="1" Grid.ColumnSpan="4" Margin="5">
                             <TabControl>
-                                <TabItem Header="Versamento / Prelievo Capitale" FontSize="14" FontWeight="Bold"
+                                <!--<TabItem Header="Versamento / Prelievo Capitale" FontSize="14" FontWeight="Bold"
                                  IsSelected="{Binding TabVersPre, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                                     <Grid Margin="5">
                                         <Grid.RowDefinitions>
@@ -733,7 +733,7 @@
                                             </i:Interaction.Triggers>
                                         </ComboBox>
                                     </Grid>
-                                </TabItem>
+                                </TabItem>-->
                                 <TabItem Header="Giro Conto Capitale" FontSize="14" FontWeight="Bold"
                                  IsSelected="{Binding TabGiroconto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                                     <TabControl>

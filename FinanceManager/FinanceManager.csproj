@@ -240,7 +240,9 @@
     <Compile Include="Services\SQL\SintesiGuadagniPerValute.cs" />
     <Compile Include="Services\SQL\UpdateQuotePeriodi.cs" />
     <Compile Include="ViewModels\AnalisiPortafoglioViewModel.cs" />
+    <Compile Include="ViewModels\CapitalsRegisterViewModel.cs" />
     <Compile Include="ViewModels\GestioneContoCorrenteViewModel.cs" />
+    <Compile Include="ViewModels\GiroContoViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Models\ContoCorrente.cs" />
     <Compile Include="Models\ContoCorrenteList.cs" />
@@ -299,11 +301,17 @@
     <Compile Include="Views\AnalisiPortafoglioView.xaml.cs">
       <DependentUpon>AnalisiPortafoglioView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\CapitalsRegisterView.xaml.cs">
+      <DependentUpon>CapitalsRegisterView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\GestioneContoCorrenteView.xaml.cs">
       <DependentUpon>GestioneContoCorrenteView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GestioneQuoteInvestitoriView.xaml.cs">
       <DependentUpon>GestioneQuoteInvestitoriView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\GiroContoView.xaml.cs">
+      <DependentUpon>GiroContoView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ReportDeltaSplitMeseView.xaml.cs">
       <DependentUpon>ReportDeltaSplitMeseView.xaml</DependentUpon>
@@ -359,7 +367,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\CapitalsRegisterView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\GestioneContoCorrenteView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\GiroContoView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

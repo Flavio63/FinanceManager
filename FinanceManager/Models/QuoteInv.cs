@@ -9,6 +9,7 @@ namespace FinanceManager.Models
     public class QuoteInv
     {
         public string NomeInvestitore { get; set; }
+        public string CodValuta { get; set; }
         public double CapitaleVersato { get; set; }
         public double TotaleVersato { get; set; }
         public double QuotaVersato { get; set; }

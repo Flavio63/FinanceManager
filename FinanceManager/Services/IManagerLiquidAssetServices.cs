@@ -23,7 +23,11 @@ namespace FinanceManager.Services
         void AddManagerLiquidAsset(PortafoglioTitoli managerLiquidAsset);
         void UpdateManagerLiquidAsset(PortafoglioTitoli managerLiquidAsset);
         void DeleteManagerLiquidAsset(int id);
-
+        /// <summary>
+        /// Calcola la quota ultima base investimento attivo
+        /// restituendo il totale immesso, prelevato, assegnato e disponibile
+        /// </summary>
+        /// <returns>ObservableCollection</returns>
         QuoteInvList GetQuoteInv();   // Calcolo le quote per investitore sulla base dell'investito attivo
         /// <summary>
         /// Calcola le quote del guadagno per investitore
@@ -89,11 +93,22 @@ namespace FinanceManager.Services
         /// </summary>
         /// <param name="RecordQuoteGuadagno">il record da modificare</param>
         void UpdateGuadagniTotaleAnno(GuadagnoPerQuote RecordQuoteGuadagno);
-
-        QuoteTabList GetQuoteTab();                                     //Prendo tutti i record della tabella AndQuote
-        void InsertInvestment(QuoteTab ActualQuote);                    // Inserisce nuovo movimento nella tabella anche il movimento 12
-
-        void UpdateQuoteTab(QuoteTab ActualQuote);                      // aggiorna i movimenti della tabella AndQuote
+        /// <summary>
+        /// Prelevo tutti i record della tabella degli Investimenti
+        /// </summary>
+        /// <returns>Lista di tipo QuoteTabList</returns>
+        QuoteTabList GetQuoteTab();
+        /// <summary>
+        /// Inserisco un nuovo movimento di capitale
+        /// nella tabella degli investimenti
+        /// </summary>
+        /// <param name="ActualQuote"></param>
+        void InsertInvestment(QuoteTab ActualQuote);
+        /// <summary>
+        /// Aggiorno i movienti della tabella investimenti
+        /// </summary>
+        /// <param name="ActualQuote"></param>
+        void UpdateQuoteTab(QuoteTab ActualQuote);
 
         void InsertAccountMovement(ContoCorrente contoCorrente);        // inserisco il movimento nella tabella conto_corrente
         /// <summary>
@@ -184,6 +199,28 @@ namespace FinanceManager.Services
         /// </summary>
         /// <param name="guadagnoPerQuote"></param>
         void DeletePrelievoUtili(GuadagnoPerQuote guadagnoPerQuote);
-
+        /// <summary>
+        /// Restituisco la somma dei soldi disponibili nella tabella
+        /// degli investimenti
+        /// </summary>
+        /// <param name="IdInvestitore"></param>
+        /// <param name="IdValuta"></param>
+        /// <returns>QuoteTabList</returns>
+        QuoteTabList GetTotalAmountByCurrency(int IdInvestitore, int IdValuta = 0);
+        /// <summary>
+        /// Restituisco le somme dei soldi presenti nei conti correnti
+        /// suddivisi per gestione e valuta
+        /// </summary>
+        /// <param name="IdConto"></param>
+        /// <param name="IdGestione"></param>
+        /// <param name="IdValuta"></param>
+        /// <returns>ContoCorrenteList</returns>
+        ContoCorrenteList GetTotalAmountByAccount(int IdConto, int IdGestione = 0, int IdValuta = 0);
+        /// <summary>
+        /// Restituisco il record in base al suo id di riga
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        QuoteTab GetQuoteTabById(int Id);
     }
 }

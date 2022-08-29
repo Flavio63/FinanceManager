@@ -388,7 +388,7 @@ namespace FinanceManager.ViewModels
                 if (ActualQuote.Id_tipo_movimento == 12)
                 {
                     // estraggo solo il record corrispondente alla selezione nella griglia quote
-                    ContoCorrenteSelected = _managerLiquidServices.GetContoCorrenteByIdQuote(ActualQuote.IdQuote);
+                    ContoCorrenteSelected = _managerLiquidServices.GetContoCorrenteByIdQuote(ActualQuote.Id_Quote_Investimenti);
                     CheckDa = ContoCorrenteSelected.Ammontare > 0 ? true : false;
                     CheckA = !CheckDa;
                     TabGiroconto = true;
@@ -437,17 +437,17 @@ namespace FinanceManager.ViewModels
                             }
                             if (e.AddedItems[0] is RegistryOwner)
                             {
-                                ActualQuote.IdGestione = ((RegistryOwner)e.AddedItems[0]).Id_gestione;
+                                ActualQuote.Id_Gestione = ((RegistryOwner)e.AddedItems[0]).Id_gestione;
                                 ActualQuote.NomeInvestitore = ((RegistryOwner)e.AddedItems[0]).Nome_Gestione;
                                 if (TabVersPre == false)
                                 {
-                                    ActualQuote.IdCurrency = 1;
+                                    ActualQuote.Id_Valuta = 1;
                                     ActualQuote.CodeCurrency = "EUR";
                                 }
                             }
                             if (e.AddedItems[0] is RegistryCurrency)
                             {
-                                ActualQuote.IdCurrency = ((RegistryCurrency)e.AddedItems[0]).IdCurrency;
+                                ActualQuote.Id_Valuta = ((RegistryCurrency)e.AddedItems[0]).IdCurrency;
                                 ActualQuote.CodeCurrency = ((RegistryCurrency)e.AddedItems[0]).CodeCurrency;
                             }
                         }
@@ -455,7 +455,7 @@ namespace FinanceManager.ViewModels
                         {
                             ContoCorrenteSelected.Id_tipo_movimento = 12;
                             ActualQuote.Id_tipo_movimento = 12;
-                            if (e.AddedItems[0] is RegistryOwner && namae.Contains("Investitori")) ActualQuote.IdGestione = ((RegistryOwner)e.AddedItems[0]).Id_gestione;
+                            if (e.AddedItems[0] is RegistryOwner && namae.Contains("Investitori")) ActualQuote.Id_Gestione = ((RegistryOwner)e.AddedItems[0]).Id_gestione;
                             if (e.AddedItems[0] is RegistryLocation) ContoCorrenteSelected.Id_Conto = ((RegistryLocation)e.AddedItems[0]).Id_Conto;
                             if (e.AddedItems[0] is RegistryOwner && namae.Contains("Gestori")) ContoCorrenteSelected.Id_Gestione = ((RegistryOwner)e.AddedItems[0]).Id_gestione;
                         }
@@ -541,33 +541,33 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                if (((StackPanel)param).Name == "Bottoniera_1" && TabVersPre && ActualQuote.IdQuote == 0)
+                if (((StackPanel)param).Name == "Bottoniera_1" && TabVersPre && ActualQuote.Id_Quote_Investimenti == 0)
                 {
-                    int Id_Aggregazione = ActualQuote.IdGestione == 4 ? 16 : 15;
+                    int Id_Aggregazione = ActualQuote.Id_Gestione == 4 ? 16 : 15;
                     int result = _managerLiquidServices.VerifyInvestmentDate(ActualQuote, Id_Aggregazione); // verifico se alla stessa data c'è già un inserimento
                     if (result == -1)
                     {
-                        if (ActualQuote.IdGestione != 4)
+                        if (ActualQuote.Id_Gestione != 4)
                         {
                             ActualQuote.Id_Periodo_Quote = _managerLiquidServices.Update_InsertQuotePeriodi(ActualQuote.DataMovimento, Id_Aggregazione);
                             _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il nuovo movimento di capitali
-                            ActualQuote.IdGestione = ActualQuote.IdGestione == 3 ? 5 : 3;
+                            ActualQuote.Id_Gestione = ActualQuote.Id_Gestione == 3 ? 5 : 3;
                             ActualQuote.AmmontareEuro = 0;
                             ActualQuote.AmmontareValuta = 0;
                             ActualQuote.ChangeValue = 0;
-                            ActualQuote.IdCurrency = 0;
+                            ActualQuote.Id_Valuta = 0;
                             ActualQuote.CodeCurrency = "";
                             ActualQuote.Note = "Inserimento per Quote";
                             _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il movimento a 0 per effettuare le quote corrette.
                             _managerLiquidServices.ComputesAndInsertQuoteGuadagno(Id_Aggregazione, ActualQuote.Id_Periodo_Quote);
                         }
-                        else if (ActualQuote.IdGestione == 4)
+                        else if (ActualQuote.Id_Gestione == 4)
                         {
                             ActualQuote.Id_Periodo_Quote = _managerLiquidServices.Update_InsertQuotePeriodi(ActualQuote.DataMovimento, Id_Aggregazione);
                             _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il nuovo movimento di capitali
-                            ActualQuote.IdGestione = 3; ActualQuote.AmmontareEuro = 0; ActualQuote.AmmontareValuta = 0; ActualQuote.Note = "Inserimento per Quote";
+                            ActualQuote.Id_Gestione = 3; ActualQuote.AmmontareEuro = 0; ActualQuote.AmmontareValuta = 0; ActualQuote.Note = "Inserimento per Quote";
                             _managerLiquidServices.InsertInvestment(ActualQuote); // FLAVIO inserisco il movimento a 0 per effettuare le quote corrette.
-                            ActualQuote.IdGestione = 5; 
+                            ActualQuote.Id_Gestione = 5; 
                             _managerLiquidServices.InsertInvestment(ActualQuote); // DANIELA inserisco il movimento a 0 per effettuare le quote corrette.
                             _managerLiquidServices.ComputesAndInsertQuoteGuadagno(Id_Aggregazione, ActualQuote.Id_Periodo_Quote);
                         }
@@ -575,7 +575,7 @@ namespace FinanceManager.ViewModels
                     else
                     {
                         ActualQuote.Id_Periodo_Quote = result;
-                        ActualQuote.IdQuote = _managerLiquidServices.GetIdQuoteTab(ActualQuote); // trovo il codice per modificare il record
+                        ActualQuote.Id_Quote_Investimenti = _managerLiquidServices.GetIdQuoteTab(ActualQuote); // trovo il codice per modificare il record
                         _managerLiquidServices.UpdateQuoteTab(ActualQuote);     // modifico l'inserimento
                         _managerLiquidServices.ComputesAndModifyQuoteGuadagno(Id_Aggregazione);
                     }
@@ -584,7 +584,7 @@ namespace FinanceManager.ViewModels
                     MessageBox.Show(string.Format("Ho effettuato l'operazione {0} correttamente.", ActualQuote.Desc_tipo_movimento),
                     Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
                 }
-                else if (((StackPanel)param).Name == "Bottoniera_1" && TabGiroconto && ActualQuote.IdQuote == 0)
+                else if (((StackPanel)param).Name == "Bottoniera_1" && TabGiroconto && ActualQuote.Id_Quote_Investimenti == 0)
                 {
                     if (CheckDa && !CheckA)
                         ActualQuote.AmmontareEuro = ActualQuote.AmmontareEuro > 0 ? ActualQuote.AmmontareEuro * -1 : ActualQuote.AmmontareEuro;
@@ -628,17 +628,17 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                if (((StackPanel)param).Name == "Bottoniera_1" && TabVersPre && ActualQuote.IdQuote > 0)
+                if (((StackPanel)param).Name == "Bottoniera_1" && TabVersPre && ActualQuote.Id_Quote_Investimenti > 0)
                 {
                     _managerLiquidServices.UpdateQuoteTab(ActualQuote); // aggiorno il record con la nuova cifra
-                    int Tipo_Soldi = ActualQuote.IdGestione == 4 ? 16 : 15;
+                    int Tipo_Soldi = ActualQuote.Id_Gestione == 4 ? 16 : 15;
                     // scopro il codice dei record da ricalcolare con le nuove quote
                     ActualQuote.Id_Periodo_Quote = _managerLiquidServices.GetIdPeriodoQuote(ActualQuote.DataMovimento, Tipo_Soldi);
                     _managerLiquidServices.ComputesAndModifyQuoteGuadagno(Tipo_Soldi);
                     // modifico i dati di guadagno per socio delle operazioni con il codice di periodo che ha subito la modifica
                     _managerLiquidServices.UpdateGuadagniTotaleAnno(ActualQuote.Id_Periodo_Quote, Tipo_Soldi);
                 }
-                else if (((StackPanel)param).Name == "Bottoniera_1" && TabGiroconto && ActualQuote.IdQuote > 0)
+                else if (((StackPanel)param).Name == "Bottoniera_1" && TabGiroconto && ActualQuote.Id_Quote_Investimenti > 0)
                 {
                     if (CheckDa && !CheckA)
                         ActualQuote.AmmontareEuro = ActualQuote.AmmontareEuro > 0 ? ActualQuote.AmmontareEuro * -1 : ActualQuote.AmmontareEuro;
@@ -709,7 +709,7 @@ namespace FinanceManager.ViewModels
         /// <returns></returns>
         public bool CanSave(object param)
         {
-            if (ActualQuote.IdQuote == 0 && ActualQuote.AmmontareEuro != 0 && ActualQuote.IdGestione > 0 && ActualQuote.Id_tipo_movimento > 0 && ActualQuote.Id_tipo_movimento < 13)
+            if (ActualQuote.Id_Quote_Investimenti == 0 && ActualQuote.AmmontareEuro != 0 && ActualQuote.Id_Gestione > 0 && ActualQuote.Id_tipo_movimento > 0 && ActualQuote.Id_tipo_movimento < 13)
             {
                 return true;
             }
@@ -732,7 +732,7 @@ namespace FinanceManager.ViewModels
 
         public bool CanModify(object param)
         {
-            if (ActualQuote.IdQuote > 0)
+            if (ActualQuote.Id_Quote_Investimenti > 0)
                 return true;
             return false;
         }

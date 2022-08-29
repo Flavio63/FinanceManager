@@ -7,6 +7,7 @@ namespace FinanceManager.Services.SQL
     {
         private string ConnectionType = "default";
         private readonly string ConnessioneTest = @"URI=file:C:\Temp\sqlite\finanza.db";
+        private readonly string NuovoDbTest = @"URI=file:C:\Temp\newPiggybank\PiggyBank.db";
         private readonly string SqLiteServer = @"URI=file:H:\Investimenti\sqlite\piggybank.db";
         private readonly string outdoor = @"URI=file:C:\Users\flavi\SynologyDrive\Investimenti\sqlite\piggybank.db";
 
@@ -18,6 +19,8 @@ namespace FinanceManager.Services.SQL
                     return ConnessioneTest;
                 case ("outdoor"):
                     return outdoor;
+                case ("NewDatabase"):
+                    return NuovoDbTest;
                 default:
                     return SqLiteServer;
             }

@@ -536,12 +536,13 @@ namespace FinanceManager.Services
             {
                 if (dataRow.Field<string>("nome_gestione") != "Aury")
                 {
-                    versato = versato + dataRow.Field<double>("Versato");
-                    prelevato = prelevato + dataRow.Field<double>("Prelevato");
-                    disinvestito = disinvestito + dataRow.Field<double>("Disinvestito");
-                    investito = investito + dataRow.Field<double>("Investito");
-                    disponibile = disponibile + dataRow.Field<double>("Disponibile");
-                    patrimonio = patrimonio + dataRow.Field<double>("Disponibile") + dataRow.Field<double>("Investito") * -1 - dataRow.Field<double>("Disinvestito");
+                    versato = versato + Convert.ToDouble(dataRow.Field<object>("Versato"));
+                    prelevato = prelevato + Convert.ToDouble(dataRow.Field<object>("Prelevato"));
+                    disinvestito = disinvestito + Convert.ToDouble(dataRow.Field<object>("Disinvestito"));
+                    investito = investito + Convert.ToDouble(dataRow.Field<object>("Investito"));
+                    disponibile = disponibile + Convert.ToDouble(dataRow.Field<object>("Disponibile"));
+                    patrimonio = patrimonio + Convert.ToDouble(dataRow.Field<object>("Disponibile")) +
+                        Convert.ToDouble(dataRow.Field<object>("Investito")) * -1 - Convert.ToDouble(dataRow.Field<object>("Disinvestito"));
                 }
             }
             quoteInv.TotaleVersato = versato;
@@ -555,23 +556,26 @@ namespace FinanceManager.Services
             {
                 QuoteInv quote = new QuoteInv();
                 quote.NomeInvestitore = dataRow.Field<string>("nome_gestione");
-                quote.CapitaleVersato = dataRow.Field<double>("Versato");
-                quote.QuotaVersato = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("Versato") / versato : 0;
-                quote.CapitalePrelevato = dataRow.Field<double>("Prelevato");
-                quote.QuotaPrelevato = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("Prelevato") / prelevato : 0;
-                quote.CapitaleDisinvestito = dataRow.Field<double>("Disinvestito");
-                quote.QuotaDisinvestito = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("disinvestito") / disinvestito : 0;
-                quote.CapitaleInvestito = dataRow.Field<double>("Investito");
-                quote.QuotaInvestito = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("Investito") / investito : 0;
-                quote.CapitaleDisponibile = dataRow.Field<double>("Disponibile");
-                quote.QuotaDisponibile = quote.NomeInvestitore != "Aury" ? dataRow.Field<double>("Disponibile") / disponibile : 0;
-                quote.Patrimonio = dataRow.Field<double>("Disponibile") + dataRow.Field<double>("Investito") * -1 - dataRow.Field<double>("Disinvestito");
+                quote.CodValuta = dataRow.Field<string>("cod_valuta");
+                quote.CapitaleVersato = Convert.ToDouble(dataRow.Field<object>("Versato"));
+                quote.QuotaVersato = quote.NomeInvestitore != "Aury" ? Convert.ToDouble(dataRow.Field<object>("Versato")) / versato : 0;
+                quote.CapitalePrelevato = Convert.ToDouble(dataRow.Field<object>("Prelevato"));
+                quote.QuotaPrelevato = quote.NomeInvestitore != "Aury" ? Convert.ToDouble(dataRow.Field<object>("Prelevato")) / prelevato : 0;
+                quote.CapitaleDisinvestito = Convert.ToDouble(dataRow.Field<object>("Disinvestito"));
+                quote.QuotaDisinvestito = quote.NomeInvestitore != "Aury" ? Convert.ToDouble(dataRow.Field<object>("Disinvestito")) / disinvestito : 0;
+                quote.CapitaleInvestito = Convert.ToDouble(dataRow.Field<object>("Investito"));
+                quote.QuotaInvestito = quote.NomeInvestitore != "Aury" ? Convert.ToDouble(dataRow.Field<object>("Investito")) / investito : 0;
+                quote.CapitaleDisponibile = Convert.ToDouble(dataRow.Field<object>("Disponibile"));
+                quote.QuotaDisponibile = quote.NomeInvestitore != "Aury" ? Convert.ToDouble(dataRow.Field<object>("Disponibile")) / disponibile : 0;
+                quote.Patrimonio = Convert.ToDouble(dataRow.Field<object>("Disponibile")) + Convert.ToDouble(dataRow.Field<object>("Investito")) * -1 -
+                    Convert.ToDouble(dataRow.Field<object>("Disinvestito"));
                 quote.QuotaPatrimonio = quote.NomeInvestitore != "Aury" ?
-                    (dataRow.Field<double>("Disponibile") + dataRow.Field<double>("Investito") * -1 - dataRow.Field<double>("Disinvestito")) / patrimonio :
+                    (Convert.ToDouble(dataRow.Field<object>("Disponibile")) + Convert.ToDouble(dataRow.Field<object>("Investito")) * -1 - 
+                    Convert.ToDouble(dataRow.Field<object>("Disinvestito"))) / patrimonio :
                     0;
                 quotes.Add(quote);
             }
-            quotes.Add(quoteInv);
+            if(quoteInv.NomeInvestitore != null) quotes.Add(quoteInv);
             return quotes;
 
         }
@@ -1001,14 +1005,14 @@ namespace FinanceManager.Services
             foreach (DataRow dataRow in DT.Rows)
             {
                 QuoteTab quote = new QuoteTab();
-                quote.IdQuote = (int)dataRow.Field<long>("id_quote_inv");
-                quote.IdGestione = (int)dataRow.Field<long>("id_gestione");
+                quote.Id_Quote_Investimenti = (int)dataRow.Field<long>("id_quote_inv");
+                quote.Id_Gestione = (int)dataRow.Field<long>("id_gestione");
                 quote.NomeInvestitore = dataRow.Field<string>("nome_gestione");
                 quote.Id_tipo_movimento = (int)dataRow.Field<long>("id_tipo_movimento");
                 quote.Desc_tipo_movimento = dataRow.Field<string>("desc_movimento");
                 quote.DataMovimento = dataRow.Field<DateTime>("data_movimento");
                 quote.AmmontareEuro = dataRow.Field<double>("ammontare");
-                quote.IdCurrency = (int)dataRow.Field<long>("id_valuta");
+                quote.Id_Valuta = (int)dataRow.Field<long>("id_valuta");
                 quote.CodeCurrency = dataRow.Field<string>("cod_valuta");
                 quote.AmmontareValuta = dataRow.Field<double>("valuta_base");
                 quote.ChangeValue = dataRow.Field<double>("valore_cambio");
@@ -1029,12 +1033,12 @@ namespace FinanceManager.Services
                 using (SQLiteCommand dbComm = new SQLiteCommand())
                 {
                     dbComm.CommandText = ManagerScripts.UpdateQuoteTab;
-                    dbComm.Parameters.AddWithValue("id_quote_inv", ActualQuote.IdQuote);
-                    dbComm.Parameters.AddWithValue("id_gestione", ActualQuote.IdGestione);
+                    dbComm.Parameters.AddWithValue("id_quote_inv", ActualQuote.Id_Quote_Investimenti);
+                    dbComm.Parameters.AddWithValue("id_gestione", ActualQuote.Id_Gestione);
                     dbComm.Parameters.AddWithValue("id_tipo_movimento", ActualQuote.Id_tipo_movimento);
                     dbComm.Parameters.AddWithValue("data_movimento", ActualQuote.DataMovimento.ToString("yyyy-MM-dd"));
                     dbComm.Parameters.AddWithValue("ammontare", ActualQuote.AmmontareEuro);
-                    dbComm.Parameters.AddWithValue("id_valuta", ActualQuote.IdCurrency);
+                    dbComm.Parameters.AddWithValue("id_valuta", ActualQuote.Id_Valuta);
                     dbComm.Parameters.AddWithValue("valuta_base", ActualQuote.AmmontareValuta);
                     dbComm.Parameters.AddWithValue("valore_cambio", ActualQuote.ChangeValue);
                     dbComm.Parameters.AddWithValue("note", ActualQuote.Note);
@@ -1088,7 +1092,7 @@ namespace FinanceManager.Services
         }
 
         /// <summary>
-        /// Trovo l'id del record da modificare
+        /// Trovo l'id dell'ultimo record inserito
         /// </summary>
         /// <param name="ActualQuote">Il record con le modifiche</param>
         /// <returns>id_quoteTab</returns>
@@ -1103,11 +1107,12 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.CommandText = ManagerScripts.GetIdQuoteTab;
                     if (ActualQuote.Id_Periodo_Quote == 0)
                         dbAdapter.SelectCommand.CommandText += "ORDER BY id_quote_inv DESC LIMIT 1";
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", ActualQuote.IdGestione);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", ActualQuote.Id_Gestione);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_tipo_movimento", ActualQuote.Id_tipo_movimento);
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_periodo_quote", ActualQuote.Id_Periodo_Quote);
                     dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
+                    return Convert.ToInt32(DT.Rows[0].ItemArray[0]);
                 }
             }
             catch (SQLiteException err)
@@ -1118,7 +1123,6 @@ namespace FinanceManager.Services
             {
                 throw new Exception(err.Message);
             }
-            return Convert.ToInt32(DT.Rows[0].ItemArray[0]);
         }
 
         /// <summary>
@@ -1131,12 +1135,13 @@ namespace FinanceManager.Services
             {
                 using (SQLiteCommand cmd = new SQLiteCommand())
                 {
-                    cmd.CommandText = "PRAGMA FOREIGN_KEYS = false; " + ManagerScripts.InsertInvestment + " PRAGMA FOREIGN_KEYS = true;";
-                    cmd.Parameters.AddWithValue("id_gestione", ActualQuote.IdGestione);
+                    //cmd.CommandText = "PRAGMA FOREIGN_KEYS = false; " + ManagerScripts.InsertInvestment + " PRAGMA FOREIGN_KEYS = true;";
+                    cmd.CommandText = ManagerScripts.InsertInvestment;
+                    cmd.Parameters.AddWithValue("id_gestione", ActualQuote.Id_Gestione);
                     cmd.Parameters.AddWithValue("id_tipo_movimento", ActualQuote.Id_tipo_movimento);
                     cmd.Parameters.AddWithValue("id_periodo_quote", ActualQuote.Id_Periodo_Quote);
                     cmd.Parameters.AddWithValue("data_movimento", ActualQuote.DataMovimento.ToString("yyyy-MM-dd"));
-                    cmd.Parameters.AddWithValue("id_valuta", ActualQuote.IdCurrency);
+                    cmd.Parameters.AddWithValue("id_valuta", ActualQuote.Id_Valuta);
                     cmd.Parameters.AddWithValue("valuta_base", ActualQuote.AmmontareValuta);
                     cmd.Parameters.AddWithValue("valore_cambio", ActualQuote.ChangeValue);
                     cmd.Parameters.AddWithValue("ammontare", ActualQuote.AmmontareEuro);
@@ -1234,6 +1239,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand.Parameters.AddWithValue("id_quote_investimenti", idQuote);
                     dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
+                    return contoCorrente(DT.Rows[0]);
                 }
             }
             catch (SQLiteException err)
@@ -1244,7 +1250,6 @@ namespace FinanceManager.Services
             {
                 throw new Exception(err.Message);
             }
-            return contoCorrente(DT.Rows[0]);
         }
 
         /// <summary>
@@ -1651,9 +1656,9 @@ namespace FinanceManager.Services
                     {
                         dbAdapter.SelectCommand = new SQLiteCommand();
                         dbAdapter.SelectCommand.CommandText = ManagerScripts.GetMovimentiContoGestioneValuta;
-                        dbAdapter.SelectCommand.Parameters.AddWithValue("IdGestione", IdGestione);
+                        dbAdapter.SelectCommand.Parameters.AddWithValue("Id_Gestione", IdGestione);
                         dbAdapter.SelectCommand.Parameters.AddWithValue("IdConto", IdConto);
-                        dbAdapter.SelectCommand.Parameters.AddWithValue("IdCurrency", IdValuta);
+                        dbAdapter.SelectCommand.Parameters.AddWithValue("Id_Valuta", IdValuta);
                         dbAdapter.SelectCommand.Parameters.AddWithValue("Year_1", AnnoSelezionato - 1);
                         dbAdapter.SelectCommand.Parameters.AddWithValue("Year", AnnoSelezionato);
                         dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
@@ -1689,6 +1694,138 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
 
+        }
+
+        /// <summary>
+        /// Restituisco la somma dei soldi disponibili nella tabella
+        /// degli investimenti
+        /// </summary>
+        /// <param name="IdInvestitore"></param>
+        /// <param name="IdValuta"></param>
+        /// <returns>QuoteTabList</returns>
+        public QuoteTabList GetTotalAmountByCurrency(int IdInvestitore, int IdValuta = 0)
+        {
+            try
+            {
+                using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
+                {
+                    dataAdapter.SelectCommand = new SQLiteCommand();
+                    dataAdapter.SelectCommand.CommandText = IdValuta > 0 ?
+                        string.Format(ManagerScripts.GetTotalAmountByCurrency, string.Format("AND A.id_valuta = {0} ", IdValuta)) :
+                        string.Format(ManagerScripts.GetTotalAmountByCurrency, "");
+                    dataAdapter.SelectCommand.Parameters.AddWithValue("IdInvestitore", IdInvestitore);
+                    dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    DataTable dt = new DataTable();
+                    dataAdapter.Fill(dt);
+                    QuoteTabList QTL = new QuoteTabList();
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        QTL.Add(new QuoteTab()
+                        {
+                            NomeInvestitore = (string)dr["Nome"],
+                            AmmontareValuta = (double)dr["Soldi"],
+                            CodeCurrency = (string)dr["Valuta"]
+                        });
+
+                    }
+                    return QTL;
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        /// <summary>
+        /// Restituisco le somme dei soldi presenti nei conti correnti
+        /// suddivisi per gestione e valuta
+        /// </summary>
+        /// <param name="IdConto"></param>
+        /// <param name="IdGestione"></param>
+        /// <param name="IdValuta"></param>
+        /// <returns>ContoCorrenteList</returns>
+        public ContoCorrenteList GetTotalAmountByAccount(int IdConto, int IdGestione = 0, int IdValuta = 0)
+        {
+            try
+            {
+                using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
+                {
+                    dataAdapter.SelectCommand = new SQLiteCommand();
+                    if (IdGestione == 0 && IdValuta == 0)
+                        dataAdapter.SelectCommand.CommandText = string.Format(ManagerScripts.GetTotalAmountByAccount, "", "");
+                    else if (IdGestione > 0 && IdValuta == 0)
+                        dataAdapter.SelectCommand.CommandText = string.Format(ManagerScripts.GetTotalAmountByAccount, string.Format("AND A.id_gestione = {0} ", IdGestione), "");
+                    else
+                        dataAdapter.SelectCommand.CommandText = string.Format(ManagerScripts.GetTotalAmountByAccount, string.Format("AND A.id_gestione = {0} ", IdGestione), string.Format("AND A.id_valuta = {0} ", IdValuta));
+                    dataAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdConto);
+                    dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    DataTable dt = new DataTable();
+                    dataAdapter.Fill(dt);
+                    ContoCorrenteList CCL = new ContoCorrenteList();
+                    foreach(DataRow dataRow in dt.Rows)
+                    {
+                        CCL.Add(new ContoCorrente(){
+                            Desc_Conto = (string)dataRow["Conto"],
+                            NomeGestione = (string)dataRow["Gestione"],
+                            Ammontare = (double)dataRow["Soldi"],
+                            Cod_Valuta = (string)dataRow["Valuta"]
+                        });
+                    }
+                    return CCL;
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        public QuoteTab GetQuoteTabById(int Id)
+        {
+            try
+            {
+                using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
+                {
+                    dataAdapter.SelectCommand = new SQLiteCommand();
+                    dataAdapter.SelectCommand.CommandText = ManagerScripts.GetQuoteTabById;
+                    dataAdapter.SelectCommand.Parameters.AddWithValue("Id_quote", Id);
+                    dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    DataTable dt = new DataTable();
+                    dataAdapter.Fill(dt);
+                    QuoteTab qt = new QuoteTab();
+                    qt.Id_Quote_Investimenti = dt.Rows[0].Field<int>("id_quote_inv");
+                    qt.Id_Gestione = dt.Rows[0].Field<int>("id_gestione");
+                    qt.NomeInvestitore = dt.Rows[0].Field<string>("nome_gestione");
+                    qt.Id_tipo_movimento = dt.Rows[0].Field<int>("id_tipo_movimento");
+                    qt.Desc_tipo_movimento = dt.Rows[0].Field<string>("desc_movimento");
+                    qt.Id_Periodo_Quote = dt.Rows[0].Field<int>("id_periodo_quote");
+                    qt.DataMovimento = dt.Rows[0].Field<DateTime>("data_movimento");
+                    qt.Id_Valuta = dt.Rows[0].Field<int>("id_valuta");
+                    qt.CodeCurrency = dt.Rows[0].Field<string>("cod_valuta");
+                    qt.ChangeValue = dt.Rows[0].Field<double>("valore_cambio");
+                    qt.AmmontareEuro = dt.Rows[0].Field<double>("ammontare");
+                    qt.AmmontareValuta = dt.Rows[0].Field<double>("valuta_base");
+                    qt.Note = dt.Rows[0].Field<string>("");
+                    return qt;
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
         }
     }
 }
