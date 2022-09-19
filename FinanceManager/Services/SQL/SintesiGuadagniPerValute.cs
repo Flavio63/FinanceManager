@@ -22,7 +22,7 @@ namespace FinanceManager.Services.SQL
         public static readonly string GetTemp = "SELECT * FROM tmpGain ORDER BY anno, id_gestione, id_valuta; ";
 
         public static readonly string dettagliato = "SELECT anno, A.id_guadagno, A.id_gestione, B.nome_gestione, A.id_tipo_movimento, C.desc_tipo_soldi, A.id_valuta, D.cod_valuta, A.data_operazione, A.quota, " +
-            "guadagnato AS GuadagnoAnno1, prelevato AS Preso, causale FROM guadagni_totale_anno A, gestioni B, tipo_soldi C, valuta D WHERE anno >= 2019 AND A.id_gestione = B.id_gestione AND A.id_tipo_soldi<> 11 " +
+            "guadagnato AS GuadagnoAnno1, prelevato AS Preso, Causale FROM guadagni_totale_anno A, gestioni B, tipo_soldi C, valuta D WHERE anno >= 2019 AND A.id_gestione = B.id_gestione AND A.id_tipo_soldi<> 11 " +
             "AND A.id_tipo_soldi = C.id_tipo_soldi AND A.id_valuta = D.id_valuta ORDER BY anno DESC, A.data_operazione DESC, A.id_tipo_soldi, A.id_gestione DESC ";
 
         public static readonly string sintesi_tipologia = "SELECT anno, A.id_guadagno, A.id_gestione, B.nome_gestione, A.id_tipo_movimento, C.desc_tipo_soldi, A.id_valuta, D.cod_valuta, A.quota, sum(guadagnato) AS GuadagnoAnno1, " +

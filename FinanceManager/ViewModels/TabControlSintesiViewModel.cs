@@ -16,7 +16,7 @@ namespace FinanceManager.ViewModels
         public SintesiSoldiList SintesiSoldiTab
         {
             get { return GetValue(() => SintesiSoldiTab); }
-            private set { SetValue(() => SintesiSoldiTab, value); }
+            set { SetValue(() => SintesiSoldiTab, value); }
         }
 
     }

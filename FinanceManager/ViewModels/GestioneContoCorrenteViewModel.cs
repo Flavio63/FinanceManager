@@ -17,6 +17,7 @@ namespace FinanceManager.ViewModels
     {
         IRegistryServices _registryServices;
         IManagerLiquidAssetServices _liquidAssetServices;
+        IContoCorrenteServices _contoCorrenteServices;
         public ICommand CloseMeCommand { get; set; }
         public ICommand InsertCommand { get; set; }
         public ICommand ModifyCommand { get; set; }
@@ -27,10 +28,12 @@ namespace FinanceManager.ViewModels
 
         private TabControl _TabControl = new TabControl();
 
-        public GestioneContoCorrenteViewModel(IRegistryServices registryServices, IManagerLiquidAssetServices managerLiquidServices)
+        public GestioneContoCorrenteViewModel
+            (IRegistryServices registryServices, IManagerLiquidAssetServices managerLiquidServices, IContoCorrenteServices contoCorrenteServices)
         {
             _registryServices = registryServices ?? throw new ArgumentNullException("Registry Services in Gestione Conto Corrente");
-            _liquidAssetServices = managerLiquidServices ?? throw new ArgumentNullException("Registry Services in Gestione Conto Corrente");
+            _liquidAssetServices = managerLiquidServices ?? throw new ArgumentNullException("Liquid Asset Services in Gestione Conto Corrente");
+            _contoCorrenteServices = contoCorrenteServices ?? throw new ArgumentNullException("Conto corrente services assente");
             CloseMeCommand = new CommandHandler(CloseMe);
             InsertCommand = new CommandHandler(SaveCommand, CanSave);
             ModifyCommand = new CommandHandler(UpdateCommand, CanModify);
@@ -81,7 +84,6 @@ namespace FinanceManager.ViewModels
                     // per ogni gestione acquisisco is dati per la sintesi soldi
                     TabItem tabItem = new TabItem();
                     tabItem.Header = registryOwner.Nome_Gestione;
-                    tabItem.Content = new TabControlSintesiView(new TabControlSintesiViewModel(_liquidAssetServices.GetCurrencyAvailable(registryOwner.Id_gestione)));
                     _TabControl.Items.Add(tabItem);
                     ListGestioni.Add(registryOwner);
                 }
@@ -103,12 +105,22 @@ namespace FinanceManager.ViewModels
         {
             try
             {
+                foreach (TabItem tabItem in _TabControl.Items)
+                {
+                    var Owner = from registryOwner in ListGestioni where registryOwner.Nome_Gestione == tabItem.Header.ToString() select registryOwner;
+
+                    tabItem.Content = null;
+                    tabItem.Content = new TabControlSintesiView(
+                        new TabControlSintesiViewModel(_liquidAssetServices.GetCurrencyAvailable(Owner.ElementAt<RegistryOwner>(0).Id_gestione)));
+                }
+ 
+
                 Record2ContoCorrente = new ContoCorrente();
                 RecordContoCorrente = new ContoCorrente();
                 TwoRecordConto = new ContoCorrenteList();
                 AmountChangedValue = 0;
                 SrchShares = "";
-                ListContoCorrente = _liquidAssetServices.GetContoCorrenteList();
+                ListContoCorrente = _contoCorrenteServices.GetContoCorrenteList();
                 CommonFieldsEnabled = true;
                 OperazioneEnabled = true;
                 CedoleEnabled = false;
@@ -582,31 +594,31 @@ namespace FinanceManager.ViewModels
                     CambioValutaEnabled = false;
                     CanUpdateDelete = true;
                 }
-                else if (CC.Id_Quote_Investimenti == 0 & (CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto || CC.Id_tipo_movimento == (int)TipologiaMovimento.CambioValuta))
-                {
-                    // cerco il record corrispondente al giroconto o al cambio valuta utilizzando il campo
-                    // modified (e poi aggiorno il campo stesso per entrambi - forse non serve)
-                    TwoRecordConto = _liquidAssetServices.Get2ContoCorrentes(CC.Modified);
-                    // RecordContoCorrente è quello attivo in modifica quindi imposto il record derivato
-                    Record2ContoCorrente = TwoRecordConto[0].Id_RowConto == RecordContoCorrente.Id_RowConto ? TwoRecordConto[1] : TwoRecordConto[0];
-                    CommonFieldsEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ? true : false;
-                    GirocontoEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ? true : false; ;
-                    OperazioneEnabled = false;
-                    CanUpdateDelete = true;
-                }
-                else if (CC.Id_Quote_Investimenti > 0 & CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
-                {
+                //else if (CC.Id_Quote_Investimenti == 0 & (CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto || CC.Id_tipo_movimento == (int)TipologiaMovimento.CambioValuta))
+                //{
+                //    // cerco il record corrispondente al giroconto o al cambio valuta utilizzando il campo
+                //    // modified (e poi aggiorno il campo stesso per entrambi - forse non serve)
+                //    TwoRecordConto = _contoCorrenteServices.Get2ContoCorrentes(CC.Modified);
+                //    // RecordContoCorrente è quello attivo in modifica quindi imposto il record derivato
+                //    Record2ContoCorrente = TwoRecordConto[0].Id_RowConto == RecordContoCorrente.Id_RowConto ? TwoRecordConto[1] : TwoRecordConto[0];
+                //    CommonFieldsEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ? true : false;
+                //    GirocontoEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ? true : false; ;
+                //    OperazioneEnabled = false;
+                //    CanUpdateDelete = true;
+                //}
+                //else if (CC.Id_Quote_Investimenti > 0 & CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
+                //{
 
-                    MessageBox.Show("Questo giroconto è stato gestito da `Quote investitori`" + Environment.NewLine +
-                        "Qua puoi solo vederlo, se vuoi modificarlo devi andare in `Quote investitori`.", "Gestione Conto Corrente", MessageBoxButton.OK, MessageBoxImage.Information);
-                    GirocontoEnabled = false;
-                    CedoleEnabled = false;
-                    VolatiliEnabled = false;
-                    CambioValutaEnabled = false;
-                    CommonFieldsEnabled = false;
-                    CanUpdateDelete = false;
-                    OperazioneEnabled = false;
-                }
+                //    MessageBox.Show("Questo giroconto è stato gestito da `Quote investitori`" + Environment.NewLine +
+                //        "Qua puoi solo vederlo, se vuoi modificarlo devi andare in `Quote investitori`.", "Gestione Conto Corrente", MessageBoxButton.OK, MessageBoxImage.Information);
+                //    GirocontoEnabled = false;
+                //    CedoleEnabled = false;
+                //    VolatiliEnabled = false;
+                //    CambioValutaEnabled = false;
+                //    CommonFieldsEnabled = false;
+                //    CanUpdateDelete = false;
+                //    OperazioneEnabled = false;
+                //}
                 else
                 {
                     RecordContoCorrente = new ContoCorrente();
@@ -707,10 +719,10 @@ namespace FinanceManager.ViewModels
                         return;
                     }
                     RecordContoCorrente.Ammontare = RecordContoCorrente.Ammontare * -1; //il segno dell'ammontare
-                    _liquidAssetServices.InsertAccountMovement(RecordContoCorrente);
+                    //_liquidAssetServices.InsertAccountMovement(RecordContoCorrente);
                     // imposto il date time del record 2 uguale al record 1
                     Record2ContoCorrente.Modified = RecordContoCorrente.Modified;
-                    _liquidAssetServices.InsertAccountMovement(Record2ContoCorrente);
+                    //_liquidAssetServices.InsertAccountMovement(Record2ContoCorrente);
                 }
                 else if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ||
                     RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ||
@@ -718,7 +730,7 @@ namespace FinanceManager.ViewModels
                 {
                     // Inserisco il codice del periodo quote_guadagno
                     RecordContoCorrente.Id_Quote_Periodi = _liquidAssetServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Tipo_Soldi);
-                    _liquidAssetServices.InsertAccountMovement(RecordContoCorrente);
+                    //_liquidAssetServices.InsertAccountMovement(RecordContoCorrente);
                     // Inserisco il guadagno ripartito per is soci
                     _liquidAssetServices.AddSingoloGuadagno(RecordContoCorrente);
                 }
@@ -744,7 +756,7 @@ namespace FinanceManager.ViewModels
                 {
                     // nel caso si sia cambiata la data nella modifica
                     RecordContoCorrente.Id_Quote_Periodi = _liquidAssetServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Tipo_Soldi);
-                    _liquidAssetServices.UpdateRecordContoCorrente(RecordContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);    //registro la modifica in conto corrente
+                    _contoCorrenteServices.UpdateRecordContoCorrente(RecordContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);    //registro la modifica in conto corrente
                     _liquidAssetServices.ModifySingoloGuadagno(RecordContoCorrente); // modifico di conseguenza is record del guadagno totale anno
                 }
                 else
@@ -755,7 +767,7 @@ namespace FinanceManager.ViewModels
                     //// RecordContoCorrente è quello attivo in modifica quindi imposto il record derivato
                     //Record2ContoCorrente = TwoRecordConto[0].Id_RowConto == RecordContoCorrente.Id_RowConto ? TwoRecordConto[1] : TwoRecordConto[0];
                     // Salvo le modifiche fatte al record attivo
-                    _liquidAssetServices.UpdateRecordContoCorrente(RecordContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);
+                    _contoCorrenteServices.UpdateRecordContoCorrente(RecordContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);
                     if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.CambioValuta)
                     {
                         if (RecordContoCorrente.Ammontare * RecordContoCorrente.Valore_Cambio != Record2ContoCorrente.Ammontare)
@@ -767,7 +779,7 @@ namespace FinanceManager.ViewModels
                         Record2ContoCorrente.DataMovimento = RecordContoCorrente.DataMovimento;
                         Record2ContoCorrente.Causale = RecordContoCorrente.Causale;
                         // Salvo le modifiche al record collegato
-                        _liquidAssetServices.UpdateRecordContoCorrente(Record2ContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);
+                        _contoCorrenteServices.UpdateRecordContoCorrente(Record2ContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);
                     }
                     else if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
                     {
@@ -777,7 +789,7 @@ namespace FinanceManager.ViewModels
                         Record2ContoCorrente.Ammontare = RecordContoCorrente.Ammontare * -1;
                         Record2ContoCorrente.Causale = RecordContoCorrente.Causale;
                         // Salvo le modifiche al record collegato
-                        _liquidAssetServices.UpdateRecordContoCorrente(Record2ContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);
+                        _contoCorrenteServices.UpdateRecordContoCorrente(Record2ContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);
                     }
                 }
                 MessageBox.Show("Record modificato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
@@ -799,13 +811,13 @@ namespace FinanceManager.ViewModels
                 {
                     // con il codice del record elimino anche le righe inserite nella tabella guadagno
                     _liquidAssetServices.DeleteRecordGuadagno_Totale_anno(RecordContoCorrente.Id_RowConto);
-                    _liquidAssetServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);  // registro l'eliminazione in conto corrente
+                    _contoCorrenteServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);  // registro l'eliminazione in conto corrente
                 }
                 else
                 {
                     // Ho trovato is 2 record collegati quando ho fatto la selezione dalla griglia
-                    _liquidAssetServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);
-                    _liquidAssetServices.DeleteRecordContoCorrente(Record2ContoCorrente.Id_RowConto);
+                    _contoCorrenteServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);
+                    _contoCorrenteServices.DeleteRecordContoCorrente(Record2ContoCorrente.Id_RowConto);
                 }
                 MessageBox.Show("Record eliminato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
                 Init();

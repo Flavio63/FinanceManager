@@ -17,6 +17,8 @@ namespace FinanceManager.ViewModels
         private readonly IManagerLiquidAssetServices _managerLiquidServices;
         private readonly IManagerReportServices _managerReportServices;
         private readonly IDAFconnection _DafConnection;
+        private readonly IContoCorrenteServices _contoCorrenteServices;
+        private readonly IQuoteServices _quoteServices;
 
         public ICommand OnClickOpenGestioni { get; set; }
         public ICommand OnClickOpenConti { get; set; }
@@ -82,6 +84,8 @@ namespace FinanceManager.ViewModels
             _registryServices = new RegistryService(_DafConnection);
             _managerLiquidServices = new ManagerLiquidAssetServices(_DafConnection);
             _managerReportServices = new ManagerReportServices(_DafConnection);
+            _contoCorrenteServices = new ContoCorrenteServices(_DafConnection);
+            _quoteServices = new QuoteServices(_DafConnection);
 
             OnClickOpenGestioni = new CommandHandler(OpenGestioni);
             OnClickOpenConti = new CommandHandler(OpenConti);
@@ -225,7 +229,7 @@ namespace FinanceManager.ViewModels
             DockPanel mainGrid = param as DockPanel;
             if (acquistoVenditaTitoliView == null || !mainGrid.Children.Contains(acquistoVenditaTitoliView))
             {
-                acquistoVenditaTitoliViewModel = new AcquistoVenditaTitoliViewModel(_registryServices, _managerLiquidServices);
+                acquistoVenditaTitoliViewModel = new AcquistoVenditaTitoliViewModel(_registryServices, _managerLiquidServices, _contoCorrenteServices);
                 acquistoVenditaTitoliView = new AcquistoVenditaTitoliView(acquistoVenditaTitoliViewModel);
                 mainGrid.Children.Add(acquistoVenditaTitoliView);
             }
@@ -261,7 +265,7 @@ namespace FinanceManager.ViewModels
             {
                 try
                 {
-                    giroContoViewModel = new GiroContoViewModel(_registryServices, _managerLiquidServices);
+                    giroContoViewModel = new GiroContoViewModel(_registryServices, _managerLiquidServices, _contoCorrenteServices);
                     giroContoView = new GiroContoView(giroContoViewModel);
                     mainGrid.Children.Add(giroContoView);
                 }
@@ -285,7 +289,7 @@ namespace FinanceManager.ViewModels
             {
                 try
                 {
-                    capitalsRegisterViewModel = new CapitalsRegisterViewModel(_registryServices, _managerLiquidServices);
+                    capitalsRegisterViewModel = new CapitalsRegisterViewModel(_registryServices, _managerLiquidServices, _contoCorrenteServices, _quoteServices);
                     capitalsRegisterView = new CapitalsRegisterView(capitalsRegisterViewModel);
                     mainGrid.Children.Add(capitalsRegisterView);
                 }
@@ -307,7 +311,7 @@ namespace FinanceManager.ViewModels
             DockPanel mainGrid = param as DockPanel;
             if (gestioneContoCorrenteView == null || !mainGrid.Children.Contains(gestioneContoCorrenteView))
             {
-                gestioneContoCorrenteViewModel = new GestioneContoCorrenteViewModel(_registryServices, _managerLiquidServices);
+                gestioneContoCorrenteViewModel = new GestioneContoCorrenteViewModel(_registryServices, _managerLiquidServices, _contoCorrenteServices);
                 gestioneContoCorrenteView = new GestioneContoCorrenteView(gestioneContoCorrenteViewModel);
                 mainGrid.Children.Add(gestioneContoCorrenteView);
             }

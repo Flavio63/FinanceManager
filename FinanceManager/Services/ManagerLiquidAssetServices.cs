@@ -360,82 +360,7 @@ namespace FinanceManager.Services
             return MLA;
         }
 
-        #region ContoCorrente
 
-        private ContoCorrenteList contoCorrentes(DataTable dataTable)
-        {
-            ContoCorrenteList lista = new ContoCorrenteList();
-            foreach (DataRow dataRow in dataTable.Rows)
-            {
-                lista.Add(contoCorrente(dataRow));
-            }
-            return lista;
-        }
-
-        private ContoCorrente contoCorrente(DataRow dataRow)
-        {
-            ContoCorrente conto = new ContoCorrente();
-            conto.Id_RowConto = (int)dataRow.Field<long>("id_fineco_euro");
-            conto.Id_Conto = (int)dataRow.Field<long>("id_conto");
-            conto.Desc_Conto = dataRow.Field<string>("desc_conto");
-            conto.Id_Quote_Investimenti = (int)dataRow.Field<long>("id_quote_investimenti");
-            conto.Id_Valuta = (int)dataRow.Field<long>("id_valuta");
-            conto.Cod_Valuta = dataRow.Field<string>("cod_valuta");
-            conto.Id_Portafoglio_Titoli = (int)dataRow.Field<long>("id_portafoglio_titoli");
-            conto.Id_tipo_movimento = (int)dataRow.Field<long>("id_tipo_movimento");
-            conto.Desc_tipo_movimento = dataRow.Field<string>("desc_movimento");
-            conto.Id_Gestione = (int)dataRow.Field<long>("id_gestione");
-            conto.NomeGestione = dataRow.Field<string>("nome_gestione");
-            conto.Id_Titolo = (int)dataRow.Field<long>("id_titolo");
-            conto.ISIN = dataRow.Field<string>("isin");
-            conto.Desc_Titolo = dataRow.Field<string>("desc_titolo");
-            conto.DataMovimento = dataRow.Field<DateTime>("data_movimento");
-            conto.Ammontare = dataRow.Field<double>("ammontare");
-            conto.Valore_Cambio = dataRow.Field<double>("cambio");
-            conto.Causale = dataRow.Field<string>("causale");
-            conto.Id_Tipo_Soldi = (int)dataRow.Field<long>("id_tipo_soldi");
-            conto.Desc_Tipo_Soldi = dataRow.Field<string>("desc_tipo_soldi");
-            conto.Modified = dataRow.Field<DateTime>("modified");
-            return conto;
-        }
-
-        #endregion ContoCorrente
-        public void InsertAccountMovement(ContoCorrente contoCorrente)
-        {
-            try
-            {
-                using (SQLiteCommand dbComm = new SQLiteCommand())
-                {
-                    dbComm.CommandText = ManagerScripts.InsertAccountMovement;
-                    dbComm.Parameters.AddWithValue("id_conto", contoCorrente.Id_Conto);
-                    dbComm.Parameters.AddWithValue("id_quote_investimenti", contoCorrente.Id_Quote_Investimenti);
-                    dbComm.Parameters.AddWithValue("id_valuta", contoCorrente.Id_Valuta);
-                    dbComm.Parameters.AddWithValue("id_portafoglio_titoli", contoCorrente.Id_Portafoglio_Titoli);
-                    dbComm.Parameters.AddWithValue("id_tipo_movimento", contoCorrente.Id_tipo_movimento);
-                    dbComm.Parameters.AddWithValue("id_gestione", contoCorrente.Id_Gestione);
-                    dbComm.Parameters.AddWithValue("id_titolo", contoCorrente.Id_Titolo);
-                    dbComm.Parameters.AddWithValue("data_movimento", contoCorrente.DataMovimento.ToString("yyyy-MM-dd"));
-                    dbComm.Parameters.AddWithValue("ammontare", contoCorrente.Ammontare);
-                    dbComm.Parameters.AddWithValue("cambio", contoCorrente.Valore_Cambio);
-                    dbComm.Parameters.AddWithValue("causale", contoCorrente.Causale);
-                    dbComm.Parameters.AddWithValue("id_tipo_soldi", contoCorrente.Id_Tipo_Soldi);
-                    dbComm.Parameters.AddWithValue("id_quote_periodi", contoCorrente.Id_Quote_Periodi);
-                    dbComm.Parameters.AddWithValue("modified", contoCorrente.Modified.ToString("yyyy-MM-dd HH:mm:ss"));
-                    dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
-                }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-        }
 
         /// <summary>
         /// Tramite l'ultimo record conto_corrente inserito
@@ -502,83 +427,83 @@ namespace FinanceManager.Services
         /// restituendo il totale immesso, prelevato, assegnato e disponibile
         /// </summary>
         /// <returns>Una lista con le quote per investitore</returns>
-        public QuoteInvList GetQuoteInv()
-        {
-            DataTable DT = new DataTable();
-            try
-            {
-                using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
-                {
-                    dataAdapter.SelectCommand = new SQLiteCommand();
-                    dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    dataAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetQuoteInv;
-                    dataAdapter.Fill(DT);
-                }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
+        //public QuoteInvList GetQuoteInv()
+        //{
+        //    DataTable DT = new DataTable();
+        //    try
+        //    {
+        //        using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
+        //        {
+        //            dataAdapter.SelectCommand = new SQLiteCommand();
+        //            dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+        //            dataAdapter.SelectCommand.CommandText = SQL.ManagerScripts.GetQuoteInv;
+        //            dataAdapter.Fill(DT);
+        //        }
+        //    }
+        //    catch (SQLiteException err)
+        //    {
+        //        throw new Exception(err.Message);
+        //    }
+        //    catch (Exception err)
+        //    {
+        //        throw new Exception(err.Message);
+        //    }
 
-            QuoteInvList quotes = new QuoteInvList();
-            double versato = 0;
-            double prelevato = 0;
-            double disinvestito = 0;
-            double investito = 0;
-            double disponibile = 0;
-            double patrimonio = 0;
-            QuoteInv quoteInv = new QuoteInv();
-            foreach (DataRow dataRow in DT.Rows)
-            {
-                if (dataRow.Field<string>("nome_gestione") != "Aury")
-                {
-                    versato = versato + Convert.ToDouble(dataRow.Field<object>("Versato"));
-                    prelevato = prelevato + Convert.ToDouble(dataRow.Field<object>("Prelevato"));
-                    disinvestito = disinvestito + Convert.ToDouble(dataRow.Field<object>("Disinvestito"));
-                    investito = investito + Convert.ToDouble(dataRow.Field<object>("Investito"));
-                    disponibile = disponibile + Convert.ToDouble(dataRow.Field<object>("Disponibile"));
-                    patrimonio = patrimonio + Convert.ToDouble(dataRow.Field<object>("Disponibile")) +
-                        Convert.ToDouble(dataRow.Field<object>("Investito")) * -1 - Convert.ToDouble(dataRow.Field<object>("Disinvestito"));
-                }
-            }
-            quoteInv.TotaleVersato = versato;
-            quoteInv.TotalePrelevato = prelevato;
-            quoteInv.TotaleDisinvestito = disinvestito;
-            quoteInv.TotaleInvestito = investito;
-            quoteInv.TotaleDisponibile = disponibile;
-            quoteInv.TotalePatrimonio = patrimonio;
+        //    QuoteInvList quotes = new QuoteInvList();
+        //    double versato = 0;
+        //    double prelevato = 0;
+        //    double disinvestito = 0;
+        //    double investito = 0;
+        //    double disponibile = 0;
+        //    double patrimonio = 0;
+        //    QuoteInv quoteInv = new QuoteInv();
+        //    foreach (DataRow dataRow in DT.Rows)
+        //    {
+        //        if (dataRow.Field<string>("nome_gestione") != "Aury")
+        //        {
+        //            versato = versato + Convert.ToDouble(dataRow.Field<object>("Versato"));
+        //            prelevato = prelevato + Convert.ToDouble(dataRow.Field<object>("Prelevato"));
+        //            disinvestito = disinvestito + Convert.ToDouble(dataRow.Field<object>("Disinvestito"));
+        //            investito = investito + Convert.ToDouble(dataRow.Field<object>("Investito"));
+        //            disponibile = disponibile + Convert.ToDouble(dataRow.Field<object>("Disponibile"));
+        //            patrimonio = patrimonio + Convert.ToDouble(dataRow.Field<object>("Disponibile")) +
+        //                Convert.ToDouble(dataRow.Field<object>("Investito")) * -1 - Convert.ToDouble(dataRow.Field<object>("Disinvestito"));
+        //        }
+        //    }
+        //    quoteInv.TotaleVersato = versato;
+        //    quoteInv.TotalePrelevato = prelevato;
+        //    quoteInv.TotaleDisinvestito = disinvestito;
+        //    quoteInv.TotaleInvestito = investito;
+        //    quoteInv.TotaleDisponibile = disponibile;
+        //    quoteInv.TotalePatrimonio = patrimonio;
 
-            foreach (DataRow dataRow in DT.Rows)
-            {
-                QuoteInv quote = new QuoteInv();
-                quote.NomeInvestitore = dataRow.Field<string>("nome_gestione");
-                quote.CodValuta = dataRow.Field<string>("cod_valuta");
-                quote.CapitaleVersato = Convert.ToDouble(dataRow.Field<object>("Versato"));
-                quote.QuotaVersato = quote.NomeInvestitore != "Aury" ? Convert.ToDouble(dataRow.Field<object>("Versato")) / versato : 0;
-                quote.CapitalePrelevato = Convert.ToDouble(dataRow.Field<object>("Prelevato"));
-                quote.QuotaPrelevato = quote.NomeInvestitore != "Aury" ? Convert.ToDouble(dataRow.Field<object>("Prelevato")) / prelevato : 0;
-                quote.CapitaleDisinvestito = Convert.ToDouble(dataRow.Field<object>("Disinvestito"));
-                quote.QuotaDisinvestito = quote.NomeInvestitore != "Aury" ? Convert.ToDouble(dataRow.Field<object>("Disinvestito")) / disinvestito : 0;
-                quote.CapitaleInvestito = Convert.ToDouble(dataRow.Field<object>("Investito"));
-                quote.QuotaInvestito = quote.NomeInvestitore != "Aury" ? Convert.ToDouble(dataRow.Field<object>("Investito")) / investito : 0;
-                quote.CapitaleDisponibile = Convert.ToDouble(dataRow.Field<object>("Disponibile"));
-                quote.QuotaDisponibile = quote.NomeInvestitore != "Aury" ? Convert.ToDouble(dataRow.Field<object>("Disponibile")) / disponibile : 0;
-                quote.Patrimonio = Convert.ToDouble(dataRow.Field<object>("Disponibile")) + Convert.ToDouble(dataRow.Field<object>("Investito")) * -1 -
-                    Convert.ToDouble(dataRow.Field<object>("Disinvestito"));
-                quote.QuotaPatrimonio = quote.NomeInvestitore != "Aury" ?
-                    (Convert.ToDouble(dataRow.Field<object>("Disponibile")) + Convert.ToDouble(dataRow.Field<object>("Investito")) * -1 - 
-                    Convert.ToDouble(dataRow.Field<object>("Disinvestito"))) / patrimonio :
-                    0;
-                quotes.Add(quote);
-            }
-            if(quoteInv.NomeInvestitore != null) quotes.Add(quoteInv);
-            return quotes;
+        //    foreach (DataRow dataRow in DT.Rows)
+        //    {
+        //        QuoteInv quote = new QuoteInv();
+        //        quote.NomeInvestitore = dataRow.Field<string>("nome_gestione");
+        //        quote.CodValuta = dataRow.Field<string>("cod_valuta");
+        //        quote.CapitaleVersato = Convert.ToDouble(dataRow.Field<object>("Versato"));
+        //        quote.QuotaVersato = quote.NomeInvestitore != "Aury" ? Convert.ToDouble(dataRow.Field<object>("Versato")) / versato : 0;
+        //        quote.CapitalePrelevato = Convert.ToDouble(dataRow.Field<object>("Prelevato"));
+        //        quote.QuotaPrelevato = quote.NomeInvestitore != "Aury" ? Convert.ToDouble(dataRow.Field<object>("Prelevato")) / prelevato : 0;
+        //        quote.CapitaleDisinvestito = Convert.ToDouble(dataRow.Field<object>("Disinvestito"));
+        //        quote.QuotaDisinvestito = quote.NomeInvestitore != "Aury" ? Convert.ToDouble(dataRow.Field<object>("Disinvestito")) / disinvestito : 0;
+        //        quote.CapitaleInvestito = Convert.ToDouble(dataRow.Field<object>("Investito"));
+        //        quote.QuotaInvestito = quote.NomeInvestitore != "Aury" ? Convert.ToDouble(dataRow.Field<object>("Investito")) / investito : 0;
+        //        quote.CapitaleDisponibile = Convert.ToDouble(dataRow.Field<object>("Disponibile"));
+        //        quote.QuotaDisponibile = quote.NomeInvestitore != "Aury" ? Convert.ToDouble(dataRow.Field<object>("Disponibile")) / disponibile : 0;
+        //        quote.Patrimonio = Convert.ToDouble(dataRow.Field<object>("Disponibile")) + Convert.ToDouble(dataRow.Field<object>("Investito")) * -1 -
+        //            Convert.ToDouble(dataRow.Field<object>("Disinvestito"));
+        //        quote.QuotaPatrimonio = quote.NomeInvestitore != "Aury" ?
+        //            (Convert.ToDouble(dataRow.Field<object>("Disponibile")) + Convert.ToDouble(dataRow.Field<object>("Investito")) * -1 -
+        //            Convert.ToDouble(dataRow.Field<object>("Disinvestito"))) / patrimonio :
+        //            0;
+        //        quotes.Add(quote);
+        //    }
+        //    if (quoteInv.NomeInvestitore != null) quotes.Add(quoteInv);
+        //    return quotes;
 
-        }
+        //}
 
         /// <summary>
         /// Prelevo tutti i record della tabella quote_guadagno
@@ -623,100 +548,6 @@ namespace FinanceManager.Services
         }
 
         /// <summary>
-        /// Calcolo le nuove quote e le inserisco nella tabella quote_guadagno
-        /// </summary>
-        /// <param name="Tipo_Soldi">Codice identificativo</param>
-        /// <param name="NuovoPeriodo">Il nuovo periodo da inserire in tabella</param>
-        public void ComputesAndInsertQuoteGuadagno(int Tipo_Soldi, int NuovoPeriodo)
-        {
-            try
-            {
-                using (SQLiteCommand cmd = new SQLiteCommand())
-                {
-                    cmd.CommandText = UpdateQuotePeriodi.ComputesQuoteGuadagno;
-                    cmd.Parameters.AddWithValue("Tipo_Soldi", Tipo_Soldi);
-                    cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    cmd.Connection.Open();
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = UpdateQuotePeriodi.InsertQuotaGuadagno;
-                    cmd.Parameters.Clear();
-                    cmd.Parameters.AddWithValue("Nuovo_Periodo", NuovoPeriodo);
-                    cmd.ExecuteNonQuery();
-                    cmd.Connection.Close();
-
-                }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-        }
-        /// <summary>
-        /// Calcolo le nuove quote e modifico la tabella quote_guadagno
-        /// </summary>
-        /// <param name="Tipo_Soldi">Codice identificativo</param>
-        public void ComputesAndModifyQuoteGuadagno(int Tipo_Soldi)
-        {
-            try
-            {
-                using (SQLiteCommand dbComm = new SQLiteCommand())
-                {
-                    dbComm.CommandText = UpdateQuotePeriodi.ComputesQuoteGuadagno;
-                    dbComm.Parameters.AddWithValue("Tipo_Soldi", Tipo_Soldi);
-                    dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.CommandText = UpdateQuotePeriodi.UpdateQuotaGuadagno;
-                    dbComm.Parameters.Clear();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
-                }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-        }
-        /// <summary>
-        /// Aggiorno la tabella Guadagni_totale_anno con le nuove
-        /// quote per il periodo interessato alle modifiche
-        /// </summary>
-        /// <param name="Id_Periodo_Quote">il periodo da modificare</param>
-        /// <param name="Id_Tipo_Soldi">Il tipo soldi</param>
-        public void UpdateGuadagniTotaleAnno(int Id_Periodo_Quote, int Id_Tipo_Soldi)
-        {
-            try
-            {
-                using (SQLiteCommand dbComm = new SQLiteCommand())
-                {
-                    dbComm.CommandText = UpdateQuotePeriodi.UpdateGuadagniTotaleAnno;
-                    dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    dbComm.Parameters.AddWithValue("IdPeriodoQuote", Id_Periodo_Quote);
-                    dbComm.Parameters.AddWithValue("IdTipoSoldi", Id_Tipo_Soldi);
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
-                }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-        }
-
-        /// <summary>
         /// Aggiorno la tabella Guadagni_totale_anno nel caso di
         /// modifiche del record di prelievo utili
         /// </summary>
@@ -733,7 +564,7 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("anno", RecordQuoteGuadagno.Anno);
                     dbComm.Parameters.AddWithValue("prelevato", RecordQuoteGuadagno.Preso);
                     dbComm.Parameters.AddWithValue("data", RecordQuoteGuadagno.DataOperazione);
-                    dbComm.Parameters.AddWithValue("causale", RecordQuoteGuadagno.Causale);
+                    dbComm.Parameters.AddWithValue("Causale", RecordQuoteGuadagno.Causale);
                     dbComm.Parameters.AddWithValue("id_guadagno", RecordQuoteGuadagno.IdGuadagno);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -842,43 +673,6 @@ namespace FinanceManager.Services
             }
         }
         /// <summary>
-        /// Modifico la tabella quote_periodi modificando la data di fine
-        /// e inserendo il nuovo record
-        /// </summary>
-        /// <param name="DataDal">Data da cercare</param>
-        /// <param name="TipoSoldi">Tipologia dei soldi</param>
-        /// <returns>Last id record inserted</returns>
-        public int Update_InsertQuotePeriodi(DateTime DataDal, int TipoSoldi)
-        {
-            try
-            {
-                using (SQLiteCommand cmd = new SQLiteCommand())
-                {
-                    cmd.CommandText = UpdateQuotePeriodi.quote_periodi;
-                    cmd.Parameters.AddWithValue("StartDate", DataDal.ToString("yyyy-MM-dd"));
-                    cmd.Parameters.AddWithValue("TipoSoldi", TipoSoldi);
-                    cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    cmd.Connection.Open();
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = UpdateQuotePeriodi.ultima_riga;
-                    SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter(cmd);
-                    DataTable dt = new DataTable();
-                    dataAdapter.Fill(dt);
-                    return Convert.ToInt32(dt.Rows[0].Field<object>("ultima_riga"));
-
-                }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception("Update_InsertQuotePeriodi " + err.Message);
-            }
-        }
-
-        /// <summary>
         /// Calcola le quote di guadagno per investitore applicando
         /// le quote di investimento per periodo.
         /// </summary>
@@ -951,7 +745,7 @@ namespace FinanceManager.Services
                                 quote.IdTipoMovimento = (int)dataRow.Field<long>("id_tipo_movimento");
                                 quote.DataOperazione = dataRow.Field<DateTime>("data_operazione");
                                 quote.QuotaInv = dataRow.Field<double>("quota");
-                                quote.Causale = dataRow.Field<string>("causale");
+                                quote.Causale = dataRow.Field<string>("Causale");
                             }
                         }
                         else
@@ -1058,39 +852,7 @@ namespace FinanceManager.Services
             }
         }
 
-        /// <summary>
-        /// Verifico se nella data di inserimento è già presente
-        /// un investimento
-        /// </summary>
-        /// <param name="ActualQuote">Il record per verificare</param>
-        /// <param name="Id_Tipo_Soldi">Il tipo soldi che si sta movimentando</param>
-        /// <returns>-1 se falso altrimenti il numero del periodo quote</returns>
-        public int VerifyInvestmentDate(QuoteTab ActualQuote, int Id_Tipo_Soldi)
-        {
-            try
-            {
-                DataTable DT = new DataTable();
-                using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
-                {
-                    dataAdapter.SelectCommand = new SQLiteCommand();
-                    dataAdapter.SelectCommand.CommandText = SQL.ManagerScripts.VerifyInvestmentDate;
-                    dataAdapter.SelectCommand.Parameters.AddWithValue("id_tipo_soldi", Id_Tipo_Soldi);
-                    dataAdapter.SelectCommand.Parameters.AddWithValue("data_inizio", ActualQuote.DataMovimento.ToString("yyyy-MM-dd"));
-                    dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    dataAdapter.Fill(DT);
-                    return Convert.ToInt16(DT.Rows[0].ItemArray[0].ToString());
-                }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-        }
-
+        
         /// <summary>
         /// Trovo l'id dell'ultimo record inserito
         /// </summary>
@@ -1131,256 +893,73 @@ namespace FinanceManager.Services
         /// <param name="ActualQuote">I dati del movimento da inserire</param>
         public void InsertInvestment(QuoteTab ActualQuote)
         {
-            try
-            {
-                using (SQLiteCommand cmd = new SQLiteCommand())
-                {
-                    //cmd.CommandText = "PRAGMA FOREIGN_KEYS = false; " + ManagerScripts.InsertInvestment + " PRAGMA FOREIGN_KEYS = true;";
-                    cmd.CommandText = ManagerScripts.InsertInvestment;
-                    cmd.Parameters.AddWithValue("id_gestione", ActualQuote.Id_Gestione);
-                    cmd.Parameters.AddWithValue("id_tipo_movimento", ActualQuote.Id_tipo_movimento);
-                    cmd.Parameters.AddWithValue("id_periodo_quote", ActualQuote.Id_Periodo_Quote);
-                    cmd.Parameters.AddWithValue("data_movimento", ActualQuote.DataMovimento.ToString("yyyy-MM-dd"));
-                    cmd.Parameters.AddWithValue("id_valuta", ActualQuote.Id_Valuta);
-                    cmd.Parameters.AddWithValue("valuta_base", ActualQuote.AmmontareValuta);
-                    cmd.Parameters.AddWithValue("valore_cambio", ActualQuote.ChangeValue);
-                    cmd.Parameters.AddWithValue("ammontare", ActualQuote.AmmontareEuro);
-                    cmd.Parameters.AddWithValue("note", ActualQuote.Note);
-                    cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    cmd.Connection.Open();
-                    cmd.ExecuteNonQuery();
-                    cmd.Connection.Close();
-                }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
+            //using (SQLiteConnection con = new SQLiteConnection(DAFconnection.GetConnectionType()))
+            //{
+            //    con.Open();
+            //    using (SQLiteTransaction transaction = con.BeginTransaction())
+            //    {
+            //        using (SQLiteCommand command = new SQLiteCommand(ManagerScripts.InsertInvestment, con))
+            //        {
+            //            try
+            //            {
+            //                command.Parameters.AddWithValue("id_gestione", ActualQuote.Id_Gestione);
+            //                command.Parameters.AddWithValue("id_tipo_movimento", ActualQuote.Id_tipo_movimento);
+            //                command.Parameters.AddWithValue("id_periodo_quote", ActualQuote.Id_Periodo_Quote);
+            //                command.Parameters.AddWithValue("data_movimento", ActualQuote.DataMovimento.ToString("yyyy-MM-dd"));
+            //                command.Parameters.AddWithValue("id_valuta", ActualQuote.Id_Valuta);
+            //                command.Parameters.AddWithValue("valuta_base", ActualQuote.AmmontareValuta);
+            //                command.Parameters.AddWithValue("valore_cambio", ActualQuote.ChangeValue);
+            //                command.Parameters.AddWithValue("ammontare", ActualQuote.AmmontareEuro);
+            //                command.Parameters.AddWithValue("note", ActualQuote.Note);
+            //                command.ExecuteNonQuery();
+            //                transaction.Commit();
+            //            }
+            //            catch (SQLiteException err)
+            //            {
+            //                transaction.Rollback();
+            //                throw new Exception(err.Message + " Investimento non inserito");
+            //            }
+            //            catch (Exception err)
+            //            {
+            //                transaction.Rollback();
+            //                throw new Exception(err.Message);
+            //            }
+            //        }
+            //    }
+            //}
         }
 
         /// <summary>
-        /// Estrae tutti i movimenti in ordine di data del conto corrente
+        /// Elimina il record dalla tabella investimenti in
+        /// base al suo identificativo
         /// </summary>
-        /// <returns>Lista con tutti i movimenti</returns>
-        public ContoCorrenteList GetContoCorrenteList()
+        /// <param name="Id_ActualQuote"></param>
+        public void DeleteRecordQuoteTab(int Id_ActualQuote)
         {
-            DataTable DT = new DataTable();
-            try
+            using (SQLiteConnection connection = new SQLiteConnection(DAFconnection.GetConnectionType()))
             {
-                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
+                connection.Open();
+                using (SQLiteTransaction transaction = connection.BeginTransaction())
                 {
-                    dbAdapter.SelectCommand = new SQLiteCommand();
-                    dbAdapter.SelectCommand.CommandText = ManagerScripts.GetContoCorrente;
-                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    dbAdapter.Fill(DT);
+                    using (SQLiteCommand command = new SQLiteCommand(ManagerScripts.DeleteRecordQuoteTab))
+                    {
+                        try
+                        {
+                            command.ExecuteNonQuery();
+                            transaction.Commit();
+                        }
+                        catch (SQLiteException err)
+                        {
+                            transaction.Rollback();
+                            throw new Exception(err.Message);
+                        }
+                        catch (Exception err)
+                        {
+                            transaction.Rollback();
+                            throw new Exception(err.Message);
+                        }
+                    }
                 }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-            return contoCorrentes(DT);
-        }
-
-        /// <summary>
-        /// Estrazione dei 2 record coinvolti nel giroconto interno o
-        /// nel cambio valuta.
-        /// </summary>
-        /// <param name="modified">DateTime</param>
-        /// <returns>List ContoCorrente</returns>
-        public ContoCorrenteList Get2ContoCorrentes(DateTime modified)
-        {
-            DataTable DT = new DataTable();
-            try
-            {
-                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
-                {
-                    dbAdapter.SelectCommand = new SQLiteCommand();
-                    dbAdapter.SelectCommand.CommandText = ManagerScripts.Get2ContoCorrentes;
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("modified", modified.ToString("yyyy-MM-dd HH:mm:ss"));
-                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    dbAdapter.Fill(DT);
-                }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-            return contoCorrentes(DT);
-        }
-
-        /// <summary>
-        /// Dato l'id del giroconto fra le 2 tabelle investimenti e cc
-        /// estrae i dati dalla tabella conto_corrente
-        /// </summary>
-        /// <param name="idQuote">id_quote_inv</param>
-        /// <returns>Record di tipo Conto Corrente</returns>
-        public ContoCorrente GetContoCorrenteByIdQuote(int idQuote)
-        {
-            DataTable DT = new DataTable();
-            try
-            {
-                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
-                {
-                    dbAdapter.SelectCommand = new SQLiteCommand();
-                    dbAdapter.SelectCommand.CommandText = ManagerScripts.GetContoCorrenteByIdQuote;
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_quote_investimenti", idQuote);
-                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    dbAdapter.Fill(DT);
-                    return contoCorrente(DT.Rows[0]);
-                }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-        }
-
-        /// <summary>
-        /// Dato l'id del portafoglio titoli estrae i dati dalla tabella conto_corrente
-        /// </summary>
-        /// <param name="idPortafoglioTitoli">id_portafoglio_titoli</param>
-        /// <returns>Record di tipo Conto Corrente</returns>
-        public ContoCorrenteList GetContoCorrenteByIdPortafoglio(int idPortafoglioTitoli)
-        {
-            DataTable DT = new DataTable();
-            try
-            {
-                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
-                {
-                    dbAdapter.SelectCommand = new SQLiteCommand();
-                    dbAdapter.SelectCommand.CommandText = ManagerScripts.GetContoCorrenteByIdPortafoglio;
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_portafoglio_titoli", idPortafoglioTitoli);
-                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    dbAdapter.Fill(DT);
-                }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-            return contoCorrentes(DT);
-        }
-
-        /// <summary>
-        /// Elimina un record dalla tabella ContoCorrente
-        /// sulla base di un id di riga
-        /// </summary>
-        /// <param name="idCC">id del record da eliminare</param>
-        public void DeleteRecordContoCorrente(int idCC)
-        {
-            try
-            {
-                using (SQLiteCommand dbComm = new SQLiteCommand())
-                {
-                    dbComm.CommandText = ManagerScripts.DeleteAccount;
-                    dbComm.Parameters.AddWithValue("id_fineco_euro", idCC);
-                    dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
-                }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-        }
-
-        /// <summary>
-        /// Elimina un record dalla tabella conto_corrente
-        /// sulla base del id_portafoglio_titoli
-        /// </summary>
-        /// <param name="idContoTitoli">id-portafoglio_titoli</param>
-        public void DeleteContoCorrenteByIdPortafoglioTitoli(int idContoTitoli)
-        {
-            try
-            {
-                using (SQLiteCommand dbComm = new SQLiteCommand())
-                {
-                    dbComm.CommandText = ManagerScripts.DeleteContoCorrenteByIdPortafoglioTitoli;
-                    dbComm.Parameters.AddWithValue("id_portafoglio_titoli", idContoTitoli);
-                    dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
-                }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-        }
-
-        public void UpdateRecordContoCorrente(ContoCorrente contoCorrente, TipologiaIDContoCorrente tipologiaID)
-        {
-            try
-            {
-                using (SQLiteCommand dbComm = new SQLiteCommand())
-                {
-                    dbComm.CommandType = CommandType.Text;
-                    if (tipologiaID == TipologiaIDContoCorrente.IdContoCorrente)
-                        dbComm.CommandText = ManagerScripts.UpdateContoCorrenteByIdCC;
-                    else if (tipologiaID == TipologiaIDContoCorrente.IdContoTitoli)
-                        dbComm.CommandText = ManagerScripts.UpdateContoCorrenteByIdPortafoglioTitoli;
-                    else if (tipologiaID == TipologiaIDContoCorrente.IdQuoteInvestimenti)
-                        dbComm.CommandText = ManagerScripts.UpdateContoCorrenteByIdQuote;
-                    dbComm.Parameters.AddWithValue("id_fineco_euro", contoCorrente.Id_RowConto);
-                    dbComm.Parameters.AddWithValue("id_conto", contoCorrente.Id_Conto);
-                    dbComm.Parameters.AddWithValue("id_quote_investimenti", contoCorrente.Id_Quote_Investimenti);
-                    dbComm.Parameters.AddWithValue("id_valuta", contoCorrente.Id_Valuta);
-                    dbComm.Parameters.AddWithValue("id_portafoglio_titoli", contoCorrente.Id_Portafoglio_Titoli);
-                    dbComm.Parameters.AddWithValue("id_tipo_movimento", contoCorrente.Id_tipo_movimento);
-                    dbComm.Parameters.AddWithValue("id_gestione", contoCorrente.Id_Gestione);
-                    dbComm.Parameters.AddWithValue("id_titolo", contoCorrente.Id_Titolo);
-                    dbComm.Parameters.AddWithValue("data_movimento", contoCorrente.DataMovimento.ToString("yyyy-MM-dd"));
-                    dbComm.Parameters.AddWithValue("ammontare", contoCorrente.Ammontare);
-                    dbComm.Parameters.AddWithValue("cambio", contoCorrente.Valore_Cambio);
-                    dbComm.Parameters.AddWithValue("causale", contoCorrente.Causale);
-                    dbComm.Parameters.AddWithValue("id_tipo_soldi", contoCorrente.Id_Tipo_Soldi);
-                    dbComm.Parameters.AddWithValue("id_quote_periodi", contoCorrente.Id_Quote_Periodi);
-                    dbComm.Parameters.AddWithValue("modified", contoCorrente.Modified.ToString("yyyy-MM-dd HH:mm:ss"));
-                    dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
-                }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
             }
         }
 
@@ -1442,14 +1021,14 @@ namespace FinanceManager.Services
             try
             {
                 DataTable dt = new DataTable();
-                    using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
-                    {
-                        dbAdapter.SelectCommand = new SQLiteCommand();
-                        dbAdapter.SelectCommand.CommandText = ManagerScripts.GetPortafoglioTitoliById;
-                        dbAdapter.SelectCommand.Parameters.AddWithValue("id_portafoglio_titoli", IdPortafoglioTitoli);
-                        dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                        dbAdapter.Fill(dt);
-                    }
+                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new SQLiteCommand();
+                    dbAdapter.SelectCommand.CommandText = ManagerScripts.GetPortafoglioTitoliById;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_portafoglio_titoli", IdPortafoglioTitoli);
+                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.Fill(dt);
+                }
                 return MLA(dt.Rows[0]);
             }
             catch (SQLiteException err)
@@ -1473,18 +1052,18 @@ namespace FinanceManager.Services
             try
             {
                 DataTable DT = new DataTable();
-                    using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
-                    {
-                        dbAdapter.SelectCommand = new SQLiteCommand();
-                        dbAdapter.SelectCommand.CommandText = ManagerScripts.VerifyDisponibilitaUtili;
-                        dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", guadagnoQuote.IdGestione);
-                        dbAdapter.SelectCommand.Parameters.AddWithValue("anno", guadagnoQuote.Anno);
-                        dbAdapter.SelectCommand.Parameters.AddWithValue("daInserire", guadagnoQuote.Preso);
-                        dbAdapter.SelectCommand.Parameters.AddWithValue("id_valuta", guadagnoQuote.IdCurrency);
-                        dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                        dbAdapter.Fill(DT);
-                        return DT.Rows[0].ItemArray[0] is DBNull ? -1.0 : Convert.ToDouble(DT.Rows[0].ItemArray[0]);
-                    }
+                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new SQLiteCommand();
+                    dbAdapter.SelectCommand.CommandText = ManagerScripts.VerifyDisponibilitaUtili;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", guadagnoQuote.IdGestione);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("anno", guadagnoQuote.Anno);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("daInserire", guadagnoQuote.Preso);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_valuta", guadagnoQuote.IdCurrency);
+                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.Fill(DT);
+                    return DT.Rows[0].ItemArray[0] is DBNull ? -1.0 : Convert.ToDouble(DT.Rows[0].ItemArray[0]);
+                }
             }
             catch (SQLiteException err)
             {
@@ -1505,46 +1084,46 @@ namespace FinanceManager.Services
             try
             {
                 int result = 0;
-                    using (SQLiteCommand dbComm = new SQLiteCommand())
-                    {
-                        dbComm.CommandText = ManagerScripts.InsertPrelievoUtili;
-                        dbComm.Parameters.AddWithValue("id_gestione", guadagnoQuote.IdGestione);
-                        dbComm.Parameters.AddWithValue("id_tipo_movimento", guadagnoQuote.IdTipoMovimento);
-                        dbComm.Parameters.AddWithValue("id_valuta", guadagnoQuote.IdCurrency);
-                        dbComm.Parameters.AddWithValue("anno", guadagnoQuote.Anno);
-                        dbComm.Parameters.AddWithValue("ammontare", guadagnoQuote.Preso);
-                        dbComm.Parameters.AddWithValue("data_operazione", guadagnoQuote.DataOperazione.ToString("yyyy-MM-dd"));
-                        dbComm.Parameters.AddWithValue("causale", guadagnoQuote.Causale);
-                        dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                        dbComm.Connection.Open();
-                        dbComm.ExecuteNonQuery();
-                        dbComm.Connection.Close();
-                    }
-                    using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
-                    {
-                        dataAdapter.SelectCommand = new SQLiteCommand();
-                        dataAdapter.SelectCommand.CommandText = "SELECT id_guadagno FROM guadagni_totale_anno ORDER BY id_guadagno DESC LIMIT 1";
-                        dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                        DataTable dt = new DataTable();
-                        dataAdapter.Fill(dt);
-                        result = Convert.ToInt32(dt.Rows[0].ItemArray[0]);
-                    }
-                    using (SQLiteCommand dbComm = new SQLiteCommand())
-                    {
-                        dbComm.CommandText = ManagerScripts.InsertPrelievoUtiliBkd;
-                        dbComm.Parameters.AddWithValue("id_prelievo", result);
-                        dbComm.Parameters.AddWithValue("id_gestione", guadagnoQuote.IdGestione);
-                        dbComm.Parameters.AddWithValue("id_tipo_movimento", guadagnoQuote.IdTipoMovimento);
-                        dbComm.Parameters.AddWithValue("id_valuta", guadagnoQuote.IdCurrency);
-                        dbComm.Parameters.AddWithValue("anno", guadagnoQuote.Anno);
-                        dbComm.Parameters.AddWithValue("ammontare", guadagnoQuote.Preso);
-                        dbComm.Parameters.AddWithValue("data_operazione", guadagnoQuote.DataOperazione.ToString("yyyy-MM-dd"));
-                        dbComm.Parameters.AddWithValue("causale", guadagnoQuote.Causale);
-                        dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                        dbComm.Connection.Open();
-                        dbComm.ExecuteNonQuery();
-                        dbComm.Connection.Close();
-                    }
+                using (SQLiteCommand dbComm = new SQLiteCommand())
+                {
+                    dbComm.CommandText = ManagerScripts.InsertPrelievoUtili;
+                    dbComm.Parameters.AddWithValue("id_gestione", guadagnoQuote.IdGestione);
+                    dbComm.Parameters.AddWithValue("id_tipo_movimento", guadagnoQuote.IdTipoMovimento);
+                    dbComm.Parameters.AddWithValue("id_valuta", guadagnoQuote.IdCurrency);
+                    dbComm.Parameters.AddWithValue("anno", guadagnoQuote.Anno);
+                    dbComm.Parameters.AddWithValue("ammontare", guadagnoQuote.Preso);
+                    dbComm.Parameters.AddWithValue("data_operazione", guadagnoQuote.DataOperazione.ToString("yyyy-MM-dd"));
+                    dbComm.Parameters.AddWithValue("Causale", guadagnoQuote.Causale);
+                    dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+                using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
+                {
+                    dataAdapter.SelectCommand = new SQLiteCommand();
+                    dataAdapter.SelectCommand.CommandText = "SELECT id_guadagno FROM guadagni_totale_anno ORDER BY id_guadagno DESC LIMIT 1";
+                    dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    DataTable dt = new DataTable();
+                    dataAdapter.Fill(dt);
+                    result = Convert.ToInt32(dt.Rows[0].ItemArray[0]);
+                }
+                using (SQLiteCommand dbComm = new SQLiteCommand())
+                {
+                    dbComm.CommandText = ManagerScripts.InsertPrelievoUtiliBkd;
+                    dbComm.Parameters.AddWithValue("id_prelievo", result);
+                    dbComm.Parameters.AddWithValue("id_gestione", guadagnoQuote.IdGestione);
+                    dbComm.Parameters.AddWithValue("id_tipo_movimento", guadagnoQuote.IdTipoMovimento);
+                    dbComm.Parameters.AddWithValue("id_valuta", guadagnoQuote.IdCurrency);
+                    dbComm.Parameters.AddWithValue("anno", guadagnoQuote.Anno);
+                    dbComm.Parameters.AddWithValue("ammontare", guadagnoQuote.Preso);
+                    dbComm.Parameters.AddWithValue("data_operazione", guadagnoQuote.DataOperazione.ToString("yyyy-MM-dd"));
+                    dbComm.Parameters.AddWithValue("Causale", guadagnoQuote.Causale);
+                    dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
             }
             catch (SQLiteException err)
             {
@@ -1564,25 +1143,25 @@ namespace FinanceManager.Services
         {
             try
             {
-                    using (SQLiteCommand dbComm = new SQLiteCommand())
-                    {
-                        dbComm.CommandText = ManagerScripts.DeletePrelievoUtiliBKd;
-                        dbComm.Parameters.AddWithValue("id_prelievo", guadagnoPerQuote.IdGuadagno);
-                        dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                        dbComm.Connection.Open();
-                        dbComm.ExecuteNonQuery();
-                        dbComm.Connection.Close();
-                    }
+                using (SQLiteCommand dbComm = new SQLiteCommand())
+                {
+                    dbComm.CommandText = ManagerScripts.DeletePrelievoUtiliBKd;
+                    dbComm.Parameters.AddWithValue("id_prelievo", guadagnoPerQuote.IdGuadagno);
+                    dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
 
-                    using (SQLiteCommand dbComm = new SQLiteCommand())
-                    {
-                        dbComm.CommandText = ManagerScripts.DeletePrelievoUtili;
-                        dbComm.Parameters.AddWithValue("id_guadagno", guadagnoPerQuote.IdGuadagno);
-                        dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                        dbComm.Connection.Open();
-                        dbComm.ExecuteNonQuery();
-                        dbComm.Connection.Close();
-                    }
+                using (SQLiteCommand dbComm = new SQLiteCommand())
+                {
+                    dbComm.CommandText = ManagerScripts.DeletePrelievoUtili;
+                    dbComm.Parameters.AddWithValue("id_guadagno", guadagnoPerQuote.IdGuadagno);
+                    dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
             }
             catch (SQLiteException err)
             {
@@ -1604,19 +1183,19 @@ namespace FinanceManager.Services
             {
                 DataTable dt = new DataTable();
                 PortafoglioTitoliList PTL = new PortafoglioTitoliList();
-                    using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
-                    {
-                        dbAdapter.SelectCommand = new SQLiteCommand();
-                        dbAdapter.SelectCommand.CommandText = ManagerScripts.GetCostiMediPerTitolo;
-                        dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                        dbAdapter.Fill(dt);
-                    }
+                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new SQLiteCommand();
+                    dbAdapter.SelectCommand.CommandText = ManagerScripts.GetCostiMediPerTitolo;
+                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.Fill(dt);
+                }
                 foreach (DataRow DR in dt.Rows)
                 {
                     PortafoglioTitoli PT = new PortafoglioTitoli();
                     PT.Nome_Gestione = DR.Field<string>("nome_gestione");
                     PT.Desc_Conto = DR.Field<string>("desc_conto");
-                    PT.Id_tipo_titolo = (uint)DR.Field<long>("id_tipo_titolo") ;
+                    PT.Id_tipo_titolo = (uint)DR.Field<long>("id_tipo_titolo");
                     PT.Desc_tipo_titolo = DR.Field<string>("desc_tipo_titolo");
                     PT.Desc_titolo = DR.Field<string>("desc_titolo");
                     PT.Isin = DR.Field<string>("isin");
@@ -1652,18 +1231,18 @@ namespace FinanceManager.Services
             {
                 DataTable DT = new DataTable();
                 MovimentiContoList MCL = new MovimentiContoList();
-                    using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
-                    {
-                        dbAdapter.SelectCommand = new SQLiteCommand();
-                        dbAdapter.SelectCommand.CommandText = ManagerScripts.GetMovimentiContoGestioneValuta;
-                        dbAdapter.SelectCommand.Parameters.AddWithValue("Id_Gestione", IdGestione);
-                        dbAdapter.SelectCommand.Parameters.AddWithValue("IdConto", IdConto);
-                        dbAdapter.SelectCommand.Parameters.AddWithValue("Id_Valuta", IdValuta);
-                        dbAdapter.SelectCommand.Parameters.AddWithValue("Year_1", AnnoSelezionato - 1);
-                        dbAdapter.SelectCommand.Parameters.AddWithValue("Year", AnnoSelezionato);
-                        dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                        dbAdapter.Fill(DT);
-                    }
+                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new SQLiteCommand();
+                    dbAdapter.SelectCommand.CommandText = ManagerScripts.GetMovimentiContoGestioneValuta;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("Id_Gestione", IdGestione);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("IdConto", IdConto);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("Id_Valuta", IdValuta);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("Year_1", AnnoSelezionato - 1);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("Year", AnnoSelezionato);
+                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.Fill(DT);
+                }
                 foreach (DataRow row in DT.Rows)
                 {
                     MovimentiConto MC = new MovimentiConto();
@@ -1679,7 +1258,7 @@ namespace FinanceManager.Services
                     MC.Entrate = row.Field<double>("ENTRATE");
                     MC.Uscite = row.Field<double>("USCITE");
                     MC.Cumulato = row.Field<double>("CUMULATO");
-                    MC.Causale = row.Field<string>("causale");
+                    MC.Causale = row.Field<string>("Causale");
                     MC.Desc_Tipo_Soldi = row.Field<string>("desc_tipo_soldi");
                     MCL.Add(MC);
                 }
@@ -1729,54 +1308,6 @@ namespace FinanceManager.Services
 
                     }
                     return QTL;
-                }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-        }
-
-        /// <summary>
-        /// Restituisco le somme dei soldi presenti nei conti correnti
-        /// suddivisi per gestione e valuta
-        /// </summary>
-        /// <param name="IdConto"></param>
-        /// <param name="IdGestione"></param>
-        /// <param name="IdValuta"></param>
-        /// <returns>ContoCorrenteList</returns>
-        public ContoCorrenteList GetTotalAmountByAccount(int IdConto, int IdGestione = 0, int IdValuta = 0)
-        {
-            try
-            {
-                using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
-                {
-                    dataAdapter.SelectCommand = new SQLiteCommand();
-                    if (IdGestione == 0 && IdValuta == 0)
-                        dataAdapter.SelectCommand.CommandText = string.Format(ManagerScripts.GetTotalAmountByAccount, "", "");
-                    else if (IdGestione > 0 && IdValuta == 0)
-                        dataAdapter.SelectCommand.CommandText = string.Format(ManagerScripts.GetTotalAmountByAccount, string.Format("AND A.id_gestione = {0} ", IdGestione), "");
-                    else
-                        dataAdapter.SelectCommand.CommandText = string.Format(ManagerScripts.GetTotalAmountByAccount, string.Format("AND A.id_gestione = {0} ", IdGestione), string.Format("AND A.id_valuta = {0} ", IdValuta));
-                    dataAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdConto);
-                    dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    DataTable dt = new DataTable();
-                    dataAdapter.Fill(dt);
-                    ContoCorrenteList CCL = new ContoCorrenteList();
-                    foreach(DataRow dataRow in dt.Rows)
-                    {
-                        CCL.Add(new ContoCorrente(){
-                            Desc_Conto = (string)dataRow["Conto"],
-                            NomeGestione = (string)dataRow["Gestione"],
-                            Ammontare = (double)dataRow["Soldi"],
-                            Cod_Valuta = (string)dataRow["Valuta"]
-                        });
-                    }
-                    return CCL;
                 }
             }
             catch (SQLiteException err)

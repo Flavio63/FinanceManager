@@ -50,7 +50,6 @@ namespace FinanceManager.ViewModels
             {
                 #region Inizializzazione Liste
 
-                ListQuoteInv = new QuoteInvList();
                 ListTabQuote = new QuoteTabList();
                 ListMovementType = new RegistryMovementTypeList();
                 ListInvestitori = new RegistryOwnersList();
@@ -112,7 +111,6 @@ namespace FinanceManager.ViewModels
 
                 Causale = "";
 
-                ListQuoteInv = _managerLiquidServices.GetQuoteInv();
                 ListTabQuote = _managerLiquidServices.GetQuoteTab();
                 ListQuoteDettaglioGuadagno = _managerLiquidServices.GetQuoteGuadagno(2);
                 ListQuoteSintesiGuadagno = _managerLiquidServices.GetQuoteGuadagno(1);
@@ -146,7 +144,7 @@ namespace FinanceManager.ViewModels
         }
 
         /// <summary>
-        /// E' la causale da utilizzare per la gestione dei capitali
+        /// E' la Causale da utilizzare per la gestione dei capitali
         /// sia con ActualQuote che con contoCorrenteSelected
         /// </summary>
         public string Causale
@@ -250,16 +248,6 @@ namespace FinanceManager.ViewModels
         {
             get { return GetValue(() => ListMovementType); }
             set { SetValue(() => ListMovementType, value); }
-        }
-        /// <summary>
-        /// E' la tabella di sintesi con le quote degli investitori
-        /// aggiornata con gli ultimi movimenti
-        /// </summary>
-        public QuoteInvList ListQuoteInv
-        {
-            get { return GetValue(() => ListQuoteInv); }
-            set
-            { SetValue(() => ListQuoteInv, value); }
         }
         /// <summary>
         /// Estrae i dati di guadagno dettagliati sulla base dei periodi
@@ -388,7 +376,6 @@ namespace FinanceManager.ViewModels
                 if (ActualQuote.Id_tipo_movimento == 12)
                 {
                     // estraggo solo il record corrispondente alla selezione nella griglia quote
-                    ContoCorrenteSelected = _managerLiquidServices.GetContoCorrenteByIdQuote(ActualQuote.Id_Quote_Investimenti);
                     CheckDa = ContoCorrenteSelected.Ammontare > 0 ? true : false;
                     CheckA = !CheckDa;
                     TabGiroconto = true;
@@ -539,136 +526,135 @@ namespace FinanceManager.ViewModels
         }
         public void SaveCommand(object param)
         {
-            try
-            {
-                if (((StackPanel)param).Name == "Bottoniera_1" && TabVersPre && ActualQuote.Id_Quote_Investimenti == 0)
-                {
-                    int Id_Aggregazione = ActualQuote.Id_Gestione == 4 ? 16 : 15;
-                    int result = _managerLiquidServices.VerifyInvestmentDate(ActualQuote, Id_Aggregazione); // verifico se alla stessa data c'è già un inserimento
-                    if (result == -1)
-                    {
-                        if (ActualQuote.Id_Gestione != 4)
-                        {
-                            ActualQuote.Id_Periodo_Quote = _managerLiquidServices.Update_InsertQuotePeriodi(ActualQuote.DataMovimento, Id_Aggregazione);
-                            _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il nuovo movimento di capitali
-                            ActualQuote.Id_Gestione = ActualQuote.Id_Gestione == 3 ? 5 : 3;
-                            ActualQuote.AmmontareEuro = 0;
-                            ActualQuote.AmmontareValuta = 0;
-                            ActualQuote.ChangeValue = 0;
-                            ActualQuote.Id_Valuta = 0;
-                            ActualQuote.CodeCurrency = "";
-                            ActualQuote.Note = "Inserimento per Quote";
-                            _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il movimento a 0 per effettuare le quote corrette.
-                            _managerLiquidServices.ComputesAndInsertQuoteGuadagno(Id_Aggregazione, ActualQuote.Id_Periodo_Quote);
-                        }
-                        else if (ActualQuote.Id_Gestione == 4)
-                        {
-                            ActualQuote.Id_Periodo_Quote = _managerLiquidServices.Update_InsertQuotePeriodi(ActualQuote.DataMovimento, Id_Aggregazione);
-                            _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il nuovo movimento di capitali
-                            ActualQuote.Id_Gestione = 3; ActualQuote.AmmontareEuro = 0; ActualQuote.AmmontareValuta = 0; ActualQuote.Note = "Inserimento per Quote";
-                            _managerLiquidServices.InsertInvestment(ActualQuote); // FLAVIO inserisco il movimento a 0 per effettuare le quote corrette.
-                            ActualQuote.Id_Gestione = 5; 
-                            _managerLiquidServices.InsertInvestment(ActualQuote); // DANIELA inserisco il movimento a 0 per effettuare le quote corrette.
-                            _managerLiquidServices.ComputesAndInsertQuoteGuadagno(Id_Aggregazione, ActualQuote.Id_Periodo_Quote);
-                        }
-                    }
-                    else
-                    {
-                        ActualQuote.Id_Periodo_Quote = result;
-                        ActualQuote.Id_Quote_Investimenti = _managerLiquidServices.GetIdQuoteTab(ActualQuote); // trovo il codice per modificare il record
-                        _managerLiquidServices.UpdateQuoteTab(ActualQuote);     // modifico l'inserimento
-                        _managerLiquidServices.ComputesAndModifyQuoteGuadagno(Id_Aggregazione);
-                    }
-                    // aggiorno la tabella con i guadagni totali
-                    _managerLiquidServices.UpdateGuadagniTotaleAnno(ActualQuote.Id_Periodo_Quote, Id_Aggregazione);
-                    MessageBox.Show(string.Format("Ho effettuato l'operazione {0} correttamente.", ActualQuote.Desc_tipo_movimento),
-                    Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                else if (((StackPanel)param).Name == "Bottoniera_1" && TabGiroconto && ActualQuote.Id_Quote_Investimenti == 0)
-                {
-                    if (CheckDa && !CheckA)
-                        ActualQuote.AmmontareEuro = ActualQuote.AmmontareEuro > 0 ? ActualQuote.AmmontareEuro * -1 : ActualQuote.AmmontareEuro;
-                    else if (!CheckDa && CheckA)
-                        ActualQuote.AmmontareEuro = ActualQuote.AmmontareEuro < 0 ? ActualQuote.AmmontareEuro * -1 : ActualQuote.AmmontareEuro;
-                    ContoCorrenteSelected.Ammontare = ActualQuote.AmmontareEuro * -1;
-                    _managerLiquidServices.InsertInvestment(ActualQuote);
-                    ContoCorrenteSelected.Id_Quote_Investimenti = _managerLiquidServices.GetIdQuoteTab(ActualQuote);
-                    ContoCorrenteSelected.Id_Tipo_Soldi = 1;
-                    ContoCorrenteSelected.Id_Valuta = 1;
-                    ContoCorrenteSelected.Valore_Cambio = 1;
-                    _managerLiquidServices.InsertAccountMovement(ContoCorrenteSelected);
-                }
-                else if (((StackPanel)param).Name == "Bottoniera_2")
-                {
-                    // verifica se puoi prelevare la cifra
-                    double result = _managerLiquidServices.VerifyDisponibilitaUtili(RecordQuoteGuadagno);
-                    // scrivi il record
-                    if (result < 0)
-                    {
-                        var answer = MessageBox.Show("Non hai la cifra disponibile in questo anno, vuoi registrarla comunque?",
-                            Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                        if (answer == MessageBoxResult.No)
-                            return;
-                    }
-                    _managerLiquidServices.InsertPrelievoUtili(RecordQuoteGuadagno); // in questo script inserisco il prelievo anche nella tabella prelievi
-                    MessageBox.Show(string.Format("Ho effettuato il prelievo di {0} {1} dal conto di {2} per l'anno {3}.",
-                        RecordQuoteGuadagno.Preso, RecordQuoteGuadagno.CodeCurrency, RecordQuoteGuadagno.Nome, RecordQuoteGuadagno.Anno),
-                        Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                // aggiorna la maschera
-                UpdateCollection();
-            }
-            catch (Exception err)
-            {
-                MessageBox.Show("Problemi nel caricamento del record: " + Environment.NewLine +
-                    err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            //try
+            //{
+            //    if (((StackPanel)param).Name == "Bottoniera_1" && TabVersPre && ActualQuote.Id_Quote_Investimenti == 0)
+            //    {
+            //        int Id_Aggregazione = ActualQuote.Id_Gestione == 4 ? 16 : 15;
+            //        int result = _managerLiquidServices.VerifyInvestmentDate(ActualQuote, Id_Aggregazione); // verifico se alla stessa data c'è già un inserimento
+            //        if (result == -1)
+            //        {
+            //            if (ActualQuote.Id_Gestione != 4)
+            //            {
+            //                ActualQuote.Id_Periodo_Quote = _managerLiquidServices.Update_InsertQuotePeriodi(ActualQuote.DataMovimento, Id_Aggregazione);
+            //                _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il nuovo movimento di capitali
+            //                ActualQuote.Id_Gestione = ActualQuote.Id_Gestione == 3 ? 5 : 3;
+            //                ActualQuote.AmmontareEuro = 0;
+            //                ActualQuote.AmmontareValuta = 0;
+            //                ActualQuote.ChangeValue = 0;
+            //                ActualQuote.Id_Valuta = 0;
+            //                ActualQuote.CodeCurrency = "";
+            //                ActualQuote.Note = "Inserimento per Quote";
+            //                _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il movimento a 0 per effettuare le quote corrette.
+            //                _managerLiquidServices.ComputesAndInsertQuoteGuadagno(Id_Aggregazione, ActualQuote.Id_Periodo_Quote);
+            //            }
+            //            else if (ActualQuote.Id_Gestione == 4)
+            //            {
+            //                ActualQuote.Id_Periodo_Quote = _managerLiquidServices.Update_InsertQuotePeriodi(ActualQuote.DataMovimento, Id_Aggregazione);
+            //                _managerLiquidServices.InsertInvestment(ActualQuote); // inserisco il nuovo movimento di capitali
+            //                ActualQuote.Id_Gestione = 3; ActualQuote.AmmontareEuro = 0; ActualQuote.AmmontareValuta = 0; ActualQuote.Note = "Inserimento per Quote";
+            //                _managerLiquidServices.InsertInvestment(ActualQuote); // FLAVIO inserisco il movimento a 0 per effettuare le quote corrette.
+            //                ActualQuote.Id_Gestione = 5; 
+            //                _managerLiquidServices.InsertInvestment(ActualQuote); // DANIELA inserisco il movimento a 0 per effettuare le quote corrette.
+            //                _managerLiquidServices.ComputesAndInsertQuoteGuadagno(Id_Aggregazione, ActualQuote.Id_Periodo_Quote);
+            //            }
+            //        }
+            //        else
+            //        {
+            //            ActualQuote.Id_Periodo_Quote = result;
+            //            ActualQuote.Id_Quote_Investimenti = _managerLiquidServices.GetIdQuoteTab(ActualQuote); // trovo il codice per modificare il record
+            //            _managerLiquidServices.UpdateQuoteTab(ActualQuote);     // modifico l'inserimento
+            //            _managerLiquidServices.ComputesAndModifyQuoteGuadagno(Id_Aggregazione);
+            //        }
+            //        // aggiorno la tabella con i guadagni totali
+            //        _managerLiquidServices.UpdateGuadagniTotaleAnno(ActualQuote.Id_Periodo_Quote, Id_Aggregazione);
+            //        MessageBox.Show(string.Format("Ho effettuato l'operazione {0} correttamente.", ActualQuote.Desc_tipo_movimento),
+            //        Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
+            //    }
+            //    else if (((StackPanel)param).Name == "Bottoniera_1" && TabGiroconto && ActualQuote.Id_Quote_Investimenti == 0)
+            //    {
+            //        if (CheckDa && !CheckA)
+            //            ActualQuote.AmmontareEuro = ActualQuote.AmmontareEuro > 0 ? ActualQuote.AmmontareEuro * -1 : ActualQuote.AmmontareEuro;
+            //        else if (!CheckDa && CheckA)
+            //            ActualQuote.AmmontareEuro = ActualQuote.AmmontareEuro < 0 ? ActualQuote.AmmontareEuro * -1 : ActualQuote.AmmontareEuro;
+            //        ContoCorrenteSelected.Ammontare = ActualQuote.AmmontareEuro * -1;
+            //        _managerLiquidServices.InsertInvestment(ActualQuote);
+            //        ContoCorrenteSelected.Id_Quote_Investimenti = _managerLiquidServices.GetIdQuoteTab(ActualQuote);
+            //        ContoCorrenteSelected.Id_Tipo_Soldi = 1;
+            //        ContoCorrenteSelected.Id_Valuta = 1;
+            //        ContoCorrenteSelected.Valore_Cambio = 1;
+            //        _managerLiquidServices.InsertAccountMovement(ContoCorrenteSelected);
+            //    }
+            //    else if (((StackPanel)param).Name == "Bottoniera_2")
+            //    {
+            //        // verifica se puoi prelevare la cifra
+            //        double result = _managerLiquidServices.VerifyDisponibilitaUtili(RecordQuoteGuadagno);
+            //        // scrivi il record
+            //        if (result < 0)
+            //        {
+            //            var answer = MessageBox.Show("Non hai la cifra disponibile in questo anno, vuoi registrarla comunque?",
+            //                Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            //            if (answer == MessageBoxResult.No)
+            //                return;
+            //        }
+            //        _managerLiquidServices.InsertPrelievoUtili(RecordQuoteGuadagno); // in questo script inserisco il prelievo anche nella tabella prelievi
+            //        MessageBox.Show(string.Format("Ho effettuato il prelievo di {0} {1} dal conto di {2} per l'anno {3}.",
+            //            RecordQuoteGuadagno.Preso, RecordQuoteGuadagno.CodeCurrency, RecordQuoteGuadagno.Nome, RecordQuoteGuadagno.Anno),
+            //            Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
+            //    }
+            //    // aggiorna la maschera
+            //    UpdateCollection();
+            //}
+            //catch (Exception err)
+            //{
+            //    MessageBox.Show("Problemi nel caricamento del record: " + Environment.NewLine +
+            //        err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+            //}
         }
         public void UpdateCommand(object param)
         {
-            try
-            {
-                if (((StackPanel)param).Name == "Bottoniera_1" && TabVersPre && ActualQuote.Id_Quote_Investimenti > 0)
-                {
-                    _managerLiquidServices.UpdateQuoteTab(ActualQuote); // aggiorno il record con la nuova cifra
-                    int Tipo_Soldi = ActualQuote.Id_Gestione == 4 ? 16 : 15;
-                    // scopro il codice dei record da ricalcolare con le nuove quote
-                    ActualQuote.Id_Periodo_Quote = _managerLiquidServices.GetIdPeriodoQuote(ActualQuote.DataMovimento, Tipo_Soldi);
-                    _managerLiquidServices.ComputesAndModifyQuoteGuadagno(Tipo_Soldi);
-                    // modifico i dati di guadagno per socio delle operazioni con il codice di periodo che ha subito la modifica
-                    _managerLiquidServices.UpdateGuadagniTotaleAnno(ActualQuote.Id_Periodo_Quote, Tipo_Soldi);
-                }
-                else if (((StackPanel)param).Name == "Bottoniera_1" && TabGiroconto && ActualQuote.Id_Quote_Investimenti > 0)
-                {
-                    if (CheckDa && !CheckA)
-                        ActualQuote.AmmontareEuro = ActualQuote.AmmontareEuro > 0 ? ActualQuote.AmmontareEuro * -1 : ActualQuote.AmmontareEuro;
-                    else if (!CheckDa && CheckA)
-                        ActualQuote.AmmontareEuro = ActualQuote.AmmontareEuro < 0 ? ActualQuote.AmmontareEuro * -1 : ActualQuote.AmmontareEuro;
-                    ContoCorrenteSelected.Ammontare = ActualQuote.AmmontareEuro * -1;
-                    _managerLiquidServices.UpdateQuoteTab(ActualQuote);
-                    _managerLiquidServices.UpdateRecordContoCorrente(ContoCorrenteSelected, Models.Enumeratori.TipologiaIDContoCorrente.IdContoCorrente);
-                }
-                else if (((StackPanel)param).Name == "Bottoniera_2")
-                {
-                    double result = _managerLiquidServices.VerifyDisponibilitaUtili(RecordQuoteGuadagno);
-                    result += (PresoOld * -1);
-                    // scrivi il record
-                    if (result < 0)
-                    {
-                        var answer = MessageBox.Show("Non hai la cifra disponibile in questo anno, vuoi registrarla comunque?",
-                            Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                        if (answer == MessageBoxResult.No)
-                            return;
-                    }
-                    _managerLiquidServices.UpdateGuadagniTotaleAnno(RecordQuoteGuadagno);
-                }
-                UpdateCollection();
-            }
-            catch (Exception err)
-            {
-                MessageBox.Show("Problemi nel modificare il record" + Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(),
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            //try
+            //{
+            //    if (((StackPanel)param).Name == "Bottoniera_1" && TabVersPre && ActualQuote.Id_Quote_Investimenti > 0)
+            //    {
+            //        _managerLiquidServices.UpdateQuoteTab(ActualQuote); // aggiorno il record con la nuova cifra
+            //        int Tipo_Soldi = ActualQuote.Id_Gestione == 4 ? 16 : 15;
+            //        // scopro il codice dei record da ricalcolare con le nuove quote
+            //        ActualQuote.Id_Periodo_Quote = _managerLiquidServices.GetIdPeriodoQuote(ActualQuote.DataMovimento, Tipo_Soldi);
+            //        _managerLiquidServices.ComputesAndModifyQuoteGuadagno(Tipo_Soldi);
+            //        // modifico i dati di guadagno per socio delle operazioni con il codice di periodo che ha subito la modifica
+            //        _managerLiquidServices.UpdateGuadagniTotaleAnno(ActualQuote.Id_Periodo_Quote, Tipo_Soldi);
+            //    }
+            //    else if (((StackPanel)param).Name == "Bottoniera_1" && TabGiroconto && ActualQuote.Id_Quote_Investimenti > 0)
+            //    {
+            //        if (CheckDa && !CheckA)
+            //            ActualQuote.AmmontareEuro = ActualQuote.AmmontareEuro > 0 ? ActualQuote.AmmontareEuro * -1 : ActualQuote.AmmontareEuro;
+            //        else if (!CheckDa && CheckA)
+            //            ActualQuote.AmmontareEuro = ActualQuote.AmmontareEuro < 0 ? ActualQuote.AmmontareEuro * -1 : ActualQuote.AmmontareEuro;
+            //        ContoCorrenteSelected.Ammontare = ActualQuote.AmmontareEuro * -1;
+            //        _managerLiquidServices.UpdateQuoteTab(ActualQuote);
+            //    }
+            //    else if (((StackPanel)param).Name == "Bottoniera_2")
+            //    {
+            //        double result = _managerLiquidServices.VerifyDisponibilitaUtili(RecordQuoteGuadagno);
+            //        result += (PresoOld * -1);
+            //        // scrivi il record
+            //        if (result < 0)
+            //        {
+            //            var answer = MessageBox.Show("Non hai la cifra disponibile in questo anno, vuoi registrarla comunque?",
+            //                Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            //            if (answer == MessageBoxResult.No)
+            //                return;
+            //        }
+            //        _managerLiquidServices.UpdateGuadagniTotaleAnno(RecordQuoteGuadagno);
+            //    }
+            //    UpdateCollection();
+            //}
+            //catch (Exception err)
+            //{
+            //    MessageBox.Show("Problemi nel modificare il record" + Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(),
+            //        MessageBoxButton.OK, MessageBoxImage.Error);
+            //}
         }
         public void DeleteCommand(object param)
         {

@@ -11,7 +11,6 @@ namespace FinanceManager.Models
         public int Id_RowConto { get; set; }
         public int Id_Conto { get; set; }
         public string Desc_Conto { get; set; }
-        public int Id_Quote_Investimenti { get; set; }
         public int Id_Valuta { get; set; }
         public string Cod_Valuta { get; set; }
         public int Id_Portafoglio_Titoli { get; set; }
@@ -66,7 +65,6 @@ namespace FinanceManager.Models
         public ContoCorrente(PortafoglioTitoli portafoglioTitoli, double valoreInCC, TipologiaSoldi idTipoSoldi, int IdQuotePeriodi)
         {
             Id_Conto = portafoglioTitoli.Id_Conto;
-            Id_Quote_Investimenti = 0;
             Id_Valuta = portafoglioTitoli.Id_valuta;
             Id_Portafoglio_Titoli = portafoglioTitoli.Id_portafoglio;
             Id_tipo_movimento = portafoglioTitoli.Id_tipo_movimento;

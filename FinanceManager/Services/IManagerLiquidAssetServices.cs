@@ -28,7 +28,7 @@ namespace FinanceManager.Services
         /// restituendo il totale immesso, prelevato, assegnato e disponibile
         /// </summary>
         /// <returns>ObservableCollection</returns>
-        QuoteInvList GetQuoteInv();   // Calcolo le quote per investitore sulla base dell'investito attivo
+//        QuoteInvList GetQuoteInv();   // Calcolo le quote per investitore sulla base dell'investito attivo
         /// <summary>
         /// Calcola le quote del guadagno per investitore
         /// suddividendola per ogni periodo di validà delle 
@@ -59,39 +59,6 @@ namespace FinanceManager.Services
         /// <returns>int</returns>
         int GetIdPeriodoQuote(DateTime dateTime, int Id_tipoSoldi);
 
-        /// <summary>
-        /// Modifico la tabella quote_periodi modificando la data di fine
-        /// e inserendo il nuovo record
-        /// </summary>
-        /// <param name="DataDal">Data da cercare</param>
-        /// <param name="TipoSoldi">Tipologia dei soldi</param>
-        /// <returns>Last id record inserted</returns>
-        int Update_InsertQuotePeriodi(DateTime DataDal, int TipoSoldi);
-
-        /// <summary>
-        /// Calcolo le nuove quote e le inserisco nella tabella quote_guadagno
-        /// </summary>
-        /// <param name="Tipo_Soldi">Codice identificativo</param>
-        /// <param name="NuovoPeriodo">Il nuovo periodo da inserire in tabella</param>
-        void ComputesAndInsertQuoteGuadagno(int Tipo_Soldi, int NuovoPeriodo);
-
-        /// <summary>
-        /// Calcolo le nuove quote e modifico la tabella quote_guadagno
-        /// </summary>
-        /// <param name="Tipo_Soldi">Codice identificativo</param>
-        void ComputesAndModifyQuoteGuadagno(int Tipo_Soldi);
-        /// <summary>
-        /// Aggiorno la tabella Guadagni_totale_anno con le nuove
-        /// quote per il periodo interessato alle modifiche
-        /// </summary>
-        /// <param name="Id_Periodo_Quote">il periodo da modificare</param>
-        /// <param name="Id_Tipo_Soldi">Il tipo soldi</param>
-        void UpdateGuadagniTotaleAnno(int Id_Periodo_Quote, int Id_Tipo_Soldi);
-        /// <summary>
-        /// Aggiorno la tabella Guadagni_totale_anno nel caso di
-        /// modifiche del record di prelievo utili
-        /// </summary>
-        /// <param name="RecordQuoteGuadagno">il record da modificare</param>
         void UpdateGuadagniTotaleAnno(GuadagnoPerQuote RecordQuoteGuadagno);
         /// <summary>
         /// Prelevo tutti i record della tabella degli Investimenti
@@ -109,8 +76,13 @@ namespace FinanceManager.Services
         /// </summary>
         /// <param name="ActualQuote"></param>
         void UpdateQuoteTab(QuoteTab ActualQuote);
+        /// <summary>
+        /// Elimina il record dalla tabella investimenti in
+        /// base al suo identificativo
+        /// </summary>
+        /// <param name="Id_ActualQuote"></param>
+        void DeleteRecordQuoteTab(int Id_ActualQuote);
 
-        void InsertAccountMovement(ContoCorrente contoCorrente);        // inserisco il movimento nella tabella conto_corrente
         /// <summary>
         /// Tramite l'ultimo record conto_corrente inserito
         /// calcolo e inserisco le quote guadagno per ogni singolo socio
@@ -124,55 +96,9 @@ namespace FinanceManager.Services
         /// <param name="RecordContoCorrente">record conto corrente con i dati</param>
         void ModifySingoloGuadagno(ContoCorrente RecordContoCorrente);
 
-        /// <summary>
-        /// Estrae tutti i record della tabella ContoCorrente
-        /// </summary>
-        /// <returns>Lista di ContoCorrente</returns>
-        
-        ContoCorrenteList GetContoCorrenteList();
-        /// <summary>
-        /// Seleziona i record ContoCorrente sulla base dell'ID quote relativo
-        /// alla tabella quote_investimenti e utilizzato per il giroconto fra le
-        /// due tabelle
-        /// </summary>
-        /// <param name="idQuote">Il codice comune alle tabelle</param>
-        /// <returns>Il record trovato ContoCorrente</returns>
-        ContoCorrente GetContoCorrenteByIdQuote(int idQuote);
-
-        /// <summary>
-        /// Estrazione dei 2 record coinvolti nel giroconto interno o
-        /// nel cambio valuta.
-        /// </summary>
-        /// <param name="modified">DateTime</param>
-        /// <returns>List ContoCorrente</returns>
-        ContoCorrenteList Get2ContoCorrentes(DateTime modified);
-        
-        ContoCorrenteList GetContoCorrenteByIdPortafoglio(int idPortafoglioTitoli); // I max 2 movimenti di ContoCorrente associati al trade
-        /// <summary>
-        /// Aggiorno la tabella conto_corrente
-        /// </summary>
-        /// <param name="contoCorrente">Il record con i dati aggiornati</param>
-        /// <param name="idTipo">la scelta dell'identificativo</param>
-        void UpdateRecordContoCorrente(ContoCorrente contoCorrente, TipologiaIDContoCorrente idTipo);
-
-        void DeleteContoCorrenteByIdPortafoglioTitoli(int idContoTitoli);           // Elimino il movimento dalla tabella ContoCorrente sulla base del conto titoli
-        /// <summary>
-        /// Elimina un record dalla tabella ContoCorrente
-        /// sulla base di un id di riga
-        /// </summary>
-        /// <param name="idCC">id del record da eliminare</param>
-        void DeleteRecordContoCorrente(int idCC);
         QuotePerPeriodoList GetAllRecordQuote_Guadagno();
         void DeleteRecordGuadagno_Totale_anno(int id_quota);
 
-        /// <summary>
-        /// Verifico se nella data di inserimento è già presente
-        /// un investimento
-        /// </summary>
-        /// <param name="ActualQuote">Il record per verificare</param>
-        /// <param name="Id_Tipo_Soldi">Il tipo soldi che si sta movimentando</param>
-        /// <returns>-1 se falso altrimenti il numero del periodo quote</returns>
-        int VerifyInvestmentDate(QuoteTab ActualQuote, int Id_Tipo_Soldi);
         /// <summary>
         /// Trovo l'id del record da modificare
         /// </summary>
@@ -207,15 +133,6 @@ namespace FinanceManager.Services
         /// <param name="IdValuta"></param>
         /// <returns>QuoteTabList</returns>
         QuoteTabList GetTotalAmountByCurrency(int IdInvestitore, int IdValuta = 0);
-        /// <summary>
-        /// Restituisco le somme dei soldi presenti nei conti correnti
-        /// suddivisi per gestione e valuta
-        /// </summary>
-        /// <param name="IdConto"></param>
-        /// <param name="IdGestione"></param>
-        /// <param name="IdValuta"></param>
-        /// <returns>ContoCorrenteList</returns>
-        ContoCorrenteList GetTotalAmountByAccount(int IdConto, int IdGestione = 0, int IdValuta = 0);
         /// <summary>
         /// Restituisco il record in base al suo id di riga
         /// </summary>

@@ -237,8 +237,13 @@
     <Compile Include="Models\TipoSoldi.cs" />
     <Compile Include="Models\TipoSoldiList.cs" />
     <Compile Include="Models\Enumeratori\TipologiaSoldi.cs" />
+    <Compile Include="Services\ContoCorrenteServices.cs" />
+    <Compile Include="Services\IContoCorrenteServices.cs" />
+    <Compile Include="Services\IQuoteServices.cs" />
+    <Compile Include="Services\QuoteServices.cs" />
+    <Compile Include="Services\SQL\ContoCorrenteScript.cs" />
+    <Compile Include="Services\SQL\QuoteScript.cs" />
     <Compile Include="Services\SQL\SintesiGuadagniPerValute.cs" />
-    <Compile Include="Services\SQL\UpdateQuotePeriodi.cs" />
     <Compile Include="ViewModels\AnalisiPortafoglioViewModel.cs" />
     <Compile Include="ViewModels\CapitalsRegisterViewModel.cs" />
     <Compile Include="ViewModels\GestioneContoCorrenteViewModel.cs" />
@@ -248,8 +253,8 @@
     <Compile Include="Models\ContoCorrenteList.cs" />
     <Compile Include="Models\PortafoglioTitoli.cs" />
     <Compile Include="Models\PortafoglioTitoliList.cs" />
-    <Compile Include="Models\QuoteInv.cs" />
-    <Compile Include="Models\QuoteInvList.cs" />
+    <Compile Include="Models\InvestmentSituation.cs" />
+    <Compile Include="Models\InvestmentSituationList.cs" />
     <Compile Include="Models\QuoteTab.cs" />
     <Compile Include="Models\QuoteTabList.cs" />
     <Compile Include="Models\RegistryCurrency.cs" />

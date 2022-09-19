@@ -15,6 +15,8 @@ namespace FinanceManager.ViewModels
     {
         private readonly IRegistryServices _registryServices;
         private readonly IManagerLiquidAssetServices _managerLiquidServices;
+        private readonly IContoCorrenteServices _contoCorrenteServices;
+        private readonly IQuoteServices _quoteServices;
 
         public ICommand CloseMeCommand { get; set; }
         public ICommand ClearMeCommand { get; set; }
@@ -22,10 +24,14 @@ namespace FinanceManager.ViewModels
         public ICommand ModifyCommand { get; set; }
         Predicate<object> _Filter;
 
-        public CapitalsRegisterViewModel(IRegistryServices registryServices, IManagerLiquidAssetServices managerLiquidServices)
+        public CapitalsRegisterViewModel
+            (IRegistryServices registryServices, IManagerLiquidAssetServices managerLiquidServices, 
+            IContoCorrenteServices contoCorrenteServices, IQuoteServices quoteServices)
         {
             _registryServices = registryServices ?? throw new ArgumentNullException("Manca collegamento con richiesta dati anagrafica Capitali View Model");
             _managerLiquidServices = managerLiquidServices ?? throw new ArgumentNullException("Manca collegamento con richiesta dati conti Capitali View Model");
+            _contoCorrenteServices = contoCorrenteServices ?? throw new ArgumentNullException("Manca collegamento con Conto Services");
+            _quoteServices = quoteServices ?? throw new ArgumentNullException("Manca collegamento con Quote Services");
             CloseMeCommand = new CommandHandler(CloseMe);
             ClearMeCommand = new CommandHandler(ClearMe);
             InsertCommand = new CommandHandler(SaveCommand, CanSave);
@@ -58,17 +64,10 @@ namespace FinanceManager.ViewModels
         /// </summary>
         private void Init()
         {
-            ActualQuoteTab = new QuoteTab();
-            dataModifica = DateTime.Now;
-            QuoteTabList ListaQuoteOriginale = new QuoteTabList();
-            Investimenti = new QuoteTabList();
-            ListaQuoteOriginale = _managerLiquidServices.GetQuoteTab();
-            foreach (QuoteTab QuoteTab in ListaQuoteOriginale)
-            {
-                if (QuoteTab.Id_tipo_movimento == 1 || QuoteTab.Id_tipo_movimento == 2)
-                    Investimenti.Add(QuoteTab);
-            }
-            SintesiContoBase = _managerLiquidServices.GetQuoteInv();
+            ActualContoCorrente = new ContoCorrente();
+            Investimenti = new ContoCorrenteList();
+            Investimenti = _contoCorrenteServices.GetCCListByInvestmentSituation();
+            SintesiContoBase = _contoCorrenteServices.GetInvestmentSituation();
             _Filter = new Predicate<object>(Filter);
             Investitore = "";
             CodeCurrency = "";
@@ -103,7 +102,7 @@ namespace FinanceManager.ViewModels
         #endregion ComboBox
 
         #region DataGrid
-        public QuoteInvList SintesiContoBase
+        public InvestmentSituationList SintesiContoBase
         {
             get { return GetValue(() => SintesiContoBase); }
             set { SetValue(() => SintesiContoBase, value); SintesiCBase = CollectionViewSource.GetDefaultView(value); }
@@ -113,7 +112,11 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => SintesiCBase); }
             set { SetValue(() => SintesiCBase, value); }
         }
-        public QuoteTabList Investimenti
+        /// <summary>
+        /// Elenco di movimenti del conto zero
+        /// solo per versamenti e prelievi
+        /// </summary>
+        public ContoCorrenteList Investimenti
         {
             get { return GetValue(() => Investimenti); }
             set { SetValue(() => Investimenti, value); InvestCollection = CollectionViewSource.GetDefaultView(value); }
@@ -129,10 +132,10 @@ namespace FinanceManager.ViewModels
         /// E' il record che si sta lavorando e che verrà
         /// salvato nel data base come capitali versati o prelevati
         /// </summary>
-        public QuoteTab ActualQuoteTab
+        public ContoCorrente ActualContoCorrente
         {
-            get { return GetValue(() => ActualQuoteTab); }
-            set { SetValue(() => ActualQuoteTab, value); }
+            get { return GetValue(() => ActualContoCorrente); }
+            set { SetValue(() => ActualContoCorrente, value); }
         }
         #endregion Get_Set
 
@@ -151,9 +154,9 @@ namespace FinanceManager.ViewModels
                 {
                     try
                     {
-                        ActualQuoteTab.AmmontareValuta = Convert.ToDouble(textBox.Text);
-                        if (ActualQuoteTab.Id_tipo_movimento == 2)
-                            if (ActualQuoteTab.AmmontareValuta > ((QuoteInv)SintesiCBase.CurrentItem).CapitaleDisponibile)
+                        ActualContoCorrente.Ammontare = Convert.ToDouble(textBox.Text);
+                        if (ActualContoCorrente.Id_tipo_movimento == 2)
+                            if (SintesiCBase.CurrentItem == null || ActualContoCorrente.Ammontare > ((InvestmentSituation)SintesiCBase.CurrentItem).Disponibile)
                             {
                                 MessageBox.Show("Non hai abbastanza capitali.", "Registrazione Capitali",
                                     MessageBoxButton.OK, MessageBoxImage.Information);
@@ -193,7 +196,7 @@ namespace FinanceManager.ViewModels
         {
             if (e.AddedItems.Count > 0 && sender is DataGrid DS)
             {
-                ActualQuoteTab = (QuoteTab)e.AddedItems[0];
+                ActualContoCorrente = (ContoCorrente)e.AddedItems[0];
             }
             if (e.AddedItems.Count > 0 && sender is ComboBox)
             {
@@ -210,17 +213,17 @@ namespace FinanceManager.ViewModels
         {
             if (obj != null)
             {
-                if (obj.GetType() == typeof(QuoteInv))
+                if (obj.GetType() == typeof(InvestmentSituation))
                 {
-                    var data = obj as QuoteInv;
-                    if (!string.IsNullOrEmpty(data.NomeInvestitore))
+                    var data = obj as InvestmentSituation;
+                    if (!string.IsNullOrEmpty(data.Socio))
                     {
                         if (!string.IsNullOrEmpty(Investitore) && string.IsNullOrEmpty(CodeCurrency))
-                            return data.NomeInvestitore.ToUpper().Contains(Investitore.ToUpper());
+                            return data.Socio.ToUpper().Contains(Investitore.ToUpper());
                         else if (string.IsNullOrEmpty(Investitore) && !string.IsNullOrEmpty(CodeCurrency))
                             return data.CodValuta.ToLower().Contains(CodeCurrency.ToLower());
                         else if (!string.IsNullOrEmpty(Investitore) && !string.IsNullOrEmpty(CodeCurrency))
-                            return data.NomeInvestitore.ToLower().Contains(Investitore.ToLower()) && data.CodValuta.ToUpper().Contains(CodeCurrency.ToUpper());
+                            return data.Socio.ToLower().Contains(Investitore.ToLower()) && data.CodValuta.ToUpper().Contains(CodeCurrency.ToUpper());
                     }
                 }
             }
@@ -253,8 +256,8 @@ namespace FinanceManager.ViewModels
         }
         public bool CanSave(object param)
         {
-            if (ActualQuoteTab.Id_Gestione > 0 && ActualQuoteTab.AmmontareValuta != 0 && ActualQuoteTab.Id_Valuta > 0 &&
-                (ActualQuoteTab.Id_tipo_movimento == 1 || ActualQuoteTab.Id_tipo_movimento == 2) && ActualQuoteTab.ChangeValue > 0)
+            if (ActualContoCorrente.Id_Gestione > 0 && ActualContoCorrente.Ammontare != 0 && ActualContoCorrente.Id_Valuta > 0 &&
+                (ActualContoCorrente.Id_tipo_movimento == 1 || ActualContoCorrente.Id_tipo_movimento == 2) && ActualContoCorrente.Valore_Cambio > 0)
                 return true;
             return false;
         }
@@ -262,46 +265,49 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                if (ActualQuoteTab.Id_tipo_movimento == 2 && ActualQuoteTab.AmmontareValuta > 0)
-                    ActualQuoteTab.AmmontareValuta = ActualQuoteTab.AmmontareValuta * -1;
-                ActualQuoteTab.AmmontareEuro = ActualQuoteTab.AmmontareValuta * ActualQuoteTab.ChangeValue;
-                int Id_Aggregazione = ActualQuoteTab.Id_Gestione == 4 ? 16 : 15;
-                int result = _managerLiquidServices.VerifyInvestmentDate(ActualQuoteTab, Id_Aggregazione); // verifico se alla stessa data c'è già un inserimento
-                if (result == -1)
+                if (ActualContoCorrente.Id_tipo_movimento == 2 && ActualContoCorrente.Ammontare > 0)
+                    ActualContoCorrente.Ammontare = ActualContoCorrente.Ammontare * -1;
+                int Id_Aggregazione = ActualContoCorrente.Id_Gestione == 4 ? 16 : 15;
+                object result = _quoteServices.VerifyInvestmentDate(ActualContoCorrente, Id_Aggregazione); // verifico se alla stessa data c'è già un inserimento
+                if (result is long) //non è mai stato effettuato un versamento / prelievo in questa data
                 {
-                    if (ActualQuoteTab.Id_Gestione != 4)
+                    if (ActualContoCorrente.Id_Gestione != 4)
                     {
-                        ActualQuoteTab.Id_Periodo_Quote = _managerLiquidServices.Update_InsertQuotePeriodi(ActualQuoteTab.DataMovimento, Id_Aggregazione);
-                        _managerLiquidServices.InsertInvestment(ActualQuoteTab); // inserisco il nuovo movimento di capitali
-                        ActualQuoteTab.Id_Gestione = ActualQuoteTab.Id_Gestione == 3 ? 5 : 3;
-                        ActualQuoteTab.AmmontareEuro = 0;
-                        ActualQuoteTab.AmmontareValuta = 0;
-                        ActualQuoteTab.ChangeValue = 0;
-                        ActualQuoteTab.CodeCurrency = "";
-                        ActualQuoteTab.Note = "Inserimento per Quote";
-                        _managerLiquidServices.InsertInvestment(ActualQuoteTab); // inserisco il movimento a 0 per effettuare le quote corrette.
-                        _managerLiquidServices.ComputesAndInsertQuoteGuadagno(Id_Aggregazione, ActualQuoteTab.Id_Periodo_Quote);
+                        ActualContoCorrente.Id_Quote_Periodi = _quoteServices.Update_InsertQuotePeriodi(ActualContoCorrente.DataMovimento, Id_Aggregazione);
+                        _contoCorrenteServices.InsertAccountMovement(ActualContoCorrente); // inserisco il nuovo movimento di capitali
+                        ActualContoCorrente.Id_Gestione = ActualContoCorrente.Id_Gestione == 3 ? 5 : 3;
+                        ActualContoCorrente.Ammontare = 0;
+                        ActualContoCorrente.Valore_Cambio = 0;
+                        ActualContoCorrente.Cod_Valuta = "";
+                        ActualContoCorrente.Causale = "Inserimento per Quote";
+                        _contoCorrenteServices.InsertAccountMovement(ActualContoCorrente); // inserisco il movimento a 0 per effettuare le quote corrette.
+                        _quoteServices.ComputesAndInsertQuoteGuadagno(Id_Aggregazione, ActualContoCorrente.Id_Quote_Periodi);
                     }
-                    else if (ActualQuoteTab.Id_Gestione == 4)
+                    else if (ActualContoCorrente.Id_Gestione == 4)
                     {
-                        ActualQuoteTab.Id_Periodo_Quote = _managerLiquidServices.Update_InsertQuotePeriodi(ActualQuoteTab.DataMovimento, Id_Aggregazione);
-                        _managerLiquidServices.InsertInvestment(ActualQuoteTab); // inserisco il nuovo movimento di capitali
-                        ActualQuoteTab.Id_Gestione = 3; ActualQuoteTab.AmmontareEuro = 0; ActualQuoteTab.AmmontareValuta = 0; ActualQuoteTab.Note = "Inserimento per Quote";
-                        _managerLiquidServices.InsertInvestment(ActualQuoteTab); // FLAVIO inserisco il movimento a 0 per effettuare le quote corrette.
-                        ActualQuoteTab.Id_Gestione = 5;
-                        _managerLiquidServices.InsertInvestment(ActualQuoteTab); // DANIELA inserisco il movimento a 0 per effettuare le quote corrette.
-                        _managerLiquidServices.ComputesAndInsertQuoteGuadagno(Id_Aggregazione, ActualQuoteTab.Id_Periodo_Quote);
+                        ActualContoCorrente.Id_Quote_Periodi = _quoteServices.Update_InsertQuotePeriodi(ActualContoCorrente.DataMovimento, Id_Aggregazione);
+                        _contoCorrenteServices.InsertAccountMovement(ActualContoCorrente); // inserisco il nuovo movimento di capitali
+                        ActualContoCorrente.Id_Gestione = 3; ActualContoCorrente.Ammontare = 0; ActualContoCorrente.Causale = "Inserimento per Quote";
+                        _contoCorrenteServices.InsertAccountMovement(ActualContoCorrente); // FLAVIO inserisco il movimento a 0 per effettuare le quote corrette.
+                        ActualContoCorrente.Id_Gestione = 5;
+                        _contoCorrenteServices.InsertAccountMovement(ActualContoCorrente); // DANIELA inserisco il movimento a 0 per effettuare le quote corrette.
+                        _quoteServices.ComputesAndInsertQuoteGuadagno(Id_Aggregazione, ActualContoCorrente.Id_Quote_Periodi);
                     }
                 }
                 else
                 {
-                    ActualQuoteTab.Id_Periodo_Quote = result;
-                    ActualQuoteTab.Id_Quote_Investimenti = _managerLiquidServices.GetIdQuoteTab(ActualQuoteTab); // trovo il codice per modificare il record
-                    _managerLiquidServices.UpdateQuoteTab(ActualQuoteTab);     // modifico l'inserimento
-                    _managerLiquidServices.ComputesAndModifyQuoteGuadagno(Id_Aggregazione);
+                    // se esiste già un versamento / prelievo mi ritorna la data link
+                    ActualContoCorrente.Modified = (DateTime)result;
+                    ContoCorrenteList contos = _contoCorrenteServices.Get2ContoCorrentes(ActualContoCorrente.Modified);   // è il cc già inserito con parametri a zero
+                    if (contos[0].Causale == "Inserimento per Quote")
+                        ActualContoCorrente.Id_RowConto = contos[0].Id_RowConto;
+                    else if (contos.Count == 2 && contos[1].Causale == "Inserimento per Quote")
+                        ActualContoCorrente.Id_RowConto = contos[1].Id_RowConto;
+                    _contoCorrenteServices.UpdateRecordContoCorrente(ActualContoCorrente, Models.Enumeratori.TipologiaIDContoCorrente.IdContoCorrente);
+                    _quoteServices.ComputesAndModifyQuoteGuadagno(Id_Aggregazione);
                 }
                 // aggiorno la tabella con i guadagni totali
-                _managerLiquidServices.UpdateGuadagniTotaleAnno(ActualQuoteTab.Id_Periodo_Quote, Id_Aggregazione);
+                _quoteServices.UpdateGuadagniTotaleAnno(ActualContoCorrente.Id_Quote_Periodi, Id_Aggregazione);
                 MessageBox.Show("Il movimento di capitali è stato registrato con successo.", "Registrazione Capitali",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -314,7 +320,7 @@ namespace FinanceManager.ViewModels
         }
         public bool CanModify(object param)
         {
-            if (ActualQuoteTab.Id_Quote_Investimenti > 0)
+            if (ActualContoCorrente.Id_RowConto > 0)
                 return true;
             return false;
         }
@@ -322,10 +328,9 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                if (ActualQuoteTab.Id_tipo_movimento == 2 && ActualQuoteTab.AmmontareValuta > 0)
-                    ActualQuoteTab.AmmontareValuta = ActualQuoteTab.AmmontareValuta * -1;
-                ActualQuoteTab.AmmontareEuro = ActualQuoteTab.AmmontareValuta * ActualQuoteTab.ChangeValue;
-                _managerLiquidServices.UpdateQuoteTab(ActualQuoteTab);
+                if (ActualContoCorrente.Id_tipo_movimento == 2 && ActualContoCorrente.Ammontare > 0)
+                    ActualContoCorrente.Ammontare = ActualContoCorrente.Ammontare * -1;
+                _contoCorrenteServices.UpdateRecordContoCorrente(ActualContoCorrente, Models.Enumeratori.TipologiaIDContoCorrente.IdContoCorrente);
                 MessageBox.Show("La modifica è stata registrata con successo.", "Registrazione Capitali",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             }

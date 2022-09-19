@@ -8,6 +8,8 @@ using FinanceManager.Events;
 using FinanceManager.Services;
 using FinanceManager.Views;
 using FinanceManager.Models;
+using System.Linq.Expressions;
+using NPOI.SS.Formula.Functions;
 
 namespace FinanceManager.ViewModels
 {
@@ -15,15 +17,19 @@ namespace FinanceManager.ViewModels
     {
         private readonly IRegistryServices _registryServices;
         private readonly IManagerLiquidAssetServices _managerLiquidServices;
+        private readonly IContoCorrenteServices _contoCorrenteServices;
 
         public ICommand CloseMeCommand { get; set; }
         public ICommand ClearMeCommand { get; set; }
         public ICommand InsertCommand { get; set; }
         public ICommand ModifyCommand { get; set; }
-        public GiroContoViewModel(IRegistryServices registryServices, IManagerLiquidAssetServices managerLiquidServices)
+
+        public GiroContoViewModel
+            (IRegistryServices registryServices, IManagerLiquidAssetServices managerLiquidServices, IContoCorrenteServices contoCorrenteServices)
         {
             _registryServices = registryServices ?? throw new ArgumentNullException("Manca collegamento con richiesta dati anagrafica Giroconto View Model");
             _managerLiquidServices = managerLiquidServices ?? throw new ArgumentNullException("Manca collegamento con richiesta dati conti Giroconto View Model");
+            _contoCorrenteServices = contoCorrenteServices ?? throw new ArgumentNullException("Manca Concocorrente services");
             Init();
             UpdateCollection();
             ClearData();
@@ -41,6 +47,7 @@ namespace FinanceManager.ViewModels
         {
             ListValute = new RegistryCurrencyList();
             ListValute = _registryServices.GetRegistryCurrencyList();
+            //------------------- in doppio per i combo box Mittente e Ricevente ------------------------------
             ListInvestitoriMittente = new RegistryOwnersList();
             ListGestioniMittente = new RegistryOwnersList();
             ListContoMittente = new RegistryLocationList();
@@ -64,12 +71,13 @@ namespace FinanceManager.ViewModels
             }
             ListContoMittente = _registryServices.GetRegistryLocationList();
             ListContoRicevente = _registryServices.GetRegistryLocationList();
-
+            //===================================================================================================
         }
         private void ClearData()
         {
+            //------- I DATI DELLE GRIGLIE DI CONTI CORRENTI E CONTO INVESTITORE SOLO GIROCONTO ----------------
             ContoCorrenteList conti_Correnti = new ContoCorrenteList();
-            conti_Correnti = _managerLiquidServices.GetContoCorrenteList();
+            conti_Correnti = _contoCorrenteServices.GetContoCorrenteList();
             var contos = from record in conti_Correnti where record.Id_tipo_movimento == 12 select record;
             ContiCorrenti = new ContoCorrenteList();
             foreach (ContoCorrente conto in contos)
@@ -87,7 +95,18 @@ namespace FinanceManager.ViewModels
                 if (tab.Id_tipo_movimento == 12)
                     Investimenti.Add(tab);
             }
+            //===================================================================================================
+            ActualQuote = new QuoteTab();
+            ActualCCmittente = new ContoCorrente();
+            ActualCCricevente = new ContoCorrente();
+            ActualQuote.Id_tipo_movimento = 12;
+            ActualCCmittente.Id_tipo_movimento = 12;
+            ActualCCricevente.Id_tipo_movimento = 12;
 
+            TotaleMittenteQuote = new QuoteTabList();
+            TotaleRiceventeQuote = new QuoteTabList();
+            TotaleMittenteConto = new ContoCorrenteList();
+            TotaleRiceventeConto = new ContoCorrenteList();
             ChiMittente = true;
             ContoMittente = true;
             GestioneMittente = false;
@@ -95,10 +114,6 @@ namespace FinanceManager.ViewModels
             ContoRicevente = false;
             GestioneRicevente = false;
             ValutaEnabled = false;
-            TotaleMittenteQuote = new QuoteTabList();
-            TotaleRiceventeQuote = new QuoteTabList();
-            TotaleMittenteConto = new ContoCorrenteList();
-            TotaleRiceventeConto = new ContoCorrenteList();
             IdInvestitoreMittente = 0;
             IdInvestitoreRicevente = 0;
             IdContoMittente = 0;
@@ -107,8 +122,8 @@ namespace FinanceManager.ViewModels
             IdGestioneRicevente = 0;
             IdValuta = 0;
             Valore = 0;
-            dataModifica = DateTime.Now;
-            causale = "";
+            DataModifica = DateTime.Now;
+            Causale = "";
         }
 
         #region Get_Set
@@ -123,6 +138,30 @@ namespace FinanceManager.ViewModels
         {
             get { return GetValue(() => ContiCorrenti); }
             set { SetValue(() => ContiCorrenti, value); }
+        }
+        /// <summary>
+        /// E' il record dedicato agli investimenti dei soci
+        /// </summary>
+        public QuoteTab ActualQuote
+        {
+            get { return GetValue(() => ActualQuote); }
+            set { SetValue(() => ActualQuote, value); }
+        }
+        /// <summary>
+        /// E' il record per il giroconto mittente
+        /// </summary>
+        public ContoCorrente ActualCCmittente
+        {
+            get { return GetValue(() => ActualCCmittente); }
+            set { SetValue(() => ActualCCmittente, value); }
+        }
+        /// <summary>
+        /// E' il record per il giroconto ricevente
+        /// </summary>
+        public ContoCorrente ActualCCricevente
+        {
+            get { return GetValue(() => ActualCCricevente); }
+            set { SetValue(() => ActualCCricevente, value); }
         }
 
         #region boolean per autorizzazioni a cascata
@@ -186,7 +225,7 @@ namespace FinanceManager.ViewModels
             set { SetValue(() => GestioneRicevente, value); }
         }
 
-        
+
         public bool ValutaEnabled
         {
             get { return GetValue(() => ValutaEnabled); }
@@ -305,12 +344,14 @@ namespace FinanceManager.ViewModels
         }
 
         #endregion combobo
-
-        #region dati da registrare
+        // compila la griglia con la disponibilità finanziaria per selezione ------------------
         public QuoteTabList TotaleMittenteQuote { get; set; }
         public QuoteTabList TotaleRiceventeQuote { get; set; }
         public ContoCorrenteList TotaleMittenteConto { get; set; }
         public ContoCorrenteList TotaleRiceventeConto { get; set; }
+        //=======================================================================================
+
+        #region dati da registrare
         /// <summary>
         /// è il valore da trasferire
         /// </summary>
@@ -320,27 +361,33 @@ namespace FinanceManager.ViewModels
             set { SetValue(() => Valore, value); }
         }
 
-        public DateTime dataModifica
+        public DateTime DataModifica
         {
-            get { return GetValue(() => dataModifica); }
-            set { SetValue(() => dataModifica, value); }
+            get { return GetValue(() => DataModifica); }
+            set { SetValue(() => DataModifica, value); }
         }
 
-        public string causale
+        public string Causale
         {
-            get { return GetValue(() => causale); }
-            set { SetValue(() => causale, value); }
+            get { return GetValue(() => Causale); }
+            set { SetValue(() => Causale, value); }
         }
         #endregion dati da registrare
 
-        #endregion
-        
+        #endregion getter & setter
+
         #region Events
         public void LostFocus(object sender, EventArgs e)
         {
-            if (((TextBox)sender).Text != "")
+            if (((TextBox)sender).Text != "" && ((TextBox)sender).Name != "Causale")
             {
-                try { Valore = Convert.ToDouble(((TextBox)sender).Text); } catch { } 
+                try { Valore = Convert.ToDouble(((TextBox)sender).Text); } catch { }
+            }
+            else if (((TextBox)sender).Text != "" && ((TextBox)sender).Name == "Causale")
+            {
+                ActualQuote.Note = Causale;
+                ActualCCmittente.Causale = Causale;
+                ActualCCricevente.Causale = Causale;
             }
         }
 
@@ -365,11 +412,13 @@ namespace FinanceManager.ViewModels
         {
             if (e.AddedItems.Count > 0 && sender is DatePicker DP)
             {
-                dataModifica = (DateTime)e.AddedItems[0];
+                DataModifica = (DateTime)e.AddedItems[0];
+
             }
             else if (e.AddedItems.Count > 0 && sender is ComboBox CB)
             {
                 string CBname = CB.Name;
+                // --- ATTIVO SELETTIVAMENTE I COMBO BOX E AGGIORNO LE GRIGLIE ---------
                 switch (CBname)
                 {
                     case "InvMittente":
@@ -385,18 +434,18 @@ namespace FinanceManager.ViewModels
                         break;
                     case "ContoMittente":
                         ChiMittente = false;
-                        GestioneMittente=true;
+                        GestioneMittente = true;
                         IdContoMittente = ((RegistryLocation)e.AddedItems[0]).Id_Conto;
                         TotaleMittenteQuote = null;
-                        TotaleMittenteConto = _managerLiquidServices.GetTotalAmountByAccount(IdContoMittente);
+                        TotaleMittenteConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoMittente);
                         CreaDataGrid(sender, TotaleMittenteQuote, TotaleMittenteConto, (DataGrid)CB.FindName("DGMittente"));
                         break;
                     case "GestioneMittente":
                         ContoMittente = false;
                         ChiRicevente = true;
-                        ContoRicevente=true;
+                        ContoRicevente = true;
                         IdGestioneMittente = ((RegistryOwner)e.AddedItems[0]).Id_gestione;
-                        TotaleMittenteConto = _managerLiquidServices.GetTotalAmountByAccount(IdContoMittente, IdGestioneMittente);
+                        TotaleMittenteConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoMittente, IdGestioneMittente);
                         CreaDataGrid(sender, TotaleMittenteQuote, TotaleMittenteConto, (DataGrid)CB.FindName("DGMittente"));
                         break;
                     case "InvRicevente":
@@ -415,29 +464,32 @@ namespace FinanceManager.ViewModels
                         GestioneRicevente = true;
                         IdContoRicevente = ((RegistryLocation)e.AddedItems[0]).Id_Conto;
                         TotaleRiceventeQuote = null;
-                        TotaleRiceventeConto = _managerLiquidServices.GetTotalAmountByAccount(IdContoRicevente);
+                        TotaleRiceventeConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoRicevente);
                         CreaDataGrid(sender, TotaleRiceventeQuote, TotaleRiceventeConto, (DataGrid)CB.FindName("DGRicevente"));
                         break;
                     case "GestioneRicevente":
                         ContoRicevente = false;
                         ValutaEnabled = true;
                         IdGestioneRicevente = ((RegistryOwner)e.AddedItems[0]).Id_gestione;
-                        TotaleRiceventeConto = _managerLiquidServices.GetTotalAmountByAccount(IdContoRicevente, IdGestioneRicevente);
+                        TotaleRiceventeConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoRicevente, IdGestioneRicevente);
                         CreaDataGrid(sender, TotaleRiceventeQuote, TotaleRiceventeConto, (DataGrid)CB.FindName("DGRicevente"));
                         break;
                     case "Valuta":
                         GestioneRicevente = false;
                         ChiRicevente = false;
                         IdValuta = ((RegistryCurrency)e.AddedItems[0]).IdCurrency;
+                        ActualQuote.Id_Valuta = IdValuta;
+                        ActualCCmittente.Id_Valuta = IdValuta;
+                        ActualCCricevente.Id_Valuta = IdValuta;
                         if (TotaleMittenteQuote != null)
                             TotaleMittenteQuote = _managerLiquidServices.GetTotalAmountByCurrency(IdInvestitoreMittente, IdValuta);
                         else
-                             TotaleMittenteConto = _managerLiquidServices.GetTotalAmountByAccount(IdContoMittente, IdGestioneMittente, IdValuta);
+                            TotaleMittenteConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoMittente, IdGestioneMittente, IdValuta);
                         CreaDataGrid(sender, TotaleMittenteQuote, TotaleMittenteConto, (DataGrid)CB.FindName("DGMittente"));
                         if (TotaleRiceventeQuote != null)
                             TotaleRiceventeQuote = _managerLiquidServices.GetTotalAmountByCurrency(IdInvestitoreRicevente, IdValuta);
                         else
-                            TotaleRiceventeConto =  _managerLiquidServices.GetTotalAmountByAccount(IdContoRicevente, IdGestioneRicevente, IdValuta);
+                            TotaleRiceventeConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoRicevente, IdGestioneRicevente, IdValuta);
                         CreaDataGrid(sender, TotaleRiceventeQuote, TotaleRiceventeConto, (DataGrid)CB.FindName("DGRicevente"));
                         break;
                 }
@@ -449,25 +501,20 @@ namespace FinanceManager.ViewModels
                     if (QT.AmmontareValuta < 0)
                     {
                         IdInvestitoreMittente = QT.Id_Gestione;
-                        ContoCorrente contoRicevuto = _managerLiquidServices.GetContoCorrenteByIdQuote(QT.Id_Quote_Investimenti);
-                        IdContoRicevente = contoRicevuto.Id_Conto;
-                        IdGestioneRicevente = contoRicevuto.Id_Gestione;
+                        IdContoRicevente = ActualCCricevente.Id_Conto;
+                        IdGestioneRicevente = ActualCCricevente.Id_Gestione;
                         IdValuta = QT.Id_Valuta;
                         Valore = QT.AmmontareValuta * -1;
-                        dataModifica = QT.DataMovimento;
-                        causale = QT.Note;
                     }
                     else
                     {
                         IdInvestitoreRicevente = QT.Id_Gestione;
                         IdValuta = QT.Id_Valuta;
                         Valore = QT.AmmontareValuta;
-                        dataModifica = QT.DataMovimento;
-                        causale = QT.Note;
-                        ContoCorrente contoInviato = _managerLiquidServices.GetContoCorrenteByIdQuote(QT.Id_Quote_Investimenti);
-                        IdContoMittente = contoInviato.Id_Conto;
-                        IdGestioneMittente = contoInviato.Id_Gestione;
+                        IdContoMittente = ActualCCmittente.Id_Conto;
+                        IdGestioneMittente = ActualCCmittente.Id_Gestione;
                     }
+                    ActualQuote = QT;
                 }
                 else if (DS.Name == "CONTOtrasfatti" && e.AddedItems[0] is ContoCorrente CC)
                 {
@@ -476,29 +523,44 @@ namespace FinanceManager.ViewModels
                         IdContoMittente = CC.Id_Conto;
                         IdGestioneMittente = CC.Id_Gestione;
                         Valore = CC.Ammontare;
-                        dataModifica = CC.DataMovimento;
                         IdValuta = CC.Id_Valuta;
-                        causale = CC.Causale;
-                        if (CC.Id_Quote_Investimenti == 0)
-                        {
-                            ContoCorrenteList contiGemellati = _managerLiquidServices.Get2ContoCorrentes(CC.Modified);
-                            ContoCorrente conto = contiGemellati[0].Id_Conto == CC.Id_Conto ? contiGemellati[1] : contiGemellati[0];
-                            IdContoRicevente = conto.Id_Conto;
-                            IdGestioneRicevente = conto.Id_Gestione;
+                        ActualCCmittente = CC;
+                        //if (CC.Id_Quote_Investimenti == 0)
+                        //{
+                        //    ContoCorrenteList contiGemellati = _contoCorrenteServices.Get2ContoCorrentes(CC.Modified);
+                        //    ActualCCricevente = contiGemellati[0].Id_Conto == CC.Id_Conto ? contiGemellati[1] : contiGemellati[0];
+                        //    IdContoRicevente = ActualCCricevente.Id_Conto;
+                        //    IdGestioneRicevente = ActualCCricevente.Id_Gestione;
 
-                        }
-                        else
-                        {
-                            QuoteTab socioRicevente = _managerLiquidServices.GetQuoteTabById(CC.Id_Quote_Investimenti);
-                            IdInvestitoreRicevente = socioRicevente.Id_Gestione;
-                        }
+                        //}
+                        //else
+                        //{
+                        //    ActualQuote = _managerLiquidServices.GetQuoteTabById(CC.Id_Quote_Investimenti);
+                        //    IdInvestitoreRicevente = ActualQuote.Id_Gestione;
+                        //}
                     }
                     else
                     {
-
+                        IdContoRicevente = CC.Id_Conto;
+                        IdGestioneRicevente = CC.Id_Gestione;
+                        Valore = CC.Ammontare;
+                        IdValuta = CC.Id_Valuta;
+                        ActualCCricevente = CC;
+                        //if (CC.Id_Quote_Investimenti == 0)
+                        //{
+                        //    ContoCorrenteList contiGemellati = _contoCorrenteServices.Get2ContoCorrentes(CC.Modified);
+                        //    ActualCCmittente = contiGemellati[0].Id_Conto == CC.Id_Conto ? contiGemellati[1] : contiGemellati[0];
+                        //    IdContoMittente = ActualCCmittente.Id_Conto;
+                        //    IdGestioneMittente = ActualCCmittente.Id_Gestione;
+                        //}
+                        //else
+                        //{
+                        //    ActualQuote = _managerLiquidServices.GetQuoteTabById(CC.Id_Quote_Investimenti);
+                        //    IdInvestitoreMittente = ActualQuote.Id_Gestione;
+                        //}
                     }
                 }
-                
+
             }
         }
 
@@ -564,10 +626,10 @@ namespace FinanceManager.ViewModels
         public void ClearMe(object param)
         {
             GiroContoView view = param as GiroContoView;
-            DataGrid grid = (DataGrid) view.FindName("DGMittente");
+            DataGrid grid = (DataGrid)view.FindName("DGMittente");
             grid.ItemsSource = null;
             grid.Columns.Clear();
-            grid = (DataGrid) view.FindName("DGRicevente");
+            grid = (DataGrid)view.FindName("DGRicevente");
             grid.ItemsSource = null;
             grid.Columns.Clear();
             ClearData();
@@ -575,7 +637,7 @@ namespace FinanceManager.ViewModels
 
         public bool CanSave(object param)
         {
-            if (ChiMittente == false && ChiRicevente == false && ValutaEnabled == true && Valore > 0 && dataModifica != new DateTime())
+            if (ChiMittente == false && ChiRicevente == false && ValutaEnabled == true && Valore > 0)
             {
                 if (TotaleMittenteQuote != null)
                 {
@@ -596,98 +658,130 @@ namespace FinanceManager.ViewModels
 
         public void SaveCommand(object param)
         {
-            try
-            {
-                int id_quote = 0;
-                if (TotaleMittenteQuote != null)
+            Mouse.SetCursor(Cursors.Wait);
+            int id_quote = 0;
+            if (TotaleMittenteQuote != null && TotaleRiceventeConto != null)
+                try
                 {
-                    QuoteTab ActualQuote = new QuoteTab();
-                    ActualQuote.Id_Valuta = IdValuta;
-                    ActualQuote.DataMovimento = dataModifica;
-                    ActualQuote.AmmontareValuta = Valore < 0 ? Valore : Valore * -1;
-                    ActualQuote.Id_tipo_movimento = 12;
-                    ActualQuote.Id_Gestione = IdInvestitoreMittente;
-                    ActualQuote.Id_Periodo_Quote = 0;
-                    ActualQuote.ChangeValue = 0;
-                    ActualQuote.AmmontareEuro = 0;
-                    ActualQuote.Note = causale;
-                    _managerLiquidServices.InsertInvestment(ActualQuote);
-                    id_quote = _managerLiquidServices.GetIdQuoteTab(ActualQuote);
+                    id_quote = AddActualQuote(Valore < 0 ? Valore : Valore * -1, IdInvestitoreMittente);
+                    AddActualCC(IdContoRicevente, id_quote, IdGestioneRicevente, Valore > 0 ? Valore : Valore * -1, DateTime.Now);
                 }
-                if (TotaleRiceventeQuote != null)
+                catch (Exception err)
                 {
-                    QuoteTab ActualQuote = new QuoteTab();
-                    ActualQuote.Id_Valuta = IdValuta;
-                    ActualQuote.DataMovimento = dataModifica;
-                    ActualQuote.AmmontareValuta = Valore;
-                    ActualQuote.Id_tipo_movimento = 12;
-                    ActualQuote.Id_Gestione = IdInvestitoreRicevente;
-                    ActualQuote.Id_Periodo_Quote = 0;
-                    ActualQuote.ChangeValue = 0;
-                    ActualQuote.AmmontareEuro = 0;
-                    ActualQuote.Note = causale;
-                    _managerLiquidServices.InsertInvestment(ActualQuote);
-                    id_quote = _managerLiquidServices.GetIdQuoteTab(ActualQuote);
+                    if (id_quote != 0)  // l'errore è successivo quindi devo eliminare il recod quote
+                        _managerLiquidServices.DeleteRecordQuoteTab(id_quote);
+                    Mouse.SetCursor(Cursors.Arrow);
+                    MessageBox.Show(string.Format("Modica dei dati con errori: ", Environment.NewLine, err.Message),
+                        "Giroconto", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-                if (TotaleMittenteConto != null)
+
+            if (TotaleRiceventeQuote != null && TotaleMittenteConto != null)
+                try
                 {
-                    ContoCorrente contoCorrente = new ContoCorrente();
-                    contoCorrente.Id_Valuta = IdValuta;
-                    contoCorrente.Id_Conto = IdContoMittente;
-                    contoCorrente.Id_Quote_Investimenti = id_quote;
-                    contoCorrente.DataMovimento = dataModifica;
-                    contoCorrente.Id_Valuta = IdValuta;
-                    contoCorrente.Id_Portafoglio_Titoli = 0;
-                    contoCorrente.Id_tipo_movimento = 12;
-                    contoCorrente.Id_Gestione = IdGestioneMittente;
-                    contoCorrente.Id_Titolo = 0;
-                    contoCorrente.Ammontare = Valore * -1;
-                    contoCorrente.Valore_Cambio = 0;
-                    contoCorrente.Causale = causale;
-                    contoCorrente.Id_Tipo_Soldi = 1;    // nel prossimo aggiornamento togliere il tipo soldi
-                    contoCorrente.Id_Quote_Periodi = 0;
-                    contoCorrente.Modified = DateTime.Now;
-                    _managerLiquidServices.InsertAccountMovement(contoCorrente);
+                    id_quote = AddActualQuote(Valore > 0 ? Valore : Valore * -1, IdInvestitoreRicevente);
+                    AddActualCC(IdContoMittente, id_quote, IdGestioneMittente, Valore < 0 ? Valore : Valore * -1, DateTime.Now);
                 }
-                if (TotaleRiceventeConto != null)
+                catch (Exception err)
                 {
-                    ContoCorrente contoCorrente = new ContoCorrente();
-                    contoCorrente.Id_Valuta = IdValuta;
-                    contoCorrente.Id_Conto = IdContoRicevente;
-                    contoCorrente.Id_Quote_Investimenti = id_quote;
-                    contoCorrente.DataMovimento = dataModifica;
-                    contoCorrente.Id_Valuta = IdValuta;
-                    contoCorrente.Id_Portafoglio_Titoli = 0;
-                    contoCorrente.Id_tipo_movimento = 12;
-                    contoCorrente.Id_Gestione = IdGestioneRicevente;
-                    contoCorrente.Id_Titolo = 0;
-                    contoCorrente.Ammontare = Valore > 0 ? Valore : Valore * -1;
-                    contoCorrente.Valore_Cambio = 0;
-                    contoCorrente.Causale = causale;
-                    contoCorrente.Id_Tipo_Soldi = 1;    // nel prossimo aggiornamento togliere il tipo soldi
-                    contoCorrente.Id_Quote_Periodi = 0;
-                    contoCorrente.Modified = DateTime.Now;
-                    _managerLiquidServices.InsertAccountMovement(contoCorrente);
+                    if (id_quote != 0)  // l'errore è successivo quindi devo eliminare il recod quote
+                        _managerLiquidServices.DeleteRecordQuoteTab(id_quote);
+                    Mouse.SetCursor(Cursors.Arrow);
+                    MessageBox.Show(string.Format("Modica dei dati con errori: ", Environment.NewLine, err.Message),
+                        "Giroconto", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-                ClearMe(param);
-                MessageBox.Show("Il passaggio di soldi è avvenuto con successo.", "Trasferimento Soldi", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            catch(Exception err)
-            {
-                MessageBox.Show(string.Format("Modica dei dati con errori: ", err.Message), "Errore Trasferimento Soldi", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            else
+                try
+                {
+                    AddActualCC(IdContoMittente, id_quote, IdGestioneMittente, Valore < 0 ? Valore : Valore * -1, DateTime.Now);
+                    ContoCorrente cc1 = _contoCorrenteServices.GetLastContoCorrente();
+                    try
+                    {
+                        AddActualCC(IdContoRicevente, id_quote, IdGestioneRicevente, Valore > 0 ? Valore : Valore * -1, cc1.Modified);
+                    }
+                    catch(Exception err)
+                    {
+                        // devo eliminare cc1 per il mittente che è anche l'ultimo record inserito
+                        _contoCorrenteServices.DeleteRecordContoCorrente(cc1.Id_Conto);
+                        Mouse.SetCursor(Cursors.Arrow);
+                        MessageBox.Show(string.Format("Modifica dei dati con errori: ", Environment.NewLine, err.Message, Environment.NewLine,
+                            "Il record mittente ", cc1.Id_Conto, " è stato eliminato."), "Giroconto", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+                catch (Exception err)
+                {
+                    // non devo eliminare nulla in quanto l'errore è avvenuto nella prima scrittura
+                    Mouse.SetCursor(Cursors.Arrow);
+                    MessageBox.Show(string.Format("Modica dei dati con errori: ", Environment.NewLine, err.Message),
+                        "Giroconto", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            Mouse.SetCursor(Cursors.Arrow);
+            MessageBox.Show("Trasferimento effettuato", "Giroconto", MessageBoxButton.OK, MessageBoxImage.Information);
+            ClearMe(param);
+        }
+
+        private int AddActualQuote(double valore, int gestione)
+        {
+            ActualQuote.AmmontareValuta = valore;
+            ActualQuote.Id_Gestione = gestione;
+            ActualQuote.Id_Periodo_Quote = 0;
+            ActualQuote.ChangeValue = 0;
+            ActualQuote.AmmontareEuro = 0;
+            ActualQuote.DataMovimento = DataModifica;
+            _managerLiquidServices.InsertInvestment(ActualQuote);
+            return _managerLiquidServices.GetIdQuoteTab(ActualQuote);
+        }
+
+        private void AddActualCC(int conto, int quota, int gestione, double ammontare, DateTime dateLink)
+        {
+            ContoCorrente cc = new ContoCorrente();
+            cc.Id_Conto = conto;
+            //cc.Id_Quote_Investimenti = quota;
+            cc.Id_Valuta = IdValuta;
+            cc.Id_Portafoglio_Titoli = 0;
+            cc.Id_tipo_movimento = 12;
+            cc.Id_Gestione = gestione;
+            cc.Id_Titolo = 0;
+            cc.Ammontare = ammontare;
+            cc.DataMovimento = DataModifica;
+            cc.Valore_Cambio = 0;
+            cc.Id_Tipo_Soldi = 1;    // nel prossimo aggiornamento togliere il tipo soldi
+            cc.Id_Quote_Periodi = 0;
+            cc.Modified = dateLink;
+            //_managerLiquidServices.InsertAccountMovement(cc);
         }
 
         public bool CanModify(object param)
         {
-            //if(param == null)
+            if (ActualQuote.Id_Quote_Investimenti > 0 || ActualCCmittente.Id_RowConto > 0 || ActualCCricevente.Id_RowConto > 0)
+                return true;
 
             return false;
         }
 
         public void UpdateCommand(object param)
         {
-
+            try
+            {
+                if (ActualQuote.Id_Quote_Investimenti > 0)
+                {
+                    _managerLiquidServices.UpdateQuoteTab(ActualQuote);
+                    if (ActualCCmittente.Id_RowConto > 0)
+                        _contoCorrenteServices.UpdateRecordContoCorrente(ActualCCmittente, 0);
+                    else
+                        _contoCorrenteServices.UpdateRecordContoCorrente(ActualCCricevente, 0);
+                }
+                else
+                {
+                    _contoCorrenteServices.UpdateRecordContoCorrente(ActualCCmittente, 0);
+                    _contoCorrenteServices.UpdateRecordContoCorrente(ActualCCricevente, 0);
+                }
+                ClearMe(param);
+                MessageBox.Show("La modifica è avvenuto con successo.", "Trasferimento Soldi", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(string.Format("Modica dei dati con errori: ", err.Message), "Errore Trasferimento Soldi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         #endregion

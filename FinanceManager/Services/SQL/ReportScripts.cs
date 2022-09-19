@@ -42,7 +42,7 @@
             "AS AAA WHERE Totale <> 0;";
 
         public static readonly string GetMovementDetailed = "SELECT G.nome_gestione, B.desc_conto, C.desc_movimento, E.desc_tipo_titolo, D.desc_titolo, D.isin, F.desc_tipo_soldi, " +
-            "data_movimento, ROUND(case when ammontare < 0 then ammontare ELSE 0 END , 2) AS uscite, ROUND (case when ammontare > 0 then ammontare ELSE 0 END, 2) AS entrate, causale " +
+            "data_movimento, ROUND(case when ammontare < 0 then ammontare ELSE 0 END , 2) AS uscite, ROUND (case when ammontare > 0 then ammontare ELSE 0 END, 2) AS entrate, Causale " +
             "FROM conto_corrente A, conti B, tipo_movimento C, titoli D, tipo_titoli E, tipo_soldi F, gestioni G WHERE A.id_conto = B.id_conto AND A.id_tipo_movimento = C.id_tipo_movimento AND " +
             "A.id_titolo = D.id_titolo AND D.id_tipo_titolo = E.id_tipo_titolo AND A.id_tipo_soldi = F.id_tipo_soldi AND A.id_gestione = G.id_gestione " +
             "AND A.id_gestione = @id_gestione AND A.id_titolo = @id_titolo ORDER BY data_movimento DESC, A.id_titolo, A.id_tipo_soldi";

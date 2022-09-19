@@ -228,7 +228,7 @@ namespace FinanceManager.Services
                         RMD.DataMovimento = dr.Field<DateTime>("data_movimento");
                         RMD.Uscite = dr.Field<double>("uscite");
                         RMD.Entrate = dr.Field<double>("entrate");
-                        RMD.Causale = dr.Field<string>("causale");
+                        RMD.Causale = dr.Field<string>("Causale");
                         RMDL.Add(RMD);
                     }
                 }
