@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -265,15 +266,19 @@ namespace FinanceManager.ViewModels
         {
             try
             {
+                QuotePeriodi quotePeriodi = new QuotePeriodi();
                 if (ActualContoCorrente.Id_tipo_movimento == 2 && ActualContoCorrente.Ammontare > 0)
                     ActualContoCorrente.Ammontare = ActualContoCorrente.Ammontare * -1;
                 int Id_Aggregazione = ActualContoCorrente.Id_Gestione == 4 ? 16 : 15;
                 object result = _quoteServices.VerifyInvestmentDate(ActualContoCorrente, Id_Aggregazione); // verifico se alla stessa data c'è già un inserimento
+                quotePeriodi = _quoteServices.Update_InsertQuotePeriodi(ActualContoCorrente.DataMovimento, Id_Aggregazione);
                 if (result is long) //non è mai stato effettuato un versamento / prelievo in questa data
                 {
+                    ActualContoCorrente.Modified = quotePeriodi.DataInsert;
+                    ActualContoCorrente.Id_Quote_Periodi = quotePeriodi.IdPeriodoQuote;
+                    ActualContoCorrente.Id_Tipo_Soldi = 1;
                     if (ActualContoCorrente.Id_Gestione != 4)
                     {
-                        ActualContoCorrente.Id_Quote_Periodi = _quoteServices.Update_InsertQuotePeriodi(ActualContoCorrente.DataMovimento, Id_Aggregazione);
                         _contoCorrenteServices.InsertAccountMovement(ActualContoCorrente); // inserisco il nuovo movimento di capitali
                         ActualContoCorrente.Id_Gestione = ActualContoCorrente.Id_Gestione == 3 ? 5 : 3;
                         ActualContoCorrente.Ammontare = 0;
@@ -285,7 +290,6 @@ namespace FinanceManager.ViewModels
                     }
                     else if (ActualContoCorrente.Id_Gestione == 4)
                     {
-                        ActualContoCorrente.Id_Quote_Periodi = _quoteServices.Update_InsertQuotePeriodi(ActualContoCorrente.DataMovimento, Id_Aggregazione);
                         _contoCorrenteServices.InsertAccountMovement(ActualContoCorrente); // inserisco il nuovo movimento di capitali
                         ActualContoCorrente.Id_Gestione = 3; ActualContoCorrente.Ammontare = 0; ActualContoCorrente.Causale = "Inserimento per Quote";
                         _contoCorrenteServices.InsertAccountMovement(ActualContoCorrente); // FLAVIO inserisco il movimento a 0 per effettuare le quote corrette.
@@ -297,7 +301,9 @@ namespace FinanceManager.ViewModels
                 else
                 {
                     // se esiste già un versamento / prelievo mi ritorna la data link
-                    ActualContoCorrente.Modified = (DateTime)result;
+                    ActualContoCorrente.Modified = Convert.ToDateTime(result);
+                    ActualContoCorrente.Id_Tipo_Soldi = 1;
+                    ActualContoCorrente.Id_Quote_Periodi = quotePeriodi.IdPeriodoQuote;
                     ContoCorrenteList contos = _contoCorrenteServices.Get2ContoCorrentes(ActualContoCorrente.Modified);   // è il cc già inserito con parametri a zero
                     if (contos[0].Causale == "Inserimento per Quote")
                         ActualContoCorrente.Id_RowConto = contos[0].Id_RowConto;
@@ -313,7 +319,7 @@ namespace FinanceManager.ViewModels
             }
             catch (Exception err)
             {
-                MessageBox.Show(String.Format("La registrazione ha generato il seguente errore:\r\n", err), "Registrazione Capitali",
+                MessageBox.Show(String.Format("La registrazione ha generato il seguente errore:", Environment.NewLine, err), "Registrazione Capitali",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             }
             ClearMe();

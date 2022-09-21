@@ -24,8 +24,8 @@ namespace FinanceManager.Services
         /// </summary>
         /// <param name="DataDal">Data da cercare</param>
         /// <param name="TipoSoldi">Tipologia dei soldi</param>
-        /// <returns>Last id record inserted</returns>
-        int Update_InsertQuotePeriodi(DateTime DataDal, int TipoSoldi);
+        /// <returns>Il record di quote_periodi</returns>
+        QuotePeriodi Update_InsertQuotePeriodi(DateTime DataDal, int TipoSoldi);
 
         /// <summary>
         /// Calcolo le nuove quote e le inserisco nella tabella quote_guadagno

@@ -2,10 +2,12 @@
 
 namespace FinanceManager.Models
 {
-    public class PeriodiDiValidita
+    public class QuotePeriodi
     {
         public int IdPeriodoQuote { get; set; }
+        public int IdAggregazione { get; set; }
         public DateTime DataInizio { get; set; }
         public DateTime DataFine { get; set; }
+        public DateTime DataInsert { get; set; }
     }
 }

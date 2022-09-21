@@ -17,7 +17,6 @@ namespace FinanceManager.Services.SQL
 
         public static readonly string GetContoCorrente = ContoCorrente + " ORDER BY data_movimento desc, A.id_fineco_euro";
         public static readonly string GetContoCorrenteByIdCC = ContoCorrente + " AND A.id_fineco_euro = @id_fineco_euro ";
-        public static readonly string GetContoCorrenteByIdQuote = ContoCorrente + " AND A.id_quote_investimenti = @id_quote_investimenti ORDER BY A.data_movimento ";
         public static readonly string Get2ContoCorrentes = ContoCorrente + " AND A.modified = @modified ORDER BY  A.data_movimento, A.id_fineco_euro";
         public static readonly string GetContoCorrenteByIdPortafoglio = ContoCorrente + " AND A.id_portafoglio_titoli = @id_portafoglio_titoli ORDER BY A.data_movimento ";
 
@@ -49,8 +48,8 @@ namespace FinanceManager.Services.SQL
         /// <summary>
         /// Inserisce un movimento nel conto corrente
         /// </summary>
-        public static readonly string InsertAccountMovement = "INSERT INTO conto_corrente (id_conto, id_quote_investimenti, id_valuta, id_portafoglio_titoli, id_tipo_movimento, " +
-            "id_gestione, id_titolo, data_movimento, ammontare, cambio, Causale, id_tipo_soldi, id_quote_periodi, modified) VALUES ( @id_conto, @id_quote_investimenti, @id_valuta, @id_portafoglio_titoli, @id_tipo_movimento, " +
+        public static readonly string InsertAccountMovement = "INSERT INTO conto_corrente (id_conto, id_valuta, id_portafoglio_titoli, id_tipo_movimento, " +
+            "id_gestione, id_titolo, data_movimento, ammontare, cambio, Causale, id_tipo_soldi, id_quote_periodi, modified) VALUES ( @id_conto, @id_valuta, @id_portafoglio_titoli, @id_tipo_movimento, " +
             "@id_gestione, @id_titolo, @data_movimento, @ammontare, @cambio, @Causale, @id_tipo_soldi, @id_quote_periodi, @modified)";
 
 
@@ -63,12 +62,12 @@ namespace FinanceManager.Services.SQL
         public static readonly string DeleteRecordContoCorrente = "DELETE FROM conto_corrente WHERE id_fineco_euro = @id_fineco_euro";
 
         // aggiorno un record conto corrente sulla base dell'ID CONTO CORRENTE //
-        public static readonly string UpdateContoCorrenteByIdCC = "UPDATE conto_corrente SET id_conto = @id_conto, id_quote_investimenti = @id_quote_investimenti, id_valuta = @id_valuta, " +
+        public static readonly string UpdateContoCorrenteByIdCC = "UPDATE conto_corrente SET id_conto = @id_conto, id_valuta = @id_valuta, " +
             "id_portafoglio_titoli = @id_portafoglio_titoli, id_tipo_movimento = @id_tipo_movimento, id_gestione = @id_gestione, id_titolo = @id_titolo, data_movimento = @data_movimento, " +
             "ammontare = @ammontare, cambio = @cambio, Causale = @Causale, id_tipo_soldi = @id_tipo_soldi, id_quote_periodi = @id_quote_periodi WHERE id_fineco_euro = @id_fineco_euro";
 
         // aggiorno un record conto corrente sulla base dell'ID PORTAFOGLIO TITOLI //
-        public static readonly string UpdateContoCorrenteByIdPortafoglioTitoli = "UPDATE conto_corrente SET id_conto = @id_conto, id_valuta = @id_valuta, id_quote_investimenti = @id_quote_investimenti, " +
+        public static readonly string UpdateContoCorrenteByIdPortafoglioTitoli = "UPDATE conto_corrente SET id_conto = @id_conto, id_valuta = @id_valuta, " +
             "id_tipo_movimento = @id_tipo_movimento, id_gestione = @id_gestione, id_titolo = @id_titolo, data_movimento = @data_movimento, ammontare = @ammontare, " +
             "cambio = @cambio, Causale = @Causale, id_tipo_soldi = @id_tipo_soldi, id_quote_periodi = @id_quote_periodi WHERE id_portafoglio_titoli = @id_portafoglio_titoli";
 

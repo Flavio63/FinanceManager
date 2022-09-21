@@ -58,8 +58,8 @@ namespace FinanceManager.Services
         /// </summary>
         /// <param name="DataDal">Data da cercare</param>
         /// <param name="TipoSoldi">Tipologia dei soldi</param>
-        /// <returns>Last id record inserted</returns>
-        public int Update_InsertQuotePeriodi(DateTime DataDal, int TipoSoldi)
+        /// <returns>Il record di quote_periodi</returns>
+        public QuotePeriodi Update_InsertQuotePeriodi(DateTime DataDal, int TipoSoldi)
         {
             try
             {
@@ -68,14 +68,24 @@ namespace FinanceManager.Services
                     cmd.CommandText = QuoteScript.quote_periodi;
                     cmd.Parameters.AddWithValue("StartDate", DataDal.ToString("yyyy-MM-dd"));
                     cmd.Parameters.AddWithValue("TipoSoldi", TipoSoldi);
+                    cmd.Parameters.AddWithValue("Date_Time", DateTime.Now);
                     cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     cmd.Connection.Open();
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = QuoteScript.ultima_riga;
+                    cmd.ExecuteNonQuery();  // aggiorna la penultima riga e inserisce la nuova riga
+                    cmd.CommandText = QuoteScript.ultima_riga;  // dalla nuova riga ritorna il valore del date time
                     SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter(cmd);
                     DataTable dt = new DataTable();
                     dataAdapter.Fill(dt);
-                    return Convert.ToInt32(dt.Rows[0].Field<object>("ultima_riga"));
+                    QuotePeriodi QP = new QuotePeriodi
+                    {
+                        IdPeriodoQuote = Convert.ToInt16(dt.Rows[0].Field<object>("id_periodo_quote")),
+                        IdAggregazione = Convert.ToInt16(dt.Rows[0].Field<object>("id_aggregazione")),
+                        DataInizio = dt.Rows[0].Field<DateTime>("data_inizio"),
+                        DataFine = dt.Rows[0].Field<DateTime>("data_fine"),
+                        DataInsert = dt.Rows[0].Field<DateTime>("data_insert")
+                    };
+
+                    return QP;
 
                 }
             }
@@ -96,30 +106,41 @@ namespace FinanceManager.Services
         /// <param name="NuovoPeriodo">Il nuovo periodo da inserire in tabella</param>
         public void ComputesAndInsertQuoteGuadagno(int Tipo_Soldi, int NuovoPeriodo)
         {
-            try
+            using (SQLiteConnection con = new SQLiteConnection(DAFconnection.GetConnectionType()))
             {
-                using (SQLiteCommand cmd = new SQLiteCommand())
+                con.Open();
+                using (SQLiteTransaction transaction = con.BeginTransaction())
                 {
-                    cmd.CommandText = QuoteScript.ComputesQuoteGuadagno;
-                    cmd.Parameters.AddWithValue("Tipo_Soldi", Tipo_Soldi);
-                    cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    cmd.Connection.Open();
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = QuoteScript.InsertQuotaGuadagno;
-                    cmd.Parameters.Clear();
-                    cmd.Parameters.AddWithValue("Nuovo_Periodo", NuovoPeriodo);
-                    cmd.ExecuteNonQuery();
-                    cmd.Connection.Close();
+                    try
+                    {
+                        using (SQLiteCommand cmd = new SQLiteCommand())
+                        {
+                            cmd.CommandText = QuoteScript.ComputesQuoteGuadagno;
+                            cmd.Parameters.AddWithValue("Tipo_Soldi", Tipo_Soldi);
+                            cmd.Connection = con;
+                            cmd.ExecuteNonQuery();
+//                            transaction.Commit();
 
+                            cmd.CommandText = QuoteScript.InsertQuotaGuadagno;
+                            cmd.Parameters.Clear();
+                            cmd.Connection = con;
+                            cmd.Parameters.AddWithValue("Nuovo_Periodo", NuovoPeriodo);
+                            cmd.ExecuteNonQuery();
+                            transaction.Commit();
+
+                        }
+                    }
+                    catch (SQLiteException err)
+                    {
+                        transaction.Rollback();
+                        throw new Exception(err.Message);
+                    }
+                    catch (Exception err)
+                    {
+                        transaction.Rollback();
+                        throw new Exception(err.Message);
+                    }
                 }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
             }
         }
 

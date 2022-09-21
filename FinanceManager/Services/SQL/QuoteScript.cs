@@ -15,27 +15,38 @@ namespace FinanceManager.Services.SQL
         public static readonly string quote_periodi = "UPDATE quote_periodi SET data_fine = date(@StartDate, '-1 day') WHERE id_periodo_quote = (" +
     "SELECT quote_periodi.id_periodo_quote FROM quote_periodi WHERE quote_periodi.id_periodo_quote > 0 AND quote_periodi.id_aggregazione = @TipoSoldi " +
     "AND @StartDate > quote_periodi.data_inizio AND @StartDate <= quote_periodi.data_fine);" +
-    "INSERT INTO quote_periodi (id_periodo_quote, id_aggregazione, data_inizio, data_fine) VALUES (null, @TipoSoldi, @StartDate, '2099-12-31'); ";
+    "INSERT INTO quote_periodi (id_periodo_quote, id_aggregazione, data_inizio, data_fine, data_insert) VALUES (null, @TipoSoldi, @StartDate, '2099-12-31', @Date_Time);";
 
-        public static readonly string ultima_riga = "SELECT last_insert_rowid() as ultima_riga; ";
+        public static readonly string ultima_riga = "SELECT id_periodo_quote, id_aggregazione, data_inizio, data_fine, data_insert " +
+            "FROM quote_periodi ORDER BY id_periodo_quote DESC LIMIT 1 ";
 
-        public static readonly string ComputesQuoteGuadagno = "DROP TABLE IF EXISTS valore_cumulato; CREATE TEMP TABLE IF NOT EXISTS valore_cumulato AS " +
-            "SELECT id_periodo_quote, cum FROM (SELECT A.id_periodo_quote, SUM(ammontare) OVER (ORDER BY data_movimento) AS cum FROM quote_investimenti A, quote_periodi B " +
-            "WHERE A.id_periodo_quote = B.id_periodo_quote AND id_tipo_movimento <> 12 AND STRFTIME('%Y', data_movimento) > 2010 AND B.id_aggregazione = @Tipo_Soldi " +
-            "ORDER BY A.id_periodo_quote) AS ABC GROUP BY id_periodo_quote; " +
-            "DROP TABLE IF EXISTS getione_cumulata; CREATE TEMP TABLE IF NOT EXISTS gestione_cumulata AS SELECT id_gestione, A.id_periodo_quote, SUM(CASE WHEN id_gestione = 3 " +
-            "THEN ammontare ELSE 0 END) OVER (PARTITION BY id_gestione ORDER BY A.id_periodo_quote) AS cumulativeFv, SUM(CASE WHEN id_gestione = 5 THEN ammontare ELSE 0 END) " +
-            "OVER (PARTITION BY id_gestione ORDER BY A.id_periodo_quote) AS cumulativeDp, SUM(CASE WHEN id_gestione = 4 THEN ammontare ELSE 0 END) OVER (PARTITION BY id_gestione " +
-            "ORDER BY A.id_periodo_quote) AS cumulativeAu FROM quote_investimenti A, quote_periodi B WHERE A.id_periodo_quote = B.id_periodo_quote AND id_tipo_movimento <> 12 AND " +
-            "STRFTIME('%Y', data_movimento) > 2010 AND B.id_aggregazione = @Tipo_Soldi ORDER BY data_movimento, id_gestione;";
+        public static readonly string ComputesQuoteGuadagno = "DROP TABLE IF EXISTS valore_cumulato; " +
+            "CREATE TEMP TABLE IF NOT EXISTS valore_cumulato AS " +
+            "SELECT id_quote_periodi, cum FROM (SELECT A.id_quote_periodi, SUM(ammontare) OVER (ORDER BY data_movimento) AS cum " +
+            "FROM conto_corrente A, quote_periodi B " +
+            "WHERE A.id_quote_periodi = B.id_periodo_quote AND id_tipo_movimento <> 12 AND A.id_conto = 0 AND STRFTIME('%Y', data_movimento) > 2010 AND B.id_aggregazione = @Tipo_Soldi " +
+            "ORDER BY A.id_quote_periodi) AS ABC GROUP BY id_quote_periodi; " +
+            "DROP TABLE IF EXISTS getione_cumulata; " +
+            "CREATE TEMP TABLE IF NOT EXISTS gestione_cumulata AS " +
+            "SELECT A.id_gestione, A.id_quote_periodi, " +
+            "SUM(CASE WHEN id_gestione = 3 THEN ammontare ELSE 0 END) OVER (PARTITION BY id_gestione ORDER BY A.id_quote_periodi) AS cumulativeFv, " +
+            "SUM(CASE WHEN id_gestione = 5 THEN ammontare ELSE 0 END) OVER (PARTITION BY id_gestione ORDER BY A.id_quote_periodi) AS cumulativeDp, " +
+            "SUM(CASE WHEN id_gestione = 4 THEN ammontare ELSE 0 END) OVER (PARTITION BY id_gestione ORDER BY A.id_quote_periodi) AS cumulativeAu " +
+            "FROM conto_corrente A, quote_periodi B " +
+            "WHERE A.id_quote_periodi = B.id_periodo_quote AND id_tipo_movimento <> 12 AND A.id_conto = 0 AND STRFTIME('%Y', data_movimento) > 2010 AND B.id_aggregazione = @Tipo_Soldi " +
+            "ORDER BY data_movimento, id_gestione;";
 
-        public static readonly string InsertQuotaGuadagno = "INSERT INTO quote_guadagno (id_gestione, id_quote_periodi, quota) SELECT id_gestione, id_periodo_quote, quota FROM " +
-            "(SELECT id_gestione, AA.id_periodo_quote, QFV + QDP + QAU AS quota FROM (SELECT id_gestione, A.id_periodo_quote, cumulativeFv / cum AS QFV, cumulativeDp / cum AS QDP, " +
-            "cumulativeAu / cum AS QAU FROM gestione_cumulata A, valore_cumulato B WHERE A.id_periodo_quote = B.id_periodo_quote) AS AA WHERE AA.id_periodo_quote = @Nuovo_Periodo);";
+        public static readonly string InsertQuotaGuadagno = "INSERT INTO quote_guadagno (id_gestione, id_quote_periodi, quota) " +
+            "SELECT id_gestione, id_quote_periodi, quota FROM " +
+            "(SELECT id_gestione, AA.id_quote_periodi, QFV + QDP + QAU AS quota FROM " +
+            "(SELECT id_gestione, A.id_quote_periodi, cumulativeFv / cum AS QFV, cumulativeDp / cum AS QDP, cumulativeAu / cum AS QAU " +
+            "FROM gestione_cumulata A, valore_cumulato B WHERE A.id_quote_periodi = B.id_quote_periodi) AS AA WHERE AA.id_quote_periodi = @Nuovo_Periodo);";
 
-        public static readonly string UpdateQuotaGuadagno = "UPDATE quote_guadagno SET quota = BB.quota FROM (SELECT id_gestione, AA.id_periodo_quote, QFV + QDP + QAU AS quota FROM ( " +
-            "SELECT id_gestione, A.id_periodo_quote, cumulativeFv / cum AS QFV, cumulativeDp / cum AS QDP, cumulativeAu / cum AS QAU FROM gestione_cumulata A, valore_cumulato B WHERE " +
-            "A.id_periodo_quote = B.id_periodo_quote) AS AA) AS BB WHERE quote_guadagno.id_gestione = BB.id_gestione AND quote_guadagno.id_quote_periodi = BB.id_periodo_quote;";
+        public static readonly string UpdateQuotaGuadagno = "UPDATE quote_guadagno SET quota = BB.quota " +
+            "FROM (SELECT id_gestione, AA.id_quote_periodi, QFV + QDP + QAU AS quota " +
+            "FROM ( SELECT id_gestione, A.id_quote_periodi, cumulativeFv / cum AS QFV, cumulativeDp / cum AS QDP, cumulativeAu / cum AS QAU " +
+            "FROM gestione_cumulata A, valore_cumulato B WHERE A.id_quote_periodi = B.id_quote_periodi) AS AA) AS BB " +
+            "WHERE quote_guadagno.id_gestione = BB.id_gestione AND quote_guadagno.id_quote_periodi = BB.id_quote_periodi;";
 
         public static readonly string UpdateGuadagniTotaleAnno = "UPDATE conto_corrente SET id_quote_periodi = BB.id_periodo_quote FROM " +
             "(SELECT A.id_fineco_euro, A.data_movimento, A.id_tipo_movimento, A.ammontare, A.Causale, A.id_tipo_soldi, B.id_periodo_quote " +

@@ -220,8 +220,7 @@
     <Compile Include="Models\GuadagnoPerPeriodoList.cs" />
     <Compile Include="Models\MovimentiConto.cs" />
     <Compile Include="Models\MovimentiContoList.cs" />
-    <Compile Include="Models\PeriodiDiValidita.cs" />
-    <Compile Include="Models\PeriodiDiValiditaList.cs" />
+    <Compile Include="Models\QuotePeriodi.cs" />
     <Compile Include="Models\Ptf_CC.cs" />
     <Compile Include="Models\Ptf_CCList.cs" />
     <Compile Include="Models\GuadagnoPerQuoteList.cs" />
