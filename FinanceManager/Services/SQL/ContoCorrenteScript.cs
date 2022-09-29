@@ -17,10 +17,10 @@ namespace FinanceManager.Services.SQL
 
         public static readonly string GetContoCorrente = ContoCorrente + " ORDER BY data_movimento desc, A.id_fineco_euro";
         public static readonly string GetContoCorrenteByIdCC = ContoCorrente + " AND A.id_fineco_euro = @id_fineco_euro ";
-        public static readonly string Get2ContoCorrentes = ContoCorrente + " AND A.modified = @modified ORDER BY  A.data_movimento, A.id_fineco_euro";
+        public static readonly string Get2ContoCorrentes = ContoCorrente + " AND A.modified = @modified ORDER BY  A.ammontare";
         public static readonly string GetContoCorrenteByIdPortafoglio = ContoCorrente + " AND A.id_portafoglio_titoli = @id_portafoglio_titoli ORDER BY A.data_movimento ";
 
-        public static readonly string GetCCListByInvestmentSituation = ContoCorrente + " AND A.id_conto = 0 AND (A.id_tipo_movimento = 1 OR A.id_tipo_movimento = 2) ORDER BY A.data_movimento ";
+        public static readonly string GetCCListByInvestmentSituation = ContoCorrente + " AND A.id_conto = 1 AND (A.id_tipo_movimento = 1 OR A.id_tipo_movimento = 2) ORDER BY A.data_movimento ";
 
         /// <summary>
         /// Ritorno il numero di idContoCorrente dell'ultimo record
@@ -31,9 +31,10 @@ namespace FinanceManager.Services.SQL
         /// Ritorna il totale finanziario per conto corrente
         /// a livello di codice viene aggiunto il filtro per gestione e per valuta
         /// </summary>
-        public static readonly string GetTotalAmountByAccount = "SELECT desc_conto as Conto, nome_gestione as Gestione, sum(ammontare) as Soldi, cod_valuta as Valuta " +
-            "FROM main.conto_corrente A, main.conti B, main.gestioni C, main.valuta D where A.id_conto = B.id_conto AND A.id_gestione = C.id_gestione AND A.id_valuta = " +
-            "D.id_valuta and A.id_conto = @id_conto {0} {1} GROUP BY A.id_conto, A.id_gestione, A.id_valuta";
+        public static readonly string GetTotalAmountByAccount = "SELECT A.id_conto, desc_conto as Conto, A.id_gestione, nome_gestione as Gestione, sum(ammontare) as Soldi, " +
+            "cod_valuta as Valuta, A.id_tipo_soldi, E.desc_tipo_soldi, A.cambio FROM main.conto_corrente A, main.conti B, main.gestioni C, main.valuta D, main.tipo_soldi E where A.id_conto = B.id_conto " +
+            "AND A.id_gestione = C.id_gestione AND A.id_valuta = D.id_valuta and A.id_tipo_soldi = E.id_tipo_soldi and A.id_conto = @id_conto {0} {1} {2}" +
+            "GROUP BY A.id_conto, A.id_gestione, A.id_valuta, A.id_tipo_soldi, A.cambio;";
 
         /// <summary>
         /// Fornisce quanto versato, prelevato, investito e disinvestito
@@ -42,7 +43,7 @@ namespace FinanceManager.Services.SQL
         public static readonly string GetInvestmentSituation = "SELECT A.id_gestione, E.nome_gestione as Socio, A.id_valuta, C.cod_valuta, sum(case when A.id_tipo_movimento = 1 then ammontare else 0 end) as Versato, " +
             "sum (CASE WHEN A.id_tipo_movimento = 12 AND ammontare < 0 then ammontare ELSE 0 END) as Investito, sum (CASE WHEN A.id_tipo_movimento = 12 AND ammontare > 0 then ammontare ELSE 0 END) as Disinvestito, " +
             "sum (CASE WHEN A.id_tipo_movimento = 2 THEN ammontare else 0 end) as Prelevato, sum(ammontare) as Disponibile " +
-            "FROM conto_corrente A, valuta C, gestioni E WHERE A.id_valuta = C.id_valuta AND A.id_gestione = E.id_gestione AND id_fineco_euro > 0 AND A.id_conto = 0 " +
+            "FROM conto_corrente A, valuta C, gestioni E WHERE A.id_valuta = C.id_valuta AND A.id_gestione = E.id_gestione AND id_fineco_euro > 0 AND A.id_conto = 1 " +
             "GROUP BY A.id_gestione, A.id_valuta";
 
         /// <summary>

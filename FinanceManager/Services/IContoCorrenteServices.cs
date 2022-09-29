@@ -64,13 +64,14 @@ namespace FinanceManager.Services
         void DeleteRecordContoCorrente(int idCC);
         /// <summary>
         /// Restituisco le somme dei soldi presenti nei conti correnti
-        /// suddivisi per gestione e valuta
+        /// suddivisi per gestione, valuta e tipo soldi
         /// </summary>
         /// <param name="IdConto"></param>
         /// <param name="IdGestione"></param>
         /// <param name="IdValuta"></param>
+        /// <param name="IdTipoSoldi"></param>
         /// <returns>ContoCorrenteList</returns>
-        ContoCorrenteList GetTotalAmountByAccount(int IdConto, int IdGestione = 0, int IdValuta = 0);
+        ContoCorrenteList GetTotalAmountByAccount(int IdConto, int IdGestione = 0, int IdValuta = 0, int IdTipoSoldi = 0);
 
         /// <summary>
         /// Scrive un nuovo record per il conto corrente

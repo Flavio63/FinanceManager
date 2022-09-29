@@ -271,19 +271,37 @@ namespace FinanceManager.Services
         /// <param name="IdGestione"></param>
         /// <param name="IdValuta"></param>
         /// <returns>ContoCorrenteList</returns>
-        public ContoCorrenteList GetTotalAmountByAccount(int IdConto, int IdGestione = 0, int IdValuta = 0)
+        public ContoCorrenteList GetTotalAmountByAccount(int IdConto, int IdGestione = 0, int IdValuta = 0, int IdTipoSoldi = 0)
         {
             try
             {
                 using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
                 {
                     dataAdapter.SelectCommand = new SQLiteCommand();
-                    if (IdGestione == 0 && IdValuta == 0)
-                        dataAdapter.SelectCommand.CommandText = string.Format(ContoCorrenteScript.GetTotalAmountByAccount, "", "");
+                    string query = ContoCorrenteScript.GetTotalAmountByAccount;
+                    string query1 = "";
+                    string query2 = "";
+                    string query3 = "";
+                    if (IdGestione == 0 && IdValuta == 0 && IdTipoSoldi == 0)
+                        dataAdapter.SelectCommand.CommandText = string.Format(query, "", "", "");
                     else if (IdGestione > 0 && IdValuta == 0)
-                        dataAdapter.SelectCommand.CommandText = string.Format(ContoCorrenteScript.GetTotalAmountByAccount, string.Format("AND A.id_gestione = {0} ", IdGestione), "");
-                    else
-                        dataAdapter.SelectCommand.CommandText = string.Format(ContoCorrenteScript.GetTotalAmountByAccount, string.Format("AND A.id_gestione = {0} ", IdGestione), string.Format("AND A.id_valuta = {0} ", IdValuta));
+                    {
+                        query1 = string.Format(" AND A.id_gestione = {0} ", IdGestione);
+                        dataAdapter.SelectCommand.CommandText = string.Format(query, query1, "", "");
+                    }
+                    else if (IdGestione > 0 && IdValuta > 0 && IdTipoSoldi == 0)
+                    {
+                        query1 = string.Format(" AND A.id_gestione = {0} ", IdGestione);
+                        query2 = string.Format(" AND A.id_valuta = {0} ", IdValuta);
+                        dataAdapter.SelectCommand.CommandText = string.Format(query, query1, query2, "");
+                    }
+                    else if (IdGestione > 0 && IdValuta > 0 && IdTipoSoldi > 0)
+                    {
+                        query1 = string.Format(" AND A.id_gestione = {0} ", IdGestione);
+                        query2 = string.Format(" AND A.id_valuta = {0} ", IdValuta);
+                        query3 = string.Format(" AND A.id_tipo_soldi = {0} ", IdTipoSoldi);
+                        dataAdapter.SelectCommand.CommandText = String.Format(query, query1, query2, query3);
+                    }
                     dataAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdConto);
                     dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     DataTable dt = new DataTable();
@@ -293,10 +311,15 @@ namespace FinanceManager.Services
                     {
                         CCL.Add(new ContoCorrente()
                         {
+                            Id_Conto = Convert.ToInt32(dataRow["id_conto"]),
                             Desc_Conto = (string)dataRow["Conto"],
+                            Id_Gestione = Convert.ToInt32(dataRow["id_gestione"]),
                             NomeGestione = (string)dataRow["Gestione"],
                             Ammontare = (double)dataRow["Soldi"],
-                            Cod_Valuta = (string)dataRow["Valuta"]
+                            Cod_Valuta = (string)dataRow["Valuta"],
+                            Id_Tipo_Soldi = Convert.ToInt32(dataRow["id_tipo_soldi"]),
+                            Desc_Tipo_Soldi = (string)dataRow["desc_tipo_soldi"],
+                            Valore_Cambio = (double)dataRow["cambio"]
                         });
                     }
                     return CCL;
@@ -361,42 +384,49 @@ namespace FinanceManager.Services
 
         public void UpdateRecordContoCorrente(ContoCorrente contoCorrente, TipologiaIDContoCorrente tipologiaID)
         {
-            try
+            using (SQLiteConnection con = new SQLiteConnection(DAFconnection.GetConnectionType()))
             {
-                using (SQLiteCommand dbComm = new SQLiteCommand())
+                con.Open();
+                using (SQLiteTransaction transaction = con.BeginTransaction())
                 {
-                    dbComm.CommandType = CommandType.Text;
-                    if (tipologiaID == TipologiaIDContoCorrente.IdContoCorrente)
-                        dbComm.CommandText = ContoCorrenteScript.UpdateContoCorrenteByIdCC;
-                    else if (tipologiaID == TipologiaIDContoCorrente.IdContoTitoli)
-                        dbComm.CommandText = ContoCorrenteScript.UpdateContoCorrenteByIdPortafoglioTitoli;
-                    dbComm.Parameters.AddWithValue("id_fineco_euro", contoCorrente.Id_RowConto);
-                    dbComm.Parameters.AddWithValue("id_conto", contoCorrente.Id_Conto);
-                    dbComm.Parameters.AddWithValue("id_valuta", contoCorrente.Id_Valuta);
-                    dbComm.Parameters.AddWithValue("id_portafoglio_titoli", contoCorrente.Id_Portafoglio_Titoli);
-                    dbComm.Parameters.AddWithValue("id_tipo_movimento", contoCorrente.Id_tipo_movimento);
-                    dbComm.Parameters.AddWithValue("id_gestione", contoCorrente.Id_Gestione);
-                    dbComm.Parameters.AddWithValue("id_titolo", contoCorrente.Id_Titolo);
-                    dbComm.Parameters.AddWithValue("data_movimento", contoCorrente.DataMovimento.ToString("yyyy-MM-dd"));
-                    dbComm.Parameters.AddWithValue("ammontare", contoCorrente.Ammontare);
-                    dbComm.Parameters.AddWithValue("cambio", contoCorrente.Valore_Cambio);
-                    dbComm.Parameters.AddWithValue("Causale", contoCorrente.Causale);
-                    dbComm.Parameters.AddWithValue("id_tipo_soldi", contoCorrente.Id_Tipo_Soldi);
-                    dbComm.Parameters.AddWithValue("id_quote_periodi", contoCorrente.Id_Quote_Periodi);
-                    dbComm.Parameters.AddWithValue("modified", contoCorrente.Modified.ToString("yyyy-MM-dd HH:mm:ss"));
-                    dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
+                    try
+                    {
+                        using (SQLiteCommand dbComm = new SQLiteCommand(con))
+                        {
+                            dbComm.CommandType = CommandType.Text;
+                            if (tipologiaID == TipologiaIDContoCorrente.IdContoCorrente)
+                                dbComm.CommandText = ContoCorrenteScript.UpdateContoCorrenteByIdCC;
+                            else if (tipologiaID == TipologiaIDContoCorrente.IdContoTitoli)
+                                dbComm.CommandText = ContoCorrenteScript.UpdateContoCorrenteByIdPortafoglioTitoli;
+                            dbComm.Parameters.AddWithValue("id_fineco_euro", contoCorrente.Id_RowConto);
+                            dbComm.Parameters.AddWithValue("id_conto", contoCorrente.Id_Conto);
+                            dbComm.Parameters.AddWithValue("id_valuta", contoCorrente.Id_Valuta);
+                            dbComm.Parameters.AddWithValue("id_portafoglio_titoli", contoCorrente.Id_Portafoglio_Titoli);
+                            dbComm.Parameters.AddWithValue("id_tipo_movimento", contoCorrente.Id_tipo_movimento);
+                            dbComm.Parameters.AddWithValue("id_gestione", contoCorrente.Id_Gestione);
+                            dbComm.Parameters.AddWithValue("id_titolo", contoCorrente.Id_Titolo);
+                            dbComm.Parameters.AddWithValue("data_movimento", contoCorrente.DataMovimento.ToString("yyyy-MM-dd"));
+                            dbComm.Parameters.AddWithValue("ammontare", contoCorrente.Ammontare);
+                            dbComm.Parameters.AddWithValue("cambio", contoCorrente.Valore_Cambio);
+                            dbComm.Parameters.AddWithValue("Causale", contoCorrente.Causale);
+                            dbComm.Parameters.AddWithValue("id_tipo_soldi", contoCorrente.Id_Tipo_Soldi);
+                            dbComm.Parameters.AddWithValue("id_quote_periodi", contoCorrente.Id_Quote_Periodi);
+                            dbComm.Parameters.AddWithValue("modified", contoCorrente.Modified.ToString("yyyy-MM-dd HH:mm:ss"));
+                            dbComm.ExecuteNonQuery();
+                            transaction.Commit();
+                        }
+                    }
+                    catch (SQLiteException err)
+                    {
+                        transaction.Rollback();
+                        throw new Exception(err.Message);
+                    }
+                    catch (Exception err)
+                    {
+                        transaction.Rollback();
+                        throw new Exception(err.Message);
+                    }
                 }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
             }
         }
 

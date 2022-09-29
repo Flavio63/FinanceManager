@@ -1,0 +1,315 @@
+﻿<UserControl x:Class="FinanceManager.Views.GiroContoView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:viewmodels="clr-namespace:FinanceManager.ViewModels" 
+             Name="_Giroconto_personale_trading"
+             mc:Ignorable="d">
+
+    <Grid Margin="20, 5" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="26" FontWeight="Bold">
+                TRASFERIMENTO DI SOLDI
+        </TextBlock>
+        <Button Content="X" Command="{Binding CloseMeCommand}" 
+                CommandParameter="{Binding ElementName=_Giroconto_personale_trading}" 
+                HorizontalContentAlignment="Center" Grid.Column="2" HorizontalAlignment="Right"
+                    VerticalContentAlignment="Center" Width="25" Height="25"
+                Margin="0,0, 15, 0" FontWeight="Bold"/>
+        <Border Grid.Row="1" Grid.ColumnSpan="2" BorderBrush="DarkGreen" BorderThickness="5" Margin="0, 10, 5, 10" Padding="15">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="22" FontWeight="Bold" Text="'' MITTENTE ▬►►►"/>
+                    <StackPanel x:Name="ContoGestioneMittente" Grid.Row="2" Grid.RowSpan="2" Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
+                            <TextBlock Text="Conto Corrente" FontSize="18" VerticalAlignment="Center" Margin="0,5,10,5"/>
+                            <ComboBox Name="ContoMittente" FontSize="18" Margin="10" MinWidth="200" SelectedValuePath="Id_Conto" DisplayMemberPath="Desc_Conto"
+                                   ItemsSource="{Binding ListContoMittente, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                   SelectedValue="{Binding IdContoMittente, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                   IsEnabled="{Binding ContoMittente}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SelectionChanged">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
+                            <TextBlock Text="Gestione" FontSize="18" VerticalAlignment="Center" Margin="0,5,10,5"/>
+                            <ComboBox Name="GestioneMittente" FontSize="18" Margin="10" MinWidth="200" SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione"
+                                   ItemsSource="{Binding ListGestioniMittente, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                   SelectedValue="{Binding IdGestioneMittente, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                   IsEnabled="{Binding GestioneMittente}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SelectionChanged">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </ComboBox>
+                        </StackPanel>
+                    </StackPanel>
+                <DataGrid Name="DGMittente" Grid.Row="1" Grid.Column="1" Margin="15,0,15,5" AutoGenerateColumns="False" CanUserReorderColumns="False" 
+                          CanUserDeleteRows="False" CanUserAddRows="False" FontSize="18" ItemsSource="{Binding TotaleMittenteConto, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Conto Corrente" Binding="{Binding Desc_Conto, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="Gestione" Binding="{Binding NomeGestione, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="Somma" Binding="{Binding Ammontare, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    <Setter Property="Margin" Value="5,0,5,0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Valuta" Binding="{Binding Cod_Valuta, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="Tipo Soldi" Binding="{Binding Desc_Tipo_Soldi, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="Cambio" Binding="{Binding Valore_Cambio, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    <Setter Property="Margin" Value="5,0,5,0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="2" Grid.ColumnSpan="2" BorderBrush="Coral" BorderThickness="5" Margin="0, 10, 5, 10" Padding="15">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="22" FontWeight="Bold" Text="►►►▬RICEVENTE ''"/>
+                <StackPanel x:Name="ContoGestioneRicevente" Grid.Row="2" Grid.RowSpan="2" Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
+                            <TextBlock Text="Conto Corrente" FontSize="18" VerticalAlignment="Center" Margin="0,5,10,5"/>
+                            <ComboBox Name="ContoRicevente" FontSize="18" Margin="10" MinWidth="200" SelectedValuePath="Id_Conto" DisplayMemberPath="Desc_Conto"
+                                   ItemsSource="{Binding ListContoRicevente, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                   SelectedValue="{Binding IdContoRicevente, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                      IsEnabled="{Binding ContoRicevente}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SelectionChanged">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
+                            <TextBlock Text="Gestione" FontSize="18" VerticalAlignment="Center" Margin="0,5,10,5"/>
+                            <ComboBox Name="GestioneRicevente" FontSize="18" Margin="10" MinWidth="200" SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione"
+                                   ItemsSource="{Binding ListGestioniRicevente, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                   SelectedValue="{Binding IdGestioneRicevente, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                      IsEnabled="{Binding GestioneRicevente}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SelectionChanged">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </ComboBox>
+                        </StackPanel>
+                    </StackPanel>
+                <DataGrid Name="DGRicevente" Grid.Row="1" Grid.Column="1" Margin="15,0,15,5" AutoGenerateColumns="False" CanUserReorderColumns="False" 
+                          CanUserDeleteRows="False" CanUserAddRows="False" FontSize="18" ItemsSource="{Binding TotaleRiceventeConto, UpdateSourceTrigger=PropertyChanged}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Conto Corrente" Binding="{Binding Desc_Conto, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="Gestione" Binding="{Binding NomeGestione, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="Somma" Binding="{Binding Ammontare, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    <Setter Property="Margin" Value="5,0,5,0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Valuta" Binding="{Binding Cod_Valuta, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="Tipo Soldi" Binding="{Binding Desc_Tipo_Soldi, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="Cambio" Binding="{Binding Valore_Cambio, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    <Setter Property="Margin" Value="5,0,5,0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="3" BorderBrush="DarkGoldenrod" BorderThickness="5" Margin="0, 10, 5, 10" Padding="15">
+            <StackPanel Orientation="Horizontal" Background="LightGreen">
+                <StackPanel Orientation="Vertical" Width="100" Background="LightSalmon" VerticalAlignment="Center" Margin="5">
+                    <Button Content="Inserisci" Margin="10" Width="75" Height="25" Command="{Binding InsertCommand}" CommandParameter="{Binding ElementName=_Giroconto_personale_trading}"/>
+                    <Button Content="Modifica" Margin="10" Width="75" Height="25" Command="{Binding ModifyCommand}" CommandParameter="{Binding ElementName=_Giroconto_personale_trading}"/>
+                    <Button Content="Pulisci" Margin="10" Width="75" Height="25" Command="{Binding ClearMeCommand}" CommandParameter="{Binding ElementName=_Giroconto_personale_trading}"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Background="LightGreen" IsEnabled="{Binding DatiComuni}">
+                    <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right"
+                                IsEnabled="{Binding ValutaEnabled}">
+                        <TextBlock Text="Valuta" FontSize="18" VerticalAlignment="Center" Margin="0,5,10,5"/>
+                        <ComboBox Name="Valuta" FontSize="18" Margin="10" MinWidth="100"
+                                  ItemsSource="{Binding ListValute, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                  SelectedValue="{Binding IdValuta}"
+                                  SelectedValuePath="IdCurrency" DisplayMemberPath="CodeCurrency" >
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="SelectionChanged">
+                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
+                        <TextBlock Text="Importo" FontSize="18" VerticalAlignment="Center" Margin="0,5,10,5"/>
+                        <TextBox x:Name="importo"  FontSize="18" VerticalAlignment="Center" MinWidth="100" Margin="0,5,10,5" HorizontalContentAlignment="Right"
+                                  Text="{Binding Valore, ConverterCulture=it-IT, StringFormat=N2}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="LostFocus">
+                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                                </i:EventTrigger>
+                                <i:EventTrigger EventName="PreviewKeyDown">
+                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
+                                  
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
+                        <TextBlock Text="Data" FontSize="18" VerticalAlignment="Center" Margin="0,5,10,5"/>
+                        <DatePicker Name="DataCapitali" VerticalAlignment="Center" Width="150"  FontSize="18" Margin="10"
+                                        SelectedDate="{Binding ActualCCmittente.DataMovimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                        DisplayDate="{Binding ActualCCmittente.DataMovimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="SelectedDateChanged">
+                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </DatePicker>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
+                        <TextBlock Text="Cambio" FontSize="18" VerticalAlignment="Center" MinWidth="100" Margin="0,5,10,5"/>
+                        <TextBox Name="Val_Cambio" FontSize="18" VerticalAlignment="Center" MinWidth="100" Margin="0,5,10,5" HorizontalContentAlignment="Right"
+                                 Text="{Binding ActualCCricevente.Valore_Cambio, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, 
+                            ConverterCulture=it-IT, StringFormat=N4}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="LostFocus">
+                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
+                        <TextBlock Text="Tipo Soldi" FontSize="18" VerticalAlignment="Center" MinWidth="100" Margin="0,5,10,5"/>
+                        <ComboBox Name="Tipo_Soldi" FontSize="18" Margin="10" MinWidth="100"
+                                  ItemsSource="{Binding tipoSoldis, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                  SelectedValue="{Binding IdTipoSoldi}"
+                                  SelectedValuePath="Id_Tipo_Soldi" DisplayMemberPath="Desc_Tipo_Soldi" >
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="SelectionChanged">
+                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Height="75" HorizontalAlignment="Right">
+                        <TextBlock Text="Note" FontSize="18" VerticalAlignment="Center" Margin="0,5,10,5"/>
+                        <TextBox Name="Causale" FontSize="18" VerticalAlignment="Center" MinWidth="100" Margin="0,5,10,5" TextWrapping="Wrap" MaxWidth="450"
+                                  Text="{Binding ActualCCmittente.Causale, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="LostFocus">
+                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" BorderBrush="Aquamarine" BorderThickness="5" Margin="0, 10, 5, 10" Padding="5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Trasferimenti già fatti" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <DataGrid x:Name="CONTOtrasfatti" Grid.Row="1" Grid.Column="1" Margin="15, 0" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
+                          CanUserReorderColumns="False" FontSize="18" ItemsSource="{Binding ContiCorrenti, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id_RowConto, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="Conto Corrente" Binding="{Binding Desc_Conto, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="Gestione" Binding="{Binding NomeGestione, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="Somma" Binding="{Binding Ammontare, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    <Setter Property="Margin" Value="5,0,5,0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Valuta" Binding="{Binding Cod_Valuta, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="Data Movimento" Binding="{Binding DataMovimento, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, StringFormat=d, ConverterCulture=it-IT}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="Margin" Value="5,0,5,0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Cambio" Binding="{Binding Valore_Cambio, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N4}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    <Setter Property="Margin" Value="5,0,5,0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Causale" Binding="{Binding Causale, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="Tipo Soldi" Binding="{Binding Desc_Tipo_Soldi, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="DataLink" Binding="{Binding Modified, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=s}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    <Setter Property="Margin" Value="5,0,5,0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </DataGrid>
+            </Grid>
+        </Border>
+
+    </Grid>
+</UserControl>
