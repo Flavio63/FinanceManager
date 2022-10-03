@@ -79,6 +79,6 @@ namespace FinanceManager.Services
         /// <param name="contoCorrente"></param>
         /// <exception cref="Exception"></exception>
         void InsertAccountMovement(ContoCorrente contoCorrente);
-
+        
     }
 }

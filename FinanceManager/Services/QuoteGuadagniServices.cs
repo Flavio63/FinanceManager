@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace FinanceManager.Services
 {
-    public class QuoteServices : IQuoteServices
+    public class QuoteGuadagniServices : IQuoteGuadagniServices
     {
         IDAFconnection DAFconnection;
 
-        public QuoteServices(IDAFconnection iDAFconnection)
+        public QuoteGuadagniServices(IDAFconnection iDAFconnection)
         {
             DAFconnection = iDAFconnection ?? throw new ArgumentNullException("Manca la stringa di connessione al db");
         }
@@ -34,7 +34,7 @@ namespace FinanceManager.Services
                 using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
                 {
                     dataAdapter.SelectCommand = new SQLiteCommand();
-                    dataAdapter.SelectCommand.CommandText = QuoteScript.VerifyInvestmentDate;
+                    dataAdapter.SelectCommand.CommandText = QuoteGuadagniScript.VerifyInvestmentDate;
                     dataAdapter.SelectCommand.Parameters.AddWithValue("id_tipo_soldi", Id_Tipo_Soldi);
                     dataAdapter.SelectCommand.Parameters.AddWithValue("data_inizio", ActualCC.DataMovimento.ToString("yyyy-MM-dd"));
                     dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
@@ -65,14 +65,14 @@ namespace FinanceManager.Services
             {
                 using (SQLiteCommand cmd = new SQLiteCommand())
                 {
-                    cmd.CommandText = QuoteScript.quote_periodi;
+                    cmd.CommandText = QuoteGuadagniScript.quote_periodi;
                     cmd.Parameters.AddWithValue("StartDate", DataDal.ToString("yyyy-MM-dd"));
                     cmd.Parameters.AddWithValue("TipoSoldi", TipoSoldi);
                     cmd.Parameters.AddWithValue("Date_Time", DateTime.Now);
                     cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     cmd.Connection.Open();
                     cmd.ExecuteNonQuery();  // aggiorna la penultima riga e inserisce la nuova riga
-                    cmd.CommandText = QuoteScript.ultima_riga;  // dalla nuova riga ritorna il valore del date time
+                    cmd.CommandText = QuoteGuadagniScript.ultima_riga;  // dalla nuova riga ritorna il valore del date time
                     SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter(cmd);
                     DataTable dt = new DataTable();
                     dataAdapter.Fill(dt);
@@ -115,13 +115,13 @@ namespace FinanceManager.Services
                     {
                         using (SQLiteCommand cmd = new SQLiteCommand())
                         {
-                            cmd.CommandText = QuoteScript.ComputesQuoteGuadagno;
+                            cmd.CommandText = QuoteGuadagniScript.ComputesQuoteGuadagno;
                             cmd.Parameters.AddWithValue("Tipo_Soldi", Tipo_Soldi);
                             cmd.Connection = con;
                             cmd.ExecuteNonQuery();
 //                            transaction.Commit();
 
-                            cmd.CommandText = QuoteScript.InsertQuotaGuadagno;
+                            cmd.CommandText = QuoteGuadagniScript.InsertQuotaGuadagno;
                             cmd.Parameters.Clear();
                             cmd.Connection = con;
                             cmd.Parameters.AddWithValue("Nuovo_Periodo", NuovoPeriodo);
@@ -154,12 +154,12 @@ namespace FinanceManager.Services
             {
                 using (SQLiteCommand dbComm = new SQLiteCommand())
                 {
-                    dbComm.CommandText = QuoteScript.ComputesQuoteGuadagno;
+                    dbComm.CommandText = QuoteGuadagniScript.ComputesQuoteGuadagno;
                     dbComm.Parameters.AddWithValue("Tipo_Soldi", Tipo_Soldi);
                     dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
-                    dbComm.CommandText = QuoteScript.UpdateQuotaGuadagno;
+                    dbComm.CommandText = QuoteGuadagniScript.UpdateQuotaGuadagno;
                     dbComm.Parameters.Clear();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
@@ -187,10 +187,126 @@ namespace FinanceManager.Services
             {
                 using (SQLiteCommand dbComm = new SQLiteCommand())
                 {
-                    dbComm.CommandText = QuoteScript.UpdateGuadagniTotaleAnno;
+                    dbComm.CommandText = QuoteGuadagniScript.UpdateGuadagniTotaleAnno;
                     dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     dbComm.Parameters.AddWithValue("IdPeriodoQuote", Id_Periodo_Quote);
                     dbComm.Parameters.AddWithValue("IdTipoSoldi", Id_Tipo_Soldi);
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+        /// <summary>
+        /// Trovo il codice dei record da ricalcolare con le nuove quote
+        /// </summary>
+        /// <param name="dateTime">la data dell'investimento</param>
+        /// <param name="Id_tipoSoldi">Identifica chi sta modificando l'investimento</param>
+        /// <returns>int</returns>
+        public int GetIdPeriodoQuote(DateTime dateTime, int Id_tipoSoldi)
+        {
+            DataTable DT = new DataTable();
+            try
+            {
+                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new SQLiteCommand();
+                    dbAdapter.SelectCommand.CommandText = QuoteGuadagniScript.GetIdPeriodoQuote;
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("data_movimento", dateTime.ToString("yyyy-MM-dd"));
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_tipo_soldi", Id_tipoSoldi);
+                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.Fill(DT);
+                    return DT.Rows.Count == 0 ? 0 : (int)DT.Rows[0].Field<long>("id_periodo_quote");
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception("GetIdPeriodoQuote " + err.Message);
+            }
+        }
+        /// <summary>
+        /// Tramite l'ultimo record conto_corrente inserito
+        /// calcolo e inserisco le quote guadagno per ogni singolo socio
+        /// </summary>
+        /// <param name="RecordContoCorrente">record conto corrente con i dati</param>
+        public void AddSingoloGuadagno(ContoCorrente RecordContoCorrente)
+        {
+            try
+            {
+                using (SQLiteCommand dbComm = new SQLiteCommand())
+                {
+                    dbComm.CommandText = QuoteGuadagniScript.AddSingoloGuadagno;
+                    dbComm.Parameters.AddWithValue("id_tipo_movimento", RecordContoCorrente.Id_tipo_movimento);
+                    dbComm.Parameters.AddWithValue("id_tipo_soldi", RecordContoCorrente.Id_Tipo_Soldi);
+                    dbComm.Parameters.AddWithValue("id_quote_periodi", RecordContoCorrente.Id_Quote_Periodi);
+                    dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+        /// <summary>
+        /// Elimino un record dalla tabella quote_guadagno
+        /// </summary>
+        /// <param name="id_quota">identificativo del record base conto corrente</param>
+        public void DeleteRecordGuadagno_Totale_anno(int id_quota)
+        {
+            try
+            {
+                using (SQLiteCommand dbComm = new SQLiteCommand())
+                {
+                    dbComm.CommandText = QuoteGuadagniScript.DeleteRecordGuadagno_Totale_anno;
+                    dbComm.Parameters.AddWithValue("id_conto_corrente", id_quota);
+                    dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dbComm.Connection.Open();
+                    dbComm.ExecuteNonQuery();
+                    dbComm.Connection.Close();
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+        /// <summary>
+        /// Tramite l'ultimo record conto_corrente inserito
+        /// calcolo e inserisco le quote guadagno per ogni singolo socio
+        /// </summary>
+        /// <param name="RecordContoCorrente">record conto corrente con i dati</param>
+        public void ModifySingoloGuadagno(ContoCorrente RecordContoCorrente)
+        {
+            try
+            {
+                using (SQLiteCommand dbComm = new SQLiteCommand())
+                {
+                    dbComm.CommandText = ContoCorrenteScript.ModifySingoloGuadagno;
+                    dbComm.Parameters.AddWithValue("id_fineco_euro", RecordContoCorrente.Id_RowConto);
+                    dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();

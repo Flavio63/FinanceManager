@@ -237,11 +237,14 @@
     <Compile Include="Models\TipoSoldiList.cs" />
     <Compile Include="Models\Enumeratori\TipologiaSoldi.cs" />
     <Compile Include="Services\ContoCorrenteServices.cs" />
+    <Compile Include="Services\ContoTitoliServices.cs" />
     <Compile Include="Services\IContoCorrenteServices.cs" />
-    <Compile Include="Services\IQuoteServices.cs" />
-    <Compile Include="Services\QuoteServices.cs" />
+    <Compile Include="Services\IQuoteGuadagniServices.cs" />
+    <Compile Include="Services\QuoteGuadagniServices.cs" />
     <Compile Include="Services\SQL\ContoCorrenteScript.cs" />
-    <Compile Include="Services\SQL\QuoteScript.cs" />
+    <Compile Include="Services\SQL\ContoTitoliScript.cs" />
+    <Compile Include="Services\IContoTitoliServices.cs" />
+    <Compile Include="Services\SQL\QuoteGuadagniScript.cs" />
     <Compile Include="Services\SQL\SintesiGuadagniPerValute.cs" />
     <Compile Include="ViewModels\AnalisiPortafoglioViewModel.cs" />
     <Compile Include="ViewModels\CapitalsRegisterViewModel.cs" />
@@ -283,7 +286,6 @@
     <Compile Include="Services\SQL\ManagerScripts.cs" />
     <Compile Include="Services\SQL\RegistryScripts.cs" />
     <Compile Include="ViewModels\AcquistoVenditaTitoliViewModel.cs" />
-    <Compile Include="ViewModels\GestioneQuoteInvestitoriViewModel.cs" />
     <Compile Include="ViewModels\ManagerReportsViewModel.cs" />
     <Compile Include="ViewModels\RegistryCurrencyViewModel.cs" />
     <Compile Include="ViewModels\RegistryFirmViewModel.cs" />
@@ -310,9 +312,6 @@
     </Compile>
     <Compile Include="Views\GestioneContoCorrenteView.xaml.cs">
       <DependentUpon>GestioneContoCorrenteView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\GestioneQuoteInvestitoriView.xaml.cs">
-      <DependentUpon>GestioneQuoteInvestitoriView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GiroContoView.xaml.cs">
       <DependentUpon>GiroContoView.xaml</DependentUpon>
@@ -411,10 +410,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\AcquistoVenditaTitoliView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\GestioneQuoteInvestitoriView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

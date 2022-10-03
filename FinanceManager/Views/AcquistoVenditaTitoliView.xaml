@@ -3,10 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-             xmlns:conv="clr-namespace:FinanceManager.Events"
-             xmlns:local="clr-namespace:FinanceManager.Views"
              x:Name="_AcquistoVenditaTitoliView"        
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="1400">
@@ -35,13 +32,32 @@
                 HorizontalContentAlignment="Center" Grid.Column="5" HorizontalAlignment="Right"
                     VerticalContentAlignment="Center" Width="20" Height="20" Background="Red" Foreground="Yellow" FontWeight="Bold" 
                 Margin="0,0, 15, 0"/>
-        <Border Grid.Row="1" BorderBrush="BlueViolet" BorderThickness="0.8" Margin="5" Name="TabSintesi">
+        <Border Grid.Row="1" BorderBrush="BlueViolet" BorderThickness="0.8" Margin="5" Name="Sintesi">
+            <DataGrid Name="DGMittente" Grid.Row="1" Grid.Column="1" Margin="10" AutoGenerateColumns="False" CanUserReorderColumns="False" 
+                          CanUserDeleteRows="False" CanUserAddRows="False" FontSize="16" ItemsSource="{Binding TotaleDisponibiliView, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Conto Corrente" Binding="{Binding Desc_Conto, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                    <DataGridTextColumn Header="Gestione" Binding="{Binding NomeGestione, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                    <DataGridTextColumn Header="Totale" Binding="{Binding Ammontare, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Right"/>
+                                <Setter Property="Margin" Value="5,0,5,0"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Valuta" Binding="{Binding Cod_Valuta, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                    <DataGridTextColumn Header="Tipo Soldi" Binding="{Binding Desc_Tipo_Soldi, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+        <!--<Border Grid.Row="1" BorderBrush="BlueViolet" BorderThickness="0.8" Margin="5" Name="TabSintesi">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="Loaded">
                     <i:CallMethodAction TargetObject="{Binding}" MethodName="TabControlLoaded"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
-        </Border>
+        </Border>-->
 
         <!-- Bottoniera colonna 1-->
         <StackPanel Grid.Row="1" Grid.Column="1" Margin="5" Orientation="Vertical" HorizontalAlignment="Left">
@@ -326,8 +342,8 @@
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="Gestione" IsReadOnly="True" Binding="{Binding Nome_Gestione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                    <DataGridTextColumn Header="Conto" IsReadOnly="True" Binding="{Binding Desc_Conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                        <DataGridTextColumn Header="Conto" IsReadOnly="True" Binding="{Binding Desc_Conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                        <DataGridTextColumn Header="Gestione" IsReadOnly="True" Binding="{Binding Nome_Gestione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="Tipo Movimento" IsReadOnly="True" Binding="{Binding Desc_tipo_movimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="Tipo Titolo" IsReadOnly="True" Binding="{Binding Desc_tipo_titolo, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTemplateColumn Header="Titolo" IsReadOnly="True" MaxWidth="100">

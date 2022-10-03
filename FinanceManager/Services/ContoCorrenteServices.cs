@@ -2,12 +2,8 @@
 using FinanceManager.Models.Enumeratori;
 using FinanceManager.Services.SQL;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FinanceManager.Services
 {
@@ -278,29 +274,37 @@ namespace FinanceManager.Services
                 using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
                 {
                     dataAdapter.SelectCommand = new SQLiteCommand();
-                    string query = ContoCorrenteScript.GetTotalAmountByAccount;
+                    string query0 = "";
                     string query1 = "";
                     string query2 = "";
                     string query3 = "";
-                    if (IdGestione == 0 && IdValuta == 0 && IdTipoSoldi == 0)
-                        dataAdapter.SelectCommand.CommandText = string.Format(query, "", "", "");
-                    else if (IdGestione > 0 && IdValuta == 0)
+                    if (IdConto == 0)
+                        dataAdapter.SelectCommand.CommandText = string.Format(ContoCorrenteScript.GetTotalAmountByAccount, "", "", "", "");
+                    else if (IdConto > 0 && IdGestione == 0 && IdValuta == 0 && IdTipoSoldi == 0)
                     {
-                        query1 = string.Format(" AND A.id_gestione = {0} ", IdGestione);
-                        dataAdapter.SelectCommand.CommandText = string.Format(query, query1, "", "");
+                        query0 = String.Format(" AND A.id_conto = {0} ", IdConto);
+                        dataAdapter.SelectCommand.CommandText = string.Format(ContoCorrenteScript.GetTotalAmountByAccount, query0, "", "", "");
                     }
-                    else if (IdGestione > 0 && IdValuta > 0 && IdTipoSoldi == 0)
+                    else if (IdConto > 0 && IdGestione > 0 && IdValuta == 0 && IdTipoSoldi == 0)
                     {
+                        query0 = String.Format(" AND A.id_conto = {0} ", IdConto);
+                        query1 = string.Format(" AND A.id_gestione = {0} ", IdGestione);
+                        dataAdapter.SelectCommand.CommandText = string.Format(ContoCorrenteScript.GetTotalAmountByAccount, query0, query1, "", "");
+                    }
+                    else if (IdConto > 0 && IdGestione > 0 && IdValuta > 0 && IdTipoSoldi == 0)
+                    {
+                        query0 = String.Format(" AND A.id_conto = {0} ", IdConto);
                         query1 = string.Format(" AND A.id_gestione = {0} ", IdGestione);
                         query2 = string.Format(" AND A.id_valuta = {0} ", IdValuta);
-                        dataAdapter.SelectCommand.CommandText = string.Format(query, query1, query2, "");
+                        dataAdapter.SelectCommand.CommandText = string.Format(ContoCorrenteScript.GetTotalAmountByAccount, query0, query1, query2, "");
                     }
-                    else if (IdGestione > 0 && IdValuta > 0 && IdTipoSoldi > 0)
+                    else if (IdConto > 0 && IdGestione > 0 && IdValuta > 0 && IdTipoSoldi > 0)
                     {
+                        query0 = String.Format(" AND A.id_conto = {0} ", IdConto);
                         query1 = string.Format(" AND A.id_gestione = {0} ", IdGestione);
                         query2 = string.Format(" AND A.id_valuta = {0} ", IdValuta);
                         query3 = string.Format(" AND A.id_tipo_soldi = {0} ", IdTipoSoldi);
-                        dataAdapter.SelectCommand.CommandText = String.Format(query, query1, query2, query3);
+                        dataAdapter.SelectCommand.CommandText = String.Format(ContoCorrenteScript.GetTotalAmountByAccount, query0, query1, query2, query3);
                     }
                     dataAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdConto);
                     dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
@@ -429,7 +433,6 @@ namespace FinanceManager.Services
                 }
             }
         }
-
         private ContoCorrenteList contoCorrentes(DataTable dataTable)
         {
             ContoCorrenteList lista = new ContoCorrenteList();

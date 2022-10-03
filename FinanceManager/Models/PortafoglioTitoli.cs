@@ -65,8 +65,8 @@ namespace FinanceManager.Models
         {
             Id_gestione = 0;
             Nome_Gestione = "";
-            Id_valuta = 1;
-            Cod_valuta = "EUR";
+            Id_valuta = 0;
+            Cod_valuta = "";
             Id_tipo_movimento = 0;
             Desc_tipo_movimento = "";
             Id_azienda = 0;

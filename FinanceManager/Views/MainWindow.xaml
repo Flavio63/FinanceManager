@@ -35,8 +35,6 @@
                           CommandParameter="{Binding ElementName=mainGrid}"/>
                 <MenuItem Header="Giroconto" Margin="2,0" FontSize="14" FontWeight="Bold" Command="{Binding OnClickOpenGiroconto}"
                           CommandParameter="{Binding ElementName=mainGrid}"/>
-                <MenuItem Header="Quote Investitori" Margin="2,0" FontSize="14" FontWeight="Normal" 
-                          Command="{Binding OnClickOpenQuoteInvestitori}"  CommandParameter="{Binding ElementName=mainGrid}"/>
                 <MenuItem Header="Conto Corrente" Margin="2,0" FontSize="14" FontWeight="Normal" 
                           Command="{Binding OnClickOpenContoCorrente}" CommandParameter="{Binding ElementName=mainGrid}"/>
                 <MenuItem Header="Portafoglio Titoli" Margin="2,0" FontSize="14" FontWeight="Normal" 

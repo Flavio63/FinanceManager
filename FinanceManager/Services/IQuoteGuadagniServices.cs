@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FinanceManager.Services
 {
-    public interface IQuoteServices
+    public interface IQuoteGuadagniServices
     {
         /// <summary>
         /// Verifico se nella data di inserimento è già presente
@@ -47,6 +47,26 @@ namespace FinanceManager.Services
         /// <param name="Id_Periodo_Quote">il periodo da modificare</param>
         /// <param name="Id_Tipo_Soldi">Il tipo soldi</param>
         void UpdateGuadagniTotaleAnno(int Id_Periodo_Quote, int Id_Tipo_Soldi);
-
+        
+        /// <summary>
+        /// Trovo il codice dei record da ricalcolare con le nuove quote
+        /// </summary>
+        /// <param name="dateTime">la data dell'investimento</param>
+        /// <param name="Id_tipoSoldi">Identifica chi sta modificando l'investimento</param>
+        /// <returns>int</returns>
+        int GetIdPeriodoQuote(DateTime dateTime, int Id_tipoSoldi);
+        /// <summary>
+        /// Tramite l'ultimo record conto_corrente inserito
+        /// calcolo e inserisco le quote guadagno per ogni singolo socio
+        /// </summary>
+        /// <param name="RecordContoCorrente">record conto corrente con i dati</param>
+        void AddSingoloGuadagno(ContoCorrente RecordContoCorrente);
+        void DeleteRecordGuadagno_Totale_anno(int id_quota);
+        /// <summary>
+        /// Tramite l'ultimo record conto_corrente inserito
+        /// calcolo e inserisco le quote guadagno per ogni singolo socio
+        /// </summary>
+        /// <param name="RecordContoCorrente">record conto corrente con i dati</param>
+        void ModifySingoloGuadagno(ContoCorrente RecordContoCorrente);
     }
 }

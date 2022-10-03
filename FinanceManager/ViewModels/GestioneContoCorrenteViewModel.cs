@@ -18,6 +18,7 @@ namespace FinanceManager.ViewModels
         IRegistryServices _registryServices;
         IManagerLiquidAssetServices _liquidAssetServices;
         IContoCorrenteServices _contoCorrenteServices;
+        IQuoteGuadagniServices _quoteServices;
         public ICommand CloseMeCommand { get; set; }
         public ICommand InsertCommand { get; set; }
         public ICommand ModifyCommand { get; set; }
@@ -29,11 +30,13 @@ namespace FinanceManager.ViewModels
         private TabControl _TabControl = new TabControl();
 
         public GestioneContoCorrenteViewModel
-            (IRegistryServices registryServices, IManagerLiquidAssetServices managerLiquidServices, IContoCorrenteServices contoCorrenteServices)
+            (IRegistryServices registryServices, IManagerLiquidAssetServices managerLiquidServices, 
+            IContoCorrenteServices contoCorrenteServices, IQuoteGuadagniServices quoteServices)
         {
             _registryServices = registryServices ?? throw new ArgumentNullException("Registry Services in Gestione Conto Corrente");
             _liquidAssetServices = managerLiquidServices ?? throw new ArgumentNullException("Liquid Asset Services in Gestione Conto Corrente");
             _contoCorrenteServices = contoCorrenteServices ?? throw new ArgumentNullException("Conto corrente services assente");
+            _quoteServices = quoteServices ?? throw new ArgumentNullException("Quote guadagni services assente");
             CloseMeCommand = new CommandHandler(CloseMe);
             InsertCommand = new CommandHandler(SaveCommand, CanSave);
             ModifyCommand = new CommandHandler(UpdateCommand, CanModify);
@@ -48,6 +51,7 @@ namespace FinanceManager.ViewModels
             {
                 MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Quote Investitori");
             }
+            _quoteServices = quoteServices;
         }
 
         private void SetUpData()
@@ -729,10 +733,10 @@ namespace FinanceManager.ViewModels
                     RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Costi)
                 {
                     // Inserisco il codice del periodo quote_guadagno
-                    RecordContoCorrente.Id_Quote_Periodi = _liquidAssetServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Tipo_Soldi);
+                    RecordContoCorrente.Id_Quote_Periodi = _quoteServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Tipo_Soldi);
                     //_liquidAssetServices.InsertAccountMovement(RecordContoCorrente);
                     // Inserisco il guadagno ripartito per is soci
-                    _liquidAssetServices.AddSingoloGuadagno(RecordContoCorrente);
+                    _quoteServices.AddSingoloGuadagno(RecordContoCorrente);
                 }
 
                 MessageBox.Show(string.Format("Ho effettuato l'operazione {0} correttamente.", RecordContoCorrente.Desc_tipo_movimento),
@@ -755,9 +759,9 @@ namespace FinanceManager.ViewModels
                     RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Costi)
                 {
                     // nel caso si sia cambiata la data nella modifica
-                    RecordContoCorrente.Id_Quote_Periodi = _liquidAssetServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Tipo_Soldi);
+                    RecordContoCorrente.Id_Quote_Periodi = _quoteServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Tipo_Soldi);
                     _contoCorrenteServices.UpdateRecordContoCorrente(RecordContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);    //registro la modifica in conto corrente
-                    _liquidAssetServices.ModifySingoloGuadagno(RecordContoCorrente); // modifico di conseguenza is record del guadagno totale anno
+                    _quoteServices.ModifySingoloGuadagno(RecordContoCorrente); // modifico di conseguenza is record del guadagno totale anno
                 }
                 else
                 {
@@ -810,7 +814,7 @@ namespace FinanceManager.ViewModels
                     RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Costi)
                 {
                     // con il codice del record elimino anche le righe inserite nella tabella guadagno
-                    _liquidAssetServices.DeleteRecordGuadagno_Totale_anno(RecordContoCorrente.Id_RowConto);
+                    _quoteServices.DeleteRecordGuadagno_Totale_anno(RecordContoCorrente.Id_RowConto);
                     _contoCorrenteServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);  // registro l'eliminazione in conto corrente
                 }
                 else

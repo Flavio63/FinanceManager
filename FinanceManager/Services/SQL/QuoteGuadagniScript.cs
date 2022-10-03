@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FinanceManager.Services.SQL
 {
-    public class QuoteScript
+    public class QuoteGuadagniScript
     {
         /// <summary> Verifico se nella data di inserimento è già presente un investimento</summary>
         public static readonly string VerifyInvestmentDate = "SELECT IFNULL(A.data_insert, IFNULL(SUM(A.id_periodo_quote), -1)) AS result FROM quote_periodi A " +
@@ -61,6 +61,34 @@ namespace FinanceManager.Services.SQL
             ") AS BB WHERE guadagni_totale_anno.id_gestione = BB.id_gestione AND guadagni_totale_anno.id_tipo_soldi = BB.id_tipo_soldi AND guadagni_totale_anno.id_tipo_movimento = " +
             "BB.id_tipo_movimento AND guadagni_totale_anno.data_operazione = BB.data_movimento and guadagni_totale_anno.Causale = BB.Causale;";
 
+        /// <summary>Trovo il codice dei record da ricalcolare con le nuove quote</summary>
+        //public static readonly string GetIdPeriodoQuote = "SELECT * FROM quote_periodi A WHERE A.data_inizio = @data_movimento and A.id_tipo_soldi = @id_tipo_soldi;";
+        /// <summary>Trovo il codice del periodo quote basandomi sulla data del movimento e sul tipo soldi</summary>
+        public static readonly string GetIdPeriodoQuote = "SELECT id_periodo_quote FROM quote_periodi A, tipo_soldi B WHERE A.id_aggregazione = B.id_aggregazione AND @data_movimento " +
+            "BETWEEN A.data_inizio AND A.data_fine AND B.id_tipo_soldi = @id_tipo_soldi";
+
+        /// <summary>Dopo l'inserimento sul conto corrente, registro il guadagno</summary>
+        public static readonly string AddSingoloGuadagno = "INSERT INTO guadagni_totale_anno (id_gestione, id_tipo_soldi, id_tipo_movimento, anno, quota, guadagnato, id_valuta, data_operazione, " +
+            "Causale, id_quote_periodi, id_conto_corrente) SELECT B.id_gestione, id_tipo_soldi, id_tipo_movimento, strftime('%Y', data_movimento) AS anno, " +
+            "case when B.id_gestione = 4 AND A.id_tipo_movimento = 8 then 0 ELSE (case when A.id_tipo_movimento = 8 then 0.5 ELSE B.quota END) END AS quota, " +
+            "case when B.id_gestione = 4 AND A.id_tipo_movimento = 8 then 0 ELSE (case when A.id_tipo_movimento = 8 then 0.5 * A.ammontare ELSE (case when id_tipo_soldi = 11 then A.ammontare* B.quota * -1 ELSE A.ammontare*B.quota END) END) END AS guadagnato, " +
+            "id_valuta, data_movimento, Causale, A.id_quote_periodi, A.id_fineco_euro FROM conto_corrente A, quote_guadagno B WHERE A.id_quote_periodi = B.id_quote_periodi AND A.id_fineco_euro = " +
+            "(SELECT id_fineco_euro FROM conto_corrente C WHERE C.id_tipo_movimento = @id_tipo_movimento AND id_tipo_soldi = @id_tipo_soldi AND id_quote_periodi = @id_quote_periodi " +
+            "ORDER BY id_fineco_euro DESC LIMIT 1) GROUP BY B.id_gestione; ";
+
+        /// <summary>
+        /// Elimino un record della tabella quote_guadagno
+        /// </summary>
+        public static readonly string DeleteRecordGuadagno_Totale_anno = "DELETE FROM guadagni_totale_anno WHERE id_conto_corrente = @id_conto_corrente ";
+        
+        /// <summary>Dopo la modifica sul conto corrente, registro la modifica sul guadagno totale anno</summary>
+        public static readonly string ModifySingoloGuadagno = " UPDATE guadagni_totale_anno SET guadagni_totale_anno.anno = BB.anno, guadagni_totale_anno.guadagnato = BB.guadagnato, " +
+            "guadagni_totale_anno.data_operazione = BB.data_movimento, guadagni_totale_anno.Causale = BB.Causale, guadagni_totale_anno.id_quote_periodi = BB.id_quote_periodi, " +
+            "guadagni_totale_anno.id_tipo_soldi = BB.id_tipo_soldi, guadagni_totale_anno.id_valuta = BB.id_valuta FROM (SELECT B.id_gestione, id_tipo_soldi, id_tipo_movimento, strftime('%Y', data_movimento) AS anno, " +
+            "CASE WHEN B.id_gestione = 4 AND A.id_tipo_movimento = 8 THEN 0 ELSE (CASE WHEN A.id_tipo_movimento = 8 THEN 0.5 ELSE B.quota END) END AS quota, CASE WHEN B.id_gestione = 4 AND A.id_tipo_movimento = 8 " +
+            "THEN 0 ELSE (CASE WHEN A.id_tipo_movimento = 8 THEN 0.5 * A.ammontare ELSE A.ammontare* B.quota END) END AS guadagnato, id_valuta, data_movimento, Causale, A.id_quote_periodi, A.id_fineco_euro " +
+            "FROM conto_corrente A, quote_guadagno B WHERE A.id_quote_periodi = B.id_quote_periodi AND A.id_fineco_euro = @id_fineco_euro GROUP BY B.id_gestione ) AS BB WHERE guadagni_totale_anno.id_gestione = " +
+            "BB.id_gestione AND guadagni_totale_anno.id_conto_corrente = BB.id_fineco_euro;";
 
     }
 }

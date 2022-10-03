@@ -17,7 +17,7 @@ namespace FinanceManager.ViewModels
         private readonly IRegistryServices _registryServices;
         private readonly IManagerLiquidAssetServices _managerLiquidServices;
         private readonly IContoCorrenteServices _contoCorrenteServices;
-        private readonly IQuoteServices _quoteServices;
+        private readonly IQuoteGuadagniServices _quoteServices;
 
         public ICommand CloseMeCommand { get; set; }
         public ICommand ClearMeCommand { get; set; }
@@ -27,7 +27,7 @@ namespace FinanceManager.ViewModels
 
         public CapitalsRegisterViewModel
             (IRegistryServices registryServices, IManagerLiquidAssetServices managerLiquidServices, 
-            IContoCorrenteServices contoCorrenteServices, IQuoteServices quoteServices)
+            IContoCorrenteServices contoCorrenteServices, IQuoteGuadagniServices quoteServices)
         {
             _registryServices = registryServices ?? throw new ArgumentNullException("Manca collegamento con richiesta dati anagrafica Capitali View Model");
             _managerLiquidServices = managerLiquidServices ?? throw new ArgumentNullException("Manca collegamento con richiesta dati conti Capitali View Model");

@@ -18,7 +18,8 @@ namespace FinanceManager.ViewModels
         private readonly IManagerReportServices _managerReportServices;
         private readonly IDAFconnection _DafConnection;
         private readonly IContoCorrenteServices _contoCorrenteServices;
-        private readonly IQuoteServices _quoteServices;
+        private readonly IContoTitoliServices _contoTitoliServices;
+        private readonly IQuoteGuadagniServices _quoteServices;
 
         public ICommand OnClickOpenGestioni { get; set; }
         public ICommand OnClickOpenConti { get; set; }
@@ -26,7 +27,6 @@ namespace FinanceManager.ViewModels
         public ICommand OnClickOpenTipologiaTitoli { get; set; }
         public ICommand OnClickOpenValute { get; set; }
         public ICommand OnClickOpenMovimenti { get; set; }
-        public ICommand OnClickOpenQuoteInvestitori { get; set; }
         public ICommand OnClickOpenContoCorrente { get; set; }
         public ICommand OnClickPortafoglioTitoli { get; set; }
         public ICommand OnClickManagerReports { get; set; }
@@ -55,8 +55,6 @@ namespace FinanceManager.ViewModels
         ManagerReportsViewModel managerReportsViewModel;
         ManagerReportsView managerReportsView;
 
-        GestioneQuoteInvestitoriViewModel gestioneQuoteInvestitoriViewModel;
-        GestioneQuoteInvestitoriView gestioneQuoteInvestitoriView;
         AcquistoVenditaTitoliViewModel acquistoVenditaTitoliViewModel;
         AcquistoVenditaTitoliView acquistoVenditaTitoliView;
 
@@ -85,7 +83,8 @@ namespace FinanceManager.ViewModels
             _managerLiquidServices = new ManagerLiquidAssetServices(_DafConnection);
             _managerReportServices = new ManagerReportServices(_DafConnection);
             _contoCorrenteServices = new ContoCorrenteServices(_DafConnection);
-            _quoteServices = new QuoteServices(_DafConnection);
+            _contoTitoliServices = new ContoTitoliServices(_DafConnection);
+            _quoteServices = new QuoteGuadagniServices(_DafConnection);
 
             OnClickOpenGestioni = new CommandHandler(OpenGestioni);
             OnClickOpenConti = new CommandHandler(OpenConti);
@@ -94,7 +93,6 @@ namespace FinanceManager.ViewModels
             OnClickOpenValute = new CommandHandler(OpenValute);
             OnClickOpenSchedaTitoli = new CommandHandler(OpenSchedaTitoli);
             OnClickOpenMovimenti = new CommandHandler(OpenMovimenti);
-            OnClickOpenQuoteInvestitori = new CommandHandler(OpenQuoteInvestitori);
             OnClickPortafoglioTitoli = new CommandHandler(PortafoglioTitoli);
             OnClickOpenContoCorrente = new CommandHandler(OpenContoCorrente);
             OnClickManagerReports = new CommandHandler(OpenReports);
@@ -229,7 +227,7 @@ namespace FinanceManager.ViewModels
             DockPanel mainGrid = param as DockPanel;
             if (acquistoVenditaTitoliView == null || !mainGrid.Children.Contains(acquistoVenditaTitoliView))
             {
-                acquistoVenditaTitoliViewModel = new AcquistoVenditaTitoliViewModel(_registryServices, _managerLiquidServices, _contoCorrenteServices);
+                acquistoVenditaTitoliViewModel = new AcquistoVenditaTitoliViewModel(_registryServices, _contoTitoliServices, _contoCorrenteServices, _quoteServices);
                 acquistoVenditaTitoliView = new AcquistoVenditaTitoliView(acquistoVenditaTitoliViewModel);
                 mainGrid.Children.Add(acquistoVenditaTitoliView);
             }
@@ -238,23 +236,6 @@ namespace FinanceManager.ViewModels
                 mainGrid.Children.Remove(acquistoVenditaTitoliView);
                 acquistoVenditaTitoliView = null;
                 acquistoVenditaTitoliViewModel = null;
-            }
-        }
-
-        private void OpenQuoteInvestitori(object param)
-        {
-            DockPanel mainGrid = param as DockPanel;
-            if (gestioneQuoteInvestitoriView == null || !mainGrid.Children.Contains(gestioneQuoteInvestitoriView))
-            {
-                gestioneQuoteInvestitoriViewModel = new GestioneQuoteInvestitoriViewModel(_registryServices, _managerLiquidServices);
-                gestioneQuoteInvestitoriView = new GestioneQuoteInvestitoriView(gestioneQuoteInvestitoriViewModel);
-                mainGrid.Children.Add(gestioneQuoteInvestitoriView);
-            }
-            else
-            {
-                mainGrid.Children.Remove(gestioneQuoteInvestitoriView);
-                gestioneQuoteInvestitoriView = null;
-                gestioneQuoteInvestitoriViewModel = null;
             }
         }
 
@@ -311,7 +292,8 @@ namespace FinanceManager.ViewModels
             DockPanel mainGrid = param as DockPanel;
             if (gestioneContoCorrenteView == null || !mainGrid.Children.Contains(gestioneContoCorrenteView))
             {
-                gestioneContoCorrenteViewModel = new GestioneContoCorrenteViewModel(_registryServices, _managerLiquidServices, _contoCorrenteServices);
+                gestioneContoCorrenteViewModel = 
+                    new GestioneContoCorrenteViewModel(_registryServices, _managerLiquidServices, _contoCorrenteServices, _quoteServices);
                 gestioneContoCorrenteView = new GestioneContoCorrenteView(gestioneContoCorrenteViewModel);
                 mainGrid.Children.Add(gestioneContoCorrenteView);
             }

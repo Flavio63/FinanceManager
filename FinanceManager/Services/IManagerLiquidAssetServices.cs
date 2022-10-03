@@ -7,22 +7,7 @@ namespace FinanceManager.Services
 {
     public interface IManagerLiquidAssetServices
     {
-        PortafoglioTitoliList GetManagerLiquidAssetListByOwnerAndLocation(int IdOwner = 0, int idLocation = 0);
-        PortafoglioTitoliList GetManagerLiquidAssetListByLinkMovimenti(DateTime link_movimenti);
-        PortafoglioTitoli GetLastShareMovementByOwnerAndLocation(int IdOwner, int IdLocation);
-        PortafoglioTitoli GetPortafoglioTitoliById(int IdPortafoglioTitoli);
-        Ptf_CCList GetShareActiveAndAccountMovement(int id_gestione, int id_conto, int id_titolo);
         SintesiSoldiList GetCurrencyAvailable(int IdGestione = 0, int IdConto = 0, int IdValuta = 0);
-        double GetSharesQuantity(int IdOwner, int IdLocation, uint id_titolo);
-        /// <summary>
-        /// Prelevo le info per i costi medi dei titoli attivi
-        /// </summary>
-        /// <returns></returns>
-        PortafoglioTitoliList GetCostiMediPerTitolo();
-
-        void AddManagerLiquidAsset(PortafoglioTitoli managerLiquidAsset);
-        void UpdateManagerLiquidAsset(PortafoglioTitoli managerLiquidAsset);
-        void DeleteManagerLiquidAsset(int id);
         /// <summary>
         /// Calcola la quota ultima base investimento attivo
         /// restituendo il totale immesso, prelevato, assegnato e disponibile
@@ -51,13 +36,7 @@ namespace FinanceManager.Services
         /// <summary>Estraggo gli anni dalla tabella guadagni_totale_anno</summary>
         List<int> GetAnniFromGuadagni();
 
-        /// <summary>
-        /// Trovo il codice dei record da ricalcolare con le nuove quote
-        /// </summary>
-        /// <param name="dateTime">la data dell'investimento</param>
-        /// <param name="Id_tipoSoldi">Identifica chi sta modificando l'investimento</param>
-        /// <returns>int</returns>
-        int GetIdPeriodoQuote(DateTime dateTime, int Id_tipoSoldi);
+        
 
         void UpdateGuadagniTotaleAnno(GuadagnoPerQuote RecordQuoteGuadagno);
         /// <summary>
@@ -83,21 +62,10 @@ namespace FinanceManager.Services
         /// <param name="Id_ActualQuote"></param>
         void DeleteRecordQuoteTab(int Id_ActualQuote);
 
-        /// <summary>
-        /// Tramite l'ultimo record conto_corrente inserito
-        /// calcolo e inserisco le quote guadagno per ogni singolo socio
-        /// </summary>
-        /// <param name="RecordContoCorrente">record conto corrente con i dati</param>
-        void AddSingoloGuadagno(ContoCorrente RecordContoCorrente);
-        /// <summary>
-        /// Tramite l'ultimo record conto_corrente inserito
-        /// calcolo e inserisco le quote guadagno per ogni singolo socio
-        /// </summary>
-        /// <param name="RecordContoCorrente">record conto corrente con i dati</param>
-        void ModifySingoloGuadagno(ContoCorrente RecordContoCorrente);
+        
+        
 
         QuotePerPeriodoList GetAllRecordQuote_Guadagno();
-        void DeleteRecordGuadagno_Totale_anno(int id_quota);
 
         /// <summary>
         /// Trovo l'id del record da modificare

@@ -13,16 +13,13 @@ namespace FinanceManager.Services.SQL
         private static readonly string AndQuote = " AND A.id_quote_investimenti = @id_quote_investimenti ";
         private static readonly string AndGestione = " AND A.id_gestione = @id_gestione ";
         private static readonly string AndConto = " AND A.id_conto = @id_conto ";
-        private static readonly string AndTitolo = " AND A.id_titolo = @id_titolo ";
         private static readonly string AndValuta = " AND A.id_valuta = @id_valuta ";
         private static readonly string AndIdPortafoglioTitoli = " AND A.id_portafoglio_titoli = @id_portafoglio_titoli ";
         private static readonly string AndIdFinecoEuro = " AND A.id_fineco_euro = @id_fineco_euro ";
-        private static readonly string AndLinkMovimenti = " AND A.link_movimenti = @link_movimenti ";
         private static readonly string DataMovimentoDesc = " data_movimento desc ";
         private static readonly string OrderBy = " ORDER BY ";
         private static readonly string GroupBy = " GROUP BY ";
         private static readonly string Comma = ", ";
-        private static readonly string TipoMovimento = " A.id_tipo_movimento ";
         private static readonly string AIdConto = " A.id_conto ";
         private static readonly string AIdValuta = " A.id_valuta ";
         private static readonly string AIdQuoteInv = " A.id_quote_inv ";
@@ -32,13 +29,6 @@ namespace FinanceManager.Services.SQL
         private static readonly string GetTableQuote = "SELECT id_quote_inv, A.id_gestione, B.nome_gestione, A.id_tipo_movimento, C.desc_movimento, data_movimento, ammontare, A.id_valuta, " +
             "D.cod_valuta, A.valuta_base, A.valore_cambio, A.note FROM quote_investimenti A, gestioni B, tipo_movimento C, valuta D " +
             "WHERE A.id_gestione = B.id_gestione AND A.id_tipo_movimento = C.id_tipo_movimento AND A.id_valuta = D.id_valuta AND id_quote_inv > 0 ";
-
-        private static readonly string GetManagerLiquidAssetList = "SELECT id_portafoglio_titoli, B.id_gestione, nome_gestione, C.id_conto, desc_conto, D.id_valuta, cod_valuta, " +
-            "E.id_tipo_movimento, desc_Movimento, G.id_tipo_titolo, G.desc_tipo_titolo, H.id_azienda, H.desc_azienda, A.id_titolo, F.desc_titolo, F.isin, data_movimento, " +
-            "shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ritenuta_fiscale, ammontare, valore_cambio, A.note, attivo, link_movimenti " +
-            "FROM portafoglio_titoli A, gestioni B, conti C, valuta D, tipo_movimento E, titoli F, tipo_titoli G, aziende H " +
-            "WHERE A.id_gestione = B.id_gestione AND A.id_conto = C.id_conto AND A.id_valuta = D.id_valuta AND A.id_tipo_movimento = E.id_tipo_movimento AND A.id_titolo = F.id_titolo AND " +
-            "F.id_tipo_titolo = G.id_tipo_titolo AND F.id_azienda = H.id_azienda AND id_portafoglio_titoli > 0 ";
 
         /// <summary>
         /// Data una gestione estrae il totale cedole, utili e disponibilità  +             "GROUP BY A.id_conto, A.id_valuta "
@@ -52,31 +42,6 @@ namespace FinanceManager.Services.SQL
 
         public static readonly string GetCurrencyAvByOwner = GetCurrencyAvailable + AndGestione + GroupBy + AIdConto + Comma + AIdValuta;
         public static readonly string GetCurrencyAvByOwnerContoValuta = GetCurrencyAvailable + AndGestione + AndConto + AndValuta;
-        /// <summary>
-        /// Estrae tutti i movimenti dal portafoglio titoli
-        /// </summary>
-        public static readonly string GetManagerLiquidAssetListTotal = GetManagerLiquidAssetList + OrderBy + DataMovimentoDesc + Comma + TipoMovimento;
-
-        public static readonly string GetPortafoglioTitoliById = GetManagerLiquidAssetList + AndIdPortafoglioTitoli;
-        /// <summary>
-        /// Estrae tutti i movimenti dal portafoglio titoli di una gestione
-        /// </summary>
-        public static readonly string GetManagerLiquidAssetListByOwner = GetManagerLiquidAssetList + AndGestione + OrderBy + DataMovimentoDesc + Comma + TipoMovimento;
-
-        public static readonly string GetManagerLiquidAssetListByLocation = GetManagerLiquidAssetList + AndConto + OrderBy + DataMovimentoDesc + Comma + TipoMovimento;
-
-        public static readonly string GetManagerLiquidAssetListByOwnerLocatioAndShare = GetManagerLiquidAssetList + AndGestione + AndConto + AndTitolo + OrderBy + DataMovimentoDesc;
-
-        public static readonly string GetManagerLiquidAssetListByLinkMovimenti = GetManagerLiquidAssetList + AndLinkMovimenti + OrderBy + ADataMovimento;
-        /// <summary>
-        /// Data una gestione e un conto estrae tutti i record
-        /// </summary>
-        public static readonly string GetManagerLiquidAssetListByOwnerAndLocation = GetManagerLiquidAssetList + AndGestione + AndConto + OrderBy + DataMovimentoDesc + Comma + TipoMovimento;
-
-        /// <summary>
-        /// Data una gestione e una location, estrae tutti i record relativi ai tipi di movimenti richiesti
-        /// </summary>
-        public static readonly string GetManagerLiquidAssetByOwnerLocationAndMovementType = GetManagerLiquidAssetList + AndGestione + AndConto + " AND {0} " + OrderBy + DataMovimentoDesc;
 
         /// <summary>
         /// Data una gestione e una location, estrae tutti i record relativi ai movimenti di titoli
@@ -90,50 +55,10 @@ namespace FinanceManager.Services.SQL
             "ORDER BY data_movimento DESC";
 
         /// <summary>
-        /// Data una gestione e una location, estrae l'ultimo record caricato
-        /// </summary>
-        public static readonly string GetLastSharesMovementByOwnerAndLocation = "SELECT id_portafoglio_titoli, B.id_gestione, nome_gestione, C.id_conto, desc_conto, D.id_valuta, " +
-            "cod_valuta, E.id_tipo_movimento, desc_Movimento, A.id_titolo, F.desc_titolo, F.isin, F.id_tipo_titolo, H.desc_tipo_titolo, F.id_azienda, I.desc_azienda, data_movimento, " +
-            "shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ritenuta_fiscale, ammontare, valore_cambio, A.note, attivo, link_movimenti " +
-            "FROM portafoglio_titoli A, gestioni B, conti C, valuta D, tipo_movimento E, titoli F, tipo_titoli H, aziende I " +
-            "WHERE A.id_gestione = B.id_gestione AND A.id_conto = C.id_conto AND A.id_valuta = D.id_valuta AND A.id_tipo_movimento = E.id_tipo_movimento AND A.id_titolo = F.id_titolo " +
-            "AND F.id_tipo_titolo = H.id_tipo_titolo AND F.id_azienda = I.id_azienda AND B.id_gestione = @id_gestione AND C.id_conto = @id_conto AND A.id_titolo IS NOT NULL " +
-            "ORDER BY id_portafoglio_titoli DESC LIMIT 1";
-
-        /// <summary>
-        /// Estrae il numero di azioni possedute dato una gestione, un conto e un id azione
-        /// </summary>
-        public static readonly string GetSharesQuantity = "SELECT SUM(shares_quantity) TotalShares FROM portafoglio_titoli " +
-            "WHERE id_gestione = @id_gestione AND id_conto = @id_conto AND id_titolo = @id_titolo";
-
-        /// <summary>
         /// Estrae la somma del profit loss data una gestione e un dato conto
         /// </summary>
             public static readonly string GetProfitLossByCurrency = "SELECT SUM(profit_loss) as TotalProfitLoss FROM portafoglio_titoli " +
             "WHERE id_gestione = @id_gestione AND id_conto = @id_conto AND id_valuta =@id_valuta";
-
-        /// <summary>
-        /// Aggiunge un movimento al portafoglio titoli
-        /// </summary>
-        public static readonly string AddManagerLiquidAsset = "INSERT INTO portafoglio_titoli (id_portafoglio_titoli, id_gestione, id_conto, id_valuta, id_tipo_movimento, " +
-            "id_titolo, data_movimento, ammontare, shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ritenuta_fiscale, " +
-            "valore_cambio, note, attivo, link_movimenti) " +
-            "VALUES (null, @id_gestione, @id_conto, @id_valuta, @id_tipo_movimento, @id_titolo, @data_movimento, @ammontare, @shares_quantity, " +
-            "@unity_local_value, @total_commission, @tobin_tax, @disaggio_cedole, @ritenuta_fiscale, @valore_cambio, @note, @attivo, @link_movimenti);";
-
-        /// <summary>
-        /// Aggiorna un movimento del portafoglio titoli
-        /// </summary>
-        public static readonly string UpdateManagerLiquidAsset = "UPDATE portafoglio_titoli SET id_gestione = @id_gestione, id_conto = @id_conto, id_valuta = @id_valuta, " +
-            "id_tipo_movimento = @id_tipo_movimento, id_titolo = @id_titolo, data_movimento = @data_movimento, ammontare = @ammontare, shares_quantity = @shares_quantity, " +
-            "unity_local_value = @unity_local_value, total_commission = @total_commission, tobin_tax = @tobin_tax, disaggio_cedole = @disaggio_cedole, " +
-            "ritenuta_fiscale = @ritenuta_fiscale, valore_cambio = @valore_cambio, " +
-            "note = @note, attivo = @attivo, link_movimenti = @link_movimenti WHERE id_portafoglio_titoli = @id_portafoglio_titoli";
-        
-        /// <summary>
-        /// Cancella un movimento del portafoglio titoli
-        /// </summary>
-        public static readonly string DeleteManagerLiquidAsset = "DELETE FROM portafoglio_titoli WHERE id_portafoglio_titoli = @id_portafoglio_titoli;";
 
         /// <summary>
         /// Preleva i movimenti di acquito (5) e vendita (6)
@@ -147,14 +72,6 @@ namespace FinanceManager.Services.SQL
             "AND F.id_tipo_titoli = H.id_tipo_titoli AND F.id_azienda = I.id_azienda AND B.id_portafoglio_titoli = @owner AND C.id_conto = @id_conto AND id_titolo = @id_titolo " +
             "AND (id_movimento = 5 or id_movimento = 6) " +
             "ORDER BY data_movimento";
-
-        /// <summary>
-        /// Dato un id_titoli, una gestione e un conto restituisce i titoli ancora in portafoglio
-        /// </summary>
-        public static readonly string GetShareActiveAndAccountMovement = "SELECT AA.id_portafoglio_titoli, AA.id_gestione, AA.id_conto, AA.id_valuta, AA.id_tipo_movimento, AA.id_titolo, " +
-            "AA.data_movimento, AA.ammontare AS ValoreAzione, AA.shares_quantity, AA.unity_local_value, AA.total_commission, AA.tobin_tax, AA.disaggio_cedole, AA.ritenuta_fiscale, AA.valore_cambio, " +
-            "AA.note, BB.id_fineco_euro, BB.ammontare AS Valore_in_CC, BB.id_tipo_soldi FROM portafoglio_titoli AA LEFT JOIN conto_corrente BB ON AA.id_portafoglio_titoli = BB.id_portafoglio_titoli " +
-            "WHERE AA.id_conto = @id_conto AND AA.id_gestione = @id_gestione AND AA.id_titolo = @id_titolo AND AA.attivo = 1 ORDER BY AA.data_movimento";
 
         /// <summary>
         /// Estrae tutti i movimenti di tutti i conti correnti di tutte le gestioni
@@ -200,12 +117,6 @@ namespace FinanceManager.Services.SQL
             "WHERE A.id_quote_inv > 0 AND A.id_tipo_movimento <> 12 AND A.data_movimento < @data_movimento " +
             "ORDER BY A.data_movimento DESC LIMIT 1;";
 
-        /// <summary>Trovo il codice dei record da ricalcolare con le nuove quote</summary>
-        //public static readonly string GetIdPeriodoQuote = "SELECT * FROM quote_periodi A WHERE A.data_inizio = @data_movimento and A.id_tipo_soldi = @id_tipo_soldi;";
-        /// <summary>Trovo il codice del periodo quote basandomi sulla data del movimento e sul tipo soldi</summary>
-        public static readonly string GetIdPeriodoQuote = "SELECT id_periodo_quote FROM quote_periodi A, tipo_soldi B WHERE A.id_aggregazione = B.id_aggregazione AND @data_movimento " +
-            "BETWEEN A.data_inizio AND A.data_fine AND B.id_tipo_soldi = @id_tipo_soldi";
-
         public static readonly string GetLastPeriodoValiditaQuote = "SELECT id_periodo_quote FROM quote_periodi A ORDER BY A.id_periodo_quote DESC LIMIT 1";
 
         /// <summary>
@@ -221,11 +132,6 @@ namespace FinanceManager.Services.SQL
         /// </summary>
         public static readonly string InsertRecordQuote_Guadagno = "INSERT INTO quote_guadagno (id_quota, id_gestione, id_quote_periodi, quota) values (" +
             "null, @id_gestione, @id_quote_periodi, @quota)";
-
-        /// <summary>
-        /// Elimino un record della tabella quote_guadagno
-        /// </summary>
-        public static readonly string DeleteRecordGuadagno_Totale_anno = "DELETE FROM guadagni_totale_anno WHERE id_conto_corrente = @id_conto_corrente ";
 
         /// <summary>
         /// Esporta tutti i record della quote prendendo anche le descrizioni
@@ -282,33 +188,6 @@ namespace FinanceManager.Services.SQL
         /// <summary> Elimino un recordo di prelievo utili </summary>
         public static readonly string DeletePrelievoUtiliBKd = "DELETE FROM prelievi WHERE id_prelievo = @id_prelievo;";
         public static readonly string DeletePrelievoUtili = "DELETE FROM guadagni_totale_anno WHERE id_guadagno = @id_guadagno;";
-
-
-        /// <summary>Dopo l'inserimento sul conto corrente, registro il guadagno</summary>
-        public static readonly string AddSingoloGuadagno = "INSERT INTO guadagni_totale_anno (id_gestione, id_tipo_soldi, id_tipo_movimento, anno, quota, guadagnato, id_valuta, data_operazione, " +
-            "Causale, id_quote_periodi, id_conto_corrente) SELECT B.id_gestione, id_tipo_soldi, id_tipo_movimento, strftime('%Y', data_movimento) AS anno, " +
-            "case when B.id_gestione = 4 AND A.id_tipo_movimento = 8 then 0 ELSE (case when A.id_tipo_movimento = 8 then 0.5 ELSE B.quota END) END AS quota, " +
-            "case when B.id_gestione = 4 AND A.id_tipo_movimento = 8 then 0 ELSE (case when A.id_tipo_movimento = 8 then 0.5 * A.ammontare ELSE (case when id_tipo_soldi = 11 then A.ammontare* B.quota * -1 ELSE A.ammontare*B.quota END) END) END AS guadagnato, " +
-            "id_valuta, data_movimento, Causale, A.id_quote_periodi, A.id_fineco_euro FROM conto_corrente A, quote_guadagno B WHERE A.id_quote_periodi = B.id_quote_periodi AND A.id_fineco_euro = " +
-            "(SELECT id_fineco_euro FROM conto_corrente C WHERE C.id_tipo_movimento = @id_tipo_movimento AND id_tipo_soldi = @id_tipo_soldi AND id_quote_periodi = @id_quote_periodi " +
-            "ORDER BY id_fineco_euro DESC LIMIT 1) GROUP BY B.id_gestione; ";
-
-        /// <summary>Dopo la modifica sul conto corrente, registro la modifica sul guadagno totale anno</summary>
-        public static readonly string ModifySingoloGuadagno = " UPDATE guadagni_totale_anno SET guadagni_totale_anno.anno = BB.anno, guadagni_totale_anno.guadagnato = BB.guadagnato, " +
-            "guadagni_totale_anno.data_operazione = BB.data_movimento, guadagni_totale_anno.Causale = BB.Causale, guadagni_totale_anno.id_quote_periodi = BB.id_quote_periodi, " +
-            "guadagni_totale_anno.id_tipo_soldi = BB.id_tipo_soldi, guadagni_totale_anno.id_valuta = BB.id_valuta FROM (SELECT B.id_gestione, id_tipo_soldi, id_tipo_movimento, strftime('%Y', data_movimento) AS anno, " +
-            "CASE WHEN B.id_gestione = 4 AND A.id_tipo_movimento = 8 THEN 0 ELSE (CASE WHEN A.id_tipo_movimento = 8 THEN 0.5 ELSE B.quota END) END AS quota, CASE WHEN B.id_gestione = 4 AND A.id_tipo_movimento = 8 " +
-            "THEN 0 ELSE (CASE WHEN A.id_tipo_movimento = 8 THEN 0.5 * A.ammontare ELSE A.ammontare* B.quota END) END AS guadagnato, id_valuta, data_movimento, Causale, A.id_quote_periodi, A.id_fineco_euro " +
-            "FROM conto_corrente A, quote_guadagno B WHERE A.id_quote_periodi = B.id_quote_periodi AND A.id_fineco_euro = @id_fineco_euro GROUP BY B.id_gestione ) AS BB WHERE guadagni_totale_anno.id_gestione = " +
-            "BB.id_gestione AND guadagni_totale_anno.id_conto_corrente = BB.id_fineco_euro;";
-
-        public static readonly string GetCostiMediPerTitolo = "SELECT C.nome_gestione, D.desc_conto, B.id_tipo_titolo, E.desc_tipo_titolo, B.desc_titolo, B.isin, " +
-            "SUM(ammontare +(total_commission + tobin_tax + disaggio_cedole + ritenuta_fiscale)*-1) AS CostoMedio, SUM(shares_quantity) AS TitoliAttivi, " +
-            "SUM(ammontare + (total_commission + tobin_tax + disaggio_cedole + ritenuta_fiscale) * -1) / SUM(shares_quantity) AS CostoUnitarioMedio " +
-            "FROM portafoglio_titoli A, titoli B, gestioni C, conti D, tipo_titoli E " +
-            "WHERE A.id_gestione<> 0 AND attivo > 0 AND A.id_tipo_movimento <> 6 AND A.id_titolo = B.id_titolo AND A.id_gestione = C.id_gestione AND A.id_conto = D.id_conto AND B.id_tipo_titolo = E.id_tipo_titolo " +
-            "GROUP BY A.id_gestione, A.id_conto, E.id_tipo_titolo, A.id_titolo " +
-            "ORDER BY A.id_gestione, A.id_conto, E.desc_tipo_titolo, B.desc_titolo";
 
         public static readonly string GetMovimentiContoGestioneValuta = "DROP TEMPORARY TABLE if EXISTS movimenti_conto; " +
             "CREATE TEMPORARY TABLE movimenti_conto (`id_fineco_euro` int(10) unsigned NOT NULL DEFAULT 0, `desc_conto` VARCHAR(50) DEFAULT NULL, `nome_gestione` VARCHAR(100) DEFAULT NULL," +

@@ -3,6 +3,7 @@ using FinanceManager.Models;
 using FinanceManager.Models.Enumeratori;
 using FinanceManager.Services;
 using FinanceManager.Views;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -17,8 +18,10 @@ namespace FinanceManager.ViewModels
     public class AcquistoVenditaTitoliViewModel : ViewModelBase
     {
         private IRegistryServices _registryServices;
-        private IManagerLiquidAssetServices _liquidAssetServices;
         private IContoCorrenteServices _contoCorrenteServices;
+        private IContoTitoliServices _contoTitoliServices;
+        private IQuoteGuadagniServices _quoteServices;
+
         private double _CurrencyAvailable;
         private ObservableCollection<RegistryShare> _SharesList;
         public ICommand CloseMeCommand { get; set; }
@@ -31,11 +34,12 @@ namespace FinanceManager.ViewModels
         private TabControl _TabControl = new TabControl();
 
         public AcquistoVenditaTitoliViewModel
-            (IRegistryServices services, IManagerLiquidAssetServices liquidAssetServices, IContoCorrenteServices contoCorrenteServices)
+            (IRegistryServices services, IContoTitoliServices contoTitoliServices, IContoCorrenteServices contoCorrenteServices, IQuoteGuadagniServices quoteServices)
         {
             _registryServices = services ?? throw new ArgumentNullException("Services in Manager Portfolio Movement View Model");
-            _liquidAssetServices = liquidAssetServices ?? throw new ArgumentNullException("Liquid Asset Services in Manager Portfolio Movement View Model");
+            _contoTitoliServices = contoTitoliServices ?? throw new ArgumentNullException("Conto Titoli Services in Manager Portfolio Movement View Model");
             _contoCorrenteServices = contoCorrenteServices ?? throw new ArgumentException("Conto corrente Services non presente");
+            _quoteServices = quoteServices ?? throw new ArgumentNullException("Quote guadagno services non presente");
             CloseMeCommand = new CommandHandler(CloseMe);
             InsertCommand = new CommandHandler(SaveCommand, CanSave);
             ModifyCommand = new CommandHandler(UpdateCommand, CanModify);
@@ -57,36 +61,41 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                ListMovimenti = new RegistryMovementTypeList();
-                ListGestioni = new RegistryOwnersList();
+                // seleziono tutto tranne il conto base ------------------------------------------------
                 ListConti = new RegistryLocationList();
-                ListValute = new RegistryCurrencyList();
-                ListTipoTitoli = new RegistryShareTypeList();
-                RegistryMovementTypeList listaOriginale = new RegistryMovementTypeList();
-                listaOriginale = _registryServices.GetRegistryMovementTypesList();
-                var RMTL = from movimento in listaOriginale
-                           where (movimento.Id_tipo_movimento == 5 || movimento.Id_tipo_movimento == 6 || movimento.Id_tipo_movimento == 13 || movimento.Id_tipo_movimento == 14)
-                           select movimento;
-                foreach (RegistryMovementType registry in RMTL)
-                    ListMovimenti.Add(registry);
-                ListValute = _registryServices.GetRegistryCurrencyList();
+                RegistryLocationList  ListaContiOriginale = new RegistryLocationList();
+                ListaContiOriginale = _registryServices.GetRegistryLocationList();
+                var LCO = from conto in ListaContiOriginale
+                          where conto.Id_Conto > 1
+                          select conto;
+                foreach (RegistryLocation registryLocation in LCO)
+                    ListConti.Add(registryLocation);
+                //======================================================================================
+                // seleziono solo i gestori e non i soci -----------------------------------------------
+                ListGestioni = new RegistryOwnersList();
                 RegistryOwnersList ListaInvestitoreOriginale = new RegistryOwnersList();
                 ListaInvestitoreOriginale = _registryServices.GetGestioneList();
                 var ROL = from gestione in ListaInvestitoreOriginale
                           where (gestione.Tipologia == "Gestore")
                           select gestione;
-                _TabControl.TabStripPlacement = Dock.Left;
                 foreach (RegistryOwner registryOwner in ROL)
-                {
-                    // per ogni gestione acquisisco i dati per la sintesi soldi
-                    TabItem tabItem = new TabItem();
-                    tabItem.Header = registryOwner.Nome_Gestione;
-                    _TabControl.Items.Add(tabItem);
                     ListGestioni.Add(registryOwner);
-                }
-                //ListGestioni = (RegistryOwnersList)ROL;
-                ListConti = _registryServices.GetRegistryLocationList();
+                //=====================================================================================
+                ListValute = new RegistryCurrencyList();
+                ListValute = _registryServices.GetRegistryCurrencyList();
+                ListTipoTitoli = new RegistryShareTypeList();
                 ListTipoTitoli = _registryServices.GetRegistryShareTypeList();
+                // seleziono solo i movimenti acquisto / vendita --------------------------------------
+                ListMovimenti = new RegistryMovementTypeList();
+                RegistryMovementTypeList listaOriginale = new RegistryMovementTypeList();
+                listaOriginale = _registryServices.GetRegistryMovementTypesList();
+                var RMTL = from movimento in listaOriginale
+                           where (movimento.Id_tipo_movimento == 5 || movimento.Id_tipo_movimento == 6)
+                           select movimento;
+                foreach (RegistryMovementType registry in RMTL)
+                    ListMovimenti.Add(registry);
+                //=====================================================================================
+                // la grid filtrabile tramite i combo
                 SharesList = new ObservableCollection<RegistryShare>(_registryServices.GetRegistryShareList());
                 _Filter = new Predicate<object>(Filter);
             }
@@ -98,18 +107,14 @@ namespace FinanceManager.ViewModels
 
         private void Init()
         {
-            foreach (TabItem tabItem in _TabControl.Items)
-            {
-                var Owner = from registryOwner in ListGestioni where registryOwner.Nome_Gestione == tabItem.Header.ToString() select registryOwner;
-
-                tabItem.Content = null;
-                tabItem.Content = new TabControlSintesiView(
-                    new TabControlSintesiViewModel(_liquidAssetServices.GetCurrencyAvailable(Owner.ElementAt<RegistryOwner>(0).Id_gestione)));
-            }
+            //=====================================================================================
+            // popolo la griglia con la disponibilità di tutti i conti (codice 0)
+            TotaleDisponibili = new ContoCorrenteList();
+            TotaleDisponibili = _contoCorrenteServices.GetTotalAmountByAccount(0);
+            //=====================================================================================
             TobinOk = false;
             DisaggioOk = false;
             RitenutaOk = false;
-            CanUpdateDelete = false;
             ImportoTotale = 0;
             TotalLocalValue = 0;
             TotaleContabile = 0;
@@ -117,8 +122,8 @@ namespace FinanceManager.ViewModels
             try
             {
                 RecordPortafoglioTitoli = new PortafoglioTitoli();
-                ListPortafoglioTitoli = _liquidAssetServices.GetManagerLiquidAssetListByOwnerAndLocation();
-                ListCostiMediTitoli = _liquidAssetServices.GetCostiMediPerTitolo();
+                ListPortafoglioTitoli = _contoTitoliServices.GetListTitoliByOwnerAndLocation();
+                ListCostiMediTitoli = _contoTitoliServices.GetCostiMediPerTitolo();
             }
             catch (Exception err)
             {
@@ -129,6 +134,7 @@ namespace FinanceManager.ViewModels
             Gestione = "";
             ISIN = "";
             IdTipoTitolo = 0;
+            Valuta = "";
         }
 
         #region events
@@ -162,6 +168,7 @@ namespace FinanceManager.ViewModels
                 {
                     RecordPortafoglioTitoli.Cod_valuta = RC.CodeCurrency;
                     RecordPortafoglioTitoli.Id_valuta = RC.IdCurrency;
+                    Valuta = RC.CodeCurrency;
                 }
                 if (e.AddedItems[0] is RegistryShare RS)
                 {
@@ -179,7 +186,7 @@ namespace FinanceManager.ViewModels
                 {
                     RecordPortafoglioTitoli.Data_Movimento = DT.Date;
                 }
-                SharesOwned = _liquidAssetServices.GetSharesQuantity(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto, (uint)RecordPortafoglioTitoli.Id_titolo);
+                SharesOwned = _contoTitoliServices.GetSharesQuantity(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto, (uint)RecordPortafoglioTitoli.Id_titolo);
                 UpdateTotals();
             }
         }
@@ -200,8 +207,6 @@ namespace FinanceManager.ViewModels
             {
                 RecordPortafoglioTitoli = PT;
                 UpdateTotals();
-                CanUpdateDelete = true;
-                CanInsert = false;
             }
         }
 
@@ -282,8 +287,6 @@ namespace FinanceManager.ViewModels
             // verifico che ci sia un importo unitario e un numero di azioni
             if (RecordPortafoglioTitoli.Costo_unitario_in_valuta >= 0 && RecordPortafoglioTitoli.N_titoli != 0)
             {
-                if (RecordPortafoglioTitoli.Id_portafoglio == 0)
-                    CanInsert = true;
                 // Totale 1 VALORE TRANSAZIONE (conteggio diverso fra obbligazioni e tutto il resto)
                 RecordPortafoglioTitoli.Importo_totale = RecordPortafoglioTitoli.Id_tipo_titolo != 2 ? -1 * (RecordPortafoglioTitoli.Costo_unitario_in_valuta * RecordPortafoglioTitoli.N_titoli) :
                     -1 * (RecordPortafoglioTitoli.Costo_unitario_in_valuta * RecordPortafoglioTitoli.N_titoli) / 100;
@@ -408,19 +411,33 @@ namespace FinanceManager.ViewModels
                         return Ptf.Isin.ToLower().Contains(ISIN.ToLower());
                     }
                 }
+                else if (obj is ContoCorrente CCL)
+                {
+                    if (!string.IsNullOrWhiteSpace(Conto) && string.IsNullOrWhiteSpace(Gestione) && string.IsNullOrWhiteSpace(Valuta))
+                        return CCL.Desc_Conto == Conto;
+                    else if (!string.IsNullOrWhiteSpace(Conto) && !string.IsNullOrWhiteSpace(Gestione) && string.IsNullOrWhiteSpace(Valuta))
+                        return CCL.Desc_Conto == Conto && CCL.NomeGestione == Gestione;
+                    else if (!string.IsNullOrWhiteSpace(Conto) && !string.IsNullOrWhiteSpace(Gestione) && !string.IsNullOrWhiteSpace(Valuta))
+                        return CCL.Desc_Conto == Conto && CCL.NomeGestione == Gestione && CCL.Cod_Valuta == Valuta;
+                }
             }
             return true;
         }
 
-        public void TabControlLoaded(object sender, System.EventArgs e)
-        {
-            Border MyTabControl = sender as Border;
-            MyTabControl.Child = _TabControl;
-        }
-
         #endregion
 
-        #region Filtri per DataGrid
+        #region Filtri per i DataGrid
+        private string _valuta;
+        private string Valuta
+        {
+            get { return _valuta; }
+            set
+            {
+                _valuta = value;
+                TotaleDisponibiliView.Filter = _Filter;
+                TotaleDisponibiliView.Refresh();
+            }
+        }
         private string _conto;
         private string Conto
         {
@@ -432,6 +449,8 @@ namespace FinanceManager.ViewModels
                 PtfCollectionView.Refresh();
                 CollectionCostiMedi.Filter = _Filter;
                 CollectionCostiMedi.Refresh();
+                TotaleDisponibiliView.Filter = _Filter;
+                TotaleDisponibiliView.Refresh();
             }
         }
         private string _gestione;
@@ -445,6 +464,8 @@ namespace FinanceManager.ViewModels
                 PtfCollectionView.Refresh();
                 CollectionCostiMedi.Filter = _Filter;
                 CollectionCostiMedi.Refresh();
+                TotaleDisponibiliView.Filter = _Filter;
+                TotaleDisponibiliView.Refresh();
             }
         }
         private string _isin;
@@ -473,34 +494,6 @@ namespace FinanceManager.ViewModels
                 CollectionCostiMedi.Refresh();
             }
         }
-        #endregion
-
-        #region SintesiSoldi
-        /// <summary>
-        /// il riepilogo dei soldi per la gestione Dany&Fla
-        /// </summary>
-        public SintesiSoldiList SintesiSoldiDF
-        {
-            get { return GetValue(() => SintesiSoldiDF); }
-            private set { SetValue(() => SintesiSoldiDF, value); }
-        }
-        /// <summary>
-        /// il riepilogo dei soldi per la gestione Rubiu
-        /// </summary>
-        public SintesiSoldiList SintesiSoldiR
-        {
-            get { return GetValue(() => SintesiSoldiR); }
-            private set { SetValue(() => SintesiSoldiR, value); }
-        }
-        /// <summary>
-        /// il riepilogo dei soldi per la gestione Dany&Fla_Volatili
-        /// </summary>
-        public SintesiSoldiList SintesiSoldiDFV
-        {
-            get { return GetValue(() => SintesiSoldiDFV); }
-            private set { SetValue(() => SintesiSoldiDFV, value); }
-        }
-
         #endregion
 
         #region Parametri comuni
@@ -636,12 +629,30 @@ namespace FinanceManager.ViewModels
 
         #region DataGrid
         /// <summary>
+        /// Elenco con la somma delle disponibilità
+        /// </summary>
+        public ContoCorrenteList TotaleDisponibili
+        {
+            get { return GetValue(() => TotaleDisponibili); }
+            set { SetValue(() => TotaleDisponibili, value); TotaleDisponibiliView = CollectionViewSource.GetDefaultView(value); }
+        }
+        public System.ComponentModel.ICollectionView TotaleDisponibiliView
+        {
+            get { return GetValue(() => TotaleDisponibiliView); }
+            set { SetValue(() => TotaleDisponibiliView, value); }
+        }
+        /// <summary>
         /// Elenco con tutti i records del portafoglio
         /// </summary>
         public PortafoglioTitoliList ListPortafoglioTitoli
         {
             get { return GetValue(() => ListPortafoglioTitoli); }
             private set { SetValue(() => ListPortafoglioTitoli, value); PtfCollectionView = CollectionViewSource.GetDefaultView(value); }
+        }
+        public System.ComponentModel.ICollectionView PtfCollectionView
+        {
+            get { return GetValue(() => PtfCollectionView); }
+            set { SetValue(() => PtfCollectionView, value); }
         }
         /// <summary>
         /// Contiene la lista di tutti i titoli attivi,
@@ -658,11 +669,6 @@ namespace FinanceManager.ViewModels
             set { SetValue(() => CollectionCostiMedi, value); }
         }
 
-        public System.ComponentModel.ICollectionView PtfCollectionView
-        {
-            get { return GetValue(() => PtfCollectionView); }
-            set { SetValue(() => PtfCollectionView, value); }
-        }
         /// <summary>
         /// Singolo record del portafoglio
         /// </summary>
@@ -709,15 +715,24 @@ namespace FinanceManager.ViewModels
 
         private bool VerificheDati()
         {
-            if (!CanUpdateDelete)
-            {// verifico la disponibilità di liquidità in conto corrente
-                CurrencyAvailable = _liquidAssetServices.GetCurrencyAvailable(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto, RecordPortafoglioTitoli.Id_valuta)[0].Disponibili;
+            if (RecordPortafoglioTitoli.Id_portafoglio ==  0)
+            {
+                // verifico la disponibilità utilizzando i paramentri inseriti con tipo_soldi "Capitale"
+                if (_contoCorrenteServices.GetTotalAmountByAccount(RecordPortafoglioTitoli.Id_Conto, 
+                        RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_valuta, 1).Count > 0)
+                    CurrencyAvailable = (_contoCorrenteServices.GetTotalAmountByAccount(RecordPortafoglioTitoli.Id_Conto, RecordPortafoglioTitoli.Id_gestione, 
+                        RecordPortafoglioTitoli.Id_valuta, 1)[0]).Ammontare;
+                else
+                {
+                    MessageBox.Show("Non hai abbastanza soldi per questo acquisto!", "Acquisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    return false;
+                }
                 if (CurrencyAvailable < Math.Abs(TotalLocalValue) && RecordPortafoglioTitoli.Id_tipo_movimento == 5)
                 {
                     MessageBox.Show("Non hai abbastanza soldi per questo acquisto!", "Acquisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     return false;
                 }
-                SharesOwned = _liquidAssetServices.GetSharesQuantity(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto, (uint)RecordPortafoglioTitoli.Id_titolo);
+                SharesOwned = _contoTitoliServices.GetSharesQuantity(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto, (uint)RecordPortafoglioTitoli.Id_titolo);
                 if ((SharesOwned == 0 || SharesOwned < RecordPortafoglioTitoli.N_titoli * -1) && RecordPortafoglioTitoli.Id_tipo_movimento == 6)
                 {
                     MessageBox.Show("C'è un problema sul numero di titoli da vendere!", "Acuisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -741,16 +756,16 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                if (!VerificheDati()) return;
+                if (RecordPortafoglioTitoli.Id_portafoglio == 0) return;
                 // estraggo tutti i record di portafoglio coinvolti sulla base di link_movimenti
-                PortafoglioTitoliList ptl = _liquidAssetServices.GetManagerLiquidAssetListByLinkMovimenti(RecordPortafoglioTitoli.Link_Movimenti);
+                PortafoglioTitoliList ptl = _contoTitoliServices.GetListaTitoliByLinkMovimenti(RecordPortafoglioTitoli.Link_Movimenti);
                 if (ptl.Count == 1)
                 {
                     // il record in modifica è l'unico
-                    _liquidAssetServices.UpdateManagerLiquidAsset(RecordPortafoglioTitoli);
+                    _contoTitoliServices.UpdateMovimentoTitoli(RecordPortafoglioTitoli);
                     _contoCorrenteServices.UpdateRecordContoCorrente(new ContoCorrente(
                         RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale, 
-                        _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale)), TipologiaIDContoCorrente.IdContoTitoli);
+                        _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale)), TipologiaIDContoCorrente.IdContoTitoli);
                 }
                 else
                 {
@@ -763,7 +778,7 @@ namespace FinanceManager.ViewModels
                         if (portafoglio.Id_portafoglio == RecordPortafoglioTitoli.Id_portafoglio)
                         {
                             portafoglio = RecordPortafoglioTitoli;
-                            _liquidAssetServices.UpdateManagerLiquidAsset(RecordPortafoglioTitoli);
+                            _contoTitoliServices.UpdateMovimentoTitoli(RecordPortafoglioTitoli);
                         }
                         if (portafoglio.Id_tipo_movimento == 5)
                         {
@@ -773,7 +788,7 @@ namespace FinanceManager.ViewModels
                             {
                                 _contoCorrenteServices.UpdateRecordContoCorrente(
                                     new ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale, 
-                                    _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale)), TipologiaIDContoCorrente.IdContoTitoli);
+                                    _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale)), TipologiaIDContoCorrente.IdContoTitoli);
                             }
                         }
                         else if (portafoglio.Id_tipo_movimento == 6)
@@ -795,9 +810,9 @@ namespace FinanceManager.ViewModels
                             if (_valoreAcquisto + _valoreVendita > 0)
                             {
                                 CCcapitale = new ContoCorrente(pt, _valoreAcquisto * -1, TipologiaSoldi.Capitale,
-                                    _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale));
+                                    _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale));
                                 CCprofitloss = new ContoCorrente(pt, (_valoreAcquisto + _valoreVendita), TipologiaSoldi.Utili_da_Vendite,
-                                    _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento,(int)TipologiaSoldi.Utili_da_Vendite));
+                                    _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento,(int)TipologiaSoldi.Utili_da_Vendite));
 
                                 if (CCs[0].Id_Tipo_Soldi == (int)TipologiaSoldi.Capitale)
                                 {
@@ -807,15 +822,15 @@ namespace FinanceManager.ViewModels
                                     CCprofitloss.Id_RowConto = CCs[1].Id_RowConto;
                                     CCprofitloss.Causale = RecordPortafoglioTitoli.Note;
                                     _contoCorrenteServices.UpdateRecordContoCorrente(CCprofitloss, TipologiaIDContoCorrente.IdContoCorrente);
-                                    _liquidAssetServices.ModifySingoloGuadagno(CCprofitloss);
+                                    _quoteServices.ModifySingoloGuadagno(CCprofitloss);
                                 }
                             }
                             else if (_valoreAcquisto + _valoreVendita < 0)
                             {
                                 CCcapitale = new ContoCorrente(pt, _valoreVendita, TipologiaSoldi.Capitale,
-                                    _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale));
+                                    _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale));
                                 CCprofitloss = new ContoCorrente(pt, (_valoreVendita + _valoreAcquisto) * -1, TipologiaSoldi.PerditaCapitale,
-                                    _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.PerditaCapitale));
+                                    _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.PerditaCapitale));
                                 if (CCs[0].Id_Tipo_Soldi == (int)TipologiaSoldi.Capitale)
                                 {
                                     CCcapitale.Id_RowConto = CCs[0].Id_RowConto;
@@ -845,18 +860,36 @@ namespace FinanceManager.ViewModels
                 if (RecordPortafoglioTitoli.Id_tipo_movimento == 5)
                 {
                     PortafoglioTitoli MLA = new PortafoglioTitoli();
-                    _liquidAssetServices.AddManagerLiquidAsset(RecordPortafoglioTitoli);    // ho inserito il movimento in portafoglio
-                    MLA = _liquidAssetServices.GetLastShareMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto); // ricarico l'ultimo record
-                    //_liquidAssetServices.InsertAccountMovement(new ContoCorrente(MLA, TotaleContabile, TipologiaSoldi.Capitale,
-                    //    _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale)));     // ho inserito il movimento in conto corrente
-                    // reimposto la griglia con quanto inserito
-                    ListPortafoglioTitoli = _liquidAssetServices.GetManagerLiquidAssetListByOwnerAndLocation();
-                    CanInsert = false;          // disabilito la possibilità di un inserimento accidentale --> buttare --> GetManagerSharesMovementByOwnerAndLocation
+                    try
+                    {
+                        _contoTitoliServices.AddMovimentoTitoli(RecordPortafoglioTitoli);    // ho inserito il movimento in portafoglio
+                    }
+                    catch (Exception err)
+                    {
+                        MessageBox.Show("Errore nel caricamento in conto titoli: " + Environment.NewLine +
+                            err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    try
+                    {
+                        // ricarico l'ultimo record
+                        MLA = _contoTitoliServices.GetLastShareMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto);
+                        _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(MLA, TotaleContabile, TipologiaSoldi.Capitale,
+                            _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale)));
+                        ListPortafoglioTitoli = _contoTitoliServices.GetListTitoliByOwnerAndLocation();
+                    }
+                    catch (Exception err)
+                    {
+                        // questo errore determina l'eliminazione dell'inserimento nel conto titoli
+                        _contoTitoliServices.DeleteManagerLiquidAsset(MLA.Id_portafoglio);
+                        MessageBox.Show("Errore nella registrazione in conto corrente, " + Environment.NewLine + 
+                            "è stato eliminato anche l'inserimento in conto titoli" + Environment.NewLine +
+                            err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
                 else if (RecordPortafoglioTitoli.Id_tipo_movimento == 6)
                 {
                     // estraggo tutti gli acquisti / vendite del titolo ancora attive
-                    Ptf_CCList ptf_CCs = _liquidAssetServices.GetShareActiveAndAccountMovement(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto, (int)RecordPortafoglioTitoli.Id_titolo);
+                    Ptf_CCList ptf_CCs = _contoTitoliServices.GetListaTitoliAttiviByContoGestioneTitolo(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto, (int)RecordPortafoglioTitoli.Id_titolo);
                     double valoreAcquisto = 0;      // n. azioni per costo unitario in valuta
                     double numeroAzioni = 0;        // n. azioni
                     foreach (Ptf_CC row in ptf_CCs)
@@ -901,36 +934,36 @@ namespace FinanceManager.ViewModels
                         {
                             if (row.Id_Tipo_Soldi == 1)
                             {
-                                PortafoglioTitoli pt = _liquidAssetServices.GetPortafoglioTitoliById(row.Id_portafoglio_titoli);
+                                PortafoglioTitoli pt = _contoTitoliServices.GetPortafoglioTitoliById(row.Id_portafoglio_titoli);
                                 pt.Attivo = 0;
                                 pt.Link_Movimenti = RecordPortafoglioTitoli.Link_Movimenti;
-                                _liquidAssetServices.UpdateManagerLiquidAsset(pt);
+                                _contoTitoliServices.UpdateMovimentoTitoli(pt);
                             }
                         }
                         RecordPortafoglioTitoli.Attivo = 0;
-                        _liquidAssetServices.AddManagerLiquidAsset(RecordPortafoglioTitoli);    // ho inserito il movimento in portafoglio titoli
-                        RecordPortafoglioTitoli = _liquidAssetServices.GetLastShareMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto); // ricarico l'ultimo record
+                        _contoTitoliServices.AddMovimentoTitoli(RecordPortafoglioTitoli);    // ho inserito il movimento in portafoglio titoli
+                        RecordPortafoglioTitoli = _contoTitoliServices.GetLastShareMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto); // ricarico l'ultimo record
                         if (valoreAcquisto + TotaleContabile > 0)
                         {
-                            //_liquidAssetServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto * -1, TipologiaSoldi.Capitale,
-                            //    _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale)));
-                            //_liquidAssetServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.Utili_da_Vendite,
-                            //    _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
-                            // inserisco gli utili per quota soci
-                            _liquidAssetServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.Utili_da_Vendite,
-                                _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
+                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto * -1, TipologiaSoldi.Capitale,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale)));
+                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.Utili_da_Vendite,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
+                            //inserisco gli utili per quota soci
+                            _quoteServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.Utili_da_Vendite,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
 
                         }
                         else if (valoreAcquisto + TotaleContabile < 0)
                         {
-                            // per inserire le perdite di capitale nella tabella dei guadagni totale anno si deve cercare il periodo quote
-                            // con la tipologia soldi degli utili (sempre uguale per la gestione rubiu e no rubiu)
-                            //_liquidAssetServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale,
-                            //    _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale)));
-                            //_liquidAssetServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, (TotaleContabile + valoreAcquisto) * -1, TipologiaSoldi.PerditaCapitale,
-                            //    _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
-                            //_liquidAssetServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.PerditaCapitale,
-                            //    _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
+                            //per inserire le perdite di capitale nella tabella dei guadagni totale anno si deve cercare il periodo quote
+                            //con la tipologia soldi degli utili(sempre uguale per la gestione rubiu e no rubiu)
+                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale)));
+                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, (TotaleContabile + valoreAcquisto) * -1, TipologiaSoldi.PerditaCapitale,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
+                            _quoteServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.PerditaCapitale,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
                         }
                     }
                     else //e nel caso di vendita parziale
@@ -940,38 +973,38 @@ namespace FinanceManager.ViewModels
                         {
                             if (row.Id_Tipo_Soldi == 1)
                             {
-                                PortafoglioTitoli pt = _liquidAssetServices.GetPortafoglioTitoliById(row.Id_portafoglio_titoli);
+                                PortafoglioTitoli pt = _contoTitoliServices.GetPortafoglioTitoliById(row.Id_portafoglio_titoli);
                                 pt.Link_Movimenti = RecordPortafoglioTitoli.Link_Movimenti;
-                                _liquidAssetServices.UpdateManagerLiquidAsset(pt);
+                                _contoTitoliServices.UpdateMovimentoTitoli(pt);
                             }
                         }
                         RecordPortafoglioTitoli.ProfitLoss = valoreAcquisto / numeroAzioni * RecordPortafoglioTitoli.N_titoli * -1 +
                             (RecordPortafoglioTitoli.Importo_totale + (RecordPortafoglioTitoli.Commissioni_totale + RecordPortafoglioTitoli.TobinTax +
                             RecordPortafoglioTitoli.Disaggio_anticipo_cedole + RecordPortafoglioTitoli.RitenutaFiscale) * -1);
 
-                        _liquidAssetServices.AddManagerLiquidAsset(RecordPortafoglioTitoli);
-                        RecordPortafoglioTitoli = _liquidAssetServices.GetLastShareMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto);
+                        _contoTitoliServices.AddMovimentoTitoli(RecordPortafoglioTitoli);
+                        RecordPortafoglioTitoli = _contoTitoliServices.GetLastShareMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto);
                         valoreAcquisto = valoreAcquisto / numeroAzioni * RecordPortafoglioTitoli.N_titoli * -1;
                         if (valoreAcquisto + TotaleContabile > 0)
                         {
-                            //_liquidAssetServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto * -1, TipologiaSoldi.Capitale,
-                            //    _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale)));
-                            //_liquidAssetServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.Utili_da_Vendite,
-                            //    _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
-                            //// Inserisco il guadagno ripartito per i soci
-                            //_liquidAssetServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.Utili_da_Vendite,
-                            //    _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
+                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto * -1, TipologiaSoldi.Capitale,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale)));
+                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.Utili_da_Vendite,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
+                            // Inserisco il guadagno ripartito per i soci
+                            _quoteServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.Utili_da_Vendite,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
                         }
                         else if (valoreAcquisto + TotaleContabile < 0)
                         {
-                            // per inserire le perdite di capitale nella tabella dei guadagni totale anno si deve cercare il periodo quote
-                            // con la tipologia soldi degli utili (sempre uguale per la gestione rubiu e no rubiu)
-                            //_liquidAssetServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale,
-                            //    _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale)));
-                            //_liquidAssetServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, (TotaleContabile + valoreAcquisto) * -1, TipologiaSoldi.PerditaCapitale,
-                            //    _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
-                            //_liquidAssetServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.PerditaCapitale,
-                            //    _liquidAssetServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
+                            //per inserire le perdite di capitale nella tabella dei guadagni totale anno si deve cercare il periodo quote
+                            //con la tipologia soldi degli utili(sempre uguale per la gestione rubiu e no rubiu)
+                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale)));
+                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, (TotaleContabile + valoreAcquisto) * -1, TipologiaSoldi.PerditaCapitale,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
+                            _quoteServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.PerditaCapitale,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
                         }
                     }
                 }
@@ -996,18 +1029,18 @@ namespace FinanceManager.ViewModels
             try
             {
                 // estraggo tutti i record di portafoglio coinvolti sulla base di link_movimenti
-                PortafoglioTitoliList ptl = _liquidAssetServices.GetManagerLiquidAssetListByLinkMovimenti(RecordPortafoglioTitoli.Link_Movimenti);
+                PortafoglioTitoliList ptl = _contoTitoliServices.GetListaTitoliByLinkMovimenti(RecordPortafoglioTitoli.Link_Movimenti);
                 foreach (PortafoglioTitoli pt in ptl)
                 {
                     pt.Attivo = 1;
-                    _liquidAssetServices.UpdateManagerLiquidAsset(pt);
+                    _contoTitoliServices.UpdateMovimentoTitoli(pt);
                 }
                 ContoCorrenteList CCL = _contoCorrenteServices.GetContoCorrenteByIdPortafoglio(RecordPortafoglioTitoli.Id_portafoglio);
                 foreach (ContoCorrente cc in CCL)
                     if (cc.Id_Tipo_Soldi == (int)TipologiaSoldi.Utili_da_Vendite)
-                        _liquidAssetServices.DeleteRecordGuadagno_Totale_anno(cc.Id_RowConto);                          // Registro l'eliminazione in guadagni totale anno
+                        _quoteServices.DeleteRecordGuadagno_Totale_anno(cc.Id_RowConto);                          // Registro l'eliminazione in guadagni totale anno
                 _contoCorrenteServices.DeleteContoCorrenteByIdPortafoglioTitoli(RecordPortafoglioTitoli.Id_portafoglio);  // registro l'eliminazione in conto corrente
-                _liquidAssetServices.DeleteManagerLiquidAsset(RecordPortafoglioTitoli.Id_portafoglio);                  // registro l'eliminazione dal portafoglio
+                _contoTitoliServices.DeleteManagerLiquidAsset(RecordPortafoglioTitoli.Id_portafoglio);                  // registro l'eliminazione dal portafoglio
                 UpdateDB();
                 Init();
                 MessageBox.Show("Record eliminato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
@@ -1029,30 +1062,17 @@ namespace FinanceManager.ViewModels
             wp.Children.Remove(MFMV);
         }
 
-        public bool CanInsert
-        {
-            get { return GetValue(() => CanInsert); }
-            set { SetValue(() => CanInsert, value); }
-        }
-
         public bool CanSave(object param)
         {
-            return CanInsert;
-        }
-
-        public bool CanUpdateDelete
-        {
-            get { return GetValue(() => CanUpdateDelete); }
-            set
-            {
-                SetValue(() => CanUpdateDelete, value);
-                CanModifyBaseParameters = !value;
-            }
+            if (!string.IsNullOrEmpty(Conto) && !string.IsNullOrEmpty(Gestione) && !string.IsNullOrEmpty(Valuta) && RecordPortafoglioTitoli.Id_portafoglio == 0 &&
+                RecordPortafoglioTitoli.N_titoli != 0 && RecordPortafoglioTitoli.Costo_unitario_in_valuta > 0)
+                return true;
+            return false;
         }
 
         public bool CanModify(object param)
         {
-            if (CanUpdateDelete)
+            if (RecordPortafoglioTitoli.Id_portafoglio != 0)
                 return true;
             return false;
         }

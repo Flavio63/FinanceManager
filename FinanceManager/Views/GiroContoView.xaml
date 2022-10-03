@@ -13,7 +13,7 @@
             <RowDefinition Height="50"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
@@ -81,14 +81,14 @@
                         </DataGridTextColumn>
                         <DataGridTextColumn Header="Valuta" Binding="{Binding Cod_Valuta, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                         <DataGridTextColumn Header="Tipo Soldi" Binding="{Binding Desc_Tipo_Soldi, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
-                        <DataGridTextColumn Header="Cambio" Binding="{Binding Valore_Cambio, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}">
+                        <!--<DataGridTextColumn Header="Cambio" Binding="{Binding Valore_Cambio, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="{x:Type TextBlock}">
                                     <Setter Property="HorizontalAlignment" Value="Right"/>
                                     <Setter Property="Margin" Value="5,0,5,0"/>
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
+                        </DataGridTextColumn>-->
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
@@ -148,14 +148,14 @@
                         </DataGridTextColumn>
                         <DataGridTextColumn Header="Valuta" Binding="{Binding Cod_Valuta, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                         <DataGridTextColumn Header="Tipo Soldi" Binding="{Binding Desc_Tipo_Soldi, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
-                        <DataGridTextColumn Header="Cambio" Binding="{Binding Valore_Cambio, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}">
+                        <!--<DataGridTextColumn Header="Cambio" Binding="{Binding Valore_Cambio, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="{x:Type TextBlock}">
                                     <Setter Property="HorizontalAlignment" Value="Right"/>
                                     <Setter Property="Margin" Value="5,0,5,0"/>
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
+                        </DataGridTextColumn>-->
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
@@ -257,7 +257,7 @@
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="40"/>
-                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <TextBlock Text="Trasferimenti già fatti" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 <DataGrid x:Name="CONTOtrasfatti" Grid.Row="1" Grid.Column="1" Margin="15, 0" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
