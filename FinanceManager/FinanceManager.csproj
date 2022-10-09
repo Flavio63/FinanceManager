@@ -247,6 +247,7 @@
     <Compile Include="Services\SQL\QuoteGuadagniScript.cs" />
     <Compile Include="Services\SQL\SintesiGuadagniPerValute.cs" />
     <Compile Include="ViewModels\AnalisiPortafoglioViewModel.cs" />
+    <Compile Include="ViewModels\CambioValutaViewModel.cs" />
     <Compile Include="ViewModels\CapitalsRegisterViewModel.cs" />
     <Compile Include="ViewModels\GestioneContoCorrenteViewModel.cs" />
     <Compile Include="ViewModels\GiroContoViewModel.cs" />
@@ -310,6 +311,9 @@
     <Compile Include="Views\CapitalsRegisterView.xaml.cs">
       <DependentUpon>CapitalsRegisterView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\CambioValutaView.xaml.cs">
+      <DependentUpon>CambioValutaView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\GestioneContoCorrenteView.xaml.cs">
       <DependentUpon>GestioneContoCorrenteView.xaml</DependentUpon>
     </Compile>
@@ -371,6 +375,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\CapitalsRegisterView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CambioValutaView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

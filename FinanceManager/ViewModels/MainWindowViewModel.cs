@@ -33,6 +33,7 @@ namespace FinanceManager.ViewModels
         public ICommand OnClickOpenGiroconto { get; set; }
         public ICommand OnClickOpenCapitali { get; set; }
         public ICommand OnClickOpenSchedaTitoli { get; set; }
+        public ICommand OnClickOpenCambioValuta { get; set; }
 
         RegistryOwnerViewModel ownerViewModel;
         RegistryOwnerView ownerView;
@@ -63,6 +64,9 @@ namespace FinanceManager.ViewModels
 
         CapitalsRegisterView capitalsRegisterView;
         CapitalsRegisterViewModel capitalsRegisterViewModel;
+
+        CambioValutaView cambioValutaView;
+        CambioValutaViewModel cambioValutaViewModel;
         #endregion
 
         public MainWindowViewModel()
@@ -98,6 +102,7 @@ namespace FinanceManager.ViewModels
             OnClickManagerReports = new CommandHandler(OpenReports);
             OnClickOpenGiroconto = new CommandHandler(OpenGiroconto);
             OnClickOpenCapitali = new CommandHandler(OpenCapitali);
+            OnClickOpenCambioValuta = new CommandHandler(OpenCambioValuta);
         }
 
         #region Anagrafica
@@ -262,6 +267,30 @@ namespace FinanceManager.ViewModels
                 giroContoViewModel = null;
             }
         }
+        private void OpenCambioValuta(object param)
+        {
+            DockPanel mainGrid = param as DockPanel;
+            if (cambioValutaView == null || !mainGrid.Children.Contains(cambioValutaView))
+            {
+                try
+                {
+                    cambioValutaViewModel = new CambioValutaViewModel(_registryServices, _contoCorrenteServices);
+                    cambioValutaView = new CambioValutaView(cambioValutaViewModel);
+                    mainGrid.Children.Add(cambioValutaView);
+                }
+                catch (System.Exception err)
+                {
+                    System.Windows.MessageBox.Show("Errore in apertura: " + err, "DAF - PROGRAM", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                mainGrid.Children.Remove(cambioValutaView);
+                cambioValutaView = null;
+                cambioValutaViewModel = null;
+            }
+        }
+
 
         private void OpenCapitali(object param)
         {

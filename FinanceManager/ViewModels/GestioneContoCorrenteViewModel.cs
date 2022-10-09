@@ -598,31 +598,6 @@ namespace FinanceManager.ViewModels
                     CambioValutaEnabled = false;
                     CanUpdateDelete = true;
                 }
-                //else if (CC.Id_Quote_Investimenti == 0 & (CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto || CC.Id_tipo_movimento == (int)TipologiaMovimento.CambioValuta))
-                //{
-                //    // cerco il record corrispondente al giroconto o al cambio valuta utilizzando il campo
-                //    // modified (e poi aggiorno il campo stesso per entrambi - forse non serve)
-                //    TwoRecordConto = _contoCorrenteServices.Get2ContoCorrentes(CC.Modified);
-                //    // RecordContoCorrente è quello attivo in modifica quindi imposto il record derivato
-                //    Record2ContoCorrente = TwoRecordConto[0].Id_RowConto == RecordContoCorrente.Id_RowConto ? TwoRecordConto[1] : TwoRecordConto[0];
-                //    CommonFieldsEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ? true : false;
-                //    GirocontoEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ? true : false; ;
-                //    OperazioneEnabled = false;
-                //    CanUpdateDelete = true;
-                //}
-                //else if (CC.Id_Quote_Investimenti > 0 & CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
-                //{
-
-                //    MessageBox.Show("Questo giroconto è stato gestito da `Quote investitori`" + Environment.NewLine +
-                //        "Qua puoi solo vederlo, se vuoi modificarlo devi andare in `Quote investitori`.", "Gestione Conto Corrente", MessageBoxButton.OK, MessageBoxImage.Information);
-                //    GirocontoEnabled = false;
-                //    CedoleEnabled = false;
-                //    VolatiliEnabled = false;
-                //    CambioValutaEnabled = false;
-                //    CommonFieldsEnabled = false;
-                //    CanUpdateDelete = false;
-                //    OperazioneEnabled = false;
-                //}
                 else
                 {
                     RecordContoCorrente = new ContoCorrente();

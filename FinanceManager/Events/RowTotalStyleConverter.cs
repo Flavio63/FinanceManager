@@ -10,7 +10,7 @@ namespace FinanceManager.Events
         {
             try
             {
-                System.Console.WriteLine(value.ToString().ToLower() + parameter.ToString().ToLower());
+                Console.WriteLine(value.ToString().ToLower() + parameter.ToString().ToLower());
                 return value.ToString().ToLower().StartsWith(parameter.ToString().ToLower());
             }
             catch
