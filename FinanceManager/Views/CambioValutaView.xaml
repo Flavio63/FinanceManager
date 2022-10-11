@@ -10,7 +10,7 @@
     <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="250"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -60,7 +60,7 @@
         <Border Grid.Row="1" Grid.Column="2" BorderBrush="LightGray" BorderThickness="0.8" Margin="5">
             <Grid Margin="5">
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
+                    <RowDefinition Height="50"/>
                     <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition/>
@@ -127,7 +127,7 @@
                     </i:Interaction.Triggers>
                 </ComboBox>
                 <TextBlock Grid.Row="6" Grid.Column="0" Text="Il cambio" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
-                <TextBox Grid.Row="6" Grid.Column="1" Name="Valore_di_cambio" Text="{Binding recordCCMittente.Valore_Cambio, UpdateSourceTrigger=PropertyChanged, ConverterCulture=it-IT}" 
+                <TextBox Grid.Row="6" Grid.Column="1" Name="Valore_di_cambio" Text="{Binding recordCCMittente.Valore_Cambio, ConverterCulture=it-IT}" 
                          HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="5, 2" Padding="0, 0, 5, 0" MinWidth="70">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="LostFocus">
@@ -149,7 +149,7 @@
                     </i:Interaction.Triggers>
                 </DatePicker>
                 <TextBlock Grid.Row="2" Grid.Column="2" Text="Cifra" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
-                <TextBox Grid.Row="2" Grid.Column="3" Name="cifra_da_cambiare" Text="{Binding recordCCMittente.Ammontare, UpdateSourceTrigger=PropertyChanged, ConverterCulture=it-IT}" 
+                <TextBox Grid.Row="2" Grid.Column="3" Name="cifra_da_cambiare" Text="{Binding recordCCMittente.Ammontare, ConverterCulture=it-IT}" 
                          HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="5, 2" Padding="0, 0, 5, 0" MinWidth="70">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="LostFocus">
@@ -239,7 +239,7 @@
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
                     <DataGridTextColumn Header="Cambio" Binding="{Binding Valore_Cambio, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay,
-                                        ConverterCulture=it-IT, StringFormat=N2}" IsReadOnly="True" FontSize="14" FontWeight="Normal">
+                                        ConverterCulture=it-IT, StringFormat=N6}" IsReadOnly="True" FontSize="14" FontWeight="Normal">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="{x:Type TextBlock}">
                                 <Setter Property="HorizontalAlignment" Value="Right"/>

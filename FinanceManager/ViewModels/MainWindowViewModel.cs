@@ -322,7 +322,7 @@ namespace FinanceManager.ViewModels
             if (gestioneContoCorrenteView == null || !mainGrid.Children.Contains(gestioneContoCorrenteView))
             {
                 gestioneContoCorrenteViewModel = 
-                    new GestioneContoCorrenteViewModel(_registryServices, _managerLiquidServices, _contoCorrenteServices, _quoteServices);
+                    new GestioneContoCorrenteViewModel(_registryServices, _contoCorrenteServices, _quoteServices);
                 gestioneContoCorrenteView = new GestioneContoCorrenteView(gestioneContoCorrenteViewModel);
                 mainGrid.Children.Add(gestioneContoCorrenteView);
             }

@@ -17,7 +17,6 @@ namespace FinanceManager.ViewModels
     public class GiroContoViewModel : ViewModelBase
     {
         private readonly IRegistryServices _registryServices;
-        private readonly IManagerLiquidAssetServices _managerLiquidServices;
         private readonly IContoCorrenteServices _contoCorrenteServices;
 
         public ICommand CloseMeCommand { get; set; }
@@ -29,7 +28,6 @@ namespace FinanceManager.ViewModels
             (IRegistryServices registryServices, IManagerLiquidAssetServices managerLiquidServices, IContoCorrenteServices contoCorrenteServices)
         {
             _registryServices = registryServices ?? throw new ArgumentNullException("Manca collegamento con richiesta dati anagrafica Giroconto View Model");
-            _managerLiquidServices = managerLiquidServices ?? throw new ArgumentNullException("Manca collegamento con richiesta dati conti Giroconto View Model");
             _contoCorrenteServices = contoCorrenteServices ?? throw new ArgumentNullException("Manca Concocorrente services");
             Init();
             ClearData();

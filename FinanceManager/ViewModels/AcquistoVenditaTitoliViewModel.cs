@@ -31,8 +31,6 @@ namespace FinanceManager.ViewModels
         public ICommand ClearCommand { get; set; }
         Predicate<object> _Filter;
 
-        private TabControl _TabControl = new TabControl();
-
         public AcquistoVenditaTitoliViewModel
             (IRegistryServices services, IContoTitoliServices contoTitoliServices, IContoCorrenteServices contoCorrenteServices, IQuoteGuadagniServices quoteServices)
         {
@@ -129,6 +127,7 @@ namespace FinanceManager.ViewModels
             {
                 throw new Exception("Errore in init." + Environment.NewLine + err.Message);
             }
+            CanModifyBaseParameters = true;
             SrchShares = "";
             Conto = "";
             Gestione = "";
@@ -300,7 +299,8 @@ namespace FinanceManager.ViewModels
                     TotaleContabile = RecordPortafoglioTitoli.Id_valuta == 1 ?
                         TotalLocalValue + (RecordPortafoglioTitoli.TobinTax + RecordPortafoglioTitoli.Disaggio_anticipo_cedole + RecordPortafoglioTitoli.RitenutaFiscale) * -1 :
                         TotalLocalValue + (RecordPortafoglioTitoli.Disaggio_anticipo_cedole + (RecordPortafoglioTitoli.RitenutaFiscale * RecordPortafoglioTitoli.Valore_di_cambio)) * -1;
-                    if ((RecordPortafoglioTitoli.Id_tipo_titolo == 1 || RecordPortafoglioTitoli.Id_tipo_titolo == 4) && RecordPortafoglioTitoli.Valore_di_cambio != 1)
+                    // tolta la specifica sul valore cambio != 1 nel successivo if 
+                    if ((RecordPortafoglioTitoli.Id_tipo_titolo == 1 || RecordPortafoglioTitoli.Id_tipo_titolo == 4))
                     {
                         TobinOk = true;
                     }
@@ -1073,7 +1073,10 @@ namespace FinanceManager.ViewModels
         public bool CanModify(object param)
         {
             if (RecordPortafoglioTitoli.Id_portafoglio != 0)
+            {
+                CanModifyBaseParameters = false;
                 return true;
+            }
             return false;
         }
 

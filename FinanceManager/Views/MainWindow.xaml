@@ -75,7 +75,7 @@
                 </RadioButton>
             </MenuItem>
         </Menu>
-        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
             <DockPanel MinHeight="250" MinWidth="250" Name="mainGrid"/>
         </ScrollViewer>
     </Grid>

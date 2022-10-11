@@ -16,7 +16,6 @@ namespace FinanceManager.ViewModels
     public class GestioneContoCorrenteViewModel : ViewModelBase
     {
         IRegistryServices _registryServices;
-        IManagerLiquidAssetServices _liquidAssetServices;
         IContoCorrenteServices _contoCorrenteServices;
         IQuoteGuadagniServices _quoteServices;
         public ICommand CloseMeCommand { get; set; }
@@ -30,11 +29,11 @@ namespace FinanceManager.ViewModels
         private TabControl _TabControl = new TabControl();
 
         public GestioneContoCorrenteViewModel
-            (IRegistryServices registryServices, IManagerLiquidAssetServices managerLiquidServices, 
+            (IRegistryServices registryServices,
             IContoCorrenteServices contoCorrenteServices, IQuoteGuadagniServices quoteServices)
         {
             _registryServices = registryServices ?? throw new ArgumentNullException("Registry Services in Gestione Conto Corrente");
-            _liquidAssetServices = managerLiquidServices ?? throw new ArgumentNullException("Liquid Asset Services in Gestione Conto Corrente");
+            //_liquidAssetServices = managerLiquidServices ?? throw new ArgumentNullException("Liquid Asset Services in Gestione Conto Corrente");
             _contoCorrenteServices = contoCorrenteServices ?? throw new ArgumentNullException("Conto corrente services assente");
             _quoteServices = quoteServices ?? throw new ArgumentNullException("Quote guadagni services assente");
             CloseMeCommand = new CommandHandler(CloseMe);
@@ -109,28 +108,18 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                foreach (TabItem tabItem in _TabControl.Items)
-                {
-                    var Owner = from registryOwner in ListGestioni where registryOwner.Nome_Gestione == tabItem.Header.ToString() select registryOwner;
-
-                    tabItem.Content = null;
-                    tabItem.Content = new TabControlSintesiView(
-                        new TabControlSintesiViewModel(_liquidAssetServices.GetCurrencyAvailable(Owner.ElementAt<RegistryOwner>(0).Id_gestione)));
-                }
- 
-
-                Record2ContoCorrente = new ContoCorrente();
+                //=====================================================================================
+                // popolo la griglia con la disponibilità di tutti i conti (codice 0)
+                TotaleDisponibili = new ContoCorrenteList();
+                TotaleDisponibili = _contoCorrenteServices.GetTotalAmountByAccount(0);
+                //=====================================================================================
                 RecordContoCorrente = new ContoCorrente();
-                TwoRecordConto = new ContoCorrenteList();
-                AmountChangedValue = 0;
                 SrchShares = "";
                 ListContoCorrente = _contoCorrenteServices.GetContoCorrenteList();
                 CommonFieldsEnabled = true;
                 OperazioneEnabled = true;
                 CedoleEnabled = false;
-                GirocontoEnabled = false;
                 VolatiliEnabled = false;
-                CambioValutaEnabled = false;
                 CanUpdateDelete = false;
                 CanInsert = false;
                 FiltroConto = "";
@@ -191,21 +180,25 @@ namespace FinanceManager.ViewModels
         }
 
         /// <summary>
-        /// Lista con is 2 record coinvolti nel giroconto
-        /// o nel cambia valuta
-        /// </summary>
-        public ContoCorrenteList TwoRecordConto
-        {
-            get { return GetValue(() => TwoRecordConto); }
-            private set { SetValue(() => TwoRecordConto, value); }
-        }
-        /// <summary>
         /// E' la lista di tutti is record Conto corrente usata per is filtri della griglia
         /// </summary>
         public System.ComponentModel.ICollectionView AccountCollectionView
         {
             get { return GetValue(() => AccountCollectionView); }
             set { SetValue(() => AccountCollectionView, value); }
+        }
+        /// <summary>
+        /// Elenco con la somma delle disponibilità
+        /// </summary>
+        public ContoCorrenteList TotaleDisponibili
+        {
+            get { return GetValue(() => TotaleDisponibili); }
+            set { SetValue(() => TotaleDisponibili, value); TotaleDisponibiliView = CollectionViewSource.GetDefaultView(value); }
+        }
+        public System.ComponentModel.ICollectionView TotaleDisponibiliView
+        {
+            get { return GetValue(() => TotaleDisponibiliView); }
+            set { SetValue(() => TotaleDisponibiliView, value); }
         }
 
         /// <summary>
@@ -215,26 +208,6 @@ namespace FinanceManager.ViewModels
         {
             get { return GetValue(() => TipoSoldis); }
             set { SetValue(() => TipoSoldis, value); }
-        }
-
-        /// <summary>
-        /// Totale Contabile convertito in euro
-        /// da mostrare nella maschera a video
-        /// </summary>
-        public double AmountChangedValue
-        {
-            get { return GetValue<double>(() => AmountChangedValue); }
-            set { SetValue<double>(() => AmountChangedValue, value); }
-        }
-
-        /// <summary>
-        /// E' la valuta disponibile 
-        /// suddivisa in Cedole, Utili e Disponibili
-        /// </summary>
-        public SintesiSoldi CurrencyAvailable
-        {
-            get { return GetValue(() => CurrencyAvailable); }
-            private set { SetValue(() => CurrencyAvailable, value); }
         }
 
         /// <summary>
@@ -293,17 +266,6 @@ namespace FinanceManager.ViewModels
         }
 
         /// <summary>
-        /// Singolo record del portafoglio da usare nel caso di Cambio CodeCurrency
-        /// o nel caso di Giroconto per duplicare le info di RecordContoCorrente
-        /// modificando solo is campi di destinazione
-        /// </summary>
-        public ContoCorrente Record2ContoCorrente
-        {
-            get { return GetValue(() => Record2ContoCorrente); }
-            set { SetValue(() => Record2ContoCorrente, value); }
-        }
-
-        /// <summary>
         /// Gestisce l'abilitazione del blocco dedicato alla registrazione delle cedole
         /// </summary>
         public bool CedoleEnabled
@@ -322,30 +284,12 @@ namespace FinanceManager.ViewModels
         }
 
         /// <summary>
-        /// Gestisce l'abilitazione del blocco dedicato al giroconto
-        /// </summary>
-        public bool GirocontoEnabled
-        {
-            get { return GetValue(() => GirocontoEnabled); }
-            private set { SetValue(() => GirocontoEnabled, value); }
-        }
-
-        /// <summary>
         /// Gestisce l'abilitazione a inserire is profit/loss delle azioni volatili
         /// </summary>
         public bool VolatiliEnabled
         {
             get { return GetValue(() => VolatiliEnabled); }
             private set { SetValue(() => VolatiliEnabled, value); }
-        }
-
-        /// <summary>
-        /// Gestisce l'abilitazione a inserire is cambi valuta
-        /// </summary>
-        public bool CambioValutaEnabled
-        {
-            get { return GetValue(() => CambioValutaEnabled); }
-            private set { SetValue(() => CambioValutaEnabled, value); }
         }
 
         /// <summary>
@@ -376,66 +320,153 @@ namespace FinanceManager.ViewModels
                 }
                 else if (obj is ContoCorrente CConto)
                 {
-                    if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && !string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // tutti e 4 is filtri
+                    if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && 
+                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // tutti e 5 i filtri
                     {
-                        return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower()) && CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower()) && CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower()) && CConto.Desc_tipo_movimento.ToLower().Contains(FiltroTipoMovimento.ToLower());
+                        return CConto.Desc_Conto == FiltroConto && CConto.NomeGestione == FiltroGestione && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi
+                            && CConto.Desc_tipo_movimento == FiltroTipoMovimento && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 3 su 4 attivi
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && 
+                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 4 su 5 attivi
                     {
-                        return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower()) && CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower()) && CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower());
+                        return CConto.Desc_Conto == FiltroConto && CConto.NomeGestione == FiltroGestione && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi
+                            && CConto.Desc_tipo_movimento == FiltroTipoMovimento;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) && !string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 3 su 4 attivi
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && 
+                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 4 su 5 attivi
                     {
-                        return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower()) && CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower()) && CConto.Desc_tipo_movimento.ToLower().Contains(FiltroTipoMovimento.ToLower());
+                        return CConto.Desc_Conto == FiltroConto && CConto.NomeGestione == FiltroGestione && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi
+                            && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && !string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 3 su 4 attivi
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 4 su 5 attivi
                     {
-                        return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower()) && CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower()) && CConto.Desc_tipo_movimento.ToLower().Contains(FiltroTipoMovimento.ToLower());
+                        return CConto.Desc_Conto == FiltroConto && CConto.NomeGestione == FiltroGestione && CConto.Desc_tipo_movimento == FiltroTipoMovimento
+                            && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && !string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 3 su 4 attivi
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 4 su 5 attivi
                     {
-                        return CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower()) && CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower()) && CConto.Desc_tipo_movimento.ToLower().Contains(FiltroTipoMovimento.ToLower());
+                        return CConto.Desc_Conto == FiltroConto && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Desc_tipo_movimento == FiltroTipoMovimento
+                            && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) && string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 2 su 4 attivi
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 4 su 5 attivi
                     {
-                        return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower()) && CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower());
+                        return CConto.NomeGestione == FiltroGestione && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Desc_tipo_movimento == FiltroTipoMovimento
+                            && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 2 su 4 attivi
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 3 su 5 attivi
                     {
-                        return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower()) && CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower());
+                        return CConto.Desc_Conto == FiltroConto && CConto.NomeGestione == FiltroGestione && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi;
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 2 su 4 attivi
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 3 su 5 attivi
                     {
-                        return CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower()) && CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower());
+                        return CConto.Desc_Conto == FiltroConto && CConto.NomeGestione == FiltroGestione && CConto.Desc_tipo_movimento == FiltroTipoMovimento;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) && !string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 2 su 4 attivi
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 3 su 5 attivi
                     {
-                        return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower()) && CConto.Desc_tipo_movimento.ToLower().Contains(FiltroTipoMovimento.ToLower());
+                        return CConto.Desc_Conto == FiltroConto && CConto.NomeGestione == FiltroGestione && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) && !string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 2 su 4 attivi
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 3 su 5 attivi
                     {
-                        return CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower()) && CConto.Desc_tipo_movimento.ToLower().Contains(FiltroTipoMovimento.ToLower());
+                        return CConto.Desc_Conto == FiltroConto && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && !string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 2 su 4 attivi
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 3 su 5 attivi
                     {
-                        return CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower()) && CConto.Desc_tipo_movimento.ToLower().Contains(FiltroTipoMovimento.ToLower());
+                        return CConto.Desc_Conto == FiltroConto && CConto.Desc_tipo_movimento == FiltroTipoMovimento && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) && string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 1 su 4 attivi
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 3 su 5 attivi
                     {
-                        return CConto.Desc_Conto.ToLower().Contains(FiltroConto.ToLower());
+                        return CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Desc_tipo_movimento == FiltroTipoMovimento && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) && string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 1 su 4 attivi
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 3 su 5 attivi
                     {
-                        return CConto.NomeGestione.ToLower().Contains(FiltroGestione.ToLower());
+                        return CConto.NomeGestione == FiltroGestione && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Desc_tipo_movimento == FiltroTipoMovimento;
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 1 su 4 attivi
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 2 su 5 attivi
                     {
-                        return CConto.Desc_Tipo_Soldi.ToLower().Contains(FiltroTipoSoldi.ToLower());
+                        return CConto.Desc_Conto == FiltroConto && CConto.NomeGestione == FiltroGestione;
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) && !string.IsNullOrWhiteSpace(FiltroTipoMovimento)) // 1 su 4 attivi
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 2 su 5 attivi
                     {
-                        return CConto.Desc_tipo_movimento.ToLower().Contains(FiltroTipoMovimento.ToLower());
+                        return CConto.Desc_Conto == FiltroConto && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi;
                     }
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 2 su 5 attivi
+                    {
+                        return CConto.Desc_Conto == FiltroConto && CConto.Desc_tipo_movimento == FiltroTipoMovimento;
+                    }
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 2 su 5 attivi
+                    {
+                        return CConto.Desc_Conto == FiltroConto && CConto.Cod_Valuta == FiltroValuta;
+                    }
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 2 su 5 attivi
+                    {
+                        return CConto.NomeGestione == FiltroGestione && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi;
+                    }
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 2 su 5 attivi
+                    {
+                        return CConto.NomeGestione == FiltroGestione && CConto.Desc_tipo_movimento == FiltroTipoMovimento;
+                    }
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 2 su 5 attivi
+                    {
+                        return CConto.NomeGestione == FiltroGestione && CConto.Cod_Valuta == FiltroValuta;
+                    }
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 2 su 5 attivi
+                    {
+                        return CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Desc_tipo_movimento == FiltroTipoMovimento;
+                    }
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 2 su 5 attivi
+                    {
+                        return CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Cod_Valuta == FiltroValuta;
+                    }
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 2 su 5 attivi
+                    {
+                        return CConto.Desc_tipo_movimento == FiltroTipoMovimento && CConto.Cod_Valuta == FiltroValuta;
+                    }
+                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 1 su 5 attivi
+                    {
+                        return CConto.Desc_Conto == FiltroConto;
+                    }
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 1 su 5 attivi
+                    {
+                        return CConto.NomeGestione == FiltroGestione;
+                    }
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 1 su 5 attivi
+                    {
+                        return CConto.Desc_Tipo_Soldi == FiltroTipoSoldi;
+                    }
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 1 su 5 attivi
+                    {
+                        return CConto.Desc_tipo_movimento == FiltroTipoMovimento;
+                    }
+                    else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
+                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 1 su 5 attivi
+                    {
+                        return CConto.Cod_Valuta == FiltroValuta;
+                    }
+
                 }
 
             }
@@ -446,25 +477,46 @@ namespace FinanceManager.ViewModels
         private string FiltroConto
         {
             get { return _FiltroConto; }
-            set { _FiltroConto = value; AccountCollectionView.Filter = _Filter; AccountCollectionView.Refresh(); }
+            set
+            {
+                _FiltroConto = value;
+                AccountCollectionView.Filter = _Filter; AccountCollectionView.Refresh();
+                TotaleDisponibiliView.Filter = _Filter; TotaleDisponibiliView.Refresh();
+            }
         }
         private string _FiltroGestione;
         private string FiltroGestione
         {
             get { return _FiltroGestione; }
-            set { _FiltroGestione = value; AccountCollectionView.Filter = _Filter; AccountCollectionView.Refresh(); }
+            set
+            {
+                _FiltroGestione = value;
+                AccountCollectionView.Filter = _Filter; AccountCollectionView.Refresh();
+                TotaleDisponibiliView.Filter = _Filter; TotaleDisponibiliView.Refresh();
+            }
         }
         private string _FiltroTipoSoldi;
         private string FiltroTipoSoldi
         {
             get { return _FiltroTipoSoldi; }
-            set { _FiltroTipoSoldi = value; AccountCollectionView.Filter = _Filter; AccountCollectionView.Refresh(); }
+            set
+            {
+                _FiltroTipoSoldi = value;
+                AccountCollectionView.Filter = _Filter; AccountCollectionView.Refresh();
+                TotaleDisponibiliView.Filter = _Filter; TotaleDisponibiliView.Refresh();
+            }
         }
         private string _FiltroTipoMovimento;
         private string FiltroTipoMovimento
         {
             get { return _FiltroTipoMovimento; }
             set { _FiltroTipoMovimento = value; AccountCollectionView.Filter = _Filter; AccountCollectionView.Refresh(); }
+        }
+        private string _FiltroValuta;
+        private string FiltroValuta
+        {
+            get { return _FiltroValuta; }
+            set { _FiltroValuta = value; TotaleDisponibiliView.Filter = _Filter; AccountCollectionView.Refresh(); }
         }
         #endregion
 
@@ -485,81 +537,38 @@ namespace FinanceManager.ViewModels
                 if (e.AddedItems[0] is DateTime DT)
                 {
                     RecordContoCorrente.DataMovimento = DT.Date;
-                    Record2ContoCorrente.DataMovimento = DT.Date;
                 }
                 else if (e.AddedItems[0] is RegistryLocation RL)
                 {
-                    if (((ComboBox)e.OriginalSource).Name == "Conto2")
-                    {
-                        Record2ContoCorrente.Id_Conto = RL.Id_Conto;
-                        Record2ContoCorrente.Desc_Conto = RL.Desc_Conto;
-                    }
-                    else
-                    {
-                        RecordContoCorrente.Id_Conto = RL.Id_Conto;
-                        RecordContoCorrente.Desc_Conto = RL.Desc_Conto;
-                        if (CanUpdateDelete != true) Record2ContoCorrente.Id_Conto = RL.Id_Conto;
-                        if (CanUpdateDelete != true) Record2ContoCorrente.Desc_Conto = RL.Desc_Conto;
-                    }
+                    RecordContoCorrente.Id_Conto = RL.Id_Conto;
+                    RecordContoCorrente.Desc_Conto = RL.Desc_Conto;
                     FiltroConto = RL.Desc_Conto;
                 }
                 else if (e.AddedItems[0] is RegistryOwner RO)
                 {
-                    if (((ComboBox)e.OriginalSource).Name == "Gestione2")
-                    {
-                        Record2ContoCorrente.Id_Gestione = RO.Id_gestione;
-                        Record2ContoCorrente.NomeGestione = RO.Nome_Gestione;
-                        CanInsert = true;
-                    }
-                    else
-                    {
-                        RecordContoCorrente.Id_Gestione = RO.Id_gestione;
-                        RecordContoCorrente.NomeGestione = RO.Nome_Gestione;
-                        if (CanUpdateDelete != true) Record2ContoCorrente.Id_Gestione = RO.Id_gestione;
-                        if (CanUpdateDelete != true) Record2ContoCorrente.NomeGestione = RO.Nome_Gestione;
-                    }
+                    RecordContoCorrente.Id_Gestione = RO.Id_gestione;
+                    RecordContoCorrente.NomeGestione = RO.Nome_Gestione;
                     FiltroGestione = RO.Nome_Gestione;
                 }
                 else if (e.AddedItems[0] is RegistryCurrency RC)
                 {
-                    if (((ComboBox)e.OriginalSource).Name == "Valuta2")
-                    {
-                        if (RC.IdCurrency == RecordContoCorrente.Id_Valuta)
-                        {
-                            MessageBox.Show("Attenzione le 2 valute sono uguali!", "Gestione Conto Corrente", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                            return;
-                        }
-                        Record2ContoCorrente.Id_Valuta = RC.IdCurrency;
-                        Record2ContoCorrente.Cod_Valuta = RC.CodeCurrency;
-                        // verifico la presenza della valuta di partenza
-                    }
-                    else
-                    {
-                        RecordContoCorrente.Id_Valuta = RC.IdCurrency;
-                        RecordContoCorrente.Cod_Valuta = RC.CodeCurrency;
-                        Record2ContoCorrente.Id_Valuta = RC.IdCurrency;
-                        Record2ContoCorrente.Cod_Valuta = RC.CodeCurrency;
-                    }
+                    RecordContoCorrente.Id_Valuta = RC.IdCurrency;
+                    RecordContoCorrente.Cod_Valuta = RC.CodeCurrency;
+                    FiltroValuta = RC.CodeCurrency;
                 }
                 else if (e.AddedItems[0] is TipoSoldi TS)
                 {
                     RecordContoCorrente.Id_Tipo_Soldi = TS.Id_Tipo_Soldi;
                     RecordContoCorrente.Desc_Tipo_Soldi = TS.Desc_Tipo_Soldi;
-                    Record2ContoCorrente.Id_Tipo_Soldi = TS.Id_Tipo_Soldi;
-                    Record2ContoCorrente.Desc_Tipo_Soldi = TS.Desc_Tipo_Soldi;
                     FiltroTipoSoldi = TS.Desc_Tipo_Soldi;
                 }
                 else if (e.AddedItems[0] is RegistryMovementType RMT)
                 {
                     RecordContoCorrente.Id_tipo_movimento = RMT.Id_tipo_movimento;
                     RecordContoCorrente.Desc_tipo_movimento = RMT.Desc_tipo_movimento;
-                    Record2ContoCorrente.Id_tipo_movimento = RMT.Id_tipo_movimento;
-                    Record2ContoCorrente.Desc_tipo_movimento = RMT.Desc_tipo_movimento;
                     // abilito il blocco di input dati sulla base di questa scelta
                     CedoleEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ? true : false;
-                    GirocontoEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ? true : false;
                     VolatiliEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ? true : false;
-                    CambioValutaEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.CambioValuta ? true : false;
                     CanInsert = RMT.Id_tipo_movimento == (int)TipologiaMovimento.Costi ? true : false;
                     FiltroTipoMovimento = RMT.Desc_tipo_movimento;
                 }
@@ -595,16 +604,13 @@ namespace FinanceManager.ViewModels
                     OperazioneEnabled = false;
                     CedoleEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ? true : false;
                     VolatiliEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ? true : false;
-                    CambioValutaEnabled = false;
                     CanUpdateDelete = true;
                 }
                 else
                 {
                     RecordContoCorrente = new ContoCorrente();
-                    GirocontoEnabled = false;
                     CedoleEnabled = false;
                     VolatiliEnabled = false;
-                    CambioValutaEnabled = false;
                     CommonFieldsEnabled = false;
                     CanUpdateDelete = false;
                     OperazioneEnabled = false;
@@ -628,26 +634,11 @@ namespace FinanceManager.ViewModels
                 {
                     case ("Ammontare"):
                         RecordContoCorrente.Valore_Cambio = 1;
-                        Record2ContoCorrente.Ammontare = RecordContoCorrente.Ammontare;
                         break;
                     case ("Causale"):
-                        Record2ContoCorrente.Causale = TB.Text;
-                        break;
-                    case ("Valore_Cambio"):
-                        CambioValuta(Convert.ToDouble(TB.Text));
-                        CanInsert = true;
                         break;
                 }
             }
-        }
-
-        private void CambioValuta(double ValoreCambio)
-        {
-            RecordContoCorrente.Valore_Cambio = ValoreCambio;
-            Record2ContoCorrente.Ammontare = RecordContoCorrente.Valore_Cambio * RecordContoCorrente.Ammontare;
-            AmountChangedValue = Record2ContoCorrente.Ammontare;
-            Record2ContoCorrente.Valore_Cambio = RecordContoCorrente.Valore_Cambio > 0 ? 1 / RecordContoCorrente.Valore_Cambio : 0;
-
         }
 
         /// <summary>
@@ -667,12 +658,6 @@ namespace FinanceManager.ViewModels
                 }
         }
 
-        public void TabControlLoaded(object sender, System.EventArgs e)
-        {
-            Border MyTabControl = sender as Border;
-            MyTabControl.Child = _TabControl;
-        }
-
         #endregion
 
         #region command
@@ -680,39 +665,12 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                // In base all'operazione scelta decido:
-                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ||
-                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.CambioValuta)
-                {
-                    CurrencyAvailable = _liquidAssetServices.GetCurrencyAvailable(IdGestione: RecordContoCorrente.Id_Gestione,
-                        IdConto: RecordContoCorrente.Id_Conto, IdValuta: RecordContoCorrente.Id_Valuta)[0];
-
-                    if (RecordContoCorrente.Ammontare > CurrencyAvailable.Disponibili && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Capitale ||
-                        RecordContoCorrente.Ammontare > CurrencyAvailable.Cedole && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Utili_da_Cedole ||
-                        RecordContoCorrente.Ammontare > CurrencyAvailable.Utili && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Utili_da_Volatili ||
-                        RecordContoCorrente.Ammontare > CurrencyAvailable.Utili && RecordContoCorrente.Id_Tipo_Soldi == (int)TipologiaSoldi.Utili_da_Vendite)
-                    {
-                        MessageBox.Show(String.Format("Non hai abbastanza soldi in {0} per effettuare un {1} di {2}.{3}" +
-                            "Ricontrollare is parametri inseriti.", RecordContoCorrente.Cod_Valuta, RecordContoCorrente.Desc_tipo_movimento, RecordContoCorrente.Desc_Tipo_Soldi,
-                            Environment.NewLine), "Gestione Conto Corrente", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
-                    RecordContoCorrente.Ammontare = RecordContoCorrente.Ammontare * -1; //il segno dell'ammontare
-                    //_liquidAssetServices.InsertAccountMovement(RecordContoCorrente);
-                    // imposto il date time del record 2 uguale al record 1
-                    Record2ContoCorrente.Modified = RecordContoCorrente.Modified;
-                    //_liquidAssetServices.InsertAccountMovement(Record2ContoCorrente);
-                }
-                else if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ||
-                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ||
-                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Costi)
-                {
-                    // Inserisco il codice del periodo quote_guadagno
-                    RecordContoCorrente.Id_Quote_Periodi = _quoteServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Tipo_Soldi);
-                    //_liquidAssetServices.InsertAccountMovement(RecordContoCorrente);
-                    // Inserisco il guadagno ripartito per is soci
-                    _quoteServices.AddSingoloGuadagno(RecordContoCorrente);
-                }
+                // Inserisco il codice del periodo quote_guadagno
+                RecordContoCorrente.Id_Quote_Periodi = _quoteServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Tipo_Soldi);
+                // registro il record
+                _contoCorrenteServices.InsertAccountMovement(RecordContoCorrente);
+                // Inserisco il guadagno ripartito per is soci
+                _quoteServices.AddSingoloGuadagno(RecordContoCorrente);
 
                 MessageBox.Show(string.Format("Ho effettuato l'operazione {0} correttamente.", RecordContoCorrente.Desc_tipo_movimento),
                     Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
@@ -728,49 +686,12 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                // se è una registrazione cedola modifico direttamente il record 1
-                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ||
-                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ||
-                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Costi)
-                {
-                    // nel caso si sia cambiata la data nella modifica
-                    RecordContoCorrente.Id_Quote_Periodi = _quoteServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Tipo_Soldi);
-                    _contoCorrenteServices.UpdateRecordContoCorrente(RecordContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);    //registro la modifica in conto corrente
-                    _quoteServices.ModifySingoloGuadagno(RecordContoCorrente); // modifico di conseguenza is record del guadagno totale anno
-                }
-                else
-                {
-                    //// cerco il record corrispondente al giroconto o al cambio valuta utilizzando il campo
-                    //// modified (e poi aggiorno il campo stesso per entrambi - forse non serve)
-                    //TwoRecordConto = _liquidAssetServices.Get2ContoCorrentes(RecordContoCorrente.Modified);
-                    //// RecordContoCorrente è quello attivo in modifica quindi imposto il record derivato
-                    //Record2ContoCorrente = TwoRecordConto[0].Id_RowConto == RecordContoCorrente.Id_RowConto ? TwoRecordConto[1] : TwoRecordConto[0];
-                    // Salvo le modifiche fatte al record attivo
-                    _contoCorrenteServices.UpdateRecordContoCorrente(RecordContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);
-                    if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.CambioValuta)
-                    {
-                        if (RecordContoCorrente.Ammontare * RecordContoCorrente.Valore_Cambio != Record2ContoCorrente.Ammontare)
-                        {
-                            Record2ContoCorrente.Ammontare = RecordContoCorrente.Ammontare * RecordContoCorrente.Valore_Cambio;
-                            Record2ContoCorrente.Valore_Cambio = 1 / RecordContoCorrente.Valore_Cambio;
-                        }
-                        Record2ContoCorrente.Id_Tipo_Soldi = RecordContoCorrente.Id_Tipo_Soldi;
-                        Record2ContoCorrente.DataMovimento = RecordContoCorrente.DataMovimento;
-                        Record2ContoCorrente.Causale = RecordContoCorrente.Causale;
-                        // Salvo le modifiche al record collegato
-                        _contoCorrenteServices.UpdateRecordContoCorrente(Record2ContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);
-                    }
-                    else if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto)
-                    {
-                        // modifico il record 2 sulla base delle modifiche apportate al record 1
-                        Record2ContoCorrente.Id_Tipo_Soldi = RecordContoCorrente.Id_Tipo_Soldi;
-                        Record2ContoCorrente.DataMovimento = RecordContoCorrente.DataMovimento;
-                        Record2ContoCorrente.Ammontare = RecordContoCorrente.Ammontare * -1;
-                        Record2ContoCorrente.Causale = RecordContoCorrente.Causale;
-                        // Salvo le modifiche al record collegato
-                        _contoCorrenteServices.UpdateRecordContoCorrente(Record2ContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);
-                    }
-                }
+                // prelevo il codice periodi
+                RecordContoCorrente.Id_Quote_Periodi = _quoteServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Tipo_Soldi);
+                //registro la modifica in conto corrente
+                _contoCorrenteServices.UpdateRecordContoCorrente(RecordContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);
+                // modifico di conseguenza is record del guadagno totale anno
+                _quoteServices.ModifySingoloGuadagno(RecordContoCorrente);
                 MessageBox.Show("Record modificato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
                 Init();
             }
@@ -784,20 +705,10 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                if (RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ||
-                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ||
-                    RecordContoCorrente.Id_tipo_movimento == (int)TipologiaMovimento.Costi)
-                {
-                    // con il codice del record elimino anche le righe inserite nella tabella guadagno
-                    _quoteServices.DeleteRecordGuadagno_Totale_anno(RecordContoCorrente.Id_RowConto);
-                    _contoCorrenteServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);  // registro l'eliminazione in conto corrente
-                }
-                else
-                {
-                    // Ho trovato is 2 record collegati quando ho fatto la selezione dalla griglia
-                    _contoCorrenteServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);
-                    _contoCorrenteServices.DeleteRecordContoCorrente(Record2ContoCorrente.Id_RowConto);
-                }
+                // con il codice del record elimino anche le righe inserite nella tabella guadagno
+                _quoteServices.DeleteRecordGuadagno_Totale_anno(RecordContoCorrente.Id_RowConto);
+                // registro l'eliminazione in conto corrente
+                _contoCorrenteServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);
                 MessageBox.Show("Record eliminato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
                 Init();
             }

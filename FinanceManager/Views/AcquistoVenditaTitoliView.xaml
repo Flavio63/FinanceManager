@@ -13,7 +13,7 @@
     <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="200"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -64,7 +64,7 @@
         <Border Grid.Row="1" Grid.Column="2" BorderBrush="LightGray" BorderThickness="0.8" Margin="5">
             <Grid Margin="5">
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
+                    <RowDefinition Height="35"/>
                     <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition/>
@@ -160,7 +160,7 @@
         <Border Grid.Row="1" Grid.Column="3" BorderBrush="LightGray" BorderThickness="0.8" Margin="5">
             <Grid Margin="5">
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
+                    <RowDefinition Height="35"/>
                     <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition/>
@@ -261,9 +261,10 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </TextBox>
-                <TextBlock Grid.Row="5" Grid.Column="0" Text="Note" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
-                <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" TextWrapping="Wrap" Text="{Binding RecordPortafoglioTitoli.Note}" 
-                     Margin="5" VerticalContentAlignment="Top" HorizontalContentAlignment="Left" 
+                <TextBlock Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" Text="Note" FontSize="16" Margin="10, 2, 5, 2" 
+                           VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <TextBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" TextWrapping="Wrap" Text="{Binding RecordPortafoglioTitoli.Note}" 
+                     Margin="0 , 2" VerticalContentAlignment="Top" HorizontalContentAlignment="Left" 
                      FontSize="14">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="LostFocus">

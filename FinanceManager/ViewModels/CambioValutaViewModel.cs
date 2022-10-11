@@ -222,7 +222,11 @@ namespace FinanceManager.ViewModels
                         break;
                     case "cifra_da_cambiare":
                         if (recordCCMittente.Valore_Cambio > 0)
-                            recordCCRicevente.Ammontare = recordCCMittente.Ammontare * recordCCMittente.Valore_Cambio;
+                        {
+                            Temporaneo = recordCCRicevente;
+                            Temporaneo.Ammontare = recordCCMittente.Ammontare * recordCCMittente.Valore_Cambio;
+                            recordCCRicevente = Temporaneo;
+                        }
                         break;
                     case "Causale":
                         recordCCMittente.Causale = TB.Text;
