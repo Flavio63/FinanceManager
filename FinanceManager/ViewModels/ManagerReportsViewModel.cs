@@ -56,7 +56,7 @@ namespace FinanceManager.ViewModels
                 RegistryOwnersList ListaOriginale = new RegistryOwnersList();
                 ListaOriginale = _services.GetGestioneList();
                 var LO = from risultato in ListaOriginale
-                         where risultato.Tipologia == "Gestore"
+                         where risultato.Tipo_Gestione == "Gestore"
                          select risultato;
                 foreach (RegistryOwner registryOwner in LO)
                     OwnerList.Add(registryOwner);
@@ -735,7 +735,7 @@ namespace FinanceManager.ViewModels
                     CanExport = true;
                     break;
                 case "Titolo":
-                    ReportMovementDetaileds = _reportServices.GetMovementDetailed(_selectedOwners[0].Id_gestione, TitoloSelezionato);
+                    ReportMovementDetaileds = _reportServices.GetMovementDetailed(_selectedOwners[0].Id_Gestione, TitoloSelezionato);
                     ReportMovementDetailedViewModel TitoloData = new ReportMovementDetailedViewModel(ReportMovementDetaileds);
                     ReportMovementDetailedView report2 = new ReportMovementDetailedView(TitoloData);
                     border.Child = report2;
@@ -786,7 +786,7 @@ namespace FinanceManager.ViewModels
                     CanClear = true;
                     break;
                 case "MovimentiContoGestione":
-                    MovimentiContos = _assetServices.GetMovimentiContoGestioneValuta(_selectedAccount[0].Id_Conto, _selectedOwners[0].Id_gestione, SelectedYears[0], SelectedCurrency);
+                    MovimentiContos = _assetServices.GetMovimentiContoGestioneValuta(_selectedAccount[0].Id_Conto, _selectedOwners[0].Id_Gestione, SelectedYears[0], SelectedCurrency);
                     ReportMovimentiContoViewModel reportMovimentiContoViewModel = new ReportMovimentiContoViewModel(MovimentiContos);
                     ReportMovimentiContoView report5 = new ReportMovimentiContoView(reportMovimentiContoViewModel);
                     border.Child = report5;

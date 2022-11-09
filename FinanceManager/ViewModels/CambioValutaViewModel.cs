@@ -259,8 +259,8 @@ namespace FinanceManager.ViewModels
                 else if (e.AddedItems[0] is RegistryOwner RO)
                 {
                     LaGestione = RO.Nome_Gestione;
-                    recordCCMittente.Id_Gestione = RO.Id_gestione;
-                    recordCCRicevente.Id_Gestione = RO.Id_gestione;
+                    recordCCMittente.Id_Gestione = RO.Id_Gestione;
+                    recordCCRicevente.Id_Gestione = RO.Id_Gestione;
                 }
                 else if (e.AddedItems[0] is TipoSoldi TS)
                 {

@@ -21,7 +21,7 @@ namespace FinanceManager.Services
             {
                 string owners = " (";
                 foreach (RegistryOwner o in _selectedOwners)
-                    owners += " A.id_gestione = " + o.Id_gestione + " or ";
+                    owners += " A.id_gestione = " + o.Id_Gestione + " or ";
                 owners = owners.Substring(0, owners.Length - 4);
                 owners += ") ";
                 string accounts = " (";
@@ -102,7 +102,7 @@ namespace FinanceManager.Services
             string gestione = "A.id_gestione = ";
             foreach(RegistryOwner RO in _selectedOwners)
             {
-                gestione += RO.Id_gestione;
+                gestione += RO.Id_Gestione;
                 gestione += " OR A.id_gestione = ";
             }
             gestione = gestione.Substring(0, gestione.Length - 20);
@@ -249,7 +249,7 @@ namespace FinanceManager.Services
         {
             string owners = " (";
             foreach (RegistryOwner i in _selectedOwners)
-                owners += " A.id_gestione = " + i.Id_gestione + " or ";
+                owners += " A.id_gestione = " + i.Id_Gestione + " or ";
             owners = owners.Substring(0, owners.Length - 4);
             owners += ") ";
             string anni = " (";
@@ -317,7 +317,7 @@ namespace FinanceManager.Services
             if (_selectedOwners.Count >= 1)
             {
                 foreach (RegistryOwner item in _selectedOwners)
-                    gestioni += item.Id_gestione + " OR A.id_gestione = ";
+                    gestioni += item.Id_Gestione + " OR A.id_gestione = ";
             }
             else
             {

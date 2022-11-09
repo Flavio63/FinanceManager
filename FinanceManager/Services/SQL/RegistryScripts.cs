@@ -8,10 +8,17 @@ namespace FinanceManager.Services.SQL
 {
     public class RegistryScripts
     {
+
+
+        public readonly static string GetSociList = "SELECT id_socio, nome_socio FROM soci WHERE id_socio > 0 ORDER BY id_socio";
+        public readonly static string UpdateSocioName = "UPDATE soci SET nome_socio = @nome WHERE id_socio = @id_socio";
+        public readonly static string AddSocio = "INSERT INTO soci (id_socio, nome_socio) VALUES (null, @nome)";
+        public readonly static string DeleteSocio = "DELETE FROM soci WHERE id_socio = @id";
+
         #region Gestione
-        public readonly static string GetGestioneList = "SELECT id_gestione, nome_gestione, tipologia FROM gestioni WHERE id_gestione > 0 ORDER BY id_gestione";
-        public readonly static string UpdateGestioneName = "UPDATE gestioni SET nome_gestione = @nome, tipologia = @tipologia WHERE id_gestione = @id";
-        public readonly static string AddGestione = "INSERT INTO gestioni (id_gestione, nome_gestione, tipologia) VALUES (null, @nome, @tipologia)";
+        public readonly static string GetGestioneList = "SELECT id_gestione, nome_gestione, id_tipo_gestione, tipo_gestione FROM gestioni WHERE id_gestione > 0 ORDER BY id_gestione";
+        public readonly static string UpdateGestioneName = "UPDATE gestioni SET nome_gestione = @nome, id_tipo_gestione = @id_tipo, tipo_gestione = @tipologia WHERE id_gestione = @id";
+        public readonly static string AddGestione = "INSERT INTO gestioni (id_gestione, nome_gestione, id_tipo_gestione, tipo_gestione) VALUES (null, @nome, @id_tipo, @tipologia)";
         public readonly static string DeleteGestione = "DELETE FROM gestioni WHERE id_gestione = @id";
         #endregion
 
@@ -21,14 +28,14 @@ namespace FinanceManager.Services.SQL
         public readonly static string DeleteShareType = "DELETE FROM tipo_titoli WHERE id_tipo_titolo = @id";
         public readonly static string AddShareType = "INSERT INTO tipo_titoli (id_tipo_titolo, desc_tipo_titolo) VALUES (null, @desc);";
         #endregion
-        
+
         #region Valuta
         public readonly static string GetRegistryCurrencyList = "SELECT id_valuta, desc_valuta, cod_valuta FROM valuta WHERE id_valuta > 0 ORDER BY id_valuta;";
         public readonly static string UpdateCurrency = "UPDATE valuta SET desc_valuta = @desc, cod_valuta = @code WHERE id_valuta = @id;";
         public readonly static string DeleteCurrency = "DELETE FROM valuta WHERE id_valuta = @id";
         public readonly static string AddCurrency = "INSERT INTO valuta (id_valuta, desc_valuta, cod_valuta) VALUES (null, @desc, @code);";
         #endregion
-        
+
         #region conti
         public readonly static string GetRegistryLocationList = "SELECT id_conto, desc_conto, note FROM conti WHERE id_conto > 0 ORDER BY id_conto;";
         public readonly static string UpdateLocation = "UPDATE conti SET desc_conto = @desc, note = @note WHERE id_conto = @id;";
@@ -42,7 +49,7 @@ namespace FinanceManager.Services.SQL
         public readonly static string DeleteFirm = "DELETE FROM aziende WHERE id_azienda = @id";
         public readonly static string AddFirm = "INSERT INTO aziende (id_azienda, desc_azienda) VALUES (null, @desc);";
         #endregion
-        
+
         #region titoli
         public readonly static string GetRegistryShareList = "SELECT id_titolo, desc_titolo, isin, id_tipo_titolo, id_azienda, azioni, obbligazioni, liquidita, altro, " +
             "USA, Canada, AmericaLatinaCentrale, RegnoUnito, EuropaOccEuro, EuropaOccNoEuro, EuropaEst, Africa, MedioOriente, Giappone, Australasia, AsiaSviluppati, " +

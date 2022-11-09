@@ -21,6 +21,7 @@ namespace FinanceManager.ViewModels
         private readonly IContoTitoliServices _contoTitoliServices;
         private readonly IQuoteGuadagniServices _quoteServices;
 
+        public ICommand OnClickOpenSoci { get; set; }
         public ICommand OnClickOpenGestioni { get; set; }
         public ICommand OnClickOpenConti { get; set; }
         public ICommand OnClickOpenAziende { get; set; }
@@ -35,6 +36,8 @@ namespace FinanceManager.ViewModels
         public ICommand OnClickOpenSchedaTitoli { get; set; }
         public ICommand OnClickOpenCambioValuta { get; set; }
 
+        SociViewModels sociViewModel;
+        SociView sociView;
         RegistryOwnerViewModel ownerViewModel;
         RegistryOwnerView ownerView;
         RegistryShareTypeViewModel registryShareTypeViewModel;
@@ -90,6 +93,7 @@ namespace FinanceManager.ViewModels
             _contoTitoliServices = new ContoTitoliServices(_DafConnection);
             _quoteServices = new QuoteGuadagniServices(_DafConnection);
 
+            OnClickOpenSoci = new CommandHandler(OpenSoci);
             OnClickOpenGestioni = new CommandHandler(OpenGestioni);
             OnClickOpenConti = new CommandHandler(OpenConti);
             OnClickOpenAziende = new CommandHandler(OpenAziende);
@@ -106,6 +110,22 @@ namespace FinanceManager.ViewModels
         }
 
         #region Anagrafica
+        private void OpenSoci(object param)
+        {
+            DockPanel mainGrid = param as DockPanel;
+            if (sociView == null || !mainGrid.Children.Contains(shareTypeView))
+            {
+                sociViewModel = new SociViewModels(_registryServices);
+                sociView = new SociView(sociViewModel);
+                mainGrid.Children.Add(sociView);
+            }
+            else
+            {
+                sociView = null;
+                sociViewModel = null;
+            }
+        }
+
         private void OpenGestioni(object param)
         {
             DockPanel mainGrid = param as DockPanel;

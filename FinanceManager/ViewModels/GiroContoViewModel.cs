@@ -361,7 +361,7 @@ namespace FinanceManager.ViewModels
                     case "GestioneMittente":
                         ContoMittente = false;
                         ContoRicevente = true;
-                        ActualCCmittente.Id_Gestione = ((RegistryOwner)e.AddedItems[0]).Id_gestione;
+                        ActualCCmittente.Id_Gestione = ((RegistryOwner)e.AddedItems[0]).Id_Gestione;
                         TotaleMittenteConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoMittente, IdGestioneMittente);
                         break;
                     case "ContoRicevente":
@@ -372,7 +372,7 @@ namespace FinanceManager.ViewModels
                     case "GestioneRicevente":
                         ContoRicevente = false;
                         ValutaEnabled = true;
-                        ActualCCricevente.Id_Gestione = ((RegistryOwner)e.AddedItems[0]).Id_gestione;
+                        ActualCCricevente.Id_Gestione = ((RegistryOwner)e.AddedItems[0]).Id_Gestione;
                         TotaleRiceventeConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoRicevente, IdGestioneRicevente);
                         break;
                     case "Valuta":

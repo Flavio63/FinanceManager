@@ -23,7 +23,7 @@ namespace FinanceManager.Services
         /// e inserendo il nuovo record
         /// </summary>
         /// <param name="DataDal">Data da cercare</param>
-        /// <param name="TipoSoldi">Tipologia dei soldi</param>
+        /// <param name="TipoSoldi">Tipo_Gestione dei soldi</param>
         /// <returns>Il record di quote_periodi</returns>
         QuotePeriodi Update_InsertQuotePeriodi(DateTime DataDal, int TipoSoldi);
 

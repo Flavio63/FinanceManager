@@ -43,7 +43,7 @@ namespace FinanceManager.ViewModels
             ListaInvestitoreOriginale = _registryServices.GetGestioneList();
             foreach (RegistryOwner RO in ListaInvestitoreOriginale)
             {
-                if (RO.Tipologia == "Investitore")
+                if (RO.Tipo_Gestione == "Investitore")
                     ListInvestitori.Add(RO);
             }
             // Filtro la tabella movimenti prendendo solo versamento e prelievo

@@ -233,6 +233,7 @@
     <Compile Include="Models\ReportTitoliAttiviList.cs" />
     <Compile Include="Models\SintesiSoldi.cs" />
     <Compile Include="Models\SintesiSoldiList.cs" />
+    <Compile Include="Models\SociList.cs" />
     <Compile Include="Models\TipoSoldi.cs" />
     <Compile Include="Models\TipoSoldiList.cs" />
     <Compile Include="Models\Enumeratori\TipologiaSoldi.cs" />
@@ -301,6 +302,8 @@
     <Compile Include="ViewModels\ReportPorfitLossAnnoGestioniViewModel.cs" />
     <Compile Include="ViewModels\ReportTitoliAttiviViewModel.cs" />
     <Compile Include="ViewModels\SchedeTitoliViewModel.cs" />
+    <Compile Include="Models\Soci.cs" />
+    <Compile Include="ViewModels\SociViewModels.cs" />
     <Compile Include="ViewModels\TabControlSintesiViewModel.cs" />
     <Compile Include="Views\AcquistoVenditaTitoliView.xaml.cs">
       <DependentUpon>AcquistoVenditaTitoliView.xaml</DependentUpon>
@@ -366,6 +369,9 @@
     </Compile>
     <Compile Include="Views\SchedeTitoliView.xaml.cs">
       <DependentUpon>SchedeTitoliView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SociView.xaml.cs">
+      <DependentUpon>SociView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TabControlSintesiView.xaml.cs">
       <DependentUpon>TabControlSintesiView.xaml</DependentUpon>
@@ -466,6 +472,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SchedeTitoliView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SociView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -8,8 +8,9 @@ namespace FinanceManager.Models
 {
     public class RegistryOwner
     {
-        public int Id_gestione { get; set; }
+        public int Id_Gestione { get; set; }
         public string Nome_Gestione { get; set; }
-        public string Tipologia { get; set; }
+        public int Id_Tipo_Gestione { get; set; }
+        public string Tipo_Gestione { get; set; }
     }
 }

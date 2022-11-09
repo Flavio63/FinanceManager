@@ -3,6 +3,26 @@ namespace FinanceManager.Services
 {
     public interface IRegistryServices
     {
+        #region Soci
+        /// <summary>
+        /// Ritorna tutti i nominativi legati alla
+        /// gestione dei socii
+        /// </summary>
+        /// <returns>Observable Collection</returns>
+        SociList GetSociList();
+        /// <summary>
+        /// Aggiorna il nome di un socio
+        /// </summary>
+        /// <param name="socioName">Il nuovo nome</param>
+        void UpdateSocioName(Soci socio);
+        /// <summary>
+        /// Aggiunge una voce alla tabella soci
+        /// </summary>
+        /// <param name="socio">Il record da aggiungere</param>
+        void AddSocio(Soci socio);
+        void DeleteSocio(int id_socio);
+        #endregion
+
         #region Owner
         /// <summary>
         /// Ritorna tutti i nominativi legati alla
@@ -18,9 +38,8 @@ namespace FinanceManager.Services
         /// <summary>
         /// Aggiunge una voce alla tabella gestioni
         /// </summary>
-        /// <param name="name">Il nome della persona</param>
-        /// <param name="tipologia">La tipologia</param>
-        void AddGestione(string name, string tipologia);
+        /// <param name="owner">Il record da aggiungere</param>
+        void AddGestione(RegistryOwner owner);
         void DeleteGestione(int id);
         #endregion
 

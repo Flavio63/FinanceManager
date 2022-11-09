@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using NPOI.SS.Formula.Functions;
 
 namespace FinanceManager.ViewModels
 {
@@ -79,7 +80,7 @@ namespace FinanceManager.ViewModels
                 RegistryOwnersList ListaInvestitoreOriginale = new RegistryOwnersList();
                 ListaInvestitoreOriginale = _registryServices.GetGestioneList();
                 var ROL = from gestione in ListaInvestitoreOriginale
-                          where (gestione.Tipologia == "Gestore")
+                          where (gestione.Tipo_Gestione == "Gestore")
                           select gestione;
                 _TabControl.TabStripPlacement = Dock.Left;
                 foreach (RegistryOwner registryOwner in ROL)
@@ -120,12 +121,11 @@ namespace FinanceManager.ViewModels
                 OperazioneEnabled = true;
                 CedoleEnabled = false;
                 VolatiliEnabled = false;
-                CanUpdateDelete = false;
-                CanInsert = false;
                 FiltroConto = "";
                 FiltroGestione = "";
                 FiltroTipoSoldi = "";
                 FiltroTipoMovimento = "";
+                FiltroValuta = "";
             }
             catch (Exception err)
             {
@@ -193,7 +193,7 @@ namespace FinanceManager.ViewModels
         public ContoCorrenteList TotaleDisponibili
         {
             get { return GetValue(() => TotaleDisponibili); }
-            set { SetValue(() => TotaleDisponibili, value); TotaleDisponibiliView = CollectionViewSource.GetDefaultView(value); }
+            set { SetValue(() => TotaleDisponibili, value); TotaleDisponibiliView = CollectionViewSource.GetDefaultView(value); TotaleDisponibiliView.Refresh(); }
         }
         public System.ComponentModel.ICollectionView TotaleDisponibiliView
         {
@@ -266,6 +266,15 @@ namespace FinanceManager.ViewModels
         }
 
         /// <summary>
+        /// Record di backup del portafoglio
+        /// </summary>
+        public ContoCorrente BackupRecordContoCorrente
+        {
+            get { return GetValue(() => BackupRecordContoCorrente); }
+            set { SetValue(() => BackupRecordContoCorrente, value); }
+        }
+
+        /// <summary>
         /// Gestisce l'abilitazione del blocco dedicato alla registrazione delle cedole
         /// </summary>
         public bool CedoleEnabled
@@ -275,7 +284,7 @@ namespace FinanceManager.ViewModels
         }
 
         ///<summary>
-        /// Abilita / disabilita la possibilità di modificare is campi nei parametri comuni
+        /// Abilita / disabilita la possibilità di modificare i campi nei parametri comuni
         ///</summary>
         public bool CommonFieldsEnabled
         {
@@ -546,7 +555,7 @@ namespace FinanceManager.ViewModels
                 }
                 else if (e.AddedItems[0] is RegistryOwner RO)
                 {
-                    RecordContoCorrente.Id_Gestione = RO.Id_gestione;
+                    RecordContoCorrente.Id_Gestione = RO.Id_Gestione;
                     RecordContoCorrente.NomeGestione = RO.Nome_Gestione;
                     FiltroGestione = RO.Nome_Gestione;
                 }
@@ -569,14 +578,12 @@ namespace FinanceManager.ViewModels
                     // abilito il blocco di input dati sulla base di questa scelta
                     CedoleEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ? true : false;
                     VolatiliEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ? true : false;
-                    CanInsert = RMT.Id_tipo_movimento == (int)TipologiaMovimento.Costi ? true : false;
                     FiltroTipoMovimento = RMT.Desc_tipo_movimento;
                 }
                 else if (e.AddedItems[0] is RegistryShare RS)
                 {
                     RecordContoCorrente.Id_Titolo = (int)RS.id_titolo;
                     RecordContoCorrente.Desc_Titolo = RS.desc_titolo;
-                    CanInsert = RecordContoCorrente.Id_RowConto > 0 ? false : true;
                 }
             }
         }
@@ -595,27 +602,23 @@ namespace FinanceManager.ViewModels
             }
             else if (e.AddedItems[0] is ContoCorrente CC)
             {
+                BackupRecordContoCorrente = new ContoCorrente(); // nel caso ci siano degli errori in fase di scrittura db
+                BackupRecordContoCorrente = CC;
                 RecordContoCorrente = CC;
                 if (CC.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ||
                     CC.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ||
                     CC.Id_tipo_movimento == (int)TipologiaMovimento.Costi)
                 {
-                    CommonFieldsEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto ? true : false;
-                    OperazioneEnabled = false;
                     CedoleEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ? true : false;
                     VolatiliEnabled = CC.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ? true : false;
-                    CanUpdateDelete = true;
                 }
                 else
                 {
                     RecordContoCorrente = new ContoCorrente();
                     CedoleEnabled = false;
                     VolatiliEnabled = false;
-                    CommonFieldsEnabled = false;
-                    CanUpdateDelete = false;
-                    OperazioneEnabled = false;
                 }
-                CanInsert = false;
+                OperazioneEnabled = false;
                 e.Handled = true;
             }
         }
@@ -669,12 +672,19 @@ namespace FinanceManager.ViewModels
                 RecordContoCorrente.Id_Quote_Periodi = _quoteServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Tipo_Soldi);
                 // registro il record
                 _contoCorrenteServices.InsertAccountMovement(RecordContoCorrente);
-                // Inserisco il guadagno ripartito per is soci
-                _quoteServices.AddSingoloGuadagno(RecordContoCorrente);
-
-                MessageBox.Show(string.Format("Ho effettuato l'operazione {0} correttamente.", RecordContoCorrente.Desc_tipo_movimento),
-                    Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
-                Init();
+                try 
+                {
+                    // Inserisco il guadagno ripartito per i soci
+                    _quoteServices.AddSingoloGuadagno(RecordContoCorrente);
+                    Init();
+                    MessageBox.Show(string.Format("Ho effettuato l'operazione {0} correttamente.", RecordContoCorrente.Desc_tipo_movimento),
+                        Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception err)
+                {
+                    MessageBox.Show("Problemi nel caricamento del guadagno per i soci: " + Environment.NewLine + "Verrà cancellato anche l'inserimento nel cc" +
+                       Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
             catch (Exception err)
             {
@@ -690,10 +700,18 @@ namespace FinanceManager.ViewModels
                 RecordContoCorrente.Id_Quote_Periodi = _quoteServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Tipo_Soldi);
                 //registro la modifica in conto corrente
                 _contoCorrenteServices.UpdateRecordContoCorrente(RecordContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);
-                // modifico di conseguenza is record del guadagno totale anno
-                _quoteServices.ModifySingoloGuadagno(RecordContoCorrente);
-                MessageBox.Show("Record modificato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
-                Init();
+                try
+                { // modifico di conseguenza is record del guadagno totale anno
+                    _quoteServices.ModifySingoloGuadagno(RecordContoCorrente);
+                    MessageBox.Show("Record modificato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
+                    Init();
+                }
+                catch(Exception err)
+                {
+                    _contoCorrenteServices.UpdateRecordContoCorrente(BackupRecordContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);
+                    MessageBox.Show("Problemi nel modificare il record guadagni" + Environment.NewLine + "è stato ripristinato anche il record in conto corrente" +
+                        Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
             catch (Exception err)
             {
@@ -707,10 +725,19 @@ namespace FinanceManager.ViewModels
             {
                 // con il codice del record elimino anche le righe inserite nella tabella guadagno
                 _quoteServices.DeleteRecordGuadagno_Totale_anno(RecordContoCorrente.Id_RowConto);
-                // registro l'eliminazione in conto corrente
-                _contoCorrenteServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);
-                MessageBox.Show("Record eliminato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
-                Init();
+                try
+                {
+                    // registro l'eliminazione in conto corrente
+                    _contoCorrenteServices.DeleteRecordContoCorrente(RecordContoCorrente.Id_RowConto);
+                    MessageBox.Show("Record eliminato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
+                    Init();
+                }
+                catch (Exception err)
+                {
+                    MessageBox.Show("E' stato eliminato il guadagno relativo al record " + RecordContoCorrente.Id_RowConto + " ma non dal conto corrente." +
+                        Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(),
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
             catch (Exception err)
             {
@@ -730,26 +757,21 @@ namespace FinanceManager.ViewModels
             wp.Children.Remove(MFMV);
         }
 
-        public bool CanInsert
-        {
-            get { return GetValue(() => CanInsert); }
-            set { SetValue(() => CanInsert, value); }
-        }
-
         public bool CanSave(object param)
         {
-            return CanInsert;
-        }
+            if (RecordContoCorrente.Id_Conto > 0 && RecordContoCorrente.Id_Gestione > 0 && RecordContoCorrente.Id_Valuta > 0 && RecordContoCorrente.Id_Tipo_Soldi > 0 &&
+                RecordContoCorrente.Id_tipo_movimento == 8 && RecordContoCorrente.Id_RowConto == 0)
+                return true;
+            if (RecordContoCorrente.Id_Conto > 0 && RecordContoCorrente.Id_Gestione > 0 && RecordContoCorrente.Id_Valuta > 0 && RecordContoCorrente.Id_Tipo_Soldi > 0 &&
+                (RecordContoCorrente.Id_tipo_movimento == 4 || RecordContoCorrente.Id_tipo_movimento == 7) && RecordContoCorrente.Id_Titolo > 0 && RecordContoCorrente.Id_RowConto == 0) 
+                return true;
 
-        public bool CanUpdateDelete
-        {
-            get { return GetValue(() => CanUpdateDelete); }
-            set { SetValue(() => CanUpdateDelete, value); }
+            return false;
         }
 
         public bool CanModify(object param)
         {
-            if (CanUpdateDelete)
+            if (RecordContoCorrente.Id_RowConto > 0)
                 return true;
             return false;
         }

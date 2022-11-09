@@ -26,7 +26,7 @@ namespace FinanceManager.ViewModels
             }
             catch (Exception err)
             {
-                MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Lista Tipologia Movimenti");
+                MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Lista Tipo_Gestione Movimenti");
             }
             CloseMeCommand = new CommandHandler(CloseMe);
         }

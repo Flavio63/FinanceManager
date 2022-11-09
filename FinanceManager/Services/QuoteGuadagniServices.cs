@@ -57,7 +57,7 @@ namespace FinanceManager.Services
         /// e inserendo il nuovo record
         /// </summary>
         /// <param name="DataDal">Data da cercare</param>
-        /// <param name="TipoSoldi">Tipologia dei soldi</param>
+        /// <param name="TipoSoldi">Tipo_Gestione dei soldi</param>
         /// <returns>Il record di quote_periodi</returns>
         public QuotePeriodi Update_InsertQuotePeriodi(DateTime DataDal, int TipoSoldi)
         {
@@ -243,27 +243,35 @@ namespace FinanceManager.Services
         /// <param name="RecordContoCorrente">record conto corrente con i dati</param>
         public void AddSingoloGuadagno(ContoCorrente RecordContoCorrente)
         {
-            try
+            using (SQLiteConnection dbConnection = new SQLiteConnection(DAFconnection.GetConnectionType()))
             {
-                using (SQLiteCommand dbComm = new SQLiteCommand())
+                dbConnection.Open();
+                using (SQLiteTransaction transaction = dbConnection.BeginTransaction())
                 {
-                    dbComm.CommandText = QuoteGuadagniScript.AddSingoloGuadagno;
-                    dbComm.Parameters.AddWithValue("id_tipo_movimento", RecordContoCorrente.Id_tipo_movimento);
-                    dbComm.Parameters.AddWithValue("id_tipo_soldi", RecordContoCorrente.Id_Tipo_Soldi);
-                    dbComm.Parameters.AddWithValue("id_quote_periodi", RecordContoCorrente.Id_Quote_Periodi);
-                    dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
+                    try
+                    {
+                        using (SQLiteCommand dbComm = new SQLiteCommand())
+                        {
+                            dbComm.CommandText = QuoteGuadagniScript.AddSingoloGuadagno;
+                            dbComm.Parameters.AddWithValue("id_tipo_movimento", RecordContoCorrente.Id_tipo_movimento);
+                            dbComm.Parameters.AddWithValue("id_tipo_soldi", RecordContoCorrente.Id_Tipo_Soldi);
+                            dbComm.Parameters.AddWithValue("id_quote_periodi", RecordContoCorrente.Id_Quote_Periodi);
+                            dbComm.Connection = dbConnection;
+                            dbComm.ExecuteNonQuery();
+                            transaction.Commit();
+                        }
+                    }
+                    catch (SQLiteException err)
+                    {
+                        transaction.Rollback();
+                        throw new Exception(err.Message);
+                    }
+                    catch (Exception err)
+                    {
+                        transaction.Rollback();
+                        throw new Exception(err.Message);
+                    }
                 }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
             }
         }
         /// <summary>
@@ -300,6 +308,7 @@ namespace FinanceManager.Services
         /// <param name="RecordContoCorrente">record conto corrente con i dati</param>
         public void ModifySingoloGuadagno(ContoCorrente RecordContoCorrente)
         {
+
             try
             {
                 using (SQLiteCommand dbComm = new SQLiteCommand())

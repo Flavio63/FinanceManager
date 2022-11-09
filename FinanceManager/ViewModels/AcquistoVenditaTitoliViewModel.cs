@@ -74,7 +74,7 @@ namespace FinanceManager.ViewModels
                 RegistryOwnersList ListaInvestitoreOriginale = new RegistryOwnersList();
                 ListaInvestitoreOriginale = _registryServices.GetGestioneList();
                 var ROL = from gestione in ListaInvestitoreOriginale
-                          where (gestione.Tipologia == "Gestore")
+                          where (gestione.Tipo_Gestione == "Gestore")
                           select gestione;
                 foreach (RegistryOwner registryOwner in ROL)
                     ListGestioni.Add(registryOwner);
@@ -159,7 +159,7 @@ namespace FinanceManager.ViewModels
                 }
                 if (e.AddedItems[0] is RegistryOwner RO)
                 {
-                    RecordPortafoglioTitoli.Id_gestione = RO.Id_gestione;
+                    RecordPortafoglioTitoli.Id_gestione = RO.Id_Gestione;
                     RecordPortafoglioTitoli.Nome_Gestione = RO.Nome_Gestione;
                     Gestione = RO.Nome_Gestione;
                 }
@@ -811,8 +811,10 @@ namespace FinanceManager.ViewModels
                             {
                                 CCcapitale = new ContoCorrente(pt, _valoreAcquisto * -1, TipologiaSoldi.Capitale,
                                     _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale));
-                                CCprofitloss = new ContoCorrente(pt, (_valoreAcquisto + _valoreVendita), TipologiaSoldi.Utili_da_Vendite,
-                                    _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento,(int)TipologiaSoldi.Utili_da_Vendite));
+                                CCprofitloss = new ContoCorrente(pt, (_valoreAcquisto + _valoreVendita), 
+                                   pt.Id_gestione == 7 ? TipologiaSoldi.Utili_da_Volatili : TipologiaSoldi.Utili_da_Vendite,
+                                    _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento,
+                                    pt.Id_gestione == 7 ? (int)TipologiaSoldi.Utili_da_Volatili : (int)TipologiaSoldi.Utili_da_Vendite));
 
                                 if (CCs[0].Id_Tipo_Soldi == (int)TipologiaSoldi.Capitale)
                                 {
@@ -829,6 +831,7 @@ namespace FinanceManager.ViewModels
                             {
                                 CCcapitale = new ContoCorrente(pt, _valoreVendita, TipologiaSoldi.Capitale,
                                     _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale));
+                                // questa scrittura deve andare in una tabella diversa e solo in quella
                                 CCprofitloss = new ContoCorrente(pt, (_valoreVendita + _valoreAcquisto) * -1, TipologiaSoldi.PerditaCapitale,
                                     _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.PerditaCapitale));
                                 if (CCs[0].Id_Tipo_Soldi == (int)TipologiaSoldi.Capitale)
@@ -947,11 +950,13 @@ namespace FinanceManager.ViewModels
                         {
                             _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto * -1, TipologiaSoldi.Capitale,
                                 _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale)));
-                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.Utili_da_Vendite,
-                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
+                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile,
+                                RecordPortafoglioTitoli.Id_gestione == 7 ? TipologiaSoldi.Utili_da_Volatili : TipologiaSoldi.Utili_da_Vendite,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione == 7 ? (int)TipologiaSoldi.Utili_da_Volatili : (int)TipologiaSoldi.Utili_da_Vendite)));
                             //inserisco gli utili per quota soci
-                            _quoteServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.Utili_da_Vendite,
-                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
+                            _quoteServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile,
+                                RecordPortafoglioTitoli.Id_gestione == 7 ? TipologiaSoldi.Utili_da_Volatili : TipologiaSoldi.Utili_da_Vendite,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione == 7 ? (int)TipologiaSoldi.Utili_da_Volatili : (int)TipologiaSoldi.Utili_da_Vendite)));
 
                         }
                         else if (valoreAcquisto + TotaleContabile < 0)
@@ -961,9 +966,10 @@ namespace FinanceManager.ViewModels
                             _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale,
                                 _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale)));
                             _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, (TotaleContabile + valoreAcquisto) * -1, TipologiaSoldi.PerditaCapitale,
-                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione == 7 ? (int)TipologiaSoldi.Utili_da_Volatili : (int)TipologiaSoldi.Utili_da_Vendite)));
+                            // questa scrittura deve andare in una tabella diversa e solo in quella
                             _quoteServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.PerditaCapitale,
-                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione == 7 ? (int)TipologiaSoldi.Utili_da_Volatili : (int)TipologiaSoldi.Utili_da_Vendite)));
                         }
                     }
                     else //e nel caso di vendita parziale
@@ -989,11 +995,13 @@ namespace FinanceManager.ViewModels
                         {
                             _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto * -1, TipologiaSoldi.Capitale,
                                 _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale)));
-                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.Utili_da_Vendite,
-                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
-                            // Inserisco il guadagno ripartito per i soci
-                            _quoteServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.Utili_da_Vendite,
-                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
+                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile,
+                                RecordPortafoglioTitoli.Id_gestione == 7 ? TipologiaSoldi.Utili_da_Volatili : TipologiaSoldi.Utili_da_Vendite,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione == 7 ? (int)TipologiaSoldi.Utili_da_Volatili : (int)TipologiaSoldi.Utili_da_Vendite)));
+                            //inserisco gli utili per quota soci
+                            _quoteServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile,
+                                RecordPortafoglioTitoli.Id_gestione == 7 ? TipologiaSoldi.Utili_da_Volatili : TipologiaSoldi.Utili_da_Vendite,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione == 7 ? (int)TipologiaSoldi.Utili_da_Volatili : (int)TipologiaSoldi.Utili_da_Vendite)));
                         }
                         else if (valoreAcquisto + TotaleContabile < 0)
                         {
@@ -1002,9 +1010,10 @@ namespace FinanceManager.ViewModels
                             _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale,
                                 _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Capitale)));
                             _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, (TotaleContabile + valoreAcquisto) * -1, TipologiaSoldi.PerditaCapitale,
-                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione == 7 ? (int)TipologiaSoldi.Utili_da_Volatili : (int)TipologiaSoldi.Utili_da_Vendite)));
+                            // questa scrittura deve andare in una tabella diversa e solo in quella
                             _quoteServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.PerditaCapitale,
-                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, (int)TipologiaSoldi.Utili_da_Vendite)));
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione == 7 ? (int)TipologiaSoldi.Utili_da_Volatili : (int)TipologiaSoldi.Utili_da_Vendite)));
                         }
                     }
                 }

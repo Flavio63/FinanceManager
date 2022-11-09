@@ -10,38 +10,39 @@ using System.Windows;
 using FinanceManager.Views;
 using System.Collections.Specialized;
 using System.Collections.ObjectModel;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace FinanceManager.ViewModels
 {
-    public class RegistryOwnerViewModel : INotifyPropertyChanged
+    public class SociViewModels : INotifyPropertyChanged
     {
         private IRegistryServices _services;
-        private RegistryOwner owner;
-        private ObservableCollection<RegistryOwner> _ownerList;
+        private Soci _Socio;
+        private ObservableCollection<Soci> _sociList;
         public ICommand CloseMeCommand { get; set; }
 
         /// <summary>
         /// costruttore
         /// </summary>
         /// <param name="services">la gestione dei dati verso il database</param>
-        public RegistryOwnerViewModel(IRegistryServices services)
+        public SociViewModels(IRegistryServices services)
         {
-            _services = services ?? throw new ArgumentNullException("RegistryOwnerViewModel With No Services");
+            _services = services ?? throw new ArgumentNullException("SociViewModel With No Services");
             try
             {
-                OwnerList = new ObservableCollection<RegistryOwner>(services.GetGestioneList());
-                OwnerList.CollectionChanged += CollectionHasChanged;
+                ListaSoci = new ObservableCollection<Soci>(services.GetSociList());
+                ListaSoci.CollectionChanged += CollectionHasChanged;
             }
             catch (Exception err)
             {
-                MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Lista Gestioni");
+                MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Lista Socii");
             }
             CloseMeCommand = new CommandHandler(CloseMe);
         }
 
         public void CollectionHasChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            ListCollectionView ownerList = sender as ListCollectionView;
+            ListCollectionView listaSoci = sender as ListCollectionView;
         }
 
         /// <summary>
@@ -58,15 +59,15 @@ namespace FinanceManager.ViewModels
 
                 if (e.EditAction == DataGridEditAction.Commit)
                 {
-                    Owner = ((RegistryOwner)e.Row.Item);
-                    if (Owner.Id_Gestione > 0)
+                    Socio = ((Soci)e.Row.Item);
+                    if (Socio.Id_Socio > 0)
                     {
-                        _services.UpdateGestioneName(Owner);
+                        _services.UpdateSocioName(Socio);
                     }
-                    else if (owner.Nome_Gestione != null && Owner.Id_Tipo_Gestione > 0 && Owner.Tipo_Gestione != null)
+                    else if (Socio.Nome_Socio != null )
                     {
-                        _services.AddGestione(Owner);
-                        OwnerList = new ObservableCollection<RegistryOwner>(_services.GetGestioneList());
+                        _services.AddSocio(Socio);
+                        ListaSoci = new ObservableCollection<Soci>(_services.GetSociList());
                     }
                 }
             }
@@ -75,6 +76,7 @@ namespace FinanceManager.ViewModels
                 MessageBox.Show("Errore nell'aggiornamento dei dati: " + err.Message);
             }
         }
+
         /// <summary>
         /// Resto in ascolto dei tasti premuti con la griglia attiva
         /// se è premuto il tasto delete lo intercetto e pongo la 
@@ -89,14 +91,14 @@ namespace FinanceManager.ViewModels
                 DataGrid dg = sender as DataGrid;
                 if (dg.SelectedIndex > 0)
                 {
-                    MessageBoxResult result = MessageBox.Show("Attenzione verrà elemininata la gestione: " +
-                        ((RegistryOwner)dg.SelectedItem).Nome_Gestione, "DAF-C Gestione Gestioni", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    MessageBoxResult result = MessageBox.Show("Attenzione verrà elemininata il socio: " +
+                        ((Soci)dg.SelectedItem).Nome_Socio, "DAF-C Gestione Soci", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {
                         try
                         {
-                            _services.DeleteGestione(((RegistryOwner)dg.SelectedItem).Id_Gestione);
-                            OwnerList = new ObservableCollection<RegistryOwner>(_services.GetGestioneList());
+                            _services.DeleteSocio(((Soci)dg.SelectedItem).Id_Socio);
+                            ListaSoci = new ObservableCollection<Soci>(_services.GetSociList());
                         }
                         catch (Exception err)
                         {
@@ -110,27 +112,28 @@ namespace FinanceManager.ViewModels
             }
         }
 
-        public ObservableCollection<RegistryOwner> OwnerList
+
+        public ObservableCollection<Soci> ListaSoci
         {
-            get { return _ownerList; }
+            get { return _sociList; }
             private set
             {
-                _ownerList = value;
-                NotifyPropertyChanged("OwnerList");
+                _sociList = value;
+                NotifyPropertyChanged("ListaSoci");
             }
         }
         /// <summary>
         /// il modello della gestione
         /// </summary>
-        public RegistryOwner Owner
+        public Soci Socio
         {
-            get { return owner; }
+            get { return _Socio; }
             set
             {
                 if (value != null)
                 {
-                    owner = value;
-                    NotifyPropertyChanged("Owner");
+                    _Socio = value;
+                    NotifyPropertyChanged("Socio");
                 }
             }
         }
@@ -140,16 +143,16 @@ namespace FinanceManager.ViewModels
         /// <param name="param">La view che ha inviato l'evento</param>
         public void CloseMe(object param)
         {
-            RegistryOwnerView ROV = param as RegistryOwnerView;
+            SociView ROV = param as SociView;
             DockPanel wp = ROV.Parent as DockPanel;
             wp.Children.Remove(ROV);
         }
-
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
     }
 }
