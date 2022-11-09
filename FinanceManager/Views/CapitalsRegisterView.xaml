@@ -97,9 +97,9 @@
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
                     <TextBlock Text="Nome Investitore" FontSize="18" VerticalAlignment="Center" Margin="0,5,10,5"/>
-                    <ComboBox Name="Investitore" FontSize="18" Margin="10" MinWidth="200" SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione" 
+                    <ComboBox Name="Investitore" FontSize="18" Margin="10" MinWidth="200" SelectedValuePath="Id_Socio" DisplayMemberPath="Nome_Socio" 
                                    ItemsSource="{Binding ListInvestitori, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                   SelectedValue="{Binding ActualContoCorrente.Id_Gestione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                   SelectedValue="{Binding ActualContoCorrente.Id_Socio, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                   >
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">
@@ -198,7 +198,7 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID" Binding="{Binding Id_RowConto, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                     <DataGridTextColumn Header="Movimento" Binding="{Binding Desc_tipo_movimento, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
-                    <DataGridTextColumn Header="Nome Socio" Binding="{Binding NomeGestione, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                    <DataGridTextColumn Header="Nome Socio" Binding="{Binding Nome_Socio, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                     <DataGridTextColumn Header="Data Movimento" Binding="{Binding DataMovimento, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, StringFormat=d, ConverterCulture=it-IT}">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="{x:Type TextBlock}">

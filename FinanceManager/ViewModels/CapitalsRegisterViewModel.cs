@@ -37,15 +37,8 @@ namespace FinanceManager.ViewModels
             ClearMeCommand = new CommandHandler(ClearMe);
             InsertCommand = new CommandHandler(SaveCommand, CanSave);
             ModifyCommand = new CommandHandler(UpdateCommand, CanModify);
-            ListInvestitori = new RegistryOwnersList();
-            // Filtro la tabella "proprietari" prendendo solo gli "investitori"
-            RegistryOwnersList ListaInvestitoreOriginale = new RegistryOwnersList();
-            ListaInvestitoreOriginale = _registryServices.GetGestioneList();
-            foreach (RegistryOwner RO in ListaInvestitoreOriginale)
-            {
-                if (RO.Tipo_Gestione == "Investitore")
-                    ListInvestitori.Add(RO);
-            }
+            ListInvestitori = new SociList();
+            ListInvestitori = _registryServices.GetSociList();
             // Filtro la tabella movimenti prendendo solo versamento e prelievo
             ListMovimento = new RegistryMovementTypeList();
             RegistryMovementTypeList ListaOriginale = new RegistryMovementTypeList();
@@ -77,7 +70,7 @@ namespace FinanceManager.ViewModels
         #region Get_Set
 
         #region ComboBox
-        public RegistryOwnersList ListInvestitori
+        public SociList ListInvestitori
         {
             get { return GetValue(() => ListInvestitori); }
             set { SetValue(() => ListInvestitori, value); }
@@ -201,8 +194,8 @@ namespace FinanceManager.ViewModels
             }
             if (e.AddedItems.Count > 0 && sender is ComboBox)
             {
-                if (e.AddedItems[0] is RegistryOwner)
-                    Investitore = ((RegistryOwner)e.AddedItems[0]).Nome_Gestione;
+                if (e.AddedItems[0] is Soci)
+                    Investitore = ((Soci)e.AddedItems[0]).Nome_Socio;
                 if (e.AddedItems[0] is RegistryCurrency)
                     CodeCurrency = ((RegistryCurrency)e.AddedItems[0]).CodeCurrency;
             }

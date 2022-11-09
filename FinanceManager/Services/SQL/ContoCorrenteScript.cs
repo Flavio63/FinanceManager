@@ -9,11 +9,11 @@ namespace FinanceManager.Services.SQL
 {
     public class ContoCorrenteScript
     {
-        protected static readonly string ContoCorrente = "SELECT id_fineco_euro, A.id_conto, B.desc_conto, A.id_valuta, C.cod_valuta, id_portafoglio_titoli, A.id_tipo_movimento, " +
+        protected static readonly string ContoCorrente = "SELECT id_fineco_euro, A.id_conto, B.desc_conto, A.id_socio, H.nome_socio,  A.id_valuta, C.cod_valuta, id_portafoglio_titoli, A.id_tipo_movimento, " +
             "D.desc_movimento, A.id_gestione, E.nome_gestione, A.id_titolo, F.isin, F.desc_titolo, data_movimento, ammontare, cambio, Causale, A.id_tipo_soldi, G.desc_tipo_soldi, modified " +
-            "FROM conto_corrente A, conti B, valuta C, tipo_movimento D, gestioni E, titoli F, tipo_soldi G " +
+            "FROM conto_corrente A, conti B, valuta C, tipo_movimento D, gestioni E, titoli F, tipo_soldi G, soci H " +
             "WHERE A.id_conto = B.id_conto AND A.id_valuta = C.id_valuta AND A.id_tipo_movimento = D.id_tipo_movimento AND " +
-            "A.id_gestione = E.id_gestione AND A.id_titolo = F.id_titolo AND A.id_tipo_soldi = G.id_tipo_soldi AND id_fineco_euro > 0 ";
+            "A.id_gestione = E.id_gestione AND A.id_titolo = F.id_titolo AND A.id_tipo_soldi = G.id_tipo_soldi AND A.id_socio = H.id_socio AND id_fineco_euro > 0 ";
 
         public static readonly string GetContoCorrente = ContoCorrente + " ORDER BY data_movimento desc, A.id_fineco_euro";
         public static readonly string GetContoCorrenteByIdCC = ContoCorrente + " AND A.id_fineco_euro = @id_fineco_euro ";
@@ -40,11 +40,11 @@ namespace FinanceManager.Services.SQL
         /// Fornisce quanto versato, prelevato, investito e disinvestito
         /// suddiviso per nome e valuta
         /// </summary>
-        public static readonly string GetInvestmentSituation = "SELECT A.id_gestione, E.nome_gestione as Socio, A.id_valuta, C.cod_valuta, sum(case when A.id_tipo_movimento = 1 then ammontare else 0 end) as Versato, " +
+        public static readonly string GetInvestmentSituation = "SELECT A.id_socio, E.nome_socio as Socio, A.id_valuta, C.cod_valuta, sum(case when A.id_tipo_movimento = 1 then ammontare else 0 end) as Versato, " +
             "sum (CASE WHEN A.id_tipo_movimento = 12 AND ammontare < 0 then ammontare ELSE 0 END) as Investito, sum (CASE WHEN A.id_tipo_movimento = 12 AND ammontare > 0 then ammontare ELSE 0 END) as Disinvestito, " +
             "sum (CASE WHEN A.id_tipo_movimento = 2 THEN ammontare else 0 end) as Prelevato, sum(ammontare) as Disponibile " +
-            "FROM conto_corrente A, valuta C, gestioni E WHERE A.id_valuta = C.id_valuta AND A.id_gestione = E.id_gestione AND id_fineco_euro > 0 AND A.id_conto = 1 " +
-            "GROUP BY A.id_gestione, A.id_valuta";
+            "FROM conto_corrente A, valuta C, soci E WHERE A.id_valuta = C.id_valuta AND A.id_socio = E.id_socio AND id_fineco_euro > 0 AND A.id_conto = 1 " +
+            "GROUP BY A.id_socio, A.id_valuta";
 
         /// <summary>
         /// Inserisce un movimento nel conto corrente

@@ -216,7 +216,7 @@ namespace FinanceManager.Services
                     {
                         iSituationList.Add(new InvestmentSituation()
                         {
-                            IdGestione = Convert.ToInt16(inv["id_gestione"]),
+                            IdGestione = Convert.ToInt16(inv["id_socio"]),
                             Socio = (string)inv["Socio"],
                             IdValuta = Convert.ToInt16(inv["id_valuta"]),
                             CodValuta = (string)inv["cod_valuta"],
@@ -449,6 +449,8 @@ namespace FinanceManager.Services
             conto.Id_RowConto = (int)dataRow.Field<long>("id_fineco_euro");
             conto.Id_Conto = (int)dataRow.Field<long>("id_conto");
             conto.Desc_Conto = dataRow.Field<string>("desc_conto");
+            conto.Id_Socio = (int)dataRow.Field<long>("id_socio");
+            conto.Nome_Socio = dataRow.Field<string>("nome_socio");
             conto.Id_Valuta = (int)dataRow.Field<long>("id_valuta");
             conto.Cod_Valuta = dataRow.Field<string>("cod_valuta");
             conto.Id_Portafoglio_Titoli = (int)dataRow.Field<long>("id_portafoglio_titoli");
