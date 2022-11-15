@@ -29,7 +29,7 @@ namespace FinanceManager.ViewModels
         private ObservableCollection<RegistryShare> _SharesList;
         Predicate<object> _Filter;
 
-        private IList<RegistryOwner> _selectedOwners;
+        private IList<RegistryGestioni> _selectedOwners;
         private IList<RegistryLocation> _selectedAccount;
 
         public ManagerReportsViewModel(IRegistryServices registryServices, IManagerReportServices managerReportServices, IManagerLiquidAssetServices managerLiquidAssetServices)
@@ -50,19 +50,19 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                OwnerList = new RegistryOwnersList();
+                OwnerList = new RegistryGestioniList();
                 CurrenciesList = _services.GetRegistryCurrencyList();
 
-                RegistryOwnersList ListaOriginale = new RegistryOwnersList();
+                RegistryGestioniList ListaOriginale = new RegistryGestioniList();
                 ListaOriginale = _services.GetGestioneList();
                 var LO = from risultato in ListaOriginale
                          where risultato.Tipo_Gestione == "Gestore"
                          select risultato;
-                foreach (RegistryOwner registryOwner in LO)
+                foreach (RegistryGestioni registryOwner in LO)
                     OwnerList.Add(registryOwner);
 
                 AccountList = _services.GetRegistryLocationList();
-                _selectedOwners = new List<RegistryOwner>();
+                _selectedOwners = new List<RegistryGestioni>();
                 _selectedAccount = new List<RegistryLocation>();
                 AvailableYears = _reportServices.GetAvailableYears();
                 SelectedYears = new List<int>();
@@ -294,7 +294,7 @@ namespace FinanceManager.ViewModels
                 {
                     case "Gestione":
                         _selectedOwners.Clear();
-                        foreach (RegistryOwner item in LB.SelectedItems)
+                        foreach (RegistryGestioni item in LB.SelectedItems)
                             _selectedOwners.Add(item);
                         break;
                     case "Conto":
@@ -463,7 +463,7 @@ namespace FinanceManager.ViewModels
         /// <summary>
         /// La lista di tutte le gestioni selezionabili
         /// </summary>
-        public RegistryOwnersList OwnerList
+        public RegistryGestioniList OwnerList
         {
             get { return GetValue(() => OwnerList); }
             set { SetValue(() => OwnerList, value); }
@@ -472,7 +472,7 @@ namespace FinanceManager.ViewModels
         /// <summary>
         /// L'elenco delle gestioni selezionate in maschera
         /// </summary>
-        public RegistryOwnersList SelectedOwner
+        public RegistryGestioniList SelectedOwner
         {
             get { return GetValue(() => SelectedOwner); }
             set { SetValue(() => SelectedOwner, value); }
@@ -762,9 +762,9 @@ namespace FinanceManager.ViewModels
                     else
                     {
                         DockPanel dockPanel = new DockPanel();
-                        foreach (RegistryOwner I in _selectedOwners)
+                        foreach (RegistryGestioni I in _selectedOwners)
                         {
-                            List<RegistryOwner> temp = new List<RegistryOwner>();
+                            List<RegistryGestioni> temp = new List<RegistryGestioni>();
                             temp.Add(I);
                             GetAnalisiPortafoglio.Add(_reportServices.QuoteInvGeoSettori(temp));
                             AnalisiPortafoglioViewModel analisiPortafoglioViewModel = new AnalisiPortafoglioViewModel(_reportServices.QuoteInvGeoSettori(temp));

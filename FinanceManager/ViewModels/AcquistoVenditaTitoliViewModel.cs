@@ -70,13 +70,13 @@ namespace FinanceManager.ViewModels
                     ListConti.Add(registryLocation);
                 //======================================================================================
                 // seleziono solo i gestori e non i soci -----------------------------------------------
-                ListGestioni = new RegistryOwnersList();
-                RegistryOwnersList ListaInvestitoreOriginale = new RegistryOwnersList();
+                ListGestioni = new RegistryGestioniList();
+                RegistryGestioniList ListaInvestitoreOriginale = new RegistryGestioniList();
                 ListaInvestitoreOriginale = _registryServices.GetGestioneList();
                 var ROL = from gestione in ListaInvestitoreOriginale
                           where (gestione.Tipo_Gestione == "Gestore")
                           select gestione;
-                foreach (RegistryOwner registryOwner in ROL)
+                foreach (RegistryGestioni registryOwner in ROL)
                     ListGestioni.Add(registryOwner);
                 //=====================================================================================
                 ListValute = new RegistryCurrencyList();
@@ -157,7 +157,7 @@ namespace FinanceManager.ViewModels
                     RecordPortafoglioTitoli.Desc_Conto = RL.Desc_Conto;
                     Conto = RL.Desc_Conto;
                 }
-                if (e.AddedItems[0] is RegistryOwner RO)
+                if (e.AddedItems[0] is RegistryGestioni RO)
                 {
                     RecordPortafoglioTitoli.Id_gestione = RO.Id_Gestione;
                     RecordPortafoglioTitoli.Nome_Gestione = RO.Nome_Gestione;
@@ -508,7 +508,7 @@ namespace FinanceManager.ViewModels
         /// <summary>
         /// combo box con la lista delle gestioni
         /// </summary>
-        public RegistryOwnersList ListGestioni
+        public RegistryGestioniList ListGestioni
         {
             get { return GetValue(() => ListGestioni); }
             set { SetValue(() => ListGestioni, value); }

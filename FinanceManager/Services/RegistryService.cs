@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.SQLite;
 using FinanceManager.Models;
+using FinanceManager.Models.Enumeratori;
 using FinanceManager.Services.SQL;
 
 namespace FinanceManager.Services
@@ -21,10 +22,10 @@ namespace FinanceManager.Services
         /// gestione dei socii
         /// </summary>
         /// <returns>Observable Collection</returns>
-        public SociList GetSociList()
+        public RegistrySociList GetSociList()
         {
             DataTable dataTable = new DataTable();
-            SociList ROL = new SociList();
+            RegistrySociList ROL = new RegistrySociList();
             try
             {
                 using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
@@ -36,9 +37,10 @@ namespace FinanceManager.Services
                 }
                 foreach (DataRow dr in dataTable.Rows)
                 {
-                    Soci RO = new Soci();
+                    RegistrySoci RO = new RegistrySoci();
                     RO.Id_Socio = Convert.ToInt32(dr.Field<long>("id_socio"));
                     RO.Nome_Socio = dr.Field<string>("nome_socio");
+                    RO.Id_Conto = Convert.ToInt32(dr.Field<long>("id_conto"));
                     ROL.Add(RO);
                 }
                 return ROL;
@@ -56,7 +58,7 @@ namespace FinanceManager.Services
         /// Aggiorna il nome di un socio
         /// </summary>
         /// <param name="socio">Il record da modificare</param>
-        public void UpdateSocioName(Soci socio)
+        public void UpdateSocioName(RegistrySoci socio)
         {
             try
             {
@@ -66,6 +68,7 @@ namespace FinanceManager.Services
                     cmd.CommandText = RegistryScripts.UpdateSocioName;
                     cmd.Parameters.AddWithValue("nome", socio.Nome_Socio);
                     cmd.Parameters.AddWithValue("id_socio", socio.Id_Socio);
+                    cmd.Parameters.AddWithValue("id_conto", socio.Id_Conto);
                     cmd.Connection.Open();
                     cmd.ExecuteNonQuery();
                     cmd.Connection.Close();
@@ -84,7 +87,7 @@ namespace FinanceManager.Services
         /// Aggiunge una voce alla tabella soci
         /// </summary>
         /// <param name="socio">Il record da aggiungere</param>
-        public void AddSocio(Soci socio)
+        public void AddSocio(RegistrySoci socio)
         {
             try
             {
@@ -94,6 +97,7 @@ namespace FinanceManager.Services
                     cmd.CommandText = RegistryScripts.AddSocio;
                     cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     cmd.Parameters.AddWithValue("nome", socio.Nome_Socio);
+                    cmd.Parameters.AddWithValue("id_conto", socio.Id_Conto);
                     cmd.Connection.Open();
                     cmd.ExecuteNonQuery();
                     cmd.Connection.Close();
@@ -138,7 +142,7 @@ namespace FinanceManager.Services
         /// Aggiunge una persona
         /// </summary>
         /// <param name="owner">Il record da aggiornare</param>
-        public void AddGestione(RegistryOwner owner)
+        public void AddGestione(RegistryGestioni owner)
         {
             try
             {
@@ -150,6 +154,7 @@ namespace FinanceManager.Services
                     cmd.Parameters.AddWithValue("nome", owner.Nome_Gestione);
                     cmd.Parameters.AddWithValue("id_tipo", owner.Id_Tipo_Gestione);
                     cmd.Parameters.AddWithValue("tipologia", owner.Tipo_Gestione);
+                    cmd.Parameters.AddWithValue("id_conto", owner.Id_Conto);
                     cmd.Connection.Open();
                     cmd.ExecuteNonQuery();
                     cmd.Connection.Close();
@@ -193,10 +198,10 @@ namespace FinanceManager.Services
         /// Estrae la lista di tutti i gestori
         /// </summary>
         /// <returns>Observable Collection</returns>
-        public RegistryOwnersList GetGestioneList()
+        public RegistryGestioniList GetGestioneList()
         {
             DataTable dataTable = new DataTable();
-            RegistryOwnersList ROL = new RegistryOwnersList();
+            RegistryGestioniList ROL = new RegistryGestioniList();
             try
             {
                 using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
@@ -207,6 +212,17 @@ namespace FinanceManager.Services
                     dataAdapter.SelectCommand.CommandText = RegistryScripts.GetGestioneList;
                     dataAdapter.Fill(dataTable);
                 }
+                foreach (DataRow dr in dataTable.Rows)
+                {
+                    RegistryGestioni RO = new RegistryGestioni();
+                    RO.Id_Gestione = Convert.ToInt32(dr.Field<long>("id_gestione"));
+                    RO.Nome_Gestione = dr.Field<string>("nome_gestione");
+                    RO.Id_Tipo_Gestione = Convert.ToInt32(dr.Field<long>("id_tipo_gestione"));
+                    RO.Tipo_Gestione = dr.Field<string>("tipo_gestione");
+                    RO.Id_Conto = Convert.ToInt32(dr.Field<long>("id_conto"));
+                    ROL.Add(RO);
+                }
+                return ROL;
             }
             catch (SQLiteException err)
             {
@@ -216,22 +232,12 @@ namespace FinanceManager.Services
             {
                 throw new Exception("GetGestioneList " + err.Message);
             }
-            foreach (DataRow dr in dataTable.Rows)
-            {
-                RegistryOwner RO = new RegistryOwner();
-                RO.Id_Gestione = Convert.ToInt32(dr.Field<long>("id_gestione"));
-                RO.Nome_Gestione = dr.Field<string>("nome_gestione");
-                RO.Id_Tipo_Gestione = Convert.ToInt32(dr.Field<long>("id_tipo_gestione"));
-                RO.Tipo_Gestione = dr.Field<string>("tipo_gestione");
-                ROL.Add(RO);
-            }
-            return ROL;
         }
         /// <summary>
         /// Aggiorna i dati di una persona
         /// </summary>
         /// <param name="owner">Il record da aggiornare</param>
-        public void UpdateGestioneName(RegistryOwner owner)
+        public void UpdateGestioneName(RegistryGestioni owner)
         {
             try
             {
@@ -243,6 +249,7 @@ namespace FinanceManager.Services
                     cmd.Parameters.AddWithValue("nome", owner.Nome_Gestione);
                     cmd.Parameters.AddWithValue("id_tipo", owner.Id_Tipo_Gestione);
                     cmd.Parameters.AddWithValue("tipologia", owner.Tipo_Gestione);
+                    cmd.Parameters.AddWithValue("id_conto", owner.Id_Conto);
                     cmd.Parameters.AddWithValue("id", owner.Id_Gestione);
                     cmd.Connection.Open();
                     cmd.ExecuteNonQuery();

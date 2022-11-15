@@ -9,17 +9,17 @@ namespace FinanceManager.Services
         /// gestione dei socii
         /// </summary>
         /// <returns>Observable Collection</returns>
-        SociList GetSociList();
+        RegistrySociList GetSociList();
         /// <summary>
         /// Aggiorna il nome di un socio
         /// </summary>
         /// <param name="socioName">Il nuovo nome</param>
-        void UpdateSocioName(Soci socio);
+        void UpdateSocioName(RegistrySoci socio);
         /// <summary>
         /// Aggiunge una voce alla tabella soci
         /// </summary>
         /// <param name="socio">Il record da aggiungere</param>
-        void AddSocio(Soci socio);
+        void AddSocio(RegistrySoci socio);
         void DeleteSocio(int id_socio);
         #endregion
 
@@ -29,17 +29,17 @@ namespace FinanceManager.Services
         /// gestione dei conti
         /// </summary>
         /// <returns>Observable Collection</returns>
-        RegistryOwnersList GetGestioneList();
+        RegistryGestioniList GetGestioneList();
         /// <summary>
         /// Aggiorna i dati di un gestore
         /// </summary>
         /// <param name="owner">Il record da aggiornare</param>
-        void UpdateGestioneName(RegistryOwner owner);
+        void UpdateGestioneName(RegistryGestioni owner);
         /// <summary>
         /// Aggiunge una voce alla tabella gestioni
         /// </summary>
         /// <param name="owner">Il record da aggiungere</param>
-        void AddGestione(RegistryOwner owner);
+        void AddGestione(RegistryGestioni owner);
         void DeleteGestione(int id);
         #endregion
 

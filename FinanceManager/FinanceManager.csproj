@@ -213,6 +213,7 @@
     <Compile Include="Exports\CellsTableBorderStyle.cs" />
     <Compile Include="Exports\ManagerWorkbooks.cs" />
     <Compile Include="Models\AnalisiPortafoglio.cs" />
+    <Compile Include="Models\Enumeratori\TipologiaGestione.cs" />
     <Compile Include="Models\Enumeratori\TipologiaIDContoCorrente.cs" />
     <Compile Include="Models\Enumeratori\TipologiaMovimento.cs" />
     <Compile Include="Models\Enumeratori\EnumExtensions.cs" />
@@ -233,7 +234,7 @@
     <Compile Include="Models\ReportTitoliAttiviList.cs" />
     <Compile Include="Models\SintesiSoldi.cs" />
     <Compile Include="Models\SintesiSoldiList.cs" />
-    <Compile Include="Models\SociList.cs" />
+    <Compile Include="Models\RegistrySociList.cs" />
     <Compile Include="Models\TipoSoldi.cs" />
     <Compile Include="Models\TipoSoldiList.cs" />
     <Compile Include="Models\Enumeratori\TipologiaSoldi.cs" />
@@ -250,6 +251,7 @@
     <Compile Include="ViewModels\AnalisiPortafoglioViewModel.cs" />
     <Compile Include="ViewModels\CambioValutaViewModel.cs" />
     <Compile Include="ViewModels\CapitalsRegisterViewModel.cs" />
+    <Compile Include="ViewModels\ContiSociGestioniViewModel.cs" />
     <Compile Include="ViewModels\GestioneContoCorrenteViewModel.cs" />
     <Compile Include="ViewModels\GiroContoViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
@@ -269,8 +271,8 @@
     <Compile Include="Models\RegistryLocationList.cs" />
     <Compile Include="Models\RegistryMovementType.cs" />
     <Compile Include="Models\RegistryMovementTypeList.cs" />
-    <Compile Include="Models\RegistryOwner.cs" />
-    <Compile Include="Models\RegistryOwnersList.cs" />
+    <Compile Include="Models\RegistryGestioni.cs" />
+    <Compile Include="Models\RegistryGestioniList.cs" />
     <Compile Include="Models\RegistryShare.cs" />
     <Compile Include="Models\RegistryShareList.cs" />
     <Compile Include="Models\RegistryShareType.cs" />
@@ -291,9 +293,7 @@
     <Compile Include="ViewModels\ManagerReportsViewModel.cs" />
     <Compile Include="ViewModels\RegistryCurrencyViewModel.cs" />
     <Compile Include="ViewModels\RegistryFirmViewModel.cs" />
-    <Compile Include="ViewModels\RegistryLocationViewModel.cs" />
     <Compile Include="ViewModels\RegistryMovementTypeViewModel.cs" />
-    <Compile Include="ViewModels\RegistryOwnerViewModel.cs" />
     <Compile Include="ViewModels\RegistryShareTypeViewModel.cs" />
     <Compile Include="ViewModels\ReportDeltaSplitMeseViewModel.cs" />
     <Compile Include="ViewModels\ReportGuadagniViewModel.cs" />
@@ -302,8 +302,7 @@
     <Compile Include="ViewModels\ReportPorfitLossAnnoGestioniViewModel.cs" />
     <Compile Include="ViewModels\ReportTitoliAttiviViewModel.cs" />
     <Compile Include="ViewModels\SchedeTitoliViewModel.cs" />
-    <Compile Include="Models\Soci.cs" />
-    <Compile Include="ViewModels\SociViewModels.cs" />
+    <Compile Include="Models\RegistrySoci.cs" />
     <Compile Include="ViewModels\TabControlSintesiViewModel.cs" />
     <Compile Include="Views\AcquistoVenditaTitoliView.xaml.cs">
       <DependentUpon>AcquistoVenditaTitoliView.xaml</DependentUpon>
@@ -316,6 +315,9 @@
     </Compile>
     <Compile Include="Views\CambioValutaView.xaml.cs">
       <DependentUpon>CambioValutaView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ContiSociGestioniView.xaml.cs">
+      <DependentUpon>ContiSociGestioniView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GestioneContoCorrenteView.xaml.cs">
       <DependentUpon>GestioneContoCorrenteView.xaml</DependentUpon>
@@ -343,14 +345,8 @@
     <Compile Include="Views\RegistryFirmView.xaml.cs">
       <DependentUpon>RegistryFirmView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\RegistryLocationView.xaml.cs">
-      <DependentUpon>RegistryLocationView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\RegistryMovementTypeView.xaml.cs">
       <DependentUpon>RegistryMovementTypeView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\RegistryOwnerView.xaml.cs">
-      <DependentUpon>RegistryOwnerView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RegistryShareTypeView.xaml.cs">
       <DependentUpon>RegistryShareTypeView.xaml</DependentUpon>
@@ -370,9 +366,6 @@
     <Compile Include="Views\SchedeTitoliView.xaml.cs">
       <DependentUpon>SchedeTitoliView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SociView.xaml.cs">
-      <DependentUpon>SociView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\TabControlSintesiView.xaml.cs">
       <DependentUpon>TabControlSintesiView.xaml</DependentUpon>
     </Compile>
@@ -385,6 +378,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\CambioValutaView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ContiSociGestioniView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -439,15 +436,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\RegistryLocationView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\RegistryMovementTypeView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\RegistryOwnerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -472,10 +461,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SchedeTitoliView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\SociView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

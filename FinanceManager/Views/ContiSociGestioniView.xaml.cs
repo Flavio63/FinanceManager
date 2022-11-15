@@ -4,11 +4,11 @@ using System.Windows.Controls;
 namespace FinanceManager.Views
 {
     /// <summary>
-    /// Logica di interazione per SociView.xaml
+    /// Logica di interazione per ContiSociGestioniView.xaml
     /// </summary>
-    public partial class SociView : UserControl
+    public partial class ContiSociGestioniView : UserControl
     {
-        public SociView(SociViewModels viewModel)
+        public ContiSociGestioniView(ContiSociGestioniViewModel viewModel)
         {
             InitializeComponent();
             DataContext = viewModel;

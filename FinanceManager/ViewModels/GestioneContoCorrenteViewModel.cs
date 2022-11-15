@@ -59,7 +59,7 @@ namespace FinanceManager.ViewModels
             try
             {
                 ListMovimenti = new RegistryMovementTypeList();
-                ListGestioni = new RegistryOwnersList();
+                ListGestioni = new RegistryGestioniList();
                 ListConti = new RegistryLocationList();
                 ListValute = new RegistryCurrencyList();
                 TipoSoldis = new TipoSoldiList();
@@ -77,13 +77,13 @@ namespace FinanceManager.ViewModels
                 foreach (RegistryMovementType registry in RMTL)
                     ListMovimenti.Add(registry);
                 ListValute = _registryServices.GetRegistryCurrencyList();
-                RegistryOwnersList ListaInvestitoreOriginale = new RegistryOwnersList();
+                RegistryGestioniList ListaInvestitoreOriginale = new RegistryGestioniList();
                 ListaInvestitoreOriginale = _registryServices.GetGestioneList();
                 var ROL = from gestione in ListaInvestitoreOriginale
                           where (gestione.Tipo_Gestione == "Gestore")
                           select gestione;
                 _TabControl.TabStripPlacement = Dock.Left;
-                foreach (RegistryOwner registryOwner in ROL)
+                foreach (RegistryGestioni registryOwner in ROL)
                 {
                     // per ogni gestione acquisisco is dati per la sintesi soldi
                     TabItem tabItem = new TabItem();
@@ -164,7 +164,7 @@ namespace FinanceManager.ViewModels
         /// <summary>
         /// combo box con la lista dei C/C
         /// </summary>
-        public RegistryOwnersList ListGestioni
+        public RegistryGestioniList ListGestioni
         {
             get { return GetValue(() => ListGestioni); }
             set { SetValue(() => ListGestioni, value); }
@@ -553,7 +553,7 @@ namespace FinanceManager.ViewModels
                     RecordContoCorrente.Desc_Conto = RL.Desc_Conto;
                     FiltroConto = RL.Desc_Conto;
                 }
-                else if (e.AddedItems[0] is RegistryOwner RO)
+                else if (e.AddedItems[0] is RegistryGestioni RO)
                 {
                     RecordContoCorrente.Id_Gestione = RO.Id_Gestione;
                     RecordContoCorrente.NomeGestione = RO.Nome_Gestione;

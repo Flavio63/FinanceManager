@@ -2,7 +2,7 @@
 
 namespace FinanceManager.Models
 {
-    public class SociList : ObservableCollection<Soci>
+    public class RegistryGestioniList : ObservableCollection<RegistryGestioni>
     {
     }
 }

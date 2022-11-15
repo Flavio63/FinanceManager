@@ -15,12 +15,12 @@ namespace FinanceManager.Services
             DAFconnection = iDAFconnection ?? throw new ArgumentNullException("Manca la stringa di connessione al db");
         }
 
-        public ReportTitoliAttiviList GetActiveAssets(IList<RegistryOwner> _selectedOwners, IList<RegistryLocation> _selectedAccount)
+        public ReportTitoliAttiviList GetActiveAssets(IList<RegistryGestioni> _selectedOwners, IList<RegistryLocation> _selectedAccount)
         {
             try
             {
                 string owners = " (";
-                foreach (RegistryOwner o in _selectedOwners)
+                foreach (RegistryGestioni o in _selectedOwners)
                     owners += " A.id_gestione = " + o.Id_Gestione + " or ";
                 owners = owners.Substring(0, owners.Length - 4);
                 owners += ") ";
@@ -96,11 +96,11 @@ namespace FinanceManager.Services
             }
         }
 
-        public GuadagnoPerPeriodoList GetDeltaPeriod(IList<RegistryOwner> _selectedOwners, IList<int> _selectedYears, bool isYear, bool isAggregated)
+        public GuadagnoPerPeriodoList GetDeltaPeriod(IList<RegistryGestioni> _selectedOwners, IList<int> _selectedYears, bool isYear, bool isAggregated)
         {
             GuadagnoPerPeriodoList GPPL = new GuadagnoPerPeriodoList();
             string gestione = "A.id_gestione = ";
-            foreach(RegistryOwner RO in _selectedOwners)
+            foreach(RegistryGestioni RO in _selectedOwners)
             {
                 gestione += RO.Id_Gestione;
                 gestione += " OR A.id_gestione = ";
@@ -244,11 +244,11 @@ namespace FinanceManager.Services
             }
         }
 
-        public ReportProfitLossList GetReport1(IList<RegistryOwner> _selectedOwners,
+        public ReportProfitLossList GetReport1(IList<RegistryGestioni> _selectedOwners,
             IList<int> _selectedYears, bool isSynthetic)
         {
             string owners = " (";
-            foreach (RegistryOwner i in _selectedOwners)
+            foreach (RegistryGestioni i in _selectedOwners)
                 owners += " A.id_gestione = " + i.Id_Gestione + " or ";
             owners = owners.Substring(0, owners.Length - 4);
             owners += ") ";
@@ -311,12 +311,12 @@ namespace FinanceManager.Services
             }
         }
 
-        public AnalisiPortafoglio QuoteInvGeoSettori(IList<RegistryOwner> _selectedOwners)
+        public AnalisiPortafoglio QuoteInvGeoSettori(IList<RegistryGestioni> _selectedOwners)
         {
             string gestioni = "A.id_gestione = ";
             if (_selectedOwners.Count >= 1)
             {
-                foreach (RegistryOwner item in _selectedOwners)
+                foreach (RegistryGestioni item in _selectedOwners)
                     gestioni += item.Id_Gestione + " OR A.id_gestione = ";
             }
             else
@@ -347,7 +347,7 @@ namespace FinanceManager.Services
                         }
                         else if (property.Name == "Nome")
                         {
-                            foreach (RegistryOwner item in _selectedOwners)
+                            foreach (RegistryGestioni item in _selectedOwners)
                                 gestioni += item.Nome_Gestione + " + ";
                             gestioni = gestioni.Substring(0, gestioni.Length - 3);
                             property.SetValue(RS, gestioni);

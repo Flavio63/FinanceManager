@@ -7,15 +7,15 @@ namespace FinanceManager.Services
     public interface IManagerReportServices
     {
         IList<int> GetAvailableYears();
-        ReportProfitLossList GetReport1(IList<RegistryOwner> _selectedOwners, 
+        ReportProfitLossList GetReport1(IList<RegistryGestioni> _selectedOwners, 
             IList<int> _selectedYears, bool isSynthetic = true);
 
         ReportMovementDetailedList GetMovementDetailed(int IdGestione, int IdTitolo);
 
-        ReportTitoliAttiviList GetActiveAssets(IList<RegistryOwner> _selectedOwners, IList<RegistryLocation> _selectedAccount);
+        ReportTitoliAttiviList GetActiveAssets(IList<RegistryGestioni> _selectedOwners, IList<RegistryLocation> _selectedAccount);
 
-        AnalisiPortafoglio QuoteInvGeoSettori(IList<RegistryOwner> _selectedOwners);
+        AnalisiPortafoglio QuoteInvGeoSettori(IList<RegistryGestioni> _selectedOwners);
 
-        GuadagnoPerPeriodoList GetDeltaPeriod(IList<RegistryOwner> _selectedOwners, IList<int> _selectedYears, bool isYear, bool isAggregated);
+        GuadagnoPerPeriodoList GetDeltaPeriod(IList<RegistryGestioni> _selectedOwners, IList<int> _selectedYears, bool isYear, bool isAggregated);
     }
 }

@@ -37,7 +37,7 @@ namespace FinanceManager.ViewModels
             ClearMeCommand = new CommandHandler(ClearMe);
             InsertCommand = new CommandHandler(SaveCommand, CanSave);
             ModifyCommand = new CommandHandler(UpdateCommand, CanModify);
-            ListInvestitori = new SociList();
+            ListInvestitori = new RegistrySociList();
             ListInvestitori = _registryServices.GetSociList();
             // Filtro la tabella movimenti prendendo solo versamento e prelievo
             ListMovimento = new RegistryMovementTypeList();
@@ -70,7 +70,7 @@ namespace FinanceManager.ViewModels
         #region Get_Set
 
         #region ComboBox
-        public SociList ListInvestitori
+        public RegistrySociList ListInvestitori
         {
             get { return GetValue(() => ListInvestitori); }
             set { SetValue(() => ListInvestitori, value); }
@@ -194,8 +194,8 @@ namespace FinanceManager.ViewModels
             }
             if (e.AddedItems.Count > 0 && sender is ComboBox)
             {
-                if (e.AddedItems[0] is Soci)
-                    Investitore = ((Soci)e.AddedItems[0]).Nome_Socio;
+                if (e.AddedItems[0] is RegistrySoci)
+                    Investitore = ((RegistrySoci)e.AddedItems[0]).Nome_Socio;
                 if (e.AddedItems[0] is RegistryCurrency)
                     CodeCurrency = ((RegistryCurrency)e.AddedItems[0]).CodeCurrency;
             }

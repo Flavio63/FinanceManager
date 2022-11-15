@@ -21,9 +21,7 @@ namespace FinanceManager.ViewModels
         private readonly IContoTitoliServices _contoTitoliServices;
         private readonly IQuoteGuadagniServices _quoteServices;
 
-        public ICommand OnClickOpenSoci { get; set; }
-        public ICommand OnClickOpenGestioni { get; set; }
-        public ICommand OnClickOpenConti { get; set; }
+        public ICommand OnClickOpenConti_Soci_Gestioni { set; get; }
         public ICommand OnClickOpenAziende { get; set; }
         public ICommand OnClickOpenTipologiaTitoli { get; set; }
         public ICommand OnClickOpenValute { get; set; }
@@ -36,16 +34,12 @@ namespace FinanceManager.ViewModels
         public ICommand OnClickOpenSchedaTitoli { get; set; }
         public ICommand OnClickOpenCambioValuta { get; set; }
 
-        SociViewModels sociViewModel;
-        SociView sociView;
-        RegistryOwnerViewModel ownerViewModel;
-        RegistryOwnerView ownerView;
+        ContiSociGestioniViewModel contiSociGestioniViewModel;
+        ContiSociGestioniView contiSociGestioniView;
         RegistryShareTypeViewModel registryShareTypeViewModel;
         RegistryShareTypeView shareTypeView;
         RegistryCurrencyViewModel registryCurrencyViewModel;
         RegistryCurrencyView currencyView;
-        RegistryLocationViewModel registryLocationViewModel;
-        RegistryLocationView locationView;
         RegistryFirmViewModel registryFirmViewModel;
         RegistryFirmView firmView;
         RegistryMovementTypeViewModel registryMovementTypeViewModel;
@@ -93,9 +87,7 @@ namespace FinanceManager.ViewModels
             _contoTitoliServices = new ContoTitoliServices(_DafConnection);
             _quoteServices = new QuoteGuadagniServices(_DafConnection);
 
-            OnClickOpenSoci = new CommandHandler(OpenSoci);
-            OnClickOpenGestioni = new CommandHandler(OpenGestioni);
-            OnClickOpenConti = new CommandHandler(OpenConti);
+            OnClickOpenConti_Soci_Gestioni = new CommandHandler(OpenConti_Soci_Gestioni);
             OnClickOpenAziende = new CommandHandler(OpenAziende);
             OnClickOpenTipologiaTitoli = new CommandHandler(OpenTipologiaTitoli);
             OnClickOpenValute = new CommandHandler(OpenValute);
@@ -110,35 +102,19 @@ namespace FinanceManager.ViewModels
         }
 
         #region Anagrafica
-        private void OpenSoci(object param)
+        private void OpenConti_Soci_Gestioni(object param)
         {
             DockPanel mainGrid = param as DockPanel;
-            if (sociView == null || !mainGrid.Children.Contains(shareTypeView))
+            if (contiSociGestioniView == null || !mainGrid.Children.Contains(contiSociGestioniView))
             {
-                sociViewModel = new SociViewModels(_registryServices);
-                sociView = new SociView(sociViewModel);
-                mainGrid.Children.Add(sociView);
+                contiSociGestioniViewModel = new ContiSociGestioniViewModel(_registryServices);
+                contiSociGestioniView = new ContiSociGestioniView(contiSociGestioniViewModel);
+                mainGrid.Children.Add(contiSociGestioniView);
             }
             else
             {
-                sociView = null;
-                sociViewModel = null;
-            }
-        }
-
-        private void OpenGestioni(object param)
-        {
-            DockPanel mainGrid = param as DockPanel;
-            if (ownerView == null || !mainGrid.Children.Contains(shareTypeView))
-            {
-                ownerViewModel = new RegistryOwnerViewModel(_registryServices);
-                ownerView = new RegistryOwnerView(ownerViewModel);
-                mainGrid.Children.Add(ownerView);
-            }
-            else
-            {
-                ownerView = null;
-                ownerViewModel = null;
+                mainGrid.Children.Remove(contiSociGestioniView);
+                contiSociGestioniView = null;
             }
         }
 
@@ -173,23 +149,6 @@ namespace FinanceManager.ViewModels
                 mainGrid.Children.Remove(currencyView);
                 currencyView = null;
                 registryCurrencyViewModel = null;
-            }
-        }
-
-        private void OpenConti(object param)
-        {
-            DockPanel mainGrid = param as DockPanel;
-            if (locationView == null || !mainGrid.Children.Contains(locationView))
-            {
-                registryLocationViewModel = new RegistryLocationViewModel(_registryServices);
-                locationView = new RegistryLocationView(registryLocationViewModel);
-                mainGrid.Children.Add(locationView);
-            }
-            else
-            {
-                mainGrid.Children.Remove(locationView);
-                locationView = null;
-                registryLocationViewModel = null;
             }
         }
 

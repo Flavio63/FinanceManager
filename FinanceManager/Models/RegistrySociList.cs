@@ -2,7 +2,7 @@
 
 namespace FinanceManager.Models
 {
-    public class RegistryOwnersList : ObservableCollection<RegistryOwner>
+    public class RegistrySociList : ObservableCollection<RegistrySoci>
     {
     }
 }

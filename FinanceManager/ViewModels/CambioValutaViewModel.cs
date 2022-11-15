@@ -35,7 +35,7 @@ namespace FinanceManager.ViewModels
             ClearCommand = new CommandHandler(CleanCommand);
             ListConti = new RegistryLocationList();
             ListConti = _registryServices.GetRegistryLocationList();
-            ListGestioni = new RegistryOwnersList();
+            ListGestioni = new RegistryGestioniList();
             ListGestioni = _registryServices.GetGestioneList();
             ListTipoSoldi = new TipoSoldiList();
             ListTipoSoldi = _registryServices.GetTipoSoldiList();
@@ -89,7 +89,7 @@ namespace FinanceManager.ViewModels
             set { SetValue(() => ListConti, value); }
         }
         // combo box con la lista delle gestioni ---------------
-        public RegistryOwnersList ListGestioni
+        public RegistryGestioniList ListGestioni
         {
             get { return GetValue(() => ListGestioni); }
             set { SetValue(() => ListGestioni, value); }
@@ -256,7 +256,7 @@ namespace FinanceManager.ViewModels
                     recordCCMittente.Id_Conto = RL.Id_Conto;
                     recordCCRicevente.Id_Conto = RL.Id_Conto;
                 }
-                else if (e.AddedItems[0] is RegistryOwner RO)
+                else if (e.AddedItems[0] is RegistryGestioni RO)
                 {
                     LaGestione = RO.Nome_Gestione;
                     recordCCMittente.Id_Gestione = RO.Id_Gestione;
