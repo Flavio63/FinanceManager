@@ -33,6 +33,7 @@
                           CanUserDeleteRows="False" CanUserAddRows="False" FontSize="16" ItemsSource="{Binding TotaleDisponibiliView, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Conto Corrente" Binding="{Binding Desc_Conto, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                    <DataGridTextColumn Header="Socio" Binding="{Binding Nome_Socio, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                     <DataGridTextColumn Header="Gestione" Binding="{Binding NomeGestione, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                     <DataGridTextColumn Header="Totale" Binding="{Binding Ammontare, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}">
                         <DataGridTextColumn.ElementStyle>
@@ -86,10 +87,22 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </ComboBox>
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="La gestione" FontSize="16" Margin="2, 2, 5, 2" VerticalAlignment="Center"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="La gestione" FontSize="16" Margin="2, 2, 5, 2" 
+                           Visibility="{Binding ContoGestioni}" VerticalAlignment="Center"/>
                 <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding ListGestioni, UpdateSourceTrigger=PropertyChanged}"
-                          SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione" Margin="5, 2" MinWidth="100"
-                          SelectedValue="{Binding recordCCMittente.Id_Gestione}">
+                          SelectedValuePath="Id_Gestione" DisplayMemberPath="Nome_Gestione" Margin="5, 2" MinWidth="100"
+                          SelectedValue="{Binding recordCCMittente.Id_Gestione}" Visibility="{Binding ContoGestioni}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ComboBox>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Il socio" FontSize="16" Margin="2, 2, 5, 2" 
+                           Visibility="{Binding ContoSoci}" VerticalAlignment="Center"/>
+                <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding ListSoci, UpdateSourceTrigger=PropertyChanged}"
+                          SelectedValuePath="Id_Socio" DisplayMemberPath="Nome_Socio" Margin="5, 2" MinWidth="100"
+                          SelectedValue="{Binding recordCCMittente.Id_Socio}" Visibility="{Binding ContoSoci}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="SelectionChanged">
                             <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
@@ -197,6 +210,14 @@
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
                     <DataGridTextColumn Header="C/C in" Binding="{Binding Desc_Conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=d, ConverterCulture=it-IT}"
+                                        IsReadOnly="True" FontSize="14" FontWeight="Normal">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Margin" Value="5,0,5,0"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Socio" Binding="{Binding Nome_Socio, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=d, ConverterCulture=it-IT}"
                                         IsReadOnly="True" FontSize="14" FontWeight="Normal">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="{x:Type TextBlock}">

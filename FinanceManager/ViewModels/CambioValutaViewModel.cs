@@ -35,6 +35,8 @@ namespace FinanceManager.ViewModels
             ClearCommand = new CommandHandler(CleanCommand);
             ListConti = new RegistryLocationList();
             ListConti = _registryServices.GetRegistryLocationList();
+            ListSoci = new RegistrySociList();
+            ListSoci = _registryServices.GetSociList();
             ListGestioni = new RegistryGestioniList();
             ListGestioni = _registryServices.GetGestioneList();
             ListTipoSoldi = new TipoSoldiList();
@@ -74,14 +76,29 @@ namespace FinanceManager.ViewModels
             // variabili per il filtro disponibilità --------------------------------------------
             IlConto = "";
             LaGestione = "";
+            IlSocio = "";
             LaValuta = "";
             IlTipoSoldi = "";
+            ContoGestioni = "Visible";
+            ContoSoci = "Collapsed";
             _Filter = new Predicate<object>(Filter);
             //===================================================================================
         }
 
 
         #region get_set
+        // visibilità del combo Soci / Gestioni
+        public string ContoGestioni
+        {
+            get { return GetValue(() => ContoGestioni); }
+            set { SetValue(() => ContoGestioni, value); }
+        }
+        public string ContoSoci
+        {
+            get { return GetValue(() => ContoSoci); }
+            set { SetValue(() => ContoSoci, value); }
+        }
+
         // combo box con la lista dei C/C-----------------------
         public RegistryLocationList ListConti
         {
@@ -93,6 +110,12 @@ namespace FinanceManager.ViewModels
         {
             get { return GetValue(() => ListGestioni); }
             set { SetValue(() => ListGestioni, value); }
+        }
+        // combo box con i soci
+        public RegistrySociList ListSoci
+        {
+            get { return GetValue(() => ListSoci); }
+            set { SetValue(() => ListSoci, value); }
         }
         // combo box con i tipi soldi --------------------------
         public TipoSoldiList ListTipoSoldi
@@ -168,6 +191,11 @@ namespace FinanceManager.ViewModels
         {
             get { return GetValue(() => LaGestione); }
             set { SetValue(() => LaGestione, value); TotaleDisponibiliView.Filter = _Filter; TotaleDisponibiliView.Refresh(); }
+        }
+        public string IlSocio
+        {
+            get { return GetValue(() => IlSocio); }
+            set { SetValue(() => IlSocio, value); TotaleDisponibiliView.Filter = _Filter; TotaleDisponibiliView.Refresh(); }
         }
         public string LaValuta
         {
@@ -255,6 +283,22 @@ namespace FinanceManager.ViewModels
                     IlConto = RL.Desc_Conto;
                     recordCCMittente.Id_Conto = RL.Id_Conto;
                     recordCCRicevente.Id_Conto = RL.Id_Conto;
+                    if (RL.Id_Conto == 1)
+                    {
+                        ContoSoci = "Visible";
+                        ContoGestioni = "Collapsed";
+                    }
+                    else if (RL.Id_Conto > 1)
+                    {
+                        ContoGestioni = "Visible";
+                        ContoSoci = "Collapsed";
+                    }
+                }
+                else if (e.AddedItems[0] is RegistrySoci RS)
+                {
+                    IlSocio = RS.Nome_Socio;
+                    recordCCMittente.Id_Socio = RS.Id_Socio;
+                    recordCCRicevente.Id_Socio = RS.Id_Socio;
                 }
                 else if (e.AddedItems[0] is RegistryGestioni RO)
                 {
@@ -320,36 +364,62 @@ namespace FinanceManager.ViewModels
             {
                 if (obj is ContoCorrente CCL)
                 {
-                    if (!String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
+                    if (!String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(IlSocio) && string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
                         return CCL.Desc_Conto == IlConto;
-                    else if (String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
+                    else if (String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(IlSocio) && string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
+                        return CCL.NomeGestione == IlSocio;
+                    else if (String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(IlSocio) && !string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
                         return CCL.NomeGestione == LaGestione;
-                    else if (String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
+                    else if (String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(IlSocio) && string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
                         return CCL.Cod_Valuta == LaValuta;
-                    else if (String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
+                    else if (String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(IlSocio) && string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
                         return CCL.Desc_Tipo_Soldi == IlTipoSoldi;
-                    else if (!String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
+                    else if (!String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(IlSocio) && string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
+                        return CCL.Desc_Conto == IlConto && CCL.NomeGestione == IlSocio;
+                    else if (!String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(IlSocio) && !string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
                         return CCL.Desc_Conto == IlConto && CCL.NomeGestione == LaGestione;
-                    else if (!String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
+                    else if (!String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(IlSocio) && string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
                         return CCL.Desc_Conto == IlConto && CCL.Cod_Valuta == LaValuta;
-                    else if (!String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
+                    else if (!String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(IlSocio) && string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
                         return CCL.Desc_Conto == IlConto && CCL.Desc_Tipo_Soldi == IlTipoSoldi;
-                    else if (String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
+                    else if (String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(IlSocio) && !string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
+                        return CCL.NomeGestione == IlSocio && CCL.NomeGestione == LaGestione;
+                    else if (String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(IlSocio) && string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
+                        return CCL.NomeGestione == IlSocio && CCL.Cod_Valuta == LaValuta;
+                    else if (String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(IlSocio) && string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
+                        return CCL.NomeGestione == IlSocio && CCL.Desc_Tipo_Soldi == IlTipoSoldi;
+                    else if (String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(IlSocio) && !string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
                         return CCL.NomeGestione == LaGestione && CCL.Cod_Valuta == LaValuta;
-                    else if (String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
+                    else if (String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(IlSocio) && !string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
                         return CCL.NomeGestione == LaGestione && CCL.Desc_Tipo_Soldi == IlTipoSoldi;
-                    else if (String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
+                    else if (String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(IlSocio) && string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
                         return CCL.Cod_Valuta == LaValuta && CCL.Desc_Tipo_Soldi == IlTipoSoldi;
-                    else if (!String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
+                    else if (!String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(IlSocio) && !string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
+                        return CCL.Desc_Conto == IlConto && CCL.NomeGestione == IlSocio && CCL.NomeGestione == LaGestione;
+                    else if (!String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(IlSocio) && string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
+                        return CCL.Desc_Conto == IlConto && CCL.NomeGestione == IlSocio && CCL.Cod_Valuta == LaValuta;
+                    else if (!String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(IlSocio) && string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
+                        return CCL.Desc_Conto == IlConto && CCL.NomeGestione == IlSocio && CCL.Desc_Tipo_Soldi == IlTipoSoldi;
+                    else if (!String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(IlSocio) && !string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
                         return CCL.Desc_Conto == IlConto && CCL.NomeGestione == LaGestione && CCL.Cod_Valuta == LaValuta;
-                    else if (!String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
+                    else if (!String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(IlSocio) && !string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
                         return CCL.Desc_Conto == IlConto && CCL.NomeGestione == LaGestione && CCL.Desc_Tipo_Soldi == IlTipoSoldi;
-                    else if (!String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
+                    else if (!String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(IlSocio) && string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
                         return CCL.Desc_Conto == IlConto && CCL.Cod_Valuta == LaValuta && CCL.Desc_Tipo_Soldi == IlTipoSoldi;
-                    else if (String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
+                    else if (String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(IlSocio) && !string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
                         return CCL.NomeGestione == LaGestione && CCL.Cod_Valuta == LaValuta && CCL.Desc_Tipo_Soldi == IlTipoSoldi;
-                    else if (!String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
+                    else if (!String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(IlSocio) && !string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && string.IsNullOrEmpty(IlTipoSoldi))
+                        return CCL.Desc_Conto == IlConto && CCL.NomeGestione == IlSocio && CCL.NomeGestione == LaGestione && CCL.Cod_Valuta == LaValuta;
+                    else if (!String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(IlSocio) && !string.IsNullOrEmpty(LaGestione) && string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
+                        return CCL.Desc_Conto == IlConto && CCL.NomeGestione == IlSocio && CCL.NomeGestione == LaGestione && CCL.Desc_Tipo_Soldi == IlTipoSoldi;
+                    else if (String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(IlSocio) && !string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
+                        return CCL.NomeGestione == IlSocio && CCL.NomeGestione == LaGestione && CCL.Cod_Valuta == LaValuta && CCL.Desc_Tipo_Soldi == IlTipoSoldi;
+                    else if (!String.IsNullOrEmpty(IlConto) && string.IsNullOrEmpty(IlSocio) && !string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
                         return CCL.Desc_Conto == IlConto && CCL.NomeGestione == LaGestione && CCL.Cod_Valuta == LaValuta && CCL.Desc_Tipo_Soldi == IlTipoSoldi;
+                    else if (!String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(IlSocio) && string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
+                        return CCL.Desc_Conto == IlConto && CCL.NomeGestione == IlSocio && CCL.Cod_Valuta == LaValuta && CCL.Desc_Tipo_Soldi == IlTipoSoldi;
+                    else if (!String.IsNullOrEmpty(IlConto) && !string.IsNullOrEmpty(IlSocio) && !string.IsNullOrEmpty(LaGestione) && !string.IsNullOrEmpty(LaValuta) && !string.IsNullOrEmpty(IlTipoSoldi))
+                        return CCL.Desc_Conto == IlConto && CCL.NomeGestione == IlSocio && CCL.NomeGestione == LaGestione && CCL.Cod_Valuta == LaValuta && CCL.Desc_Tipo_Soldi == IlTipoSoldi;
                 }
             }
             return true;
