@@ -267,44 +267,38 @@ namespace FinanceManager.Services
         /// <param name="IdGestione"></param>
         /// <param name="IdValuta"></param>
         /// <returns>ContoCorrenteList</returns>
-        public ContoCorrenteList GetTotalAmountByAccount(int IdConto, int IdGestione = 0, int IdValuta = 0, int IdTipoSoldi = 0)
+        public ContoCorrenteList GetTotalAmountByAccount(int IdConto, int IdGestione = 0, int IdSocio = 0, int IdValuta = 0, int IdTipoSoldi = 0)
         {
             try
             {
                 using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
                 {
-                    dataAdapter.SelectCommand = new SQLiteCommand();
-                    string query0 = "";
                     string query1 = "";
-                    string query2 = "";
-                    string query3 = "";
+                    dataAdapter.SelectCommand = new SQLiteCommand();
+                    string query0 = String.Format(" AND A.id_conto = {0} ", IdConto);
+                    if (IdGestione > 0 && IdSocio == 0)
+                        query1 = String.Format(" {0} AND A.id_gestione = {1} ", query0, IdGestione);
+                    else if (IdSocio > 0 && IdGestione == 0)
+                        query1 = String.Format(" {0} AND A.id_socio = {1} ", query0, IdSocio);
+                    string query2 = String.Format(" {0} AND A.id_valuta = {1} ", query1, IdValuta);
+                    string query3 = String.Format(" {0} AND A.id_tipo_soldi = {1} ", query2, IdTipoSoldi);
                     if (IdConto == 0)
-                        dataAdapter.SelectCommand.CommandText = string.Format(ContoCorrenteScript.GetTotalAmountByAccount, "", "", "", "");
-                    else if (IdConto > 0 && IdGestione == 0 && IdValuta == 0 && IdTipoSoldi == 0)
+                        dataAdapter.SelectCommand.CommandText = string.Format(ContoCorrenteScript.GetTotalAmountByAccount, "");
+                    else if (IdConto > 0 && IdGestione == 0 && IdSocio == 0 && IdValuta == 0 && IdTipoSoldi == 0)
                     {
-                        query0 = String.Format(" AND A.id_conto = {0} ", IdConto);
-                        dataAdapter.SelectCommand.CommandText = string.Format(ContoCorrenteScript.GetTotalAmountByAccount, query0, "", "", "");
+                        dataAdapter.SelectCommand.CommandText = string.Format(ContoCorrenteScript.GetTotalAmountByAccount, query0);
                     }
-                    else if (IdConto > 0 && IdGestione > 0 && IdValuta == 0 && IdTipoSoldi == 0)
+                    else if (IdConto > 0 && (IdGestione > 0 || IdSocio > 0) && IdValuta == 0 && IdTipoSoldi == 0)
                     {
-                        query0 = String.Format(" AND A.id_conto = {0} ", IdConto);
-                        query1 = string.Format(" AND A.id_gestione = {0} ", IdGestione);
-                        dataAdapter.SelectCommand.CommandText = string.Format(ContoCorrenteScript.GetTotalAmountByAccount, query0, query1, "", "");
+                        dataAdapter.SelectCommand.CommandText = string.Format(ContoCorrenteScript.GetTotalAmountByAccount, query1);
                     }
-                    else if (IdConto > 0 && IdGestione > 0 && IdValuta > 0 && IdTipoSoldi == 0)
+                    else if (IdConto > 0 && (IdGestione > 0 || IdSocio > 0) && IdValuta > 0 && IdTipoSoldi == 0)
                     {
-                        query0 = String.Format(" AND A.id_conto = {0} ", IdConto);
-                        query1 = string.Format(" AND A.id_gestione = {0} ", IdGestione);
-                        query2 = string.Format(" AND A.id_valuta = {0} ", IdValuta);
-                        dataAdapter.SelectCommand.CommandText = string.Format(ContoCorrenteScript.GetTotalAmountByAccount, query0, query1, query2, "");
+                        dataAdapter.SelectCommand.CommandText = string.Format(ContoCorrenteScript.GetTotalAmountByAccount, query2);
                     }
-                    else if (IdConto > 0 && IdGestione > 0 && IdValuta > 0 && IdTipoSoldi > 0)
+                    else if (IdConto > 0 && (IdGestione > 0 || IdSocio > 0) && IdValuta > 0 && IdTipoSoldi > 0)
                     {
-                        query0 = String.Format(" AND A.id_conto = {0} ", IdConto);
-                        query1 = string.Format(" AND A.id_gestione = {0} ", IdGestione);
-                        query2 = string.Format(" AND A.id_valuta = {0} ", IdValuta);
-                        query3 = string.Format(" AND A.id_tipo_soldi = {0} ", IdTipoSoldi);
-                        dataAdapter.SelectCommand.CommandText = String.Format(ContoCorrenteScript.GetTotalAmountByAccount, query0, query1, query2, query3);
+                        dataAdapter.SelectCommand.CommandText = String.Format(ContoCorrenteScript.GetTotalAmountByAccount, query3);
                     }
                     dataAdapter.SelectCommand.Parameters.AddWithValue("id_conto", IdConto);
                     dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
@@ -317,6 +311,8 @@ namespace FinanceManager.Services
                         {
                             Id_Conto = Convert.ToInt32(dataRow["id_conto"]),
                             Desc_Conto = (string)dataRow["Conto"],
+                            Id_Socio = Convert.ToInt32(dataRow["id_socio"]),
+                            Nome_Socio = (string)dataRow["Socio"],
                             Id_Gestione = Convert.ToInt32(dataRow["id_gestione"]),
                             NomeGestione = (string)dataRow["Gestione"],
                             Ammontare = (double)dataRow["Soldi"],
@@ -356,6 +352,7 @@ namespace FinanceManager.Services
                         try
                         {
                             command.Parameters.AddWithValue("id_conto", contoCorrente.Id_Conto);
+                            command.Parameters.AddWithValue("id_socio", contoCorrente.Id_Socio);
                             command.Parameters.AddWithValue("id_valuta", contoCorrente.Id_Valuta);
                             command.Parameters.AddWithValue("id_portafoglio_titoli", contoCorrente.Id_Portafoglio_Titoli);
                             command.Parameters.AddWithValue("id_tipo_movimento", contoCorrente.Id_tipo_movimento);
@@ -404,6 +401,7 @@ namespace FinanceManager.Services
                                 dbComm.CommandText = ContoCorrenteScript.UpdateContoCorrenteByIdPortafoglioTitoli;
                             dbComm.Parameters.AddWithValue("id_fineco_euro", contoCorrente.Id_RowConto);
                             dbComm.Parameters.AddWithValue("id_conto", contoCorrente.Id_Conto);
+                            dbComm.Parameters.AddWithValue("id_socio", contoCorrente.Id_Socio);
                             dbComm.Parameters.AddWithValue("id_valuta", contoCorrente.Id_Valuta);
                             dbComm.Parameters.AddWithValue("id_portafoglio_titoli", contoCorrente.Id_Portafoglio_Titoli);
                             dbComm.Parameters.AddWithValue("id_tipo_movimento", contoCorrente.Id_tipo_movimento);

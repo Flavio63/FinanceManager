@@ -31,10 +31,10 @@ namespace FinanceManager.Services.SQL
         /// Ritorna il totale finanziario per conto corrente
         /// a livello di codice viene aggiunto il filtro per gestione e per valuta
         /// </summary>
-        public static readonly string GetTotalAmountByAccount = "SELECT A.id_conto, desc_conto as Conto, A.id_gestione, nome_gestione as Gestione, sum(ammontare) as Soldi, " +
-            "cod_valuta as Valuta, A.id_tipo_soldi, E.desc_tipo_soldi, A.cambio FROM main.conto_corrente A, main.conti B, main.gestioni C, main.valuta D, main.tipo_soldi E where A.id_conto = B.id_conto " +
-            "AND A.id_gestione = C.id_gestione AND A.id_valuta = D.id_valuta and A.id_tipo_soldi = E.id_tipo_soldi {0} {1} {2} {3}" +
-            "GROUP BY A.id_conto, A.id_gestione, A.id_valuta, A.id_tipo_soldi;";
+        public static readonly string GetTotalAmountByAccount = "SELECT A.id_conto, desc_conto as Conto, A.id_socio, nome_socio AS Socio, A.id_gestione, nome_gestione as Gestione, sum(ammontare) as Soldi, " +
+            "cod_valuta as Valuta, A.id_tipo_soldi, E.desc_tipo_soldi, A.cambio FROM conto_corrente A, conti B, gestioni C, valuta D, tipo_soldi E, soci F where A.id_conto = B.id_conto " +
+            "AND A.id_gestione = C.id_gestione AND A.id_valuta = D.id_valuta AND A.id_socio = F.id_socio and A.id_tipo_soldi = E.id_tipo_soldi {0} " +
+            "GROUP BY A.id_conto, A.id_socio, A.id_gestione, A.id_valuta, A.id_tipo_soldi;";
 
         /// <summary>
         /// Fornisce quanto versato, prelevato, investito e disinvestito
@@ -49,8 +49,8 @@ namespace FinanceManager.Services.SQL
         /// <summary>
         /// Inserisce un movimento nel conto corrente
         /// </summary>
-        public static readonly string InsertAccountMovement = "INSERT INTO conto_corrente (id_conto, id_valuta, id_portafoglio_titoli, id_tipo_movimento, " +
-            "id_gestione, id_titolo, data_movimento, ammontare, cambio, Causale, id_tipo_soldi, id_quote_periodi, modified) VALUES ( @id_conto, @id_valuta, @id_portafoglio_titoli, @id_tipo_movimento, " +
+        public static readonly string InsertAccountMovement = "INSERT INTO conto_corrente (id_conto, id_socio, id_valuta, id_portafoglio_titoli, id_tipo_movimento, " +
+            "id_gestione, id_titolo, data_movimento, ammontare, cambio, Causale, id_tipo_soldi, id_quote_periodi, modified) VALUES ( @id_conto, @id_socio, @id_valuta, @id_portafoglio_titoli, @id_tipo_movimento, " +
             "@id_gestione, @id_titolo, @data_movimento, @ammontare, @cambio, @Causale, @id_tipo_soldi, @id_quote_periodi, @modified)";
 
 
@@ -63,12 +63,12 @@ namespace FinanceManager.Services.SQL
         public static readonly string DeleteRecordContoCorrente = "DELETE FROM conto_corrente WHERE id_fineco_euro = @id_fineco_euro";
 
         // aggiorno un record conto corrente sulla base dell'ID CONTO CORRENTE //
-        public static readonly string UpdateContoCorrenteByIdCC = "UPDATE conto_corrente SET id_conto = @id_conto, id_valuta = @id_valuta, " +
+        public static readonly string UpdateContoCorrenteByIdCC = "UPDATE conto_corrente SET id_conto = @id_conto, id_socio = @id_socio, id_valuta = @id_valuta, " +
             "id_portafoglio_titoli = @id_portafoglio_titoli, id_tipo_movimento = @id_tipo_movimento, id_gestione = @id_gestione, id_titolo = @id_titolo, data_movimento = @data_movimento, " +
             "ammontare = @ammontare, cambio = @cambio, Causale = @Causale, id_tipo_soldi = @id_tipo_soldi, id_quote_periodi = @id_quote_periodi WHERE id_fineco_euro = @id_fineco_euro";
 
         // aggiorno un record conto corrente sulla base dell'ID PORTAFOGLIO TITOLI //
-        public static readonly string UpdateContoCorrenteByIdPortafoglioTitoli = "UPDATE conto_corrente SET id_conto = @id_conto, id_valuta = @id_valuta, " +
+        public static readonly string UpdateContoCorrenteByIdPortafoglioTitoli = "UPDATE conto_corrente SET id_conto = @id_conto, id_socio = @id_socio, id_valuta = @id_valuta, " +
             "id_tipo_movimento = @id_tipo_movimento, id_gestione = @id_gestione, id_titolo = @id_titolo, data_movimento = @data_movimento, ammontare = @ammontare, " +
             "cambio = @cambio, Causale = @Causale, id_tipo_soldi = @id_tipo_soldi, id_quote_periodi = @id_quote_periodi WHERE id_portafoglio_titoli = @id_portafoglio_titoli";
 
