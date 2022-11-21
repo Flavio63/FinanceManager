@@ -23,9 +23,9 @@ namespace FinanceManager.Services.SQL
         public static readonly string GetCCListByInvestmentSituation = ContoCorrente + " AND A.id_conto = 1 AND (A.id_tipo_movimento = 1 OR A.id_tipo_movimento = 2) ORDER BY A.data_movimento ";
 
         /// <summary>
-        /// Ritorno il numero di idContoCorrente dell'ultimo record
+        /// Ritorno l'ultimo record di conto corrente
         /// </summary>
-        public static readonly string GetLastContoCorrente = "SELECT id_fineco_euro FROM conto_corrente ORDER BY conto_corrente.id_fineco_euro DESC LIMIT 1";
+        public static readonly string GetLastContoCorrente = ContoCorrente + " ORDER BY id_fineco_euro DESC LIMIT 1";
 
         /// <summary>
         /// Ritorna il totale finanziario per conto corrente
@@ -71,14 +71,6 @@ namespace FinanceManager.Services.SQL
         public static readonly string UpdateContoCorrenteByIdPortafoglioTitoli = "UPDATE conto_corrente SET id_conto = @id_conto, id_socio = @id_socio, id_valuta = @id_valuta, " +
             "id_tipo_movimento = @id_tipo_movimento, id_gestione = @id_gestione, id_titolo = @id_titolo, data_movimento = @data_movimento, ammontare = @ammontare, " +
             "cambio = @cambio, Causale = @Causale, id_tipo_soldi = @id_tipo_soldi, id_quote_periodi = @id_quote_periodi WHERE id_portafoglio_titoli = @id_portafoglio_titoli";
-
-        /// <summary>Dopo la modifica sul conto corrente, registro la modifica sul guadagno totale anno</summary>
-        public static readonly string ModifySingoloGuadagno = "UPDATE guadagni_totale_anno SET anno = BB.anno, quota = BB.quota, guadagnato = BB.guadagnato, data_operazione = BB.data_movimento, Causale = BB.Causale, " +
-            "id_quote_periodi = BB.id_quote_periodi, id_tipo_soldi = BB.id_tipo_soldi, id_valuta = BB.id_valuta FROM (SELECT B.id_gestione, id_tipo_soldi, id_tipo_movimento, " +
-            "strftime('%Y', data_movimento) AS anno, CASE WHEN B.id_gestione = 4 AND A.id_tipo_movimento = 8 THEN 0 ELSE (CASE WHEN A.id_tipo_movimento = 8 THEN 0.5 ELSE B.quota END) END AS quota, " +
-            "CASE WHEN B.id_gestione = 4 AND A.id_tipo_movimento = 8 THEN 0 ELSE (CASE WHEN A.id_tipo_movimento = 8 THEN 0.5 * A.ammontare ELSE A.ammontare* B.quota END) END AS guadagnato, id_valuta, " +
-            "data_movimento, Causale, A.id_quote_periodi, A.id_fineco_euro FROM conto_corrente A, quote_guadagno B WHERE A.id_quote_periodi = B.id_quote_periodi AND " +
-            "A.id_fineco_euro = @id_fineco_euro GROUP BY B.id_gestione ) AS BB WHERE guadagni_totale_anno.id_gestione = BB.id_gestione AND id_conto_corrente = BB.id_fineco_euro;";
 
     }
 }

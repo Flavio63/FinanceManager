@@ -209,9 +209,9 @@ namespace FinanceManager.Services
         /// Trovo il codice dei record da ricalcolare con le nuove quote
         /// </summary>
         /// <param name="dateTime">la data dell'investimento</param>
-        /// <param name="Id_tipoSoldi">Identifica chi sta modificando l'investimento</param>
+        /// <param name="Id_Gestione">Identifica il tipo di gestione da cui si deducono le quote</param>
         /// <returns>int</returns>
-        public int GetIdPeriodoQuote(DateTime dateTime, int Id_tipoSoldi)
+        public int GetIdPeriodoQuote(DateTime dateTime, int Id_Gestione)
         {
             DataTable DT = new DataTable();
             try
@@ -221,7 +221,7 @@ namespace FinanceManager.Services
                     dbAdapter.SelectCommand = new SQLiteCommand();
                     dbAdapter.SelectCommand.CommandText = QuoteGuadagniScript.GetIdPeriodoQuote;
                     dbAdapter.SelectCommand.Parameters.AddWithValue("data_movimento", dateTime.ToString("yyyy-MM-dd"));
-                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_tipo_soldi", Id_tipoSoldi);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_gestione", Id_Gestione);
                     dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     dbAdapter.Fill(DT);
                     return DT.Rows.Count == 0 ? 0 : (int)DT.Rows[0].Field<long>("id_periodo_quote");
@@ -313,7 +313,7 @@ namespace FinanceManager.Services
             {
                 using (SQLiteCommand dbComm = new SQLiteCommand())
                 {
-                    dbComm.CommandText = ContoCorrenteScript.ModifySingoloGuadagno;
+                    dbComm.CommandText = QuoteGuadagniScript.ModifySingoloGuadagno;
                     dbComm.Parameters.AddWithValue("id_fineco_euro", RecordContoCorrente.Id_RowConto);
                     dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();

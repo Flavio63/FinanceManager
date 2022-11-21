@@ -59,38 +59,15 @@ namespace FinanceManager.ViewModels
             try
             {
                 ListMovimenti = new RegistryMovementTypeList();
+                ListMovimenti = _registryServices.GetRegistryMovementTypesList();
                 ListGestioni = new RegistryGestioniList();
+                ListGestioni = _registryServices.GetGestioneList();
+                ListSoci = new RegistrySociList();
+                ListSoci = _registryServices.GetSociList();
                 ListConti = new RegistryLocationList();
                 ListValute = new RegistryCurrencyList();
                 TipoSoldis = new TipoSoldiList();
-                RegistryMovementTypeList listaOriginale = new RegistryMovementTypeList();
-                listaOriginale = _registryServices.GetRegistryMovementTypesList();
-                var RMTL = from movimento in listaOriginale
-                           where (movimento.Id_tipo_movimento == (int)TipologiaMovimento.Cedola ||
-                           movimento.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ||
-                           movimento.Id_tipo_movimento == (int)TipologiaMovimento.Giroconto) ||
-                           movimento.Id_tipo_movimento == (int)TipologiaMovimento.Costi ||
-                           movimento.Id_tipo_movimento == (int)TipologiaMovimento.CambioValuta ||
-                           movimento.Id_tipo_movimento == (int)TipologiaMovimento.AcquistoTitoli ||
-                           movimento.Id_tipo_movimento == (int)TipologiaMovimento.VenditaTitoli
-                           select movimento;
-                foreach (RegistryMovementType registry in RMTL)
-                    ListMovimenti.Add(registry);
                 ListValute = _registryServices.GetRegistryCurrencyList();
-                RegistryGestioniList ListaInvestitoreOriginale = new RegistryGestioniList();
-                ListaInvestitoreOriginale = _registryServices.GetGestioneList();
-                var ROL = from gestione in ListaInvestitoreOriginale
-                          where (gestione.Tipo_Gestione == "Gestore")
-                          select gestione;
-                _TabControl.TabStripPlacement = Dock.Left;
-                foreach (RegistryGestioni registryOwner in ROL)
-                {
-                    // per ogni gestione acquisisco is dati per la sintesi soldi
-                    TabItem tabItem = new TabItem();
-                    tabItem.Header = registryOwner.Nome_Gestione;
-                    _TabControl.Items.Add(tabItem);
-                    ListGestioni.Add(registryOwner);
-                }
                 ListConti = _registryServices.GetRegistryLocationList();
                 TipoSoldis = _registryServices.GetTipoSoldiList();
                 SharesList = new ObservableCollection<RegistryShare>(_registryServices.GetRegistryShareList());
@@ -126,6 +103,9 @@ namespace FinanceManager.ViewModels
                 FiltroTipoSoldi = "";
                 FiltroTipoMovimento = "";
                 FiltroValuta = "";
+                FiltroSocio = String.Empty;
+                VisibilityGestione = "Visible";
+                VisibilitySocio = "Collapsed";
             }
             catch (Exception err)
             {
@@ -134,6 +114,25 @@ namespace FinanceManager.ViewModels
         }
 
         #region Getter&Setter
+        // la visibilità di combo gestioni / socio
+        public string VisibilityGestione
+        {
+            get { return GetValue(() => VisibilityGestione); }
+            set { SetValue(() => VisibilityGestione, value); }
+        }
+        public string VisibilitySocio
+        {
+            get { return GetValue(() => VisibilitySocio); }
+            set { SetValue(() => VisibilitySocio, value); }
+        }
+
+        // la lista soci per il combo
+        public RegistrySociList ListSoci
+        {
+            get { return GetValue(() => ListSoci); }
+            set { SetValue(() => ListSoci, value); }
+        }
+
         /// <summary>
         /// Combo box con is movimenti
         /// </summary>
@@ -329,149 +328,299 @@ namespace FinanceManager.ViewModels
                 }
                 else if (obj is ContoCorrente CConto)
                 {
-                    if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && 
-                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // tutti e 5 i filtri
+                    
+                    if (!string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroSocio) && !string.IsNullOrEmpty(FiltroTipoSoldi) && 
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // tutti e 5 i filtri
+                    {
+                        return CConto.Desc_Conto == FiltroConto && CConto.Nome_Socio == FiltroSocio && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi
+                            && CConto.Desc_tipo_movimento == FiltroTipoMovimento && CConto.Cod_Valuta == FiltroValuta;
+                    }
+                    if (!string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroGestione) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // tutti e 5 i filtri
                     {
                         return CConto.Desc_Conto == FiltroConto && CConto.NomeGestione == FiltroGestione && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi
                             && CConto.Desc_tipo_movimento == FiltroTipoMovimento && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && 
-                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 4 su 5 attivi
+                    else if (!string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroSocio) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 4 su 5 attivi
+                    {
+                        return CConto.Desc_Conto == FiltroConto && CConto.Nome_Socio == FiltroSocio && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi
+                            && CConto.Desc_tipo_movimento == FiltroTipoMovimento;
+                    }
+                    else if (!string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroGestione) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 4 su 5 attivi
                     {
                         return CConto.Desc_Conto == FiltroConto && CConto.NomeGestione == FiltroGestione && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi
                             && CConto.Desc_tipo_movimento == FiltroTipoMovimento;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) && 
-                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 4 su 5 attivi
+                    else if (!string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroSocio) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 4 su 5 attivi
+                    {
+                        return CConto.Desc_Conto == FiltroConto && CConto.Nome_Socio == FiltroSocio && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi
+                            && CConto.Cod_Valuta == FiltroValuta;
+                    }
+                    else if (!string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroGestione) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 4 su 5 attivi
                     {
                         return CConto.Desc_Conto == FiltroConto && CConto.NomeGestione == FiltroGestione && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi
                             && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 4 su 5 attivi
+                    else if (!string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroSocio) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 4 su 5 attivi
+                    {
+                        return CConto.Desc_Conto == FiltroConto && CConto.Nome_Socio == FiltroSocio && CConto.Desc_tipo_movimento == FiltroTipoMovimento
+                            && CConto.Cod_Valuta == FiltroValuta;
+                    }
+                    else if (!string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroGestione) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 4 su 5 attivi
                     {
                         return CConto.Desc_Conto == FiltroConto && CConto.NomeGestione == FiltroGestione && CConto.Desc_tipo_movimento == FiltroTipoMovimento
                             && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 4 su 5 attivi
+                    else if (!string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroSocio) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 4 su 5 attivi
                     {
                         return CConto.Desc_Conto == FiltroConto && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Desc_tipo_movimento == FiltroTipoMovimento
                             && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 4 su 5 attivi
+                    else if (!string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroGestione) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 4 su 5 attivi
+                    {
+                        return CConto.Desc_Conto == FiltroConto && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Desc_tipo_movimento == FiltroTipoMovimento
+                            && CConto.Cod_Valuta == FiltroValuta;
+                    }
+                    else if (string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroSocio) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 4 su 5 attivi
+                    {
+                        return CConto.Nome_Socio == FiltroSocio && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Desc_tipo_movimento == FiltroTipoMovimento
+                            && CConto.Cod_Valuta == FiltroValuta;
+                    }
+                    else if (string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroGestione) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 4 su 5 attivi
                     {
                         return CConto.NomeGestione == FiltroGestione && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Desc_tipo_movimento == FiltroTipoMovimento
                             && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 3 su 5 attivi
+                    else if (!string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroSocio) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 3 su 5 attivi
                     {
-                        return CConto.Desc_Conto == FiltroConto && CConto.NomeGestione == FiltroGestione && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi;
+                        return CConto.Desc_Conto == FiltroConto && CConto.Nome_Socio == FiltroSocio && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 3 su 5 attivi
+                    else if (!string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroSocio) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 3 su 5 attivi
                     {
-                        return CConto.Desc_Conto == FiltroConto && CConto.NomeGestione == FiltroGestione && CConto.Desc_tipo_movimento == FiltroTipoMovimento;
+                        return CConto.Desc_Conto == FiltroConto && CConto.Nome_Socio == FiltroSocio && CConto.Desc_tipo_movimento == FiltroTipoMovimento;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 3 su 5 attivi
+                    else if (!string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroSocio) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 3 su 5 attivi
                     {
-                        return CConto.Desc_Conto == FiltroConto && CConto.NomeGestione == FiltroGestione && CConto.Cod_Valuta == FiltroValuta;
+                        return CConto.Desc_Conto == FiltroConto && CConto.Nome_Socio == FiltroSocio && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 3 su 5 attivi
+                    else if (!string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroSocio) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 3 su 5 attivi
                     {
                         return CConto.Desc_Conto == FiltroConto && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 3 su 5 attivi
+                    else if (!string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroSocio) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 3 su 5 attivi
                     {
                         return CConto.Desc_Conto == FiltroConto && CConto.Desc_tipo_movimento == FiltroTipoMovimento && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 3 su 5 attivi
+                    else if (string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroSocio) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 3 su 5 attivi
                     {
                         return CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Desc_tipo_movimento == FiltroTipoMovimento && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 3 su 5 attivi
+                    else if (string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroSocio) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 3 su 5 attivi
+                    {
+                        return CConto.Nome_Socio == FiltroSocio && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Desc_tipo_movimento == FiltroTipoMovimento;
+                    }
+                    else if (!string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroGestione) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 3 su 5 attivi
+                    {
+                        return CConto.Desc_Conto == FiltroConto && CConto.NomeGestione == FiltroGestione && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi;
+                    }
+                    else if (!string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroGestione) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 3 su 5 attivi
+                    {
+                        return CConto.Desc_Conto == FiltroConto && CConto.NomeGestione == FiltroGestione && CConto.Desc_tipo_movimento == FiltroTipoMovimento;
+                    }
+                    else if (!string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroGestione) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 3 su 5 attivi
+                    {
+                        return CConto.Desc_Conto == FiltroConto && CConto.NomeGestione == FiltroGestione && CConto.Cod_Valuta == FiltroValuta;
+                    }
+                    else if (!string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroGestione) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 3 su 5 attivi
+                    {
+                        return CConto.Desc_Conto == FiltroConto && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Cod_Valuta == FiltroValuta;
+                    }
+                    else if (!string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroGestione) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 3 su 5 attivi
+                    {
+                        return CConto.Desc_Conto == FiltroConto && CConto.Desc_tipo_movimento == FiltroTipoMovimento && CConto.Cod_Valuta == FiltroValuta;
+                    }
+                    else if (string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroGestione) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 3 su 5 attivi
+                    {
+                        return CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Desc_tipo_movimento == FiltroTipoMovimento && CConto.Cod_Valuta == FiltroValuta;
+                    }
+                    else if (string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroGestione) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 3 su 5 attivi
                     {
                         return CConto.NomeGestione == FiltroGestione && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Desc_tipo_movimento == FiltroTipoMovimento;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 2 su 5 attivi
+                    else if (!string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroSocio) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 2 su 5 attivi
                     {
-                        return CConto.Desc_Conto == FiltroConto && CConto.NomeGestione == FiltroGestione;
+                        return CConto.Desc_Conto == FiltroConto && CConto.Nome_Socio == FiltroSocio;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 2 su 5 attivi
+                    else if (!string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroSocio) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 2 su 5 attivi
                     {
                         return CConto.Desc_Conto == FiltroConto && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 2 su 5 attivi
+                    else if (!string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroSocio) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 2 su 5 attivi
                     {
                         return CConto.Desc_Conto == FiltroConto && CConto.Desc_tipo_movimento == FiltroTipoMovimento;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 2 su 5 attivi
+                    else if (!string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroSocio) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 2 su 5 attivi
                     {
                         return CConto.Desc_Conto == FiltroConto && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 2 su 5 attivi
+                    else if (string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroSocio) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 2 su 5 attivi
                     {
-                        return CConto.NomeGestione == FiltroGestione && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi;
+                        return CConto.Nome_Socio == FiltroSocio && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi;
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 2 su 5 attivi
+                    else if (string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroSocio) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 2 su 5 attivi
                     {
-                        return CConto.NomeGestione == FiltroGestione && CConto.Desc_tipo_movimento == FiltroTipoMovimento;
+                        return CConto.Nome_Socio == FiltroSocio && CConto.Desc_tipo_movimento == FiltroTipoMovimento;
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 2 su 5 attivi
+                    else if (string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroSocio) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 2 su 5 attivi
                     {
-                        return CConto.NomeGestione == FiltroGestione && CConto.Cod_Valuta == FiltroValuta;
+                        return CConto.Nome_Socio == FiltroSocio && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 2 su 5 attivi
+                    else if (string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroSocio) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 2 su 5 attivi
                     {
                         return CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Desc_tipo_movimento == FiltroTipoMovimento;
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 2 su 5 attivi
+                    else if (string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroSocio) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 2 su 5 attivi
                     {
                         return CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 2 su 5 attivi
+                    else if (string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroSocio) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 2 su 5 attivi
                     {
                         return CConto.Desc_tipo_movimento == FiltroTipoMovimento && CConto.Cod_Valuta == FiltroValuta;
                     }
-                    else if (!string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 1 su 5 attivi
+                    else if (!string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroGestione) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 2 su 5 attivi
+                    {
+                        return CConto.Desc_Conto == FiltroConto && CConto.NomeGestione == FiltroGestione;
+                    }
+                    else if (!string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroGestione) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 2 su 5 attivi
+                    {
+                        return CConto.Desc_Conto == FiltroConto && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi;
+                    }
+                    else if (!string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroGestione) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 2 su 5 attivi
+                    {
+                        return CConto.Desc_Conto == FiltroConto && CConto.Desc_tipo_movimento == FiltroTipoMovimento;
+                    }
+                    else if (!string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroGestione) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 2 su 5 attivi
+                    {
+                        return CConto.Desc_Conto == FiltroConto && CConto.Cod_Valuta == FiltroValuta;
+                    }
+                    else if (string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroGestione) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 2 su 5 attivi
+                    {
+                        return CConto.NomeGestione == FiltroGestione && CConto.Desc_Tipo_Soldi == FiltroTipoSoldi;
+                    }
+                    else if (string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroGestione) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 2 su 5 attivi
+                    {
+                        return CConto.NomeGestione == FiltroGestione && CConto.Desc_tipo_movimento == FiltroTipoMovimento;
+                    }
+                    else if (string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroGestione) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 2 su 5 attivi
+                    {
+                        return CConto.NomeGestione == FiltroGestione && CConto.Cod_Valuta == FiltroValuta;
+                    }
+                    else if (string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroGestione) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 2 su 5 attivi
+                    {
+                        return CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Desc_tipo_movimento == FiltroTipoMovimento;
+                    }
+                    else if (string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroGestione) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 2 su 5 attivi
+                    {
+                        return CConto.Desc_Tipo_Soldi == FiltroTipoSoldi && CConto.Cod_Valuta == FiltroValuta;
+                    }
+                    else if (string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroGestione) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 2 su 5 attivi
+                    {
+                        return CConto.Desc_tipo_movimento == FiltroTipoMovimento && CConto.Cod_Valuta == FiltroValuta;
+                    }
+
+                    else if (!string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroSocio) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 1 su 5 attivi
                     {
                         return CConto.Desc_Conto == FiltroConto;
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && !string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 1 su 5 attivi
+                    else if (string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroSocio) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 1 su 5 attivi
                     {
-                        return CConto.NomeGestione == FiltroGestione;
+                        return CConto.Nome_Socio == FiltroSocio;
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && !string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 1 su 5 attivi
+                    else if (string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroSocio) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 1 su 5 attivi
                     {
                         return CConto.Desc_Tipo_Soldi == FiltroTipoSoldi;
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        !string.IsNullOrWhiteSpace(FiltroTipoMovimento) && string.IsNullOrWhiteSpace(FiltroValuta)) // 1 su 5 attivi
+                    else if (string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroSocio) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 1 su 5 attivi
                     {
                         return CConto.Desc_tipo_movimento == FiltroTipoMovimento;
                     }
-                    else if (string.IsNullOrWhiteSpace(FiltroConto) && string.IsNullOrWhiteSpace(FiltroGestione) && string.IsNullOrWhiteSpace(FiltroTipoSoldi) &&
-                        string.IsNullOrWhiteSpace(FiltroTipoMovimento) && !string.IsNullOrWhiteSpace(FiltroValuta)) // 1 su 5 attivi
+                    else if (string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroSocio) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 1 su 5 attivi
+                    {
+                        return CConto.Cod_Valuta == FiltroValuta;
+                    }
+
+
+                    else if (!string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroGestione) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 1 su 5 attivi
+                    {
+                        return CConto.Desc_Conto == FiltroConto;
+                    }
+                    else if (string.IsNullOrEmpty(FiltroConto) && !string.IsNullOrEmpty(FiltroGestione) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 1 su 5 attivi
+                    {
+                        return CConto.NomeGestione == FiltroGestione;
+                    }
+                    else if (string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroGestione) && !string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 1 su 5 attivi
+                    {
+                        return CConto.Desc_Tipo_Soldi == FiltroTipoSoldi;
+                    }
+                    else if (string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroGestione) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        !string.IsNullOrEmpty(FiltroTipoMovimento) && string.IsNullOrEmpty(FiltroValuta)) // 1 su 5 attivi
+                    {
+                        return CConto.Desc_tipo_movimento == FiltroTipoMovimento;
+                    }
+                    else if (string.IsNullOrEmpty(FiltroConto) && string.IsNullOrEmpty(FiltroGestione) && string.IsNullOrEmpty(FiltroTipoSoldi) &&
+                        string.IsNullOrEmpty(FiltroTipoMovimento) && !string.IsNullOrEmpty(FiltroValuta)) // 1 su 5 attivi
                     {
                         return CConto.Cod_Valuta == FiltroValuta;
                     }
@@ -480,6 +629,18 @@ namespace FinanceManager.ViewModels
 
             }
             return true;
+        }
+
+        private string _FiltroSocio;
+        private string FiltroSocio
+        {
+            get { return _FiltroSocio; }
+            set
+            {
+                _FiltroSocio = value;
+                AccountCollectionView.Filter = _Filter; AccountCollectionView.Refresh();
+                TotaleDisponibiliView.Filter = _Filter; TotaleDisponibiliView.Refresh();
+            }
         }
 
         private string _FiltroConto;
@@ -552,6 +713,22 @@ namespace FinanceManager.ViewModels
                     RecordContoCorrente.Id_Conto = RL.Id_Conto;
                     RecordContoCorrente.Desc_Conto = RL.Desc_Conto;
                     FiltroConto = RL.Desc_Conto;
+                    if (RL.Id_Conto == 1)
+                    {
+                        VisibilityGestione = "Collapsed";
+                        VisibilitySocio = "Visible";
+                    }
+                    else if (RL.Id_Conto > 1)
+                    {
+                        VisibilityGestione = "Visible";
+                        VisibilitySocio = "Collapsed";
+                    }
+                }
+                else if (e.AddedItems[0] is RegistrySoci RS)
+                {
+                    RecordContoCorrente.Id_Socio = RS.Id_Socio;
+                    RecordContoCorrente.Nome_Socio = RS.Nome_Socio;
+                    FiltroSocio = RS.Nome_Socio;
                 }
                 else if (e.AddedItems[0] is RegistryGestioni RO)
                 {
@@ -580,10 +757,10 @@ namespace FinanceManager.ViewModels
                     VolatiliEnabled = RMT.Id_tipo_movimento == (int)TipologiaMovimento.InsertVolatili ? true : false;
                     FiltroTipoMovimento = RMT.Desc_tipo_movimento;
                 }
-                else if (e.AddedItems[0] is RegistryShare RS)
+                else if (e.AddedItems[0] is RegistryShare RSs)
                 {
-                    RecordContoCorrente.Id_Titolo = (int)RS.id_titolo;
-                    RecordContoCorrente.Desc_Titolo = RS.desc_titolo;
+                    RecordContoCorrente.Id_Titolo = (int)RSs.id_titolo;
+                    RecordContoCorrente.Desc_Titolo = RSs.desc_titolo;
                 }
             }
         }
@@ -669,7 +846,7 @@ namespace FinanceManager.ViewModels
             try
             {
                 // Inserisco il codice del periodo quote_guadagno
-                RecordContoCorrente.Id_Quote_Periodi = _quoteServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Tipo_Soldi);
+                RecordContoCorrente.Id_Quote_Periodi = _quoteServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Gestione);
                 // registro il record
                 _contoCorrenteServices.InsertAccountMovement(RecordContoCorrente);
                 try 
@@ -684,12 +861,15 @@ namespace FinanceManager.ViewModels
                 {
                     MessageBox.Show("Problemi nel caricamento del guadagno per i soci: " + Environment.NewLine + "Verrà cancellato anche l'inserimento nel cc" +
                        Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+                    _contoCorrenteServices.DeleteRecordContoCorrente(_contoCorrenteServices.GetLastContoCorrente().Id_RowConto);
+                    Init();
                 }
             }
             catch (Exception err)
             {
                 MessageBox.Show("Problemi nel caricamento del record: " + Environment.NewLine +
                     err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+                Init();
             }
         }
         public void UpdateCommand(object param)
@@ -697,11 +877,11 @@ namespace FinanceManager.ViewModels
             try
             {
                 // prelevo il codice periodi
-                RecordContoCorrente.Id_Quote_Periodi = _quoteServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Tipo_Soldi);
+                RecordContoCorrente.Id_Quote_Periodi = _quoteServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Gestione);
                 //registro la modifica in conto corrente
                 _contoCorrenteServices.UpdateRecordContoCorrente(RecordContoCorrente, TipologiaIDContoCorrente.IdContoCorrente);
                 try
-                { // modifico di conseguenza is record del guadagno totale anno
+                { // modifico di conseguenza il record del guadagno totale anno
                     _quoteServices.ModifySingoloGuadagno(RecordContoCorrente);
                     MessageBox.Show("Record modificato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
                     Init();

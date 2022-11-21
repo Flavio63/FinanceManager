@@ -47,14 +47,14 @@ namespace FinanceManager.Services
         /// <param name="Id_Periodo_Quote">il periodo da modificare</param>
         /// <param name="Id_Tipo_Soldi">Il tipo soldi</param>
         void UpdateGuadagniTotaleAnno(int Id_Periodo_Quote, int Id_Tipo_Soldi);
-        
+
         /// <summary>
         /// Trovo il codice dei record da ricalcolare con le nuove quote
         /// </summary>
         /// <param name="dateTime">la data dell'investimento</param>
-        /// <param name="Id_tipoSoldi">Identifica chi sta modificando l'investimento</param>
+        /// <param name="Id_Gestione">Identifica il tipo di gestione da cui si deducono le quote</param>
         /// <returns>int</returns>
-        int GetIdPeriodoQuote(DateTime dateTime, int Id_tipoSoldi);
+        int GetIdPeriodoQuote(DateTime dateTime, int Id_Gestione);
         /// <summary>
         /// Tramite l'ultimo record conto_corrente inserito
         /// calcolo e inserisco le quote guadagno per ogni singolo socio

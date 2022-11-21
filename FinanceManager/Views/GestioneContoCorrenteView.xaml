@@ -36,6 +36,7 @@
                           CanUserDeleteRows="False" CanUserAddRows="False" FontSize="16" ItemsSource="{Binding TotaleDisponibiliView, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Conto Corrente" Binding="{Binding Desc_Conto, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                    <DataGridTextColumn Header="Socio" Binding="{Binding Nome_Socio, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                     <DataGridTextColumn Header="Gestione" Binding="{Binding NomeGestione, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                     <DataGridTextColumn Header="Totale" Binding="{Binding Ammontare, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, ConverterCulture=it-IT, StringFormat=N2}">
                         <DataGridTextColumn.ElementStyle>
@@ -89,11 +90,23 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </ComboBox>
-                <TextBlock Grid.Row="2" Text="La gestione" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
+                <TextBlock Grid.Row="2" Text="La gestione" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center" 
+                           Visibility="{Binding VisibilityGestione}"/>
                 <ComboBox Name="Gestione" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding ListGestioni, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                          SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione" Margin="5, 2" MinWidth="100" 
+                          SelectedValuePath="Id_Gestione" DisplayMemberPath="Nome_Gestione" Margin="5, 2" MinWidth="100" Visibility="{Binding VisibilityGestione}"
                           IsEnabled="{Binding CommonFieldsEnabled, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValue="{Binding RecordContoCorrente.Id_Gestione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ComboBox>
+                <TextBlock Grid.Row="2" Text="Il Socio" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center" Visibility="{Binding VisibilitySocio}"/>
+                <ComboBox Name="Socio" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding ListSoci, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                          SelectedValuePath="Id_Socio" DisplayMemberPath="Nome_Socio" Margin="5, 2" MinWidth="100" Visibility="{Binding VisibilitySocio}"
+                          IsEnabled="{Binding CommonFieldsEnabled, UpdateSourceTrigger=PropertyChanged}"
+                          SelectedValue="{Binding RecordContoCorrente.Id_Socio, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="SelectionChanged">
                             <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
@@ -274,7 +287,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="C/C in" Binding="{Binding Desc_Conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=d, ConverterCulture=it-IT}"
+                <DataGridTextColumn Header="C/C in" Binding="{Binding Desc_Conto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                         IsReadOnly="True" FontSize="14" FontWeight="Normal">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="{x:Type TextBlock}">
@@ -290,7 +303,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Gestione" Binding="{Binding NomeGestione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=d, ConverterCulture=it-IT}"
+                <DataGridTextColumn Header="Socio" Binding="{Binding Nome_Socio, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                         IsReadOnly="True" FontSize="14" FontWeight="Normal">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="{x:Type TextBlock}">
@@ -298,7 +311,15 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Titolo" Binding="{Binding Desc_Titolo, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=d, ConverterCulture=it-IT}"
+                <DataGridTextColumn Header="Gestione" Binding="{Binding NomeGestione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                        IsReadOnly="True" FontSize="14" FontWeight="Normal">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Margin" Value="5,0,5,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Titolo" Binding="{Binding Desc_Titolo, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                         IsReadOnly="True" FontSize="14" FontWeight="Normal" MaxWidth="300">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="{x:Type TextBlock}">
@@ -306,7 +327,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="ISIN" Binding="{Binding ISIN, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=d, ConverterCulture=it-IT}"
+                <DataGridTextColumn Header="ISIN" Binding="{Binding ISIN, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                         IsReadOnly="True" FontSize="14" FontWeight="Normal">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="{x:Type TextBlock}">
