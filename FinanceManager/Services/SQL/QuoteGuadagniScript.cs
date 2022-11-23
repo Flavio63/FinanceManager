@@ -70,21 +70,11 @@ namespace FinanceManager.Services.SQL
             "(id_socio, id_gestione, id_tipo_gestione, id_tipo_soldi, id_tipo_movimento, anno, quota, guadagnato, id_valuta, data_operazione, causale, id_quote_periodi, id_conto_corrente) " +
             "SELECT B.id_socio, A.id_gestione, D.id_tipo_gestione, id_tipo_soldi, id_tipo_movimento, strftime('%Y', data_movimento) AS anno, " +
             "case when B.id_socio = 3 AND A.id_tipo_movimento = 8 then 0 ELSE (case when A.id_tipo_movimento = 8 then 0.5 ELSE B.quota END) END AS quota, " +
-            "case when B.id_socio = 3 AND A.id_tipo_movimento = 8 then 0 ELSE (case when A.id_tipo_movimento = 8 then 0.5 * A.ammontare ELSE (case when id_tipo_soldi = 11 then 0 ELSE A.ammontare * B.quota END) END) END AS guadagnato, " +
+            "case when B.id_socio = 3 AND A.id_tipo_movimento = 8 then 0 ELSE (case when A.id_tipo_movimento = 8 then 0.5 * A.ammontare ELSE A.ammontare * B.quota END) END AS guadagnato, " +
             "id_valuta, data_movimento, causale, A.id_quote_periodi, A.id_fineco_euro FROM conto_corrente A, quote_guadagno B, gestioni C, tipo_gestioni D " +
             "WHERE A.id_quote_periodi = B.id_quote_periodi AND A.id_gestione = C.id_gestione AND C.id_tipo_gestione = D.id_tipo_gestione AND A.id_fineco_euro = " +
             "(SELECT id_fineco_euro FROM conto_corrente C WHERE C.id_tipo_movimento = @id_tipo_movimento AND id_tipo_soldi = @id_tipo_soldi AND id_quote_periodi = @id_quote_periodi ORDER BY id_fineco_euro DESC LIMIT 1) " +
             "GROUP BY B.id_socio, A.id_gestione;";
-
-        /// <summary>Dopo l'inserimento sul conto corrente, registro la perdita</summary>
-        public static readonly string AddSingolaPerdita = "INSERT INTO perdita_capitale_anno " +
-            "(id_socio, id_gestione, id_tipo_gestione, id_tipo_soldi, id_tipo_movimento, anno, quota, perso, id_valuta, data_operazione, causale, id_quote_periodi, id_conto_corrente) " +
-            "SELECT B.id_gestione, id_tipo_soldi, id_tipo_movimento, strftime('%Y', data_movimento) AS anno, " +
-            "case when B.id_gestione = 4 AND A.id_tipo_movimento = 8 then 0 ELSE (case when A.id_tipo_movimento = 8 then 0.5 ELSE B.quota END) END AS quota, " +
-            "case when B.id_gestione = 4 AND A.id_tipo_movimento = 8 then 0 ELSE (case when A.id_tipo_movimento = 8 then 0.5 * A.ammontare ELSE (case when id_tipo_soldi = 11 then A.ammontare * B.quota * -1 ELSE 0 END) END) END AS perso, " +
-            "id_valuta, data_movimento, causale, A.id_quote_periodi, A.id_fineco_euro FROM conto_corrente A, quote_guadagno B WHERE A.id_quote_periodi = B.id_quote_periodi AND A.id_fineco_euro = " +
-            "(SELECT id_fineco_euro FROM conto_corrente C WHERE C.id_tipo_movimento = @id_tipo_movimento AND id_tipo_soldi = @id_tipo_soldi AND id_quote_periodi = @id_quote_periodi " +
-            "ORDER BY id_fineco_euro DESC LIMIT 1) GROUP BY B.id_gestione; ";
 
         /// <summary>
         /// Elimino un record della tabella quote_guadagno
@@ -96,15 +86,7 @@ namespace FinanceManager.Services.SQL
             "anno = BB.anno, quota = BB.quota, id_gestione = BB.id_gestione, id_tipo_gestione = BB.id_tipo_gestione, guadagnato = BB.guadagnato, data_operazione = BB.data_movimento, causale = BB.causale, " +
             "id_quote_periodi = BB.id_quote_periodi, id_tipo_soldi = BB.id_tipo_soldi, id_valuta = BB.id_valuta FROM (SELECT B.id_socio, A.id_gestione, C.id_tipo_gestione, id_tipo_soldi, id_tipo_movimento, " +
             "strftime('%Y', data_movimento) AS anno, CASE WHEN B.id_socio = 3 AND A.id_tipo_movimento = 8 THEN 0 ELSE (CASE WHEN A.id_tipo_movimento = 8 THEN 0.5 ELSE B.quota END) END AS quota, " +
-            "CASE WHEN B.id_socio = 3 AND A.id_tipo_movimento = 8 THEN 0 ELSE (CASE WHEN A.id_tipo_movimento = 8 THEN 0.5 * A.ammontare ELSE (case when id_tipo_soldi = 11 then 0 ELSE A.ammontare * B.quota END) END) END AS guadagnato, id_valuta, " +
-            "data_movimento, Causale, A.id_quote_periodi, A.id_fineco_euro FROM conto_corrente A, quote_guadagno B, gestioni C WHERE A.id_quote_periodi = B.id_quote_periodi AND " +
-            "A.id_gestione = C.id_gestione AND A.id_fineco_euro = @id_fineco_euro ) AS BB WHERE guadagni_totale_anno.id_socio = BB.id_socio AND id_conto_corrente = BB.id_fineco_euro;";
-
-        public static readonly string ModifySingolaPerdita = "UPDATE perdita_capitale_anno SET " +
-            "anno = BB.anno, quota = BB.quota, id_gestione = BB.id_gestione id_tipo_gestione, perso = BB.perso, data_operazione = BB.data_movimento, causale = BB.causale, " +
-            "id_quote_periodi = BB.id_quote_periodi, id_tipo_soldi = BB.id_tipo_soldi, id_valuta = BB.id_valuta FROM (SELECT B.id_socio, A.id_gestione, C.id_tipo_gestione, id_tipo_soldi, id_tipo_movimento, " +
-            "strftime('%Y', data_movimento) AS anno, CASE WHEN B.id_socio = 3 AND A.id_tipo_movimento = 8 THEN 0 ELSE (CASE WHEN A.id_tipo_movimento = 8 THEN 0.5 ELSE B.quota END) END AS quota, " +
-            "CASE WHEN B.id_socio = 3 AND A.id_tipo_movimento = 8 THEN 0 ELSE (CASE WHEN A.id_tipo_movimento = 8 THEN 0.5 * A.ammontare ELSE (case when id_tipo_soldi = 11 then A.ammontare * B.quota * -1 ELSE 0 END) END) END AS perso, id_valuta, " +
+            "CASE WHEN B.id_socio = 3 AND A.id_tipo_movimento = 8 THEN 0 ELSE (CASE WHEN A.id_tipo_movimento = 8 THEN 0.5 * A.ammontare ELSE A.ammontare * B.quota END) END AS guadagnato, id_valuta, " +
             "data_movimento, Causale, A.id_quote_periodi, A.id_fineco_euro FROM conto_corrente A, quote_guadagno B, gestioni C WHERE A.id_quote_periodi = B.id_quote_periodi AND " +
             "A.id_gestione = C.id_gestione AND A.id_fineco_euro = @id_fineco_euro ) AS BB WHERE guadagni_totale_anno.id_socio = BB.id_socio AND id_conto_corrente = BB.id_fineco_euro;";
 

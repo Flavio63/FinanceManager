@@ -61,12 +61,22 @@ namespace FinanceManager.Services
         /// </summary>
         /// <param name="RecordContoCorrente">record conto corrente con i dati</param>
         void AddSingoloGuadagno(ContoCorrente RecordContoCorrente);
-        void DeleteRecordGuadagno_Totale_anno(int id_quota);
         /// <summary>
         /// Tramite l'ultimo record conto_corrente inserito
-        /// calcolo e inserisco le quote guadagno per ogni singolo socio
+        /// calcolo e inserisco le quote delle perdite per ogni singolo socio
+        /// </summary>
+        /// <param name="RecordContoCorrente">record conto corrente con i dati</param>
+        void DeleteRecordGuadagno_Totale_anno(int id_quota);
+        /// <summary>
+        /// Tramite l'ultimo record conto_corrente modificate
+        /// calcolo e modifico le quote guadagno per ogni singolo socio
         /// </summary>
         /// <param name="RecordContoCorrente">record conto corrente con i dati</param>
         void ModifySingoloGuadagno(ContoCorrente RecordContoCorrente);
+        /// <summary>
+        /// Tramite l'ultimo record conto_corrente modificato
+        /// calcolo e modifico le quote delle perdite per ogni singolo socio
+        /// </summary>
+        /// <param name="RecordContoCorrente">record conto corrente con i dati</param>
     }
 }

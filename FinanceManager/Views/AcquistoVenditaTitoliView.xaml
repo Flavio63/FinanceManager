@@ -92,7 +92,7 @@
                 <TextBlock Grid.Row="2" Text="La gestione" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"/>
                 <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding ListGestioni, UpdateSourceTrigger=PropertyChanged}"
                           IsEnabled="{Binding CanModifyBaseParameters, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                          SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione" Margin="5, 2" MinWidth="100"
+                          SelectedValuePath="Id_Gestione" DisplayMemberPath="Nome_Gestione" Margin="5, 2" MinWidth="100"
                           SelectedValue="{Binding RecordPortafoglioTitoli.Id_gestione}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="SelectionChanged">
