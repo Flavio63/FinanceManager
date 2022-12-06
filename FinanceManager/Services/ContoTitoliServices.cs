@@ -298,7 +298,6 @@ namespace FinanceManager.Services
                     dbComm.Parameters.AddWithValue("disaggio_cedole", managerLiquidAsset.Disaggio_anticipo_cedole);
                     dbComm.Parameters.AddWithValue("ritenuta_fiscale", managerLiquidAsset.RitenutaFiscale);
                     dbComm.Parameters.AddWithValue("valore_cambio", managerLiquidAsset.Valore_di_cambio);
-                    dbComm.Parameters.AddWithValue("profit_loss", managerLiquidAsset.ProfitLoss);
                     dbComm.Parameters.AddWithValue("disponibile", managerLiquidAsset.Available);
                     dbComm.Parameters.AddWithValue("note", managerLiquidAsset.Note);
                     dbComm.Parameters.AddWithValue("attivo", managerLiquidAsset.Attivo);
@@ -360,9 +359,9 @@ namespace FinanceManager.Services
                         ptf_CC.RitenutaFiscale = row.Field<double>("ritenuta_fiscale");
                         ptf_CC.Valore_di_cambio = row.Field<double>("valore_cambio");
                         ptf_CC.Note = row.Field<string>("note");
-                        ptf_CC.Id_RowConto = (int)row.Field<long>("id_fineco_euro");
-                        ptf_CC.Valore_in_CC = row.Field<double>("Valore_in_CC");
-                        ptf_CC.Id_Tipo_Soldi = (int)row.Field<long>("id_tipo_soldi");
+                        ptf_CC.Id_RowConto = row.Field<object>("id_fineco_euro") == null ? 0 : (int)row.Field<long>("id_fineco_euro");
+                        ptf_CC.Valore_in_CC = row.Field<object>("id_fineco_euro") == null ? 0 : row.Field<double>("Valore_in_CC");
+                        ptf_CC.Id_Tipo_Soldi = row.Field<object>("id_fineco_euro") == null ? 0 : (int)row.Field<long>("id_tipo_soldi");
                         _CCs.Add(ptf_CC);
                     }
                 }

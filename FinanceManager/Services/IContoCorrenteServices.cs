@@ -11,6 +11,12 @@ namespace FinanceManager.Services
     public interface IContoCorrenteServices
     {
         /// <summary>
+        /// Restituisce un record del conto corrente
+        /// </summary>
+        /// <param name="idContoCorrente">Id del record</param>
+        /// <returns>Record Conto Corrente</returns>
+        ContoCorrente GetContoCorrenteByIdCC(int idContoCorrente);
+        /// <summary>
         /// Estrae tutti i record della tabella ContoCorrente
         /// </summary>
         /// <returns>Lista di ContoCorrente</returns>

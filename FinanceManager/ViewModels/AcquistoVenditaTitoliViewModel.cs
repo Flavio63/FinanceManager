@@ -61,7 +61,7 @@ namespace FinanceManager.ViewModels
             {
                 // seleziono tutto tranne il conto base ------------------------------------------------
                 ListConti = new RegistryLocationList();
-                RegistryLocationList  ListaContiOriginale = new RegistryLocationList();
+                RegistryLocationList ListaContiOriginale = new RegistryLocationList();
                 ListaContiOriginale = _registryServices.GetRegistryLocationList();
                 var LCO = from conto in ListaContiOriginale
                           where conto.Id_Conto > 1
@@ -80,7 +80,7 @@ namespace FinanceManager.ViewModels
                 RegistryMovementTypeList listaOriginale = new RegistryMovementTypeList();
                 listaOriginale = _registryServices.GetRegistryMovementTypesList();
                 var RMTL = from movimento in listaOriginale
-                           where (movimento.Id_tipo_movimento == 5 || movimento.Id_tipo_movimento == 6)
+                           where (movimento.Id_tipo_movimento == 5 || movimento.Id_tipo_movimento == 6 || movimento.Id_tipo_movimento == 13 || movimento.Id_tipo_movimento == 14)
                            select movimento;
                 foreach (RegistryMovementType registry in RMTL)
                     ListMovimenti.Add(registry);
@@ -109,6 +109,7 @@ namespace FinanceManager.ViewModels
             TotalLocalValue = 0;
             TotaleContabile = 0;
             AmountChangedValue = 0;
+            SharesOwned = 0;
             try
             {
                 RecordPortafoglioTitoli = new PortafoglioTitoli();
@@ -234,17 +235,17 @@ namespace FinanceManager.ViewModels
                         RecordPortafoglioTitoli.Costo_unitario_in_valuta = Convert.ToDouble(TB.Text);
                         break;
                     case "doubleNShares":
-                        if (RecordPortafoglioTitoli.Id_tipo_movimento == 5 && Convert.ToDouble(TB.Text) > 0)
+                        if ((RecordPortafoglioTitoli.Id_tipo_movimento == 5 || RecordPortafoglioTitoli.Id_tipo_movimento == 14) && Convert.ToDouble(TB.Text) > 0)
                         {
                             RecordPortafoglioTitoli.N_titoli = Convert.ToDouble(TB.Text);
                         }
-                        else if (RecordPortafoglioTitoli.Id_tipo_movimento == 6 && Convert.ToDouble(TB.Text) < 0)
+                        else if ((RecordPortafoglioTitoli.Id_tipo_movimento == 6 || RecordPortafoglioTitoli.Id_tipo_movimento == 13) && Convert.ToDouble(TB.Text) < 0)
                         {
                             RecordPortafoglioTitoli.N_titoli = Convert.ToDouble(TB.Text);
                         }
                         else
                         {
-                            MessageBox.Show("Inserire un importo positivo se si compra o negativo se si vende.", "DAF-C registrazione movimenti titoli", MessageBoxButton.OK, MessageBoxImage.Information);
+                            MessageBox.Show("Inserire un importo positivo se Apri Long / Chiudi Short, negativo se Chiudi Long / Apri Short", "DAF-C registrazione movimenti titoli", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                         break;
                     case "doubleCommissionValue":
@@ -283,7 +284,7 @@ namespace FinanceManager.ViewModels
                     -1 * (RecordPortafoglioTitoli.Costo_unitario_in_valuta * RecordPortafoglioTitoli.N_titoli) / 100;
                 ImportoTotale = RecordPortafoglioTitoli.Importo_totale;
 
-                if (RecordPortafoglioTitoli.Id_tipo_movimento == 5) //acquisto
+                if (RecordPortafoglioTitoli.Id_tipo_movimento == 5 || RecordPortafoglioTitoli.Id_tipo_movimento == 14) //acquisto
                 {
                     // totale 2 valore transazione più commissioni (negativo in caso di acquisto)
                     TotalLocalValue = RecordPortafoglioTitoli.Importo_totale + RecordPortafoglioTitoli.Commissioni_totale * -1;
@@ -309,7 +310,7 @@ namespace FinanceManager.ViewModels
                         DisaggioOk = false;
                     }
                 }
-                else if (RecordPortafoglioTitoli.Id_tipo_movimento == 6) //vendita
+                else if (RecordPortafoglioTitoli.Id_tipo_movimento == 6 || RecordPortafoglioTitoli.Id_tipo_movimento == 13) //vendita
                 {
                     // totale 2 valore transazione più commissioni (positivo in caso di vendita)
                     TotalLocalValue = RecordPortafoglioTitoli.Importo_totale - RecordPortafoglioTitoli.Commissioni_totale;
@@ -707,28 +708,40 @@ namespace FinanceManager.ViewModels
 
         private bool VerificheDati()
         {
-            if (RecordPortafoglioTitoli.Id_portafoglio ==  0)
+            if (RecordPortafoglioTitoli.Id_portafoglio == 0)
             {
-                // verifico la disponibilità utilizzando i paramentri inseriti con tipo_soldi "Capitale"
-                ContoCorrenteList CCL = _contoCorrenteServices.GetTotalAmountByAccount(RecordPortafoglioTitoli.Id_Conto, IdGestione: RecordPortafoglioTitoli.Id_gestione, 
-                    IdValuta: RecordPortafoglioTitoli.Id_valuta, IdTipoSoldi: 1);
-                if (CCL.Count > 0)
-                    CurrencyAvailable = CCL[0].Ammontare;
-                else
+                if (RecordPortafoglioTitoli.Id_tipo_movimento == 5)
                 {
-                    MessageBox.Show("Non hai abbastanza soldi per questo acquisto!", "Acquisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                    return false;
-                }
-                if (CurrencyAvailable < Math.Abs(TotalLocalValue) && RecordPortafoglioTitoli.Id_tipo_movimento == 5)
-                {
-                    MessageBox.Show("Non hai abbastanza soldi per questo acquisto!", "Acquisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                    return false;
+                    // verifico la disponibilità utilizzando i paramentri inseriti con tipo_soldi "Capitale"
+                    ContoCorrenteList CCL = _contoCorrenteServices.GetTotalAmountByAccount(RecordPortafoglioTitoli.Id_Conto, IdGestione: RecordPortafoglioTitoli.Id_gestione,
+                        IdValuta: RecordPortafoglioTitoli.Id_valuta, IdTipoSoldi: 1);
+                    if (CCL.Count > 0)
+                        CurrencyAvailable = CCL[0].Ammontare;
+                    else
+                    {
+                        MessageBox.Show("Non hai soldi!", "Acquisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                        return false;
+                    }
+                    if (CurrencyAvailable < Math.Abs(TotalLocalValue))
+                    {
+                        MessageBox.Show("Non hai abbastanza soldi per questo acquisto!", "Acquisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                        return false;
+                    }
                 }
                 SharesOwned = _contoTitoliServices.GetSharesQuantity(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto, (uint)RecordPortafoglioTitoli.Id_titolo);
-                if ((SharesOwned == 0 || SharesOwned < RecordPortafoglioTitoli.N_titoli * -1) && RecordPortafoglioTitoli.Id_tipo_movimento == 6)
+                if ((SharesOwned < RecordPortafoglioTitoli.N_titoli * -1) && RecordPortafoglioTitoli.Id_tipo_movimento == 6)
                 {
-                    MessageBox.Show("C'è un problema sul numero di titoli da vendere!", "Acuisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return false;
+                    if (SharesOwned == 0)
+                    {
+                        var r = MessageBox.Show("Sembra che si stia aprendo una posizione short. E' corretto?", "Acquisto Vendita Titoli", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        if (r == MessageBoxResult.No) return false;
+                    }
+                    else
+                    {
+                        MessageBox.Show(String.Format("Possiedi {0} titoli e ne stai vendendo {1} .", SharesOwned, RecordPortafoglioTitoli.N_titoli) + Environment.NewLine +
+                        "Eventualmente prima chiudi l'operazione long e poi apri la short.", "Acquisto Vendita Titoli", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return false;
+                    }
                 }
             }
             if ((RecordPortafoglioTitoli.Id_tipo_movimento == 5 && RecordPortafoglioTitoli.N_titoli < 0) ||
@@ -744,6 +757,313 @@ namespace FinanceManager.ViewModels
         #endregion
 
         #region command
+        public void SaveCommand(object param)
+        {
+            try
+            {
+                if (!VerificheDati()) return;
+                if (RecordPortafoglioTitoli.Id_tipo_movimento == 5)
+                {
+                    PortafoglioTitoli MLA = new PortafoglioTitoli();
+                    try
+                    {
+                        _contoTitoliServices.AddMovimentoTitoli(RecordPortafoglioTitoli);    // ho inserito il movimento in portafoglio
+                    }
+                    catch (Exception err)
+                    {
+                        MessageBox.Show("Errore nel caricamento in conto titoli: " + Environment.NewLine +
+                            err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                    try
+                    {
+                        // ricarico l'ultimo record
+                        MLA = _contoTitoliServices.GetLastShareMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto);
+                        _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(MLA, TotaleContabile,
+                            RecordPortafoglioTitoli.Id_tipo_movimento == 5 ? TipologiaSoldi.Capitale : TipologiaSoldi.Utili_Lordi,
+                            _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
+                        ListPortafoglioTitoli = _contoTitoliServices.GetListTitoliByOwnerAndLocation();
+                    }
+                    catch (Exception err)
+                    {
+                        // questo errore determina l'eliminazione dell'inserimento nel conto titoli
+                        _contoTitoliServices.DeleteManagerLiquidAsset(MLA.Id_portafoglio);
+                        MessageBox.Show("Errore nella registrazione in conto corrente, " + Environment.NewLine +
+                            "è stato eliminato anche l'inserimento in conto titoli" + Environment.NewLine +
+                            err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                }
+                else if (RecordPortafoglioTitoli.Id_tipo_movimento == 6)
+                {
+                    // estraggo tutti gli acquisti / vendite del titolo ancora attive
+                    Ptf_CCList ptf_CCs = _contoTitoliServices.GetListaTitoliAttiviByContoGestioneTitolo(RecordPortafoglioTitoli.Id_gestione,
+                        RecordPortafoglioTitoli.Id_Conto, (int)RecordPortafoglioTitoli.Id_titolo);
+                    double valoreAcquisto = 0;      // n. azioni per costo unitario in valuta
+                    double numeroAzioni = 0;        // n. azioni
+                    foreach (Ptf_CC row in ptf_CCs)
+                    {
+                        //se il movimento estratto è un acquisto e per tutti gli acquisti consecutivi ne sommo costo e quote:
+                        if (row.Id_tipo_movimento == 5)
+                        {
+                            //nel caso sia stato comprato in euro e adesso in maschera c'è un valore diverso da euro
+                            if (row.Id_valuta == 1 && RecordPortafoglioTitoli.Id_valuta != 1)
+                            {
+                                valoreAcquisto += (row.ValoreAzione + (row.Commissioni_totale + row.Disaggio_anticipo_cedole) * -1) * row.Valore_di_cambio;
+                            }
+                            //nel caso sia stato comprato e venduto in una valuta diversa da euro
+                            else if (row.Id_valuta == RecordPortafoglioTitoli.Id_valuta && row.Id_valuta != 1)
+                            {
+                                valoreAcquisto += row.ValoreAzione + (row.Commissioni_totale + row.Disaggio_anticipo_cedole) * -1;
+                            }
+                            //nel caso sia stato comprato e venduto in euro
+                            else
+                            {
+                                valoreAcquisto += row.ValoreAzione + (row.Commissioni_totale + row.TobinTax + row.Disaggio_anticipo_cedole) * -1;
+                            }
+                            numeroAzioni += row.N_titoli;
+                        }
+                        //se il movimento estratto è una vendita e che non sia lo stessa vendita
+                        else if ((row.Id_tipo_movimento == 6 && row.Id_portafoglio_titoli != RecordPortafoglioTitoli.Id_portafoglio && row.Id_Tipo_Soldi == 1))
+                        {
+                            //nel caso i precedenti movimenti (acquisti) e questa vendita NON azzerino il totale azioni
+                            //vuol dire che sono rimasti dei pezzi invenduti e quindi ne calcolo il costo medio rimanente
+                            if (numeroAzioni + row.N_titoli != 0)
+                            {
+                                valoreAcquisto = valoreAcquisto / numeroAzioni * (numeroAzioni + row.N_titoli);
+                                numeroAzioni += row.N_titoli;
+                            }
+                        }
+                    }
+                    //ciclo del passato finito calcolo il profit loss nel caso di vendita totale
+                    if (numeroAzioni + RecordPortafoglioTitoli.N_titoli == 0)
+                    {
+                        // disattivo tutti i record coinvolti e uniformo il link_movimenti
+                        foreach (Ptf_CC row in ptf_CCs)
+                        {
+                            if (row.Id_Tipo_Soldi == 1)
+                            {
+                                PortafoglioTitoli pt = _contoTitoliServices.GetPortafoglioTitoliById(row.Id_portafoglio_titoli);
+                                pt.Attivo = 0;
+                                pt.Link_Movimenti = RecordPortafoglioTitoli.Link_Movimenti;
+                                _contoTitoliServices.UpdateMovimentoTitoli(pt);
+                            }
+                        }
+                        RecordPortafoglioTitoli.Attivo = 0;
+                        _contoTitoliServices.AddMovimentoTitoli(RecordPortafoglioTitoli);    // ho inserito il movimento in portafoglio titoli
+                                                                                             // ricarico l'ultimo record
+                        RecordPortafoglioTitoli = _contoTitoliServices.GetLastShareMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto);
+                        if (valoreAcquisto + TotaleContabile > 0 && RecordPortafoglioTitoli.Id_tipo_movimento == 6)
+                        {
+                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto * -1, TipologiaSoldi.Capitale,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
+                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile,
+                                RecordPortafoglioTitoli.Id_gestione == 7 ? TipologiaSoldi.Utili_da_Volatili : TipologiaSoldi.Utili_da_Vendite,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
+                            //inserisco gli utili per quota soci
+                            _quoteServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile,
+                                RecordPortafoglioTitoli.Id_gestione == 7 ? TipologiaSoldi.Utili_da_Volatili : TipologiaSoldi.Utili_da_Vendite,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
+
+                        }
+                        else if (valoreAcquisto + TotaleContabile < 0 && RecordPortafoglioTitoli.Id_tipo_movimento == 6)
+                        {
+                            //per inserire le perdite di capitale nella tabella dei guadagni totale anno si deve cercare il periodo quote
+                            //con la tipologia soldi degli utili(sempre uguale per la gestione rubiu e no rubiu)
+                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
+                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, (TotaleContabile + valoreAcquisto) * -1, TipologiaSoldi.PerditaCapitale,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
+                            _quoteServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.PerditaCapitale,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
+                        }
+                    }
+                    else //e nel caso di vendita parziale
+                    {
+                        // uniformo il link_movimenti
+                        foreach (Ptf_CC row in ptf_CCs)
+                        {
+                            if (row.Id_Tipo_Soldi == 1)
+                            {
+                                PortafoglioTitoli pt = _contoTitoliServices.GetPortafoglioTitoliById(row.Id_portafoglio_titoli);
+                                pt.Link_Movimenti = RecordPortafoglioTitoli.Link_Movimenti;
+                                _contoTitoliServices.UpdateMovimentoTitoli(pt);
+                            }
+                        }
+                        _contoTitoliServices.AddMovimentoTitoli(RecordPortafoglioTitoli);
+                        RecordPortafoglioTitoli = _contoTitoliServices.GetLastShareMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto);
+                        valoreAcquisto = valoreAcquisto / numeroAzioni * RecordPortafoglioTitoli.N_titoli * -1;
+                        if (valoreAcquisto + TotaleContabile > 0 && RecordPortafoglioTitoli.Id_tipo_movimento == 6)
+                        {
+                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto * -1, TipologiaSoldi.Capitale,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
+                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile,
+                                RecordPortafoglioTitoli.Id_gestione == 7 ? TipologiaSoldi.Utili_da_Volatili : TipologiaSoldi.Utili_da_Vendite,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
+                            //inserisco gli utili per quota soci
+                            _quoteServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile,
+                                RecordPortafoglioTitoli.Id_gestione == 7 ? TipologiaSoldi.Utili_da_Volatili : TipologiaSoldi.Utili_da_Vendite,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
+                        }
+                        else if (valoreAcquisto + TotaleContabile < 0 && RecordPortafoglioTitoli.Id_tipo_movimento == 6)
+                        {
+                            //per inserire le perdite di capitale nella tabella dei guadagni totale anno si deve cercare il periodo quote
+                            //con la tipologia soldi degli utili(sempre uguale per la gestione rubiu e no rubiu)
+                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
+                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, (TotaleContabile + valoreAcquisto) * -1, TipologiaSoldi.PerditaCapitale,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
+                            //inserisco le perdite per quota soci
+                            _quoteServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.PerditaCapitale,
+                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
+                        }
+
+                    }
+                }
+                else if (RecordPortafoglioTitoli.Id_tipo_movimento == 13)
+                {
+                    try
+                    {
+                        _contoTitoliServices.AddMovimentoTitoli(RecordPortafoglioTitoli);    // ho inserito il movimento in portafoglio
+                    }
+                    catch (Exception err)
+                    {
+                        MessageBox.Show("Errore nel caricamento in conto titoli: " + Environment.NewLine +
+                            err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                }
+                else if (RecordPortafoglioTitoli.Id_tipo_movimento == 14)
+                {
+                    // estraggo tutti gli acquisti / vendite del titolo ancora attive
+                    Ptf_CCList ptf_CCs = _contoTitoliServices.GetListaTitoliAttiviByContoGestioneTitolo(RecordPortafoglioTitoli.Id_gestione,
+                        RecordPortafoglioTitoli.Id_Conto, (int)RecordPortafoglioTitoli.Id_titolo);
+                    for (int x = 0; x < ptf_CCs.Count; x++)
+                    {
+                        if (RecordPortafoglioTitoli.N_titoli + ptf_CCs[x].N_titoli == 0)
+                        {
+                            PortafoglioTitoli pt = _contoTitoliServices.GetPortafoglioTitoliById(ptf_CCs[x].Id_portafoglio_titoli);
+                            pt.Attivo = 0;  // cambio lo stato da attivo a non attivo
+                            pt.Link_Movimenti = RecordPortafoglioTitoli.Link_Movimenti; // uniformo i link in modo da poter ricostruire il legame
+                            _contoTitoliServices.UpdateMovimentoTitoli(pt);
+                            double valContabileApShort = pt.Importo_totale - (pt.RitenutaFiscale + pt.Commissioni_totale + pt.TobinTax);
+                            double valContabileChiusura = RecordPortafoglioTitoli.Importo_totale - 
+                                (RecordPortafoglioTitoli.Commissioni_totale + RecordPortafoglioTitoli.RitenutaFiscale + RecordPortafoglioTitoli.TobinTax);
+                            RegistrazioneProfit_Loss(valContabileApShort, valContabileChiusura, pt, RecordPortafoglioTitoli);
+                            // esco dal cilco for in quanto ho concluso l'analisi del Record di chiusura short
+                            break;
+                        }
+                        else if (RecordPortafoglioTitoli.N_titoli + ptf_CCs[x].N_titoli > 0)
+                        {
+                            PortafoglioTitoli pt = _contoTitoliServices.GetPortafoglioTitoliById(ptf_CCs[x].Id_portafoglio_titoli);
+                            pt.Attivo = 0;  // cambio lo stato da attivo a non attivo in quanto i titoli ricomprati sono maggiori di quelli venduti
+                            pt.Link_Movimenti = RecordPortafoglioTitoli.Link_Movimenti; // uniformo i link in modo da poter ricostruire il legame
+                            _contoTitoliServices.UpdateMovimentoTitoli(pt);     // aggiorno il record di apertura
+                            // modifico i dati essenziali
+                            PortafoglioTitoli pt1 = (PortafoglioTitoli)RecordPortafoglioTitoli.Clone();
+                            pt1.Commissioni_totale = RecordPortafoglioTitoli.Commissioni_totale / RecordPortafoglioTitoli.N_titoli * pt.N_titoli * -1;
+                            pt1.RitenutaFiscale = RecordPortafoglioTitoli.RitenutaFiscale / RecordPortafoglioTitoli.N_titoli * pt.N_titoli * -1;
+                            pt1.TobinTax = RecordPortafoglioTitoli.TobinTax / RecordPortafoglioTitoli.N_titoli * pt.N_titoli * -1;
+                            pt1.Importo_totale = RecordPortafoglioTitoli.Importo_totale / RecordPortafoglioTitoli.N_titoli * pt.N_titoli * -1;
+                            pt1.N_titoli = pt.N_titoli * -1;
+                            // Modifico RecordPortafoglioTitoli in base a quanto già considerato
+                            RecordPortafoglioTitoli.N_titoli = RecordPortafoglioTitoli.N_titoli - pt1.N_titoli;
+                            RecordPortafoglioTitoli.Commissioni_totale = RecordPortafoglioTitoli.Commissioni_totale - pt1.Commissioni_totale;
+                            RecordPortafoglioTitoli.RitenutaFiscale = RecordPortafoglioTitoli.RitenutaFiscale - pt1.RitenutaFiscale;
+                            RecordPortafoglioTitoli.TobinTax = RecordPortafoglioTitoli.TobinTax - pt1.TobinTax;
+                            RecordPortafoglioTitoli.Importo_totale = RecordPortafoglioTitoli.Importo_totale - pt1.Importo_totale;
+                            double valContabileApShort = pt.Importo_totale - (pt.RitenutaFiscale + pt.Commissioni_totale + pt.TobinTax);
+                            double valContabileChiusura = pt1.Importo_totale - (pt1.Commissioni_totale + pt1.RitenutaFiscale + pt1.TobinTax);
+                            RegistrazioneProfit_Loss(valContabileApShort, valContabileChiusura, pt, pt1);
+                            // proseguo con il ciclo for in quanto il record di chiusura ha ancora dei titoli da confrontare
+                        }
+                        else if (RecordPortafoglioTitoli.N_titoli + ptf_CCs[x].N_titoli < 0)
+                        {
+                            PortafoglioTitoli pt = _contoTitoliServices.GetPortafoglioTitoliById(ptf_CCs[x].Id_portafoglio_titoli);
+                            // duplico il file pt e modifico i dati in proporzione a quanto riacquistato
+                            PortafoglioTitoli pt1 = _contoTitoliServices.GetPortafoglioTitoliById(ptf_CCs[x].Id_portafoglio_titoli);
+                            pt1.N_titoli = RecordPortafoglioTitoli.N_titoli * -1;   // TITOLI VENDUTI E ACQUISTATI PARITETICI
+                            pt1.Commissioni_totale = pt1.Commissioni_totale / pt.N_titoli * RecordPortafoglioTitoli.N_titoli * -1; // COMMISSIONI VENDUTI PROPORZIONALI
+                            pt1.RitenutaFiscale = pt1.RitenutaFiscale / pt.N_titoli * RecordPortafoglioTitoli.N_titoli * -1;
+                            pt1.TobinTax = pt1.TobinTax / pt1.N_titoli * RecordPortafoglioTitoli.N_titoli * -1;
+                            pt1.Importo_totale = pt1.Importo_totale / pt.N_titoli * RecordPortafoglioTitoli.N_titoli * -1;          // IMPORTO ACQUISTATI PROPORZIONALI
+                            pt1.Attivo = 0;                                                 // imposto lo stato a disattivato
+                            pt1.Link_Movimenti = RecordPortafoglioTitoli.Link_Movimenti;    // uniformo il link di collegamento
+                            pt.N_titoli = pt.N_titoli - pt1.N_titoli;
+                            pt.Commissioni_totale = pt.Commissioni_totale - pt1.Commissioni_totale;
+                            pt.RitenutaFiscale = pt.RitenutaFiscale - pt1.RitenutaFiscale;
+                            pt.TobinTax = pt.TobinTax - pt1.TobinTax;
+                            pt.Importo_totale = pt.Importo_totale - pt1.Importo_totale;
+                            // aggiorno il record in conto titoli e inserisco "l'avanzo" come nuovo movimento titoli
+                            _contoTitoliServices.UpdateMovimentoTitoli(pt1);
+                            _contoTitoliServices.AddMovimentoTitoli(pt);
+                            double valContabileApShort = pt1.Importo_totale - (pt1.Commissioni_totale + pt1.RitenutaFiscale + pt1.TobinTax);
+                            double valContabileChiusura = RecordPortafoglioTitoli.Importo_totale - 
+                                (RecordPortafoglioTitoli.Commissioni_totale + RecordPortafoglioTitoli.RitenutaFiscale + RecordPortafoglioTitoli.TobinTax);
+                            RegistrazioneProfit_Loss(valContabileApShort, valContabileChiusura, pt1, RecordPortafoglioTitoli);
+                            // chiudo il ciclo for in quanto il record di chiusura è stato analizzato
+                            break;
+                        }
+                    }
+                }
+                Init();
+                MessageBox.Show("Record caricato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show("Problemi nel caricamento del record: " + Environment.NewLine +
+                    err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void RegistrazioneProfit_Loss(double contabileApertura, double contabileChiusura, PortafoglioTitoli ptApertura, PortafoglioTitoli ptChiusura)
+        {
+            double profitLoss = contabileApertura + contabileChiusura;
+            if (profitLoss > 0)
+            {
+                // inserisco nel conto corrente l'apertura dello short con il valore di chiusura
+                _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(ptApertura, contabileChiusura * -1, TipologiaSoldi.Capitale,
+                    _quoteServices.GetIdPeriodoQuote(ptApertura.Data_Movimento, ptApertura.Id_gestione)));
+                // inserisco la chiusura dello short nel conto titoli disattivando il record
+                ptChiusura.Attivo = 0;
+                _contoTitoliServices.AddMovimentoTitoli(ptChiusura);
+                // richiamo il record per averne l'id di riga
+                PortafoglioTitoli ptt = _contoTitoliServices.GetLastShareMovementByOwnerAndLocation(ptChiusura.Id_gestione, RecordPortafoglioTitoli.Id_Conto);
+                // inserisco la chiusura dello short nel conto corrente
+                _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(ptt, contabileChiusura, TipologiaSoldi.Capitale,
+                    _quoteServices.GetIdPeriodoQuote(ptChiusura.Data_Movimento, ptChiusura.Id_gestione)));
+                // inserisco il profit nel conto corrente
+                _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(ptt, profitLoss, TipologiaSoldi.Utili_da_Volatili,
+                    _quoteServices.GetIdPeriodoQuote(ptChiusura.Data_Movimento, ptChiusura.Id_gestione)));
+                // recupero il record del conto corrente
+                ContoCorrente conto = _contoCorrenteServices.GetLastContoCorrente();
+                // inserisco il profit per quote societari
+                _quoteServices.AddSingoloGuadagno(conto);
+            }
+            else
+            {
+                // inserisco nel conto corrente l'apertura dello short con il suo valore
+                _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(ptApertura, contabileApertura, TipologiaSoldi.Capitale,
+                    _quoteServices.GetIdPeriodoQuote(ptApertura.Data_Movimento, ptApertura.Id_gestione)));
+                ptChiusura.Attivo = 0;
+                // inserisco la chiusura dello short nel conto titoli .....
+                _contoTitoliServices.AddMovimentoTitoli(ptChiusura);
+                // richiamo il record per averne l'id di riga
+                PortafoglioTitoli ptt = _contoTitoliServices.GetLastShareMovementByOwnerAndLocation(ptChiusura.Id_gestione, ptChiusura.Id_Conto);
+                // inserisco la chiusura dello short nel conto corrente con il valore dell'apertura
+                _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(ptt, contabileChiusura, TipologiaSoldi.Capitale,
+                    _quoteServices.GetIdPeriodoQuote(ptChiusura.Data_Movimento, ptChiusura.Id_gestione)));
+                // inserisco la perdita nel conto corrente
+                _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(ptt, profitLoss, TipologiaSoldi.PerditaCapitale,
+                    _quoteServices.GetIdPeriodoQuote(ptChiusura.Data_Movimento, ptChiusura.Id_gestione)));
+                // recupero il record del conto corrente
+                ContoCorrente conto = _contoCorrenteServices.GetLastContoCorrente();
+                // inserisco il profit per quote societari
+                _quoteServices.AddSingoloGuadagno(conto);
+            }
+
+        }
+
         private void UpdateDB()
         {
             try
@@ -756,7 +1076,7 @@ namespace FinanceManager.ViewModels
                     // il record in modifica è l'unico
                     _contoTitoliServices.UpdateMovimentoTitoli(RecordPortafoglioTitoli);
                     _contoCorrenteServices.UpdateRecordContoCorrente(new ContoCorrente(
-                        RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale, 
+                        RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale,
                         _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)), TipologiaIDContoCorrente.IdContoTitoli);
                 }
                 else
@@ -779,7 +1099,7 @@ namespace FinanceManager.ViewModels
                             if (pt.Id_portafoglio == RecordPortafoglioTitoli.Id_portafoglio)
                             {
                                 _contoCorrenteServices.UpdateRecordContoCorrente(
-                                    new ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale, 
+                                    new ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale,
                                     _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)), TipologiaIDContoCorrente.IdContoTitoli);
                             }
                         }
@@ -803,7 +1123,7 @@ namespace FinanceManager.ViewModels
                             {
                                 CCcapitale = new ContoCorrente(pt, _valoreAcquisto * -1, TipologiaSoldi.Capitale,
                                     _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione));
-                                CCprofitloss = new ContoCorrente(pt, (_valoreAcquisto + _valoreVendita), 
+                                CCprofitloss = new ContoCorrente(pt, (_valoreAcquisto + _valoreVendita),
                                    pt.Id_gestione == 7 ? TipologiaSoldi.Utili_da_Volatili : TipologiaSoldi.Utili_da_Vendite,
                                     _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione));
 
@@ -844,177 +1164,6 @@ namespace FinanceManager.ViewModels
             {
                 MessageBox.Show("Problemi nel registrare le modifice ai records" + Environment.NewLine + err.Message, Application.Current.FindResource("DAF_Caption").ToString(),
                     MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        public void SaveCommand(object param)
-        {
-            try
-            {
-                if (!VerificheDati()) return;
-                if (RecordPortafoglioTitoli.Id_tipo_movimento == 5)
-                {
-                    PortafoglioTitoli MLA = new PortafoglioTitoli();
-                    try
-                    {
-                        _contoTitoliServices.AddMovimentoTitoli(RecordPortafoglioTitoli);    // ho inserito il movimento in portafoglio
-                    }
-                    catch (Exception err)
-                    {
-                        MessageBox.Show("Errore nel caricamento in conto titoli: " + Environment.NewLine +
-                            err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                    try
-                    {
-                        // ricarico l'ultimo record
-                        MLA = _contoTitoliServices.GetLastShareMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto);
-                        _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(MLA, TotaleContabile, TipologiaSoldi.Capitale,
-                            _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
-                        ListPortafoglioTitoli = _contoTitoliServices.GetListTitoliByOwnerAndLocation();
-                    }
-                    catch (Exception err)
-                    {
-                        // questo errore determina l'eliminazione dell'inserimento nel conto titoli
-                        _contoTitoliServices.DeleteManagerLiquidAsset(MLA.Id_portafoglio);
-                        MessageBox.Show("Errore nella registrazione in conto corrente, " + Environment.NewLine + 
-                            "è stato eliminato anche l'inserimento in conto titoli" + Environment.NewLine +
-                            err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                }
-                else if (RecordPortafoglioTitoli.Id_tipo_movimento == 6)
-                {
-                    // estraggo tutti gli acquisti / vendite del titolo ancora attive
-                    Ptf_CCList ptf_CCs = _contoTitoliServices.GetListaTitoliAttiviByContoGestioneTitolo(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto, (int)RecordPortafoglioTitoli.Id_titolo);
-                    double valoreAcquisto = 0;      // n. azioni per costo unitario in valuta
-                    double numeroAzioni = 0;        // n. azioni
-                    foreach (Ptf_CC row in ptf_CCs)
-                    {
-                        //se il movimento estratto è un acquisto e per tutti gli acquisti consecutivi ne sommo costo e quote:
-                        if (row.Id_tipo_movimento == 5)
-                        {
-                            //nel caso sia stato comprato in euro e adesso in maschera c'è un valore diverso da euro
-                            if (row.Id_valuta == 1 && RecordPortafoglioTitoli.Id_valuta != 1)
-                            {
-                                valoreAcquisto += (row.ValoreAzione + (row.Commissioni_totale + row.Disaggio_anticipo_cedole) * -1) * row.Valore_di_cambio;
-                            }
-                            //nel caso sia stato comprato e venduto in una valuta diversa da euro
-                            else if (row.Id_valuta == RecordPortafoglioTitoli.Id_valuta && row.Id_valuta != 1)
-                            {
-                                valoreAcquisto += row.ValoreAzione + (row.Commissioni_totale + row.Disaggio_anticipo_cedole) * -1;
-                            }
-                            //nel caso sia stato comprato e venduto in euro
-                            else
-                            {
-                                valoreAcquisto += row.ValoreAzione + (row.Commissioni_totale + row.TobinTax + row.Disaggio_anticipo_cedole) * -1;
-                            }
-                            numeroAzioni += row.N_titoli;
-                        }
-                        //se il movimento estratto è una vendita e che non sia lo stessa vendita
-                        else if (row.Id_tipo_movimento == 6 && row.Id_portafoglio_titoli != RecordPortafoglioTitoli.Id_portafoglio && row.Id_Tipo_Soldi == 1)
-                        {
-                            //nel caso i precedenti movimenti (acquisti) e questa vendita NON azzerino il totale azioni
-                            //vuol dire che sono rimasti dei pezzi invenduti e quindi ne calcolo il costo medio rimanente
-                            if (numeroAzioni + row.N_titoli != 0)
-                            {
-                                valoreAcquisto = valoreAcquisto / numeroAzioni * (numeroAzioni + row.N_titoli);
-                                numeroAzioni += row.N_titoli;
-                            }
-                        }
-                    }
-                    //ciclo del passato finito calcolo il profit loss nel caso di vendita totale
-                    if (numeroAzioni + RecordPortafoglioTitoli.N_titoli == 0)
-                    {
-                        // disattivo tutti i record coinvolti e uniformo il link_movimenti
-                        foreach (Ptf_CC row in ptf_CCs)
-                        {
-                            if (row.Id_Tipo_Soldi == 1)
-                            {
-                                PortafoglioTitoli pt = _contoTitoliServices.GetPortafoglioTitoliById(row.Id_portafoglio_titoli);
-                                pt.Attivo = 0;
-                                pt.Link_Movimenti = RecordPortafoglioTitoli.Link_Movimenti;
-                                _contoTitoliServices.UpdateMovimentoTitoli(pt);
-                            }
-                        }
-                        RecordPortafoglioTitoli.Attivo = 0;
-                        _contoTitoliServices.AddMovimentoTitoli(RecordPortafoglioTitoli);    // ho inserito il movimento in portafoglio titoli
-                        RecordPortafoglioTitoli = _contoTitoliServices.GetLastShareMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto); // ricarico l'ultimo record
-                        if (valoreAcquisto + TotaleContabile > 0)
-                        {
-                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto * -1, TipologiaSoldi.Capitale,
-                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
-                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile,
-                                RecordPortafoglioTitoli.Id_gestione == 7 ? TipologiaSoldi.Utili_da_Volatili : TipologiaSoldi.Utili_da_Vendite,
-                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
-                            //inserisco gli utili per quota soci
-                            _quoteServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile,
-                                RecordPortafoglioTitoli.Id_gestione == 7 ? TipologiaSoldi.Utili_da_Volatili : TipologiaSoldi.Utili_da_Vendite,
-                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
-
-                        }
-                        else if (valoreAcquisto + TotaleContabile < 0)
-                        {
-                            //per inserire le perdite di capitale nella tabella dei guadagni totale anno si deve cercare il periodo quote
-                            //con la tipologia soldi degli utili(sempre uguale per la gestione rubiu e no rubiu)
-                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale,
-                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
-                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, (TotaleContabile + valoreAcquisto) * -1, TipologiaSoldi.PerditaCapitale,
-                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
-                            _quoteServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.PerditaCapitale,
-                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
-                        }
-                    }
-                    else //e nel caso di vendita parziale
-                    {
-                        // uniformo il link_movimenti
-                        foreach (Ptf_CC row in ptf_CCs)
-                        {
-                            if (row.Id_Tipo_Soldi == 1)
-                            {
-                                PortafoglioTitoli pt = _contoTitoliServices.GetPortafoglioTitoliById(row.Id_portafoglio_titoli);
-                                pt.Link_Movimenti = RecordPortafoglioTitoli.Link_Movimenti;
-                                _contoTitoliServices.UpdateMovimentoTitoli(pt);
-                            }
-                        }
-                        RecordPortafoglioTitoli.ProfitLoss = valoreAcquisto / numeroAzioni * RecordPortafoglioTitoli.N_titoli * -1 +
-                            (RecordPortafoglioTitoli.Importo_totale + (RecordPortafoglioTitoli.Commissioni_totale + RecordPortafoglioTitoli.TobinTax +
-                            RecordPortafoglioTitoli.Disaggio_anticipo_cedole + RecordPortafoglioTitoli.RitenutaFiscale) * -1);
-
-                        _contoTitoliServices.AddMovimentoTitoli(RecordPortafoglioTitoli);
-                        RecordPortafoglioTitoli = _contoTitoliServices.GetLastShareMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto);
-                        valoreAcquisto = valoreAcquisto / numeroAzioni * RecordPortafoglioTitoli.N_titoli * -1;
-                        if (valoreAcquisto + TotaleContabile > 0)
-                        {
-                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto * -1, TipologiaSoldi.Capitale,
-                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
-                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile,
-                                RecordPortafoglioTitoli.Id_gestione == 7 ? TipologiaSoldi.Utili_da_Volatili : TipologiaSoldi.Utili_da_Vendite,
-                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
-                            //inserisco gli utili per quota soci
-                            _quoteServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile,
-                                RecordPortafoglioTitoli.Id_gestione == 7 ? TipologiaSoldi.Utili_da_Volatili : TipologiaSoldi.Utili_da_Vendite,
-                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
-                        }
-                        else if (valoreAcquisto + TotaleContabile < 0)
-                        {
-                            //per inserire le perdite di capitale nella tabella dei guadagni totale anno si deve cercare il periodo quote
-                            //con la tipologia soldi degli utili(sempre uguale per la gestione rubiu e no rubiu)
-                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, TotaleContabile, TipologiaSoldi.Capitale,
-                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
-                            _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, (TotaleContabile + valoreAcquisto) * -1, TipologiaSoldi.PerditaCapitale,
-                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
-                            //inserisco le perdite per quota soci
-                            _quoteServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile, TipologiaSoldi.PerditaCapitale,
-                                _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
-                        }
-                    }
-                }
-                Init();
-                MessageBox.Show("Record caricato!", Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            catch (Exception err)
-            {
-                MessageBox.Show("Problemi nel caricamento del record: " + Environment.NewLine +
-                    err.Message, Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

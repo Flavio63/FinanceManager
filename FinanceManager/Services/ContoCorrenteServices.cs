@@ -17,6 +17,31 @@ namespace FinanceManager.Services
             DAFconnection = iDAFconnection ?? throw new ArgumentNullException("Manca la stringa di connessione al db");
         }
 
+        /// <summary>
+        /// Restituisce un record del conto corrente
+        /// </summary>
+        /// <param name="idContoCorrente">Id del record</param>
+        /// <returns>Record Conto Corrente</returns>
+        public ContoCorrente GetContoCorrenteByIdCC(int idContoCorrente)
+        {
+            try
+            {
+                using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
+                {
+                    dataAdapter.SelectCommand = new SQLiteCommand();
+                    dataAdapter.SelectCommand.CommandText = ContoCorrenteScript.GetContoCorrenteByIdCC;
+                    dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dataAdapter.SelectCommand.Parameters.AddWithValue("id_fineco_euro", idContoCorrente);
+                    DataTable dt = new DataTable();
+                    dataAdapter.Fill(dt);
+                    return contoCorrente(dt.Rows[0]);
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
 
         /// <summary>
         /// Elimina un record dalla tabella conto_corrente
@@ -465,6 +490,7 @@ namespace FinanceManager.Services
             conto.Causale = dataRow.Field<string>("Causale");
             conto.Id_Tipo_Soldi = (int)dataRow.Field<long>("id_tipo_soldi");
             conto.Desc_Tipo_Soldi = dataRow.Field<string>("desc_tipo_soldi");
+            conto.Id_Quote_Periodi = (int)dataRow.Field<long>("id_quote_periodi");
             conto.Modified = dataRow.Field<DateTime>("modified");
             return conto;
         }

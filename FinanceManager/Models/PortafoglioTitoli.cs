@@ -42,19 +42,9 @@ namespace FinanceManager.Models
         public double TobinTax { get; set; }
         public double Disaggio_anticipo_cedole { get; set; }
         public double RitenutaFiscale { get; set; }
-        public double ProfitLoss { get; set; }
-
         public DateTime Data_Movimento { get; set; }
-        public double Importo_totale
-        {
-            get { return GetValue(() => Importo_totale); }
-            set { SetValue(() => Importo_totale, value); }
-        }
-        public double Valore_di_cambio
-        {
-            get { return GetValue(() => Valore_di_cambio); }
-            set { SetValue(() => Valore_di_cambio, value); }
-        }
+        public double Importo_totale { get; set; }
+        public double Valore_di_cambio { get; set; }
         public double Importo_cambiato { get; set; }
         public bool Available { get; set; }
         public string Note { get; set; }
@@ -89,6 +79,10 @@ namespace FinanceManager.Models
             Attivo = 1;
             Note = "";
             Link_Movimenti = DateTime.Now;
+        }
+        public object Clone()
+        {
+            return this.MemberwiseClone();
         }
     }
 }

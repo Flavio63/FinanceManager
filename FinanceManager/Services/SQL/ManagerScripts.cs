@@ -9,14 +9,9 @@ namespace FinanceManager.Services.SQL
     public class ManagerScripts
     {
         private static readonly string DescLimit1 = " DESC LIMIT 1 ";
-        private static readonly string AndModified = " AND A.modified = @modified ";
-        private static readonly string AndQuote = " AND A.id_quote_investimenti = @id_quote_investimenti ";
         private static readonly string AndGestione = " AND A.id_gestione = @id_gestione ";
         private static readonly string AndConto = " AND A.id_conto = @id_conto ";
         private static readonly string AndValuta = " AND A.id_valuta = @id_valuta ";
-        private static readonly string AndIdPortafoglioTitoli = " AND A.id_portafoglio_titoli = @id_portafoglio_titoli ";
-        private static readonly string AndIdFinecoEuro = " AND A.id_fineco_euro = @id_fineco_euro ";
-        private static readonly string DataMovimentoDesc = " data_movimento desc ";
         private static readonly string OrderBy = " ORDER BY ";
         private static readonly string GroupBy = " GROUP BY ";
         private static readonly string Comma = ", ";
@@ -24,7 +19,6 @@ namespace FinanceManager.Services.SQL
         private static readonly string AIdValuta = " A.id_valuta ";
         private static readonly string AIdQuoteInv = " A.id_quote_inv ";
         private static readonly string ADataMovimento = " A.data_movimento ";
-        private static readonly string AId_fineco_euro = " A.id_fineco_euro";
 
         private static readonly string GetTableQuote = "SELECT id_quote_inv, A.id_gestione, B.nome_gestione, A.id_tipo_movimento, C.desc_movimento, data_movimento, ammontare, A.id_valuta, " +
             "D.cod_valuta, A.valuta_base, A.valore_cambio, A.note FROM quote_investimenti A, gestioni B, tipo_movimento C, valuta D " +
@@ -72,26 +66,6 @@ namespace FinanceManager.Services.SQL
             "AND F.id_tipo_titoli = H.id_tipo_titoli AND F.id_azienda = I.id_azienda AND B.id_portafoglio_titoli = @owner AND C.id_conto = @id_conto AND id_titolo = @id_titolo " +
             "AND (id_movimento = 5 or id_movimento = 6) " +
             "ORDER BY data_movimento";
-
-        /// <summary>
-        /// Estrae tutti i movimenti di tutti i conti correnti di tutte le gestioni
-        /// </summary>
-        protected static readonly string ContoCorrente = "SELECT id_fineco_euro, A.id_conto, B.desc_conto, id_quote_investimenti, A.id_valuta, C.cod_valuta, id_portafoglio_titoli, A.id_tipo_movimento, " +
-            "D.desc_movimento, A.id_gestione, E.nome_gestione, A.id_titolo, F.isin, F.desc_titolo, data_movimento, ammontare, cambio, Causale, A.id_tipo_soldi, G.desc_tipo_soldi, modified " +
-            "FROM conto_corrente A, conti B, valuta C, tipo_movimento D, gestioni E, titoli F, tipo_soldi G " +
-            "WHERE A.id_conto = B.id_conto AND A.id_valuta = C.id_valuta AND A.id_tipo_movimento = D.id_tipo_movimento AND " +
-            "A.id_gestione = E.id_gestione AND A.id_titolo = F.id_titolo AND A.id_tipo_soldi = G.id_tipo_soldi AND id_fineco_euro > 0 ";
-        // varie opzioni sul conto corrente
-        public static readonly string GetContoCorrente = ContoCorrente + OrderBy + DataMovimentoDesc + Comma + AId_fineco_euro;
-        public static readonly string GetContoCorrenteByIdCC = ContoCorrente + AndIdFinecoEuro;
-        public static readonly string GetContoCorrenteByIdQuote = ContoCorrente + AndQuote + OrderBy + ADataMovimento;
-        public static readonly string Get2ContoCorrentes = ContoCorrente + AndModified + OrderBy + ADataMovimento + Comma + AId_fineco_euro;
-        public static readonly string GetContoCorrenteByIdPortafoglio = ContoCorrente + AndIdPortafoglioTitoli + OrderBy + AId_fineco_euro;
-
-        // aggiorno un record conto corrente sulla base dell'ID QUOTE INVESTIMENTI//
-        public static readonly string UpdateContoCorrenteByIdQuote = "UPDATE conto_corrente SET id_conto = @id_conto, id_valuta = @id_valuta, id_portafoglio_titoli = @id_portafoglio_titoli, " +
-            "id_tipo_movimento = @id_tipo_movimento, id_gestione = @id_gestione, id_titolo = @id_titolo, data_movimento = @data_movimento, ammontare = @ammontare, " +
-            "cambio = @cambio, Causale = @Causale, id_tipo_soldi = @id_tipo_soldi, id_quote_periodi = @id_quote_periodi WHERE id_quote_investimenti = @id_quote_investimenti";
 
         /// <summary>
         /// calcola le quote per investitore del guadagno
