@@ -41,8 +41,6 @@ namespace FinanceManager.ViewModels
             ModifyCommand = new CommandHandler(UpdateCommand, CanModify);
             ListValute = new RegistryCurrencyList();
             ListValute = _registryServices.GetRegistryCurrencyList();
-            tipoSoldis = new TipoSoldiList();
-            tipoSoldis = _registryServices.GetTipoSoldiList();
             //------------------- in doppio per i combo box Mittente e Ricevente ------------------------------
             ListGestioniMittente = new RegistryGestioniList();
             ListGestioniMittente = _registryServices.GetGestioneList();
@@ -56,6 +54,10 @@ namespace FinanceManager.ViewModels
             ListContoRicevente = _registryServices.GetRegistryLocationList();
             ListSociRicevente = new RegistrySociList();
             ListSociRicevente = _registryServices.GetSociList();
+            ListTSoldiMittente = new TipoSoldiList();
+            ListTSoldiMittente = _registryServices.GetTipoSoldiList();
+            ListTSoldiRicevente = new TipoSoldiList();
+            ListTSoldiRicevente = _registryServices.GetTipoSoldiList();
             //===================================================================================================
         }
 
@@ -93,9 +95,10 @@ namespace FinanceManager.ViewModels
             IdContoRicevente = 0;
             IdSocioRicevente = -1;
             IdGestioneRicevente = -1;
+            IdTSoldiMittente = -1;
+            IdTSoldiRicevente = -1;
             IdValuta = 0;
             Valore = 0;
-            IdTipoSoldi = 0;
         }
 
         #region Get_Set
@@ -227,10 +230,15 @@ namespace FinanceManager.ViewModels
             get { return GetValue(() => IdSocioRicevente); }
             set { SetValue(() => IdSocioRicevente, value); }
         }
-        public int IdTipoSoldi
+        public int IdTSoldiMittente
         {
-            get { return GetValue(() => IdTipoSoldi); }
-            set { SetValue(() => IdTipoSoldi, value); }
+            get { return GetValue(() => IdTSoldiMittente); }
+            set { SetValue(() => IdTSoldiMittente, value); }
+        }
+        public int IdTSoldiRicevente
+        {
+            get { return GetValue(() => IdTSoldiRicevente); }
+            set { SetValue(() => IdTSoldiRicevente, value); }
         }
 
         #endregion
@@ -291,10 +299,16 @@ namespace FinanceManager.ViewModels
             set { SetValue(() => ListValute, value); }
         }
 
-        public TipoSoldiList tipoSoldis
+        public TipoSoldiList ListTSoldiMittente
         {
-            get { return GetValue(() => tipoSoldis); }
-            set { SetValue(() => tipoSoldis, value); }
+            get { return GetValue(() => ListTSoldiMittente); }
+            set { SetValue(() => ListTSoldiMittente, value); }
+        }
+
+        public TipoSoldiList ListTSoldiRicevente
+        {
+            get { return GetValue(() => ListTSoldiRicevente); }
+            set { SetValue(() => ListTSoldiRicevente, value); }
         }
         #endregion combobo
 
@@ -341,7 +355,7 @@ namespace FinanceManager.ViewModels
             }
             else if (((TextBox)sender).Text != "" && ((TextBox)sender).Name == "Val_Cambio")
             {
-                ActualCCmittente.Valore_Cambio = Convert.ToDouble( ((TextBox)sender).Text);
+                ActualCCmittente.Valore_Cambio = Convert.ToDouble(((TextBox)sender).Text);
                 ActualCCricevente.Valore_Cambio = ActualCCmittente.Valore_Cambio;
             }
             else if (((TextBox)sender).Text != "" && ((TextBox)sender).Name == "Causale")
@@ -395,6 +409,14 @@ namespace FinanceManager.ViewModels
                         ActualCCmittente.Id_Socio = ((RegistrySoci)e.AddedItems[0]).Id_Socio;
                         TotaleMittenteConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoMittente, IdSocio: IdSocioMittente);
                         break;
+                    case "TSoldiMittente":
+                        ActualCCmittente.Id_Tipo_Soldi = ((TipoSoldi)e.AddedItems[0]).Id_Tipo_Soldi;
+                        if (ActualCCmittente.Id_Conto > 1)
+                            TotaleMittenteConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoMittente, IdGestione: IdGestioneMittente, IdTipoSoldi: IdTSoldiMittente, IdValuta: IdValuta);
+                        else
+                            TotaleMittenteConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoMittente, IdSocio: IdSocioMittente, IdTipoSoldi: IdTSoldiMittente, IdValuta: IdValuta);
+
+                        break;
                     case "ContoRicevente":
                         ActualCCricevente.Id_Conto = ((RegistryLocation)e.AddedItems[0]).Id_Conto;
                         GestioneRicevente = ActualCCricevente.Id_Conto > 1 ? true : false;
@@ -411,30 +433,26 @@ namespace FinanceManager.ViewModels
                         ActualCCricevente.Id_Socio = ((RegistrySoci)e.AddedItems[0]).Id_Socio;
                         TotaleRiceventeConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoRicevente, IdSocio: IdSocioRicevente);
                         break;
+                    case "TSoldiRicevente":
+                        ActualCCricevente.Id_Tipo_Soldi = ActualCCricevente.Id_Tipo_Soldi;
+                        if (ActualCCricevente.Id_Conto > 1)
+                            TotaleRiceventeConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoRicevente, IdGestione: IdGestioneRicevente, IdTipoSoldi: IdTSoldiRicevente, IdValuta: IdValuta);
+                        else
+                            TotaleRiceventeConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoRicevente, IdSocio: IdSocioMittente, IdTipoSoldi: IdTSoldiRicevente, IdValuta: IdValuta);
+
+                        break;
                     case "Valuta":
                         GestioneRicevente = false;
                         ActualCCmittente.Id_Valuta = ((RegistryCurrency)e.AddedItems[0]).IdCurrency;
                         ActualCCricevente.Id_Valuta = ActualCCmittente.Id_Valuta;
                         if (ActualCCmittente.Id_Conto > 1)
-                            TotaleMittenteConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoMittente, IdGestione: IdGestioneMittente, IdValuta: IdValuta);
+                            TotaleMittenteConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoMittente, IdGestione: IdGestioneMittente, IdTipoSoldi: IdTSoldiMittente, IdValuta: IdValuta);
                         else
-                            TotaleMittenteConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoMittente, IdSocio: IdSocioMittente, IdValuta: IdValuta);
+                            TotaleMittenteConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoMittente, IdSocio: IdSocioMittente, IdTipoSoldi: IdTSoldiMittente, IdValuta: IdValuta);
                         if (ActualCCricevente.Id_Conto > 1)
-                            TotaleRiceventeConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoRicevente, IdGestione: IdGestioneRicevente, IdValuta: IdValuta);
+                            TotaleRiceventeConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoRicevente, IdGestione: IdGestioneRicevente, IdTipoSoldi: IdTSoldiRicevente, IdValuta: IdValuta);
                         else
-                            _contoCorrenteServices.GetTotalAmountByAccount(IdContoRicevente, IdSocio: IdSocioMittente, IdValuta: IdValuta);
-                        break;
-                    case "Tipo_Soldi":
-                        ActualCCmittente.Id_Tipo_Soldi = ((TipoSoldi)e.AddedItems[0]).Id_Tipo_Soldi;
-                        ActualCCricevente.Id_Tipo_Soldi = ActualCCmittente.Id_Tipo_Soldi;
-                        if (ActualCCmittente.Id_Conto > 1)
-                            TotaleMittenteConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoMittente, IdGestione: IdGestioneMittente, IdValuta: IdValuta, IdTipoSoldi: IdTipoSoldi);
-                        else
-                            TotaleMittenteConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoMittente, IdSocio: IdSocioMittente, IdValuta: IdValuta, IdTipoSoldi: IdTipoSoldi);
-                        if (ActualCCricevente.Id_Conto > 1)
-                            TotaleRiceventeConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoRicevente, IdGestione: IdGestioneRicevente, IdValuta: IdValuta, IdTipoSoldi: IdTipoSoldi);
-                        else
-                            TotaleRiceventeConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoRicevente, IdSocio: IdSocioMittente, IdValuta: IdValuta, IdTipoSoldi: IdTipoSoldi);
+                            TotaleRiceventeConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoRicevente, IdSocio: IdSocioMittente, IdTipoSoldi: IdTSoldiRicevente, IdValuta: IdValuta);
                         break;
                 }
             }
@@ -455,22 +473,22 @@ namespace FinanceManager.ViewModels
                         IdContoRicevente = ActualCCricevente.Id_Conto;
                         IdSocioRicevente = ActualCCricevente.Id_Socio;
                         IdGestioneRicevente = ActualCCricevente.Id_Gestione;
+                        IdTSoldiRicevente = ActualCCricevente.Id_Tipo_Soldi;
                         IdValuta = ActualCCricevente.Id_Valuta;
-                        IdTipoSoldi = ActualCCricevente.Id_Tipo_Soldi;
                     }
                     else if (CC.Ammontare > 0)
                     {
                         Valore = CC.Ammontare;
                         ActualCCricevente = CC;
                         IdContoRicevente = ActualCCricevente.Id_Conto;
-                        IdSocioRicevente= ActualCCricevente.Id_Socio;
+                        IdSocioRicevente = ActualCCricevente.Id_Socio;
                         IdGestioneRicevente = ActualCCricevente.Id_Gestione;
                         ActualCCmittente = ContiGemelli[0].Id_RowConto == CC.Id_RowConto ? ContiGemelli[1] : ContiGemelli[0];
                         IdContoMittente = ActualCCmittente.Id_Conto;
                         IdSocioMittente = ActualCCmittente.Id_Socio;
                         IdGestioneMittente = ActualCCmittente.Id_Gestione;
+                        IdTSoldiMittente = ActualCCmittente.Id_Tipo_Soldi;
                         IdValuta = ActualCCmittente.Id_Valuta;
-                        IdTipoSoldi = ActualCCmittente.Id_Tipo_Soldi;
                     }
                 }
 
@@ -494,8 +512,8 @@ namespace FinanceManager.ViewModels
 
         public bool CanSave(object param)
         {
-            if (ActualCCmittente.Ammontare < 0 && ActualCCricevente.Ammontare > 0 && ActualCCricevente.Id_Valuta > 0 && 
-                ActualCCmittente.Id_Tipo_Soldi > 0 && ActualCCmittente.Id_RowConto == 0)
+            if (ActualCCmittente.Ammontare < 0 && ActualCCricevente.Ammontare > 0 && ActualCCricevente.Id_Valuta > 0 &&
+                ActualCCmittente.Id_Tipo_Soldi > 0 && ActualCCmittente.Id_RowConto == 0 && ActualCCmittente.Valore_Cambio > 0)
                 return true;
             return false;
         }

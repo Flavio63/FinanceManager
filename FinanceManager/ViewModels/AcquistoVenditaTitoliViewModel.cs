@@ -1054,7 +1054,7 @@ namespace FinanceManager.ViewModels
                 _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(ptt, contabileChiusura, TipologiaSoldi.Capitale,
                     _quoteServices.GetIdPeriodoQuote(ptChiusura.Data_Movimento, ptChiusura.Id_gestione)));
                 // inserisco la perdita nel conto corrente
-                _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(ptt, profitLoss, TipologiaSoldi.PerditaCapitale,
+                _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(ptt, profitLoss * -1, TipologiaSoldi.PerditaCapitale,
                     _quoteServices.GetIdPeriodoQuote(ptChiusura.Data_Movimento, ptChiusura.Id_gestione)));
                 // recupero il record del conto corrente
                 ContoCorrente conto = _contoCorrenteServices.GetLastContoCorrente();

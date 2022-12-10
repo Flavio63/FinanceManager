@@ -13,6 +13,7 @@
             <RowDefinition Height="50"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -81,6 +82,19 @@
                         </StackPanel>
                     </StackPanel>
 
+                    <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
+                        <TextBlock Text="Tipo Soldi" FontSize="18" VerticalAlignment="Center" Margin="0,5,10,5"/>
+                        <ComboBox Name="TSoldiMittente" FontSize="18" Margin="10" MinWidth="200" SelectedValuePath="Id_Tipo_Soldi" DisplayMemberPath="Desc_Tipo_Soldi"
+                                   ItemsSource="{Binding ListTSoldiMittente, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                   SelectedValue="{Binding IdTSoldiMittente, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="SelectionChanged">
+                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </ComboBox>
+
+                    </StackPanel>
                 </StackPanel>
                 <DataGrid Name="DGMittente" Grid.Row="1" Grid.Column="1" Margin="15,0,15,5" AutoGenerateColumns="False" CanUserReorderColumns="False" 
                           CanUserDeleteRows="False" CanUserAddRows="False" FontSize="18" ItemsSource="{Binding TotaleMittenteConto, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
@@ -128,32 +142,45 @@
                         </ComboBox>
                     </StackPanel>
                     <StackPanel Orientation="Vertical">
-                    <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
-                        <TextBlock Text="Soci" FontSize="18" VerticalAlignment="Center" Margin="0,5,10,5"/>
-                        <ComboBox Name="SocioRicevente" FontSize="18" Margin="10" MinWidth="200" SelectedValuePath="Id_Conto" DisplayMemberPath="Desc_Conto"
+                        <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
+                            <TextBlock Text="Soci" FontSize="18" VerticalAlignment="Center" Margin="0,5,10,5"/>
+                            <ComboBox Name="SocioRicevente" FontSize="18" Margin="10" MinWidth="200" SelectedValuePath="Id_Conto" DisplayMemberPath="Desc_Conto"
                                    ItemsSource="{Binding ListSociRicevente, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                    SelectedValue="{Binding IdSocioRicevente, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                       IsEnabled="{Binding SocioRicevente}">
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="SelectionChanged">
-                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
-                        </ComboBox>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
-                        <TextBlock Text="Gestione" FontSize="18" VerticalAlignment="Center" Margin="0,5,10,5"/>
-                        <ComboBox Name="GestioneRicevente" FontSize="18" Margin="10" MinWidth="200" SelectedValuePath="Id_Gestione" DisplayMemberPath="Nome_Gestione"
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SelectionChanged">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
+                            <TextBlock Text="Gestione" FontSize="18" VerticalAlignment="Center" Margin="0,5,10,5"/>
+                            <ComboBox Name="GestioneRicevente" FontSize="18" Margin="10" MinWidth="200" SelectedValuePath="Id_Gestione" DisplayMemberPath="Nome_Gestione"
                                    ItemsSource="{Binding ListGestioniRicevente, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                    SelectedValue="{Binding IdGestioneRicevente, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                       IsEnabled="{Binding GestioneRicevente}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SelectionChanged">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </ComboBox>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
+                        <TextBlock Text="Tipo Soldi" FontSize="18" VerticalAlignment="Center" Margin="0,5,10,5"/>
+                        <ComboBox Name="TSoldiRicevente" FontSize="18" Margin="10" MinWidth="200" SelectedValuePath="Id_Tipo_Soldi" DisplayMemberPath="Desc_Tipo_Soldi"
+                                   ItemsSource="{Binding ListTSoldiRicevente, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                   SelectedValue="{Binding IdTSoldiRicevente, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="SelectionChanged">
                                     <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
                                 </i:EventTrigger>
                             </i:Interaction.Triggers>
                         </ComboBox>
-                    </StackPanel>
+
                     </StackPanel>
                 </StackPanel>
                 <DataGrid Name="DGRicevente" Grid.Row="1" Grid.Column="1" Margin="15,0,15,5" AutoGenerateColumns="False" CanUserReorderColumns="False" 
@@ -238,19 +265,6 @@
                             </i:Interaction.Triggers>
                         </TextBox>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
-                        <TextBlock Text="Tipo Soldi" FontSize="18" VerticalAlignment="Center" MinWidth="100" Margin="0,5,10,5"/>
-                        <ComboBox Name="Tipo_Soldi" FontSize="18" Margin="10" MinWidth="100"
-                                  ItemsSource="{Binding tipoSoldis, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                  SelectedValue="{Binding IdTipoSoldi}"
-                                  SelectedValuePath="Id_Tipo_Soldi" DisplayMemberPath="Desc_Tipo_Soldi" >
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="SelectionChanged">
-                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
-                        </ComboBox>
-                    </StackPanel>
                     <StackPanel Orientation="Horizontal" Height="75" HorizontalAlignment="Right">
                         <TextBlock Text="Note" FontSize="18" VerticalAlignment="Center" Margin="0,5,10,5"/>
                         <TextBox Name="Causale" FontSize="18" VerticalAlignment="Center" MinWidth="100" Margin="0,5,10,5" TextWrapping="Wrap" MaxWidth="450"
@@ -266,7 +280,7 @@
             </StackPanel>
         </Border>
 
-        <Border Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" BorderBrush="Aquamarine" BorderThickness="5" Margin="0, 10, 5, 10" Padding="5">
+        <Border Grid.Row="3" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="3" BorderBrush="Aquamarine" BorderThickness="5" Margin="0, 10, 5, 10" Padding="5">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>

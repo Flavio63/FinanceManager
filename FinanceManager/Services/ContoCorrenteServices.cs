@@ -292,7 +292,7 @@ namespace FinanceManager.Services
         /// <param name="IdGestione"></param>
         /// <param name="IdValuta"></param>
         /// <returns>ContoCorrenteList</returns>
-        public ContoCorrenteList GetTotalAmountByAccount(int IdConto, int IdGestione = 0, int IdSocio = 0, int IdValuta = 0, int IdTipoSoldi = 0)
+        public ContoCorrenteList GetTotalAmountByAccount(int IdConto, int IdGestione = 0, int IdSocio = 0, int IdTipoSoldi = 0, int IdValuta = 0)
         {
             try
             {
@@ -305,8 +305,8 @@ namespace FinanceManager.Services
                         query1 = String.Format(" {0} AND A.id_gestione = {1} ", query0, IdGestione);
                     else if (IdSocio > 0 && IdGestione == 0)
                         query1 = String.Format(" {0} AND A.id_socio = {1} ", query0, IdSocio);
-                    string query2 = String.Format(" {0} AND A.id_valuta = {1} ", query1, IdValuta);
-                    string query3 = String.Format(" {0} AND A.id_tipo_soldi = {1} ", query2, IdTipoSoldi);
+                    string query2 = String.Format(" {0} AND A.id_tipo_soldi = {1} ", query1, IdTipoSoldi);
+                    string query3 = String.Format(" {0} AND A.id_valuta = {1} ", query2, IdValuta);
                     if (IdConto == 0)
                         dataAdapter.SelectCommand.CommandText = string.Format(ContoCorrenteScript.GetTotalAmountByAccount, "");
                     else if (IdConto > 0 && IdGestione == 0 && IdSocio == 0 && IdValuta == 0 && IdTipoSoldi == 0)
@@ -317,11 +317,11 @@ namespace FinanceManager.Services
                     {
                         dataAdapter.SelectCommand.CommandText = string.Format(ContoCorrenteScript.GetTotalAmountByAccount, query1);
                     }
-                    else if (IdConto > 0 && (IdGestione > 0 || IdSocio > 0) && IdValuta > 0 && IdTipoSoldi == 0)
+                    else if (IdConto > 0 && (IdGestione > 0 || IdSocio > 0) && IdTipoSoldi > 0 && IdValuta == 0)
                     {
                         dataAdapter.SelectCommand.CommandText = string.Format(ContoCorrenteScript.GetTotalAmountByAccount, query2);
                     }
-                    else if (IdConto > 0 && (IdGestione > 0 || IdSocio > 0) && IdValuta > 0 && IdTipoSoldi > 0)
+                    else if (IdConto > 0 && (IdGestione > 0 || IdSocio > 0) && IdTipoSoldi > 0 && IdValuta > 0)
                     {
                         dataAdapter.SelectCommand.CommandText = String.Format(ContoCorrenteScript.GetTotalAmountByAccount, query3);
                     }

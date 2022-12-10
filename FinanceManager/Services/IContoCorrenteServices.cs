@@ -77,7 +77,7 @@ namespace FinanceManager.Services
         /// <param name="IdValuta"></param>
         /// <param name="IdTipoSoldi"></param>
         /// <returns>ContoCorrenteList</returns>
-        ContoCorrenteList GetTotalAmountByAccount(int IdConto, int IdGestione = 0, int IdSocio = 0, int IdValuta = 0, int IdTipoSoldi = 0);
+        ContoCorrenteList GetTotalAmountByAccount(int IdConto, int IdGestione = 0, int IdSocio = 0, int IdTipoSoldi = 0, int IdValuta = 0);
 
         /// <summary>
         /// Scrive un nuovo record per il conto corrente
