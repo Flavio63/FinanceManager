@@ -801,27 +801,6 @@ namespace FinanceManager.ViewModels
         }
 
         /// <summary>
-        /// Dopo aver inserito l'importo verifico che sia congruo 
-        /// rispetto alla selezione
-        /// </summary>
-        /// <param name="sender">TextBox</param>
-        /// <param name="e">LostFocus</param>
-        public void LostFocus(object sender, EventArgs e)
-        {
-            if (sender is TextBox TB)
-            {
-                switch (TB.Name)
-                {
-                    case ("Ammontare"):
-                        RecordContoCorrente.Valore_Cambio = 1;
-                        break;
-                    case ("Causale"):
-                        break;
-                }
-            }
-        }
-
-        /// <summary>
         /// Controlla che il punto del tastierino numerico venga trasformato in virgola
         /// </summary>
         /// <param name="sender">Tastiera</param>

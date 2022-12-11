@@ -256,7 +256,7 @@
                     <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
                         <TextBlock Text="Cambio" FontSize="18" VerticalAlignment="Center" MinWidth="100" Margin="0,5,10,5"/>
                         <TextBox Name="Val_Cambio" FontSize="18" VerticalAlignment="Center" MinWidth="100" Margin="0,5,10,5" HorizontalContentAlignment="Right"
-                                 Text="{Binding ActualCCricevente.Valore_Cambio, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, 
+                                 Text="{Binding ActualCmittente.Valore_Cambio, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, 
                             ConverterCulture=it-IT, StringFormat=N4}">
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="LostFocus">

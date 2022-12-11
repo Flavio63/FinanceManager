@@ -163,24 +163,25 @@
                 <TextBox Name="Ammontare" Grid.Row="3" Grid.Column="3" Margin="5, 2" Padding="0,0,5,0" HorizontalContentAlignment="Right"
                          Text="{Binding RecordContoCorrente.Ammontare, ConverterCulture=it-IT}">
                     <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="LostFocus">
-                            <i:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
                         </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </TextBox>
+                <TextBlock Grid.Row="4" Grid.Column="2" Text="Cambio" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
+                <TextBox Name="Valore_Cambio" Grid.Row="4" Grid.Column="3" Margin="5, 2" Padding="0,0,5,0" HorizontalContentAlignment="Right"
+                         Text="{Binding RecordContoCorrente.Valore_Cambio, ConverterCulture=it-IT}">
+                    <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewKeyDown">
                             <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </TextBox>
 
-                <TextBlock Grid.Row="5" Grid.Column="1" Text="Causale" FontSize="16" Margin="0, 2, 5, 2" HorizontalAlignment="Right"/>
-                <TextBox Name="Causale" Grid.Row="4" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="2" FontSize="16" Margin="5, 2, 5, 2" 
+                <TextBlock Grid.Row="5"  Text="Causale" FontSize="16" Margin="0, 2, 5, 2" HorizontalAlignment="Right"/>
+                <TextBox Name="Causale" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" FontSize="16" Margin="5, 2, 5, 2" 
                          VerticalAlignment="Stretch" AcceptsReturn="True" TextWrapping="Wrap"
                          Text="{Binding RecordContoCorrente.Causale, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="LostFocus">
-                            <i:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
                 </TextBox>
             </Grid>
         </Border>
@@ -355,6 +356,15 @@
                 </DataGridTextColumn>
                 <DataGridTextColumn Header="Valuta" Binding="{Binding Cod_Valuta, UpdateSourceTrigger=PropertyChanged}"
                                         IsReadOnly="True" FontSize="14" FontWeight="Normal" MaxWidth="300">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                            <Setter Property="Margin" Value="5,0,5,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Valore Cambio" Binding="{Binding Valore_Cambio, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay,
+                    ConverterCulture=it-IT,StringFormat=N6}" IsReadOnly="True" FontSize="14" FontWeight="Normal" MaxWidth="300">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="{x:Type TextBlock}">
                             <Setter Property="Margin" Value="5,0,5,0"/>
