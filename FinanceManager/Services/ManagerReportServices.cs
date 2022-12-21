@@ -365,5 +365,82 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
+
+        /// <summary>
+        /// Estrae tutti i movimenti di un dato conto per una data gestione di un anno per una valuta
+        /// e Costruisce il dato cumulato partendo dal primo giorno inserito nel database
+        /// </summary>
+        /// <param name="IdConto">E' il conto corrente</param>
+        /// <param name="IdGestione">E' la gestione nel conto</param>
+        /// <param name="AnnoSelezionato">l'anno di cui si vuole il dettaglio</param>
+        /// <param name="IdValuta">la valuta</param>
+        /// <returns></returns>
+        public MovimentiContoList GetMovimentiContoGestioneValuta(int IdConto, int IdGestione, int AnnoSelezionato, int IdValuta)
+        {
+            try
+            {
+                DataTable DT = new DataTable();
+                MovimentiContoList MCL = new MovimentiContoList();
+                using (SQLiteCommand cmd = new SQLiteCommand())
+                {
+                    cmd.CommandText = ReportScripts.ClearTable;
+                    cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    cmd.Connection.Open();
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = string.Format(ReportScripts.InsertTotale, (AnnoSelezionato-1));
+                    cmd.Parameters.AddWithValue("Id_Gestione", IdGestione);
+                    cmd.Parameters.AddWithValue("IdConto", IdConto);
+                    cmd.Parameters.AddWithValue("Id_Valuta", IdValuta);
+                    cmd.Prepare();
+                    cmd.ExecuteNonQuery();
+                    cmd.Connection.Close();
+                    cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    cmd.Connection.Open();
+                    cmd.Parameters.Clear();
+                    cmd.CommandText = string.Format(ReportScripts.InsertDettagli, AnnoSelezionato);
+                    cmd.Parameters.AddWithValue("Id_Gestione", IdGestione);
+                    cmd.Parameters.AddWithValue("IdConto", IdConto);
+                    cmd.Parameters.AddWithValue("Id_Valuta", IdValuta);
+                    cmd.Prepare();
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = ReportScripts.SelectTempTable;
+                    using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter(cmd))
+                    {
+                        dbAdapter.Fill(DT);
+                    }
+                }
+                foreach (DataRow row in DT.Rows)
+                {
+                    MovimentiConto MC = new MovimentiConto();
+                    MC.Id_Riga_Conto = row.Field<int>("id_fineco_euro");
+                    MC.Desc_Conto = row.Field<string>("desc_conto");
+                    MC.Nome_Gestione = row.Field<string>("nome_gestione");
+                    MC.Desc_Movimento = row.Field<string>("desc_movimento");
+                    MC.Desc_TipoTitolo = row.Field<string>("desc_tipo_titolo");
+                    MC.Desc_Titolo = row.Field<string>("desc_titolo");
+                    MC.Isin = row.Field<string>("isin");
+                    MC.Desc_Valuta = row.Field<string>("desc_valuta");
+                    MC.DataMovimento = row.Field<DateTime>("data_movimento");
+                    MC.Entrate = row.Field<double>("ENTRATE");
+                    MC.Uscite = row.Field<double>("USCITE");
+                    MC.Cumulato = row.Field<double>("CUMULATO");
+                    MC.Causale = row.Field<string>("Causale");
+                    MC.Desc_Tipo_Soldi = row.Field<string>("desc_tipo_soldi");
+                    MCL.Add(MC);
+                }
+                return MCL;
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+
+        }
+
+
     }
 }

@@ -46,11 +46,24 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.ColumnSpan="3" Grid.Row="0" Text="Parametri Comuni da Selezionare" FontSize="22" FontWeight="Bold" 
                        HorizontalAlignment="Center" Margin="3, 2, 3, 7"/>
+                <!-- La selezione del conto corrente -->
+                <StackPanel Margin="5" Grid.Row="1" Grid.Column="0" >
+                    <TextBlock Text="I Conti Corrente" FontSize="16" FontWeight="Bold" Margin="10, 2" HorizontalAlignment="Center"/>
+                    <ListBox Name="Conto" ItemsSource="{Binding AccountList, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" 
+                             IsEnabled="{Binding AttivaContoCorrente, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                          SelectedValuePath="Id_Conto" DisplayMemberPath="Desc_Conto" Margin="10, 2" MinWidth="100" Height="75" SelectionMode="Multiple">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </ListBox>
+                </StackPanel>
                 <!-- La selezione delle gestioni -->
-                <StackPanel Margin="5" Grid.Row="1">
+                <StackPanel Margin="5" Grid.Row="1" Grid.Column="1">
                     <TextBlock Text="Le Gestioni" FontSize="16" FontWeight="Bold" Margin="10, 2" HorizontalAlignment="Center"/>
                     <ListBox Name="Gestione" ItemsSource="{Binding OwnerList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                          SelectedValuePath="Id_gestione" DisplayMemberPath="Nome_Gestione" Margin="10, 2" MinWidth="100" Height="75" SelectionMode="Multiple"
+                          SelectedValuePath="Id_Gestione" DisplayMemberPath="Nome_Gestione" Margin="10, 2" MinWidth="100" Height="75" SelectionMode="Multiple"
                              IsEnabled="{Binding AttivaGestioni, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">
@@ -64,19 +77,6 @@
                         <ToggleButton Name="switchBTN" IsThreeState="False" Height="30" Width="30"
                                   Style="{StaticResource ON}"/>
                     </StackPanel>
-                </StackPanel>
-                <!-- La selezione del conto corrente -->
-                <StackPanel Margin="5" Grid.Row="1" Grid.Column="1" >
-                    <TextBlock Text="I Conti Corrente" FontSize="16" FontWeight="Bold" Margin="10, 2" HorizontalAlignment="Center"/>
-                    <ListBox Name="Conto" ItemsSource="{Binding AccountList, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" 
-                             IsEnabled="{Binding AttivaContoCorrente, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                          SelectedValuePath="Id_Conto" DisplayMemberPath="Desc_Conto" Margin="10, 2" MinWidth="100" Height="75" SelectionMode="Multiple">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="SelectionChanged">
-                                <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                    </ListBox>
                 </StackPanel>
                 <!-- la selezione degli anni -->
                 <StackPanel Grid.Row="2" Grid.Column="0" Margin="5" IsEnabled="{Binding YearsIsEnable, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">

@@ -20,9 +20,6 @@ namespace FinanceManager.Models
         public int Id_valuta { get; set; }
         public string Cod_valuta { get; set; }
 
-        public int Id_valuta_2 { get; set; }
-        public string Code_valuta_2 { get; set; }
-
         public int Id_tipo_movimento { get; set; }
         public string Desc_tipo_movimento { get; set; }
 
@@ -49,6 +46,7 @@ namespace FinanceManager.Models
         public bool Available { get; set; }
         public string Note { get; set; }
         public int Attivo { get; set; }
+        public int Id_Tipo_Gestione { get; set; }
         public DateTime Link_Movimenti { get; set; }
 
         public PortafoglioTitoli()

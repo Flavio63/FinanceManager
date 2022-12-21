@@ -389,6 +389,7 @@ namespace FinanceManager.Services
                             command.Parameters.AddWithValue("Causale", contoCorrente.Causale);
                             command.Parameters.AddWithValue("id_tipo_soldi", contoCorrente.Id_Tipo_Soldi);
                             command.Parameters.AddWithValue("id_quote_periodi", contoCorrente.Id_Quote_Periodi);
+                            command.Parameters.AddWithValue("id_tipo_gestione", contoCorrente.Id_Tipo_Gestione);
                             command.Parameters.AddWithValue("modified", contoCorrente.Modified.ToString("yyyy-MM-dd HH:mm:ss"));
                             command.ExecuteNonQuery();
                             transaction.Commit();
@@ -438,6 +439,7 @@ namespace FinanceManager.Services
                             dbComm.Parameters.AddWithValue("Causale", contoCorrente.Causale);
                             dbComm.Parameters.AddWithValue("id_tipo_soldi", contoCorrente.Id_Tipo_Soldi);
                             dbComm.Parameters.AddWithValue("id_quote_periodi", contoCorrente.Id_Quote_Periodi);
+                            dbComm.Parameters.AddWithValue("id_tipo_gestione", contoCorrente.Id_Tipo_Gestione);
                             dbComm.Parameters.AddWithValue("modified", contoCorrente.Modified.ToString("yyyy-MM-dd HH:mm:ss"));
                             dbComm.ExecuteNonQuery();
                             transaction.Commit();
@@ -491,6 +493,7 @@ namespace FinanceManager.Services
             conto.Id_Tipo_Soldi = (int)dataRow.Field<long>("id_tipo_soldi");
             conto.Desc_Tipo_Soldi = dataRow.Field<string>("desc_tipo_soldi");
             conto.Id_Quote_Periodi = (int)dataRow.Field<long>("id_quote_periodi");
+            conto.Id_Tipo_Gestione = (int)dataRow.Field<long>("id_tipo_gestione");
             conto.Modified = dataRow.Field<DateTime>("modified");
             return conto;
         }

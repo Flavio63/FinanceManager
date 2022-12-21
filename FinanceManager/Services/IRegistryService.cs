@@ -87,6 +87,14 @@ namespace FinanceManager.Services
         void DeleteMovementType(int id);
         #endregion
 
+        #region TIPO GESTIONE UTILI
+        RegistryTipoGestioniUtiliList GetTipoGestioniUtiliList();
+        void UpdateTipoGestioniUtili(RegistryTipoGestioniUtili tipoGestioniUtili);
+        void InsertTipoGestioniUtili(RegistryTipoGestioniUtili tipoGestioniUtili);
+        void DeleteTipoGestioniUtili(int id_tipoGestioniUtili);
+
+        #endregion
+
         TipoSoldiList GetTipoSoldiList();
     }
 }

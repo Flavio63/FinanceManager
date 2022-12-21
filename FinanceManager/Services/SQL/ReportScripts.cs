@@ -2,7 +2,7 @@
 {
     public class ReportScripts
     {
-        public static readonly string GetAvailableYears = "SELECT strftime('%Y', data_movimento) AS anni FROM conto_corrente WHERE (id_tipo_movimento = 4 or id_tipo_movimento = 6) GROUP BY anni ORDER BY anni DESC";
+        public static readonly string GetAvailableYears = "SELECT strftime('%Y', data_movimento) AS anni FROM conto_corrente GROUP BY anni ORDER BY anni DESC";
 
         public static readonly string GetProfitLoss = "SELECT strftime('%Y', data_movimento) AS Anno, E.cod_valuta, B.nome_gestione, D.desc_tipo_soldi, " +
             "ROUND(SUM(CASE WHEN C.id_tipo_titolo = 1 THEN ammontare ELSE 0 END), 2) AS Azioni, " +
@@ -118,5 +118,25 @@
             "FROM conto_corrente A, valuta C WHERE A.id_valuta = C.id_valuta AND (A.id_tipo_soldi = 11 OR A.id_tipo_soldi = 15 OR A.id_tipo_soldi = 16) " +
             "{0} " +
             "GROUP BY C.cod_valuta, Mese ORDER BY C.cod_valuta, Mese) A;";
+
+        public static readonly string ClearTable = "DELETE FROM movimenti_conto where id_fineco_euro >= 0; ";
+
+        public static readonly string InsertTotale = "INSERT INTO movimenti_conto (id_fineco_euro, desc_conto, nome_gestione, desc_movimento, desc_tipo_titolo, desc_titolo, isin, id_valuta, data_movimento, ammontare, Causale, desc_tipo_soldi) " +
+    "SELECT 0 as id_fineco_euro, B.desc_conto, C.nome_gestione, 'Totale' as desc_movimento, '' as desc_tipo_titolo, 'Riporto al:' as desc_titolo, '' as isin, A.id_valuta, data_movimento, " +
+    "SUM(ammontare) OVER(ORDER BY A.data_movimento, A.id_fineco_euro)  AS ammontare, '' as Causale, '' as desc_tipo_soldi FROM conto_corrente A, conti B, gestioni C, tipo_movimento D, titoli E, tipo_titoli F, tipo_soldi G " +
+    "WHERE A.id_conto = B.id_conto AND A.id_gestione = C.id_gestione AND A.id_tipo_movimento = D.id_tipo_movimento AND A.id_titolo = E.id_titolo AND E.id_tipo_titolo = F.id_tipo_titolo AND A.id_tipo_soldi = G.id_tipo_soldi " +
+    "AND A.id_tipo_soldi <> 11 AND A.id_conto = @IdConto AND A.id_gestione = @Id_Gestione AND A.id_valuta = @Id_Valuta AND STRFTIME('%Y', A.data_movimento) <= '{0}' ORDER BY A.data_movimento DESC, A.id_fineco_euro DESC LIMIT 1; ";
+
+        public static readonly string InsertDettagli = "INSERT INTO movimenti_conto " +
+    "SELECT A.id_fineco_euro, B.desc_conto, C.nome_gestione, D.desc_movimento, F.desc_tipo_titolo, E.desc_titolo, E.isin, A.id_valuta, data_movimento, ammontare, Causale, G.desc_tipo_soldi " +
+    "FROM conto_corrente A, conti B, gestioni C, tipo_movimento D, titoli E, tipo_titoli F, tipo_soldi G WHERE A.id_conto = B.id_conto AND A.id_gestione = C.id_gestione AND A.id_tipo_movimento = D.id_tipo_movimento " +
+    "AND A.id_titolo = E.id_titolo  AND E.id_tipo_titolo = F.id_tipo_titolo AND A.id_tipo_soldi = G.id_tipo_soldi AND A.id_tipo_soldi <> 11 AND A.id_conto = @IdConto AND A.id_gestione = @Id_Gestione AND A.id_valuta = @Id_Valuta " +
+    "AND STRFTIME('%Y', A.data_movimento) = '{0}' ORDER BY A.id_conto, A.id_gestione, A.data_movimento DESC, A.id_fineco_euro DESC; ";
+
+        public static readonly string SelectTempTable = "SELECT A.id_fineco_euro, desc_conto, nome_gestione, desc_movimento, desc_tipo_titolo, desc_titolo, isin, B.desc_valuta, data_movimento, CASE WHEN ammontare > 0 THEN ammontare ELSE 0.0 END AS ENTRATE, " +
+    "CASE WHEN ammontare < 0 THEN ammontare ELSE 0.0 END AS USCITE, SUM(ammontare) OVER(ORDER BY A.data_movimento, A.id_fineco_euro)  AS CUMULATO, Causale, desc_tipo_soldi FROM `movimenti_conto` A, valuta B " +
+    "WHERE A.id_valuta = B.id_valuta ORDER BY A.data_movimento, A.id_fineco_euro DESC;";
+
+        public static readonly string GetMovimentiContoGestioneValuta = ClearTable + InsertTotale + InsertDettagli + SelectTempTable;
     }
 }

@@ -228,6 +228,8 @@
     <Compile Include="Models\GuadagnoPerQuote.cs" />
     <Compile Include="Models\QuotePerPeriodo.cs" />
     <Compile Include="Models\QuotePerPeriodoList.cs" />
+    <Compile Include="Models\RegistryTipoGestioniUtili.cs" />
+    <Compile Include="Models\RegistryTipoGestioniUtiliList.cs" />
     <Compile Include="Models\ReportMovementDetailed.cs" />
     <Compile Include="Models\ReportMovementDetailedList.cs" />
     <Compile Include="Models\ReportTitoliAttivi.cs" />
@@ -251,7 +253,6 @@
     <Compile Include="ViewModels\AnalisiPortafoglioViewModel.cs" />
     <Compile Include="ViewModels\CambioValutaViewModel.cs" />
     <Compile Include="ViewModels\CapitalsRegisterViewModel.cs" />
-    <Compile Include="ViewModels\ContiSociGestioniViewModel.cs" />
     <Compile Include="ViewModels\GestioneContoCorrenteViewModel.cs" />
     <Compile Include="ViewModels\GiroContoViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
@@ -291,10 +292,14 @@
     <Compile Include="Services\SQL\RegistryScripts.cs" />
     <Compile Include="ViewModels\AcquistoVenditaTitoliViewModel.cs" />
     <Compile Include="ViewModels\ManagerReportsViewModel.cs" />
+    <Compile Include="ViewModels\RegistryContoCorrenteViewModel.cs" />
     <Compile Include="ViewModels\RegistryCurrencyViewModel.cs" />
     <Compile Include="ViewModels\RegistryFirmViewModel.cs" />
+    <Compile Include="ViewModels\RegistryGestioniViewModel.cs" />
     <Compile Include="ViewModels\RegistryMovementTypeViewModel.cs" />
     <Compile Include="ViewModels\RegistryShareTypeViewModel.cs" />
+    <Compile Include="ViewModels\RegistrySociViewModel.cs" />
+    <Compile Include="ViewModels\RegistryTipoGestioniUtiliViewModel.cs" />
     <Compile Include="ViewModels\ReportDeltaSplitMeseViewModel.cs" />
     <Compile Include="ViewModels\ReportGuadagniViewModel.cs" />
     <Compile Include="ViewModels\ReportMovementDetailedViewModel.cs" />
@@ -316,14 +321,23 @@
     <Compile Include="Views\CambioValutaView.xaml.cs">
       <DependentUpon>CambioValutaView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ContiSociGestioniView.xaml.cs">
-      <DependentUpon>ContiSociGestioniView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\GestioneContoCorrenteView.xaml.cs">
       <DependentUpon>GestioneContoCorrenteView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GiroContoView.xaml.cs">
       <DependentUpon>GiroContoView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RegistryContoCorrenteView.xaml.cs">
+      <DependentUpon>RegistryContoCorrenteView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RegistryGestioniView.xaml.cs">
+      <DependentUpon>RegistryGestioniView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RegistrySociView.xaml.cs">
+      <DependentUpon>RegistrySociView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RegistryTipoGestioniUtiliView.xaml.cs">
+      <DependentUpon>RegistryTipoGestioniUtiliView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ReportDeltaSplitMeseView.xaml.cs">
       <DependentUpon>ReportDeltaSplitMeseView.xaml</DependentUpon>
@@ -381,15 +395,27 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ContiSociGestioniView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\GestioneContoCorrenteView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\GiroContoView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RegistryContoCorrenteView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RegistryGestioniView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RegistrySociView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RegistryTipoGestioniUtiliView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -488,6 +514,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
     <None Include="FinanceManagerKey.pfx" />
     <None Include="FinanceManager_TemporaryKey.pfx" />
     <None Include="packages.config" />

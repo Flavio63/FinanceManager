@@ -50,16 +50,8 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                OwnerList = new RegistryGestioniList();
+                OwnerList = _services.GetGestioneList();
                 CurrenciesList = _services.GetRegistryCurrencyList();
-
-                RegistryGestioniList ListaOriginale = new RegistryGestioniList();
-                ListaOriginale = _services.GetGestioneList();
-                var LO = from risultato in ListaOriginale
-                         where risultato.Tipo_Gestione == "Gestore"
-                         select risultato;
-                foreach (RegistryGestioni registryOwner in LO)
-                    OwnerList.Add(registryOwner);
 
                 AccountList = _services.GetRegistryLocationList();
                 _selectedOwners = new List<RegistryGestioni>();
@@ -786,7 +778,7 @@ namespace FinanceManager.ViewModels
                     CanClear = true;
                     break;
                 case "MovimentiContoGestione":
-                    MovimentiContos = _assetServices.GetMovimentiContoGestioneValuta(_selectedAccount[0].Id_Conto, _selectedOwners[0].Id_Gestione, SelectedYears[0], SelectedCurrency);
+                    MovimentiContos = _reportServices.GetMovimentiContoGestioneValuta(_selectedAccount[0].Id_Conto, _selectedOwners[0].Id_Gestione, SelectedYears[0], SelectedCurrency);
                     ReportMovimentiContoViewModel reportMovimentiContoViewModel = new ReportMovimentiContoViewModel(MovimentiContos);
                     ReportMovimentiContoView report5 = new ReportMovimentiContoView(reportMovimentiContoViewModel);
                     border.Child = report5;

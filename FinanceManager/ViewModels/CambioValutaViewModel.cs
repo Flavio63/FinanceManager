@@ -87,7 +87,7 @@ namespace FinanceManager.ViewModels
 
 
         #region get_set
-        // visibilità del combo Soci / Gestioni
+        // visibilità del combo Socio / Gestioni
         public string ContoGestioni
         {
             get { return GetValue(() => ContoGestioni); }

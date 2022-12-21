@@ -10,7 +10,7 @@ namespace FinanceManager.Services.SQL
     public class ContoCorrenteScript
     {
         protected static readonly string ContoCorrente = "SELECT id_fineco_euro, A.id_conto, B.desc_conto, A.id_socio, H.nome_socio,  A.id_valuta, C.cod_valuta, id_portafoglio_titoli, A.id_tipo_movimento, " +
-            "D.desc_movimento, A.id_gestione, E.nome_gestione, A.id_titolo, F.isin, F.desc_titolo, data_movimento, ammontare, cambio, Causale, A.id_tipo_soldi, G.desc_tipo_soldi, id_quote_periodi, modified " +
+            "D.desc_movimento, A.id_gestione, E.nome_gestione, A.id_titolo, F.isin, F.desc_titolo, data_movimento, ammontare, cambio, Causale, A.id_tipo_soldi, G.desc_tipo_soldi, id_quote_periodi, A.id_tipo_gestione, modified " +
             "FROM conto_corrente A, conti B, valuta C, tipo_movimento D, gestioni E, titoli F, tipo_soldi G, soci H " +
             "WHERE A.id_conto = B.id_conto AND A.id_valuta = C.id_valuta AND A.id_tipo_movimento = D.id_tipo_movimento AND " +
             "A.id_gestione = E.id_gestione AND A.id_titolo = F.id_titolo AND A.id_tipo_soldi = G.id_tipo_soldi AND A.id_socio = H.id_socio AND id_fineco_euro > 0 ";
@@ -50,8 +50,8 @@ namespace FinanceManager.Services.SQL
         /// Inserisce un movimento nel conto corrente
         /// </summary>
         public static readonly string InsertAccountMovement = "INSERT INTO conto_corrente (id_conto, id_socio, id_valuta, id_portafoglio_titoli, id_tipo_movimento, " +
-            "id_gestione, id_titolo, data_movimento, ammontare, cambio, Causale, id_tipo_soldi, id_quote_periodi, modified) VALUES ( @id_conto, @id_socio, @id_valuta, @id_portafoglio_titoli, @id_tipo_movimento, " +
-            "@id_gestione, @id_titolo, @data_movimento, @ammontare, @cambio, @Causale, @id_tipo_soldi, @id_quote_periodi, @modified)";
+            "id_gestione, id_titolo, data_movimento, ammontare, cambio, Causale, id_tipo_soldi, id_quote_periodi, id_tipo_gestione, modified) VALUES ( @id_conto, @id_socio, @id_valuta, @id_portafoglio_titoli, @id_tipo_movimento, " +
+            "@id_gestione, @id_titolo, @data_movimento, @ammontare, @cambio, @Causale, @id_tipo_soldi, @id_quote_periodi, @id_tipo_gestione, @modified)";
 
 
         /// <summary>
@@ -65,12 +65,12 @@ namespace FinanceManager.Services.SQL
         // aggiorno un record conto corrente sulla base dell'ID CONTO CORRENTE //
         public static readonly string UpdateContoCorrenteByIdCC = "UPDATE conto_corrente SET id_conto = @id_conto, id_socio = @id_socio, id_valuta = @id_valuta, " +
             "id_portafoglio_titoli = @id_portafoglio_titoli, id_tipo_movimento = @id_tipo_movimento, id_gestione = @id_gestione, id_titolo = @id_titolo, data_movimento = @data_movimento, " +
-            "ammontare = @ammontare, cambio = @cambio, Causale = @Causale, id_tipo_soldi = @id_tipo_soldi, id_quote_periodi = @id_quote_periodi WHERE id_fineco_euro = @id_fineco_euro";
+            "ammontare = @ammontare, cambio = @cambio, Causale = @Causale, id_tipo_soldi = @id_tipo_soldi, id_quote_periodi = @id_quote_periodi, id_tipo_gestione = @id_tipo_gestione WHERE id_fineco_euro = @id_fineco_euro";
 
         // aggiorno un record conto corrente sulla base dell'ID PORTAFOGLIO TITOLI //
         public static readonly string UpdateContoCorrenteByIdPortafoglioTitoli = "UPDATE conto_corrente SET id_conto = @id_conto, id_socio = @id_socio, id_valuta = @id_valuta, " +
             "id_tipo_movimento = @id_tipo_movimento, id_gestione = @id_gestione, id_titolo = @id_titolo, data_movimento = @data_movimento, ammontare = @ammontare, " +
-            "cambio = @cambio, Causale = @Causale, id_tipo_soldi = @id_tipo_soldi, id_quote_periodi = @id_quote_periodi WHERE id_portafoglio_titoli = @id_portafoglio_titoli";
+            "cambio = @cambio, Causale = @Causale, id_tipo_soldi = @id_tipo_soldi, id_quote_periodi = @id_quote_periodi, id_tipo_gestione = @id_tipo_gestione WHERE id_portafoglio_titoli = @id_portafoglio_titoli";
 
     }
 }

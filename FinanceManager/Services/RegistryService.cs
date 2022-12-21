@@ -40,7 +40,6 @@ namespace FinanceManager.Services
                     RegistrySoci RO = new RegistrySoci();
                     RO.Id_Socio = Convert.ToInt32(dr.Field<long>("id_socio"));
                     RO.Nome_Socio = dr.Field<string>("nome_socio");
-                    RO.Id_Conto = Convert.ToInt32(dr.Field<long>("id_conto"));
                     ROL.Add(RO);
                 }
                 return ROL;
@@ -68,7 +67,6 @@ namespace FinanceManager.Services
                     cmd.CommandText = RegistryScripts.UpdateSocioName;
                     cmd.Parameters.AddWithValue("nome", socio.Nome_Socio);
                     cmd.Parameters.AddWithValue("id_socio", socio.Id_Socio);
-                    cmd.Parameters.AddWithValue("id_conto", socio.Id_Conto);
                     cmd.Connection.Open();
                     cmd.ExecuteNonQuery();
                     cmd.Connection.Close();
@@ -97,7 +95,6 @@ namespace FinanceManager.Services
                     cmd.CommandText = RegistryScripts.AddSocio;
                     cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     cmd.Parameters.AddWithValue("nome", socio.Nome_Socio);
-                    cmd.Parameters.AddWithValue("id_conto", socio.Id_Conto);
                     cmd.Connection.Open();
                     cmd.ExecuteNonQuery();
                     cmd.Connection.Close();
@@ -152,9 +149,6 @@ namespace FinanceManager.Services
                     cmd.CommandText = RegistryScripts.AddGestione;
                     cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     cmd.Parameters.AddWithValue("nome", owner.Nome_Gestione);
-                    cmd.Parameters.AddWithValue("id_tipo", owner.Id_Tipo_Gestione);
-                    cmd.Parameters.AddWithValue("tipologia", owner.Tipo_Gestione);
-                    cmd.Parameters.AddWithValue("id_conto", owner.Id_Conto);
                     cmd.Connection.Open();
                     cmd.ExecuteNonQuery();
                     cmd.Connection.Close();
@@ -217,9 +211,6 @@ namespace FinanceManager.Services
                     RegistryGestioni RO = new RegistryGestioni();
                     RO.Id_Gestione = Convert.ToInt32(dr.Field<long>("id_gestione"));
                     RO.Nome_Gestione = dr.Field<string>("nome_gestione");
-                    RO.Id_Tipo_Gestione = Convert.ToInt32(dr.Field<long>("id_tipo_gestione"));
-                    RO.Tipo_Gestione = dr.Field<string>("tipo_gestione");
-                    RO.Id_Conto = Convert.ToInt32(dr.Field<long>("id_conto"));
                     ROL.Add(RO);
                 }
                 return ROL;
@@ -247,9 +238,6 @@ namespace FinanceManager.Services
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandText = RegistryScripts.UpdateGestioneName;
                     cmd.Parameters.AddWithValue("nome", owner.Nome_Gestione);
-                    cmd.Parameters.AddWithValue("id_tipo", owner.Id_Tipo_Gestione);
-                    cmd.Parameters.AddWithValue("tipologia", owner.Tipo_Gestione);
-                    cmd.Parameters.AddWithValue("id_conto", owner.Id_Conto);
                     cmd.Parameters.AddWithValue("id", owner.Id_Gestione);
                     cmd.Connection.Open();
                     cmd.ExecuteNonQuery();
@@ -394,6 +382,15 @@ namespace FinanceManager.Services
                     cmd.CommandType = CommandType.Text;
                     SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
                     da.Fill(dt);
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        RegistryCurrency Rc = new RegistryCurrency();
+                        Rc.IdCurrency = Convert.ToInt32(dr.Field<long>("id_valuta"));
+                        Rc.DescCurrency = dr.Field<string>("desc_valuta");
+                        Rc.CodeCurrency = dr.Field<string>("cod_valuta");
+                        RcL.Add(Rc);
+                    }
+                    return RcL;
                 }
                 catch (SQLiteException err)
                 {
@@ -401,15 +398,6 @@ namespace FinanceManager.Services
                 }
 
             }
-            foreach (DataRow dr in dt.Rows)
-            {
-                RegistryCurrency Rc = new RegistryCurrency();
-                Rc.IdCurrency = Convert.ToInt32(dr.Field<long>("id_valuta"));
-                Rc.DescCurrency = dr.Field<string>("desc_valuta");
-                Rc.CodeCurrency = dr.Field<string>("cod_valuta");
-                RcL.Add(Rc);
-            }
-            return RcL;
         }
 
         public void UpdateCurrency(RegistryCurrency registryCurrency)
@@ -481,6 +469,7 @@ namespace FinanceManager.Services
         public RegistryLocationList GetRegistryLocationList()
         {
             DataTable dt = new DataTable();
+            RegistryLocationList RLL = new RegistryLocationList();
             try
             {
                 using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
@@ -490,6 +479,14 @@ namespace FinanceManager.Services
                     dataAdapter.SelectCommand.CommandText = RegistryScripts.GetRegistryLocationList;
                     dataAdapter.Fill(dt);
                 }
+                foreach (DataRow dr in dt.Rows)
+                {
+                    RegistryLocation RL = new RegistryLocation();
+                    RL.Id_Conto = Convert.ToInt32(dr.Field<long>("id_conto"));
+                    RL.Desc_Conto = dr.Field<string>("desc_conto");
+                    RL.Note = dr.Field<string>("note");
+                    RLL.Add(RL);
+                }
             }
             catch (SQLiteException err)
             {
@@ -498,15 +495,6 @@ namespace FinanceManager.Services
             catch (Exception err)
             {
                 throw new Exception(err.Message);
-            }
-            RegistryLocationList RLL = new RegistryLocationList();
-            foreach (DataRow dr in dt.Rows)
-            {
-                RegistryLocation RL = new RegistryLocation();
-                RL.Id_Conto = Convert.ToInt32(dr.Field<long>("id_conto"));
-                RL.Desc_Conto = dr.Field<string>("desc_conto");
-                RL.Note = dr.Field<string>("note");
-                RLL.Add(RL);
             }
             return RLL;
         }
@@ -1021,6 +1009,112 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
+        #endregion
+
+        #region TIPO GESTIONE UTILI
+        public RegistryTipoGestioniUtiliList GetTipoGestioniUtiliList()
+        {
+            DataTable dataTable= new DataTable();
+            RegistryTipoGestioniUtiliList registryTipoGestioniUtilis = new RegistryTipoGestioniUtiliList();
+            try
+            {
+                using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
+                {
+                    dataAdapter.SelectCommand = new SQLiteCommand();
+                    dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dataAdapter.SelectCommand.CommandText = RegistryScripts.GetTipoGestioniUtiliList;
+                    dataAdapter.Fill(dataTable);
+                }
+                foreach(DataRow row in dataTable.Rows)
+                {
+                    RegistryTipoGestioniUtili registry = new RegistryTipoGestioniUtili();
+                    registry.Id_TipoGestioneUtili = Convert.ToInt32(row.Field<long>("id_tipo_gestione"));
+                    registry.DescrizioneGestioneUtili = row.Field<string>("tipo_gestione");
+                    registryTipoGestioniUtilis.Add(registry);
+                }
+                return registryTipoGestioniUtilis;
+            }
+            catch(SQLiteException err)
+            {
+                throw new Exception("Get registry tipo gestione utili " + err.Message);
+            }
+            catch(Exception err)
+            {
+                throw new Exception("Get registry tipo gestione utili " + err.Message);
+            }
+        }
+        public void UpdateTipoGestioniUtili(RegistryTipoGestioniUtili tipoGestioniUtili)
+        {
+            try
+            {
+                using (SQLiteCommand cmd = new SQLiteCommand())
+                {
+                    cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    cmd.CommandText = RegistryScripts.UpdateTipoGestioniUtili;
+                    cmd.Parameters.AddWithValue("tipo_gestione", tipoGestioniUtili.DescrizioneGestioneUtili);
+                    cmd.Parameters.AddWithValue("id_tipo_gestione", tipoGestioniUtili.Id_TipoGestioneUtili);
+                    cmd.Connection.Open();
+                    cmd.ExecuteNonQuery();
+                    cmd.Connection.Close();
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception("Update registry tipo gestione utili " + err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception("Update registry tipo gestione utili " + err.Message);
+            }
+        }
+        public void InsertTipoGestioniUtili(RegistryTipoGestioniUtili tipoGestioniUtili)
+        {
+            try
+            {
+                using (SQLiteCommand cmd = new SQLiteCommand())
+                {
+                    cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    cmd.CommandText = RegistryScripts.InsertTipoGestioniUtili;
+                    cmd.Parameters.AddWithValue("tipo_gestione", tipoGestioniUtili.DescrizioneGestioneUtili);
+                    cmd.Connection.Open();
+                    cmd.ExecuteNonQuery();
+                    cmd.Connection.Close();
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception("Insert registry tipo gestione utili " + err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception("Insert registry tipo gestione utili " + err.Message);
+            }
+        }
+        public void DeleteTipoGestioniUtili(int id_tipoGestioniUtili)
+        {
+            try
+            {
+                using (SQLiteCommand cmd = new SQLiteCommand())
+                {
+                    cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    cmd.CommandText = RegistryScripts.DeleteTipoGestioniUtili;
+                    cmd.Parameters.AddWithValue("id_tipo_gestione", id_tipoGestioniUtili);
+                    cmd.Connection.Open();
+                    cmd.ExecuteNonQuery();
+                    cmd.Connection.Close();
+                }
+
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception("Delete registry tipo gestione utili " + err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception("Delete registry tipo gestione utili " + err.Message);
+            }
+        }
+
         #endregion
 
         public TipoSoldiList GetTipoSoldiList()

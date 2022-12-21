@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace FinanceManager.Models
 {
-    public class RegistrySoci
+    public class RegistryTipoGestioniUtili
     {
-        public int Id_Socio { get; set; }
-        public string Nome_Socio { get; set; }
+        public int Id_TipoGestioneUtili { get; set; }
+        public string DescrizioneGestioneUtili { get; set; }
     }
 }

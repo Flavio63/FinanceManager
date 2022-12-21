@@ -15,8 +15,14 @@
         </Grid.RowDefinitions>
         <Menu VerticalAlignment="Top">
             <MenuItem Header="Anagrafica" Margin="2,5" FontSize="16" FontWeight="Bold">
-                <MenuItem Header="Conti, Soci e Gestioni" Margin="2,0" FontSize="14" FontWeight="Bold" 
-                          Command="{Binding OnClickOpenConti_Soci_Gestioni}" CommandParameter="{Binding ElementName=mainGrid}"/>
+                <MenuItem Header="I Soci" Margin="2,0" FontSize="14" FontWeight="Bold" 
+                          Command="{Binding OnClickOpenSoci}" CommandParameter="{Binding ElementName=mainGrid}"/>
+                <MenuItem Header="Le Gestioni" Margin="2,0" FontSize="14" FontWeight="Bold" 
+                          Command="{Binding OnClickOpenGestioni}" CommandParameter="{Binding ElementName=mainGrid}"/>
+                <MenuItem Header="I Conti Corrente" Margin="2,0" FontSize="14" FontWeight="Bold" 
+                          Command="{Binding OnClickOpenConti_Correnti}" CommandParameter="{Binding ElementName=mainGrid}"/>
+                <MenuItem Header="Il calcolo degli Utili" Margin="2,0" FontSize="14" FontWeight="Bold" 
+                          Command="{Binding OnClickOpenTipoGestioneUtili}" CommandParameter="{Binding ElementName=mainGrid}"/>
                 <MenuItem Header="Aziende" Margin="2,0" FontSize="14" FontWeight="Normal" 
                           Command="{Binding OnClickOpenAziende}"  CommandParameter="{Binding ElementName=mainGrid}"/>
                 <MenuItem Header="Tipologia Titoli" Margin="2,0" FontSize="14" FontWeight="Normal" 

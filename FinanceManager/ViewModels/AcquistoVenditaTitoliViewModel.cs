@@ -71,6 +71,7 @@ namespace FinanceManager.ViewModels
                 //======================================================================================
                 ListGestioni = new RegistryGestioniList();
                 ListGestioni = _registryServices.GetGestioneList();
+                ListTipoGestioni = _registryServices.GetTipoGestioniUtiliList();
                 ListValute = new RegistryCurrencyList();
                 ListValute = _registryServices.GetRegistryCurrencyList();
                 ListTipoTitoli = new RegistryShareTypeList();
@@ -505,6 +506,11 @@ namespace FinanceManager.ViewModels
         {
             get { return GetValue(() => ListGestioni); }
             set { SetValue(() => ListGestioni, value); }
+        }
+        public RegistryTipoGestioniUtiliList ListTipoGestioni
+        {
+            get { return GetValue(() => ListTipoGestioni); }
+            set { SetValue(() => ListTipoGestioni, value); }
         }
         /// <summary>
         /// Combo box con i tipi di movimenti
