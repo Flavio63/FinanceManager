@@ -10,9 +10,10 @@ namespace FinanceManager.Services.SQL
     {
 
 
-        public readonly static string GetSociList = "SELECT id_socio, nome_socio FROM soci WHERE id_socio > 0";
-        public readonly static string UpdateSocioName = "UPDATE soci SET nome_socio = @nome WHERE id_socio = @id_socio";
-        public readonly static string AddSocio = "INSERT INTO soci (id_socio, nome_socio) VALUES (null, @nome)";
+        public readonly static string GetSociList = "SELECT id_socio, nome_socio, A.id_tipo_gestione, tipo_gestione FROM soci A, tipo_gestioni B " +
+            "WHERE A.id_tipo_gestione = B.id_tipo_gestione AND id_socio > 0";
+        public readonly static string UpdateSocioName = "UPDATE soci SET nome_socio = @nome, id_tipo_gestione = @id_tipo_gestione WHERE id_socio = @id_socio";
+        public readonly static string AddSocio = "INSERT INTO soci (id_socio, nome_socio, id_tipo_gestione) VALUES (null, @nome, @id_tipo_gestione)";
         public readonly static string DeleteSocio = "DELETE FROM soci WHERE id_socio = @id";
 
         public readonly static string GetTipoGestioniUtiliList = "SELECT id_tipo_gestione, tipo_gestione FROM tipo_gestioni WHERE id_tipo_gestione > 0;";

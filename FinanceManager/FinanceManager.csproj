@@ -221,13 +221,13 @@
     <Compile Include="Models\GuadagnoPerPeriodoList.cs" />
     <Compile Include="Models\MovimentiConto.cs" />
     <Compile Include="Models\MovimentiContoList.cs" />
+    <Compile Include="Models\QuoteGuadagno.cs" />
+    <Compile Include="Models\QuoteGuadagnoList.cs" />
     <Compile Include="Models\QuotePeriodi.cs" />
     <Compile Include="Models\Ptf_CC.cs" />
     <Compile Include="Models\Ptf_CCList.cs" />
     <Compile Include="Models\GuadagnoPerQuoteList.cs" />
     <Compile Include="Models\GuadagnoPerQuote.cs" />
-    <Compile Include="Models\QuotePerPeriodo.cs" />
-    <Compile Include="Models\QuotePerPeriodoList.cs" />
     <Compile Include="Models\RegistryTipoGestioniUtili.cs" />
     <Compile Include="Models\RegistryTipoGestioniUtiliList.cs" />
     <Compile Include="Models\ReportMovementDetailed.cs" />

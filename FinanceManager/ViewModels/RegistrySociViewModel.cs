@@ -2,6 +2,7 @@
 using FinanceManager.Models;
 using FinanceManager.Services;
 using FinanceManager.Views;
+using NPOI.SS.Formula.Functions;
 using Renci.SshNet.Messages;
 using System;
 using System.Collections.Generic;
@@ -18,21 +19,26 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace FinanceManager.ViewModels
 {
-    internal class RegistrySociViewModel : INotifyPropertyChanged
+    internal class RegistrySociViewModel : ViewModelBase
     {
         IRegistryServices _services;
-        private RegistrySoci soci;
-        private ObservableCollection<RegistrySoci> _registrySoci;
+        public ICommand InsertCommand { get; set; }
+        public ICommand ModifyCommand { get; set; }
+        public ICommand EraseCommand { get; set; }
 
         public ICommand CloseMeCommand { get; set; }
 
-        public RegistrySociViewModel(IRegistryServices services) 
-        { 
+        public RegistrySociViewModel(IRegistryServices services)
+        {
             _services = services ?? throw new ArgumentNullException("Registry Socio Model with NO services!");
             try
             {
-                SociList = new ObservableCollection<RegistrySoci>(services.GetSociList());
-                SociList.CollectionChanged += CollectionHasChanged;
+                InsertCommand = new CommandHandler(SaveCommand, CanSave);
+                ModifyCommand = new CommandHandler(UpdateCommand, CanModify);
+                EraseCommand = new CommandHandler(DeleteCommand, CanModify);
+                // popolo le liste
+                init();
+                TipoGestioniUtiliList = services.GetTipoGestioniUtiliList();
             }
             catch (Exception ex)
             {
@@ -41,80 +47,74 @@ namespace FinanceManager.ViewModels
             CloseMeCommand = new CommandHandler(CloseMe);
         }
 
-        public ObservableCollection<RegistrySoci> SociList
+        private void init()
         {
-            get { return _registrySoci; }
-            set { _registrySoci = value;  NotifyPropertyChanged("SociList"); }
+            Socio = new RegistrySoci();
+            TipoGestioniUtili = new RegistryTipoGestioniUtili();
+            SociList = _services.GetSociList();
+            Nome_Socio = string.Empty;
+        }
+
+        public RegistrySociList SociList
+        {
+            get { return GetValue(() => SociList); }
+            set { SetValue(() => SociList, value); }
         }
         public RegistrySoci Socio
         {
-            get { return soci; }
-            set { soci = value; NotifyPropertyChanged("Socio"); }
+            get { return GetValue(() => Socio); }
+            set { SetValue(() => Socio, value); }
+        }
+
+        public RegistryTipoGestioniUtiliList TipoGestioniUtiliList
+        {
+            get { return GetValue(() => TipoGestioniUtiliList); }
+            set { SetValue(() => TipoGestioniUtiliList, value); }
+        }
+
+        public RegistryTipoGestioniUtili TipoGestioniUtili
+        {
+            get { return GetValue(() => TipoGestioniUtili); }
+            set { SetValue(() => TipoGestioniUtili, value); }
+        }
+
+        public string Nome_Socio
+        {
+            get { return GetValue(() => Nome_Socio); }
+            set { SetValue(() => Nome_Socio, value); Socio.Nome_Socio = value; }
         }
 
         /// <summary>
-        /// E' l'evento di edit nella cella di descrizione della gestione
-        /// se il modello ha un valore di id vuol dire che è in modifica
-        /// se il valore è zero vuol dire che è un inserimento di nuova gestione
+        /// Gestore dell'evento nei combo box dei parametri comuni
         /// </summary>
-        /// <param name="sender">la cella di descrizione</param>
-        /// <param name="e">la conferma o meno della modifica</param>
-        public void CellChanged(object sender, DataGridCellEditEndingEventArgs e)
+        /// <param name="sender">Combo Box</param>
+        /// <param name="e">Cambio scelta item</param>
+        public void CbSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            try
+            if (e.AddedItems.Count > 0)
             {
-
-                if (e.EditAction == DataGridEditAction.Commit)
+                if (e.AddedItems[0] is RegistryTipoGestioniUtili RTGU)
                 {
-                    Socio = ((RegistrySoci)e.Row.Item);
-                    if (Socio.Id_Socio > 0)
-                    {
-                        _services.UpdateSocioName(Socio);
-                    }
-                    else
-                    {
-                            _services.AddSocio(Socio);
-                            SociList = new ObservableCollection<RegistrySoci>(_services.GetSociList());
-                    }
+                    TipoGestioniUtili.Id_tipo_gestione = RTGU.Id_tipo_gestione;
+                    TipoGestioniUtili.Tipo_Gestione = RTGU.Tipo_Gestione;
                 }
             }
-            catch (Exception err)
-            {
-                System.Windows.MessageBox.Show("Errore nell'aggiornamento dei dati: " + err.Message);
-            }
         }
-
         /// <summary>
-        /// Resto in ascolto dei tasti premuti con la griglia attiva
-        /// se è premuto il tasto delete lo intercetto e pongo la 
-        /// domanda se si è sicuri, in caso affermativo elimino la gestione
+        /// Imposto i campi sopra la griglia quando viene selezionata una riga
         /// </summary>
-        /// <param name="sender">tastiera</param>
-        /// <param name="e">tasto premuto</param>
-        public void DeleteRow(object sender, KeyEventArgs e)
+        /// <param name="sender">Grid dei dati</param>
+        /// <param name="e">Cambio di selezione</param>
+        public void GridSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (e.Key == Key.Delete)
+            if (e.AddedItems.Count > 0)
             {
-                DataGrid dg = sender as DataGrid;
-                if (dg.SelectedIndex > 0)
+                if (e.AddedItems[0] is RegistrySoci RS)
                 {
-                    MessageBoxResult result = MessageBox.Show("Attenzione verrà elemininata il seguente socio: " +
-                        ((RegistrySoci)dg.SelectedItem).Nome_Socio, "DAF-C Gestione Socio", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        try
-                        {
-                            _services.DeleteSocio(((RegistrySoci)dg.SelectedItem).Id_Socio);
-                            SociList = new ObservableCollection<RegistrySoci>(_services.GetSociList());
-                        }
-                        catch (Exception err)
-                        {
-                            MessageBox.Show("Errore nell'eliminazione del socio " + Environment.NewLine + err.Message);
-                            e.Handled = true;
-                        }
-                    }
-                    else
-                        e.Handled = true;
+                    Socio = RS;
+                    Nome_Socio = RS.Nome_Socio;
+                    TipoGestioniUtili.Id_tipo_gestione = RS.Id_tipo_gestione;
+                    TipoGestioniUtili.Tipo_Gestione = RS.Tipo_Gestione;
                 }
             }
         }
@@ -130,13 +130,58 @@ namespace FinanceManager.ViewModels
             wp.Children.Remove(ROV);
         }
 
-
-        public void CollectionHasChanged(object sender, NotifyCollectionChangedEventArgs e) { }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void NotifyPropertyChanged(string propertyName)
+        public void SaveCommand(object param)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            try
+            {
+                _services.AddSocio(Socio);
+                System.Windows.MessageBox.Show("Aggiornamento effettuato", "Gestione Soci", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception err)
+            {
+                System.Windows.MessageBox.Show("Errore nell'aggiornamento dei dati: " + err.Message, "Gestione Soci", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            init();
         }
+        private void UpdateCommand(object param)
+        {
+            try
+            {
+                _services.UpdateSocioName(Socio);
+                System.Windows.MessageBox.Show("Aggiornamento effettuato", "Gestione Soci", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch(Exception err)
+            {
+                System.Windows.MessageBox.Show("Errore nell'aggiornamento dei dati: " + err.Message, "Gestione Soci", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            init();
+        }
+        private void DeleteCommand(object param)
+        {
+            try
+            {
+                _services.DeleteSocio(Socio.Id_Socio);
+                System.Windows.MessageBox.Show("Aggiornamento effettuato", "Gestione Soci", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception err )
+            {
+                System.Windows.MessageBox.Show("Errore nell'aggiornamento dei dati: " + err.Message, "Gestione Soci", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            init();
+        }
+        public bool CanSave(object param)
+        {
+            if (Socio.Id_Socio == 0 && !String.IsNullOrEmpty(Nome_Socio) && TipoGestioniUtili.Id_tipo_gestione != 0)
+                return true;
+            return false;
+        }
+        public bool CanModify(object param)
+        {
+            if (Socio.Id_Socio > 0)
+                return true;
+            return false;
+        }
+
+      
     }
 }

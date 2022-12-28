@@ -40,6 +40,8 @@ namespace FinanceManager.Services
                     RegistrySoci RO = new RegistrySoci();
                     RO.Id_Socio = Convert.ToInt32(dr.Field<long>("id_socio"));
                     RO.Nome_Socio = dr.Field<string>("nome_socio");
+                    RO.Id_tipo_gestione = Convert.ToInt32(dr.Field<long>("id_tipo_gestione"));
+                    RO.Tipo_Gestione = dr.Field<string>("tipo_gestione");
                     ROL.Add(RO);
                 }
                 return ROL;
@@ -66,6 +68,7 @@ namespace FinanceManager.Services
                     cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     cmd.CommandText = RegistryScripts.UpdateSocioName;
                     cmd.Parameters.AddWithValue("nome", socio.Nome_Socio);
+                    cmd.Parameters.AddWithValue("id_tipo_gestione", socio.Id_tipo_gestione);
                     cmd.Parameters.AddWithValue("id_socio", socio.Id_Socio);
                     cmd.Connection.Open();
                     cmd.ExecuteNonQuery();
@@ -95,6 +98,7 @@ namespace FinanceManager.Services
                     cmd.CommandText = RegistryScripts.AddSocio;
                     cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     cmd.Parameters.AddWithValue("nome", socio.Nome_Socio);
+                    cmd.Parameters.AddWithValue("id_tipo_gestione", socio.Id_tipo_gestione);
                     cmd.Connection.Open();
                     cmd.ExecuteNonQuery();
                     cmd.Connection.Close();
@@ -1028,8 +1032,8 @@ namespace FinanceManager.Services
                 foreach(DataRow row in dataTable.Rows)
                 {
                     RegistryTipoGestioniUtili registry = new RegistryTipoGestioniUtili();
-                    registry.Id_TipoGestioneUtili = Convert.ToInt32(row.Field<long>("id_tipo_gestione"));
-                    registry.DescrizioneGestioneUtili = row.Field<string>("tipo_gestione");
+                    registry.Id_tipo_gestione = Convert.ToInt32(row.Field<long>("id_tipo_gestione"));
+                    registry.Tipo_Gestione = row.Field<string>("tipo_gestione");
                     registryTipoGestioniUtilis.Add(registry);
                 }
                 return registryTipoGestioniUtilis;
@@ -1051,8 +1055,8 @@ namespace FinanceManager.Services
                 {
                     cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     cmd.CommandText = RegistryScripts.UpdateTipoGestioniUtili;
-                    cmd.Parameters.AddWithValue("tipo_gestione", tipoGestioniUtili.DescrizioneGestioneUtili);
-                    cmd.Parameters.AddWithValue("id_tipo_gestione", tipoGestioniUtili.Id_TipoGestioneUtili);
+                    cmd.Parameters.AddWithValue("tipo_gestione", tipoGestioniUtili.Tipo_Gestione);
+                    cmd.Parameters.AddWithValue("id_tipo_gestione", tipoGestioniUtili.Id_tipo_gestione);
                     cmd.Connection.Open();
                     cmd.ExecuteNonQuery();
                     cmd.Connection.Close();
@@ -1075,7 +1079,7 @@ namespace FinanceManager.Services
                 {
                     cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     cmd.CommandText = RegistryScripts.InsertTipoGestioniUtili;
-                    cmd.Parameters.AddWithValue("tipo_gestione", tipoGestioniUtili.DescrizioneGestioneUtili);
+                    cmd.Parameters.AddWithValue("tipo_gestione", tipoGestioniUtili.Tipo_Gestione);
                     cmd.Connection.Open();
                     cmd.ExecuteNonQuery();
                     cmd.Connection.Close();
