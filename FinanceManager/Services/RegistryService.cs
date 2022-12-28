@@ -138,12 +138,12 @@ namespace FinanceManager.Services
         }
         #endregion
 
-        #region Owner
+        #region Gestioni
         /// <summary>
-        /// Aggiunge una persona
+        /// Aggiunge una voce alla tabella gestioni
         /// </summary>
-        /// <param name="owner">Il record da aggiornare</param>
-        public void AddGestione(RegistryGestioni owner)
+        /// <param name="gestione">Il record da aggiungere</param>
+        public void AddGestione(RegistryGestioni gestione)
         {
             try
             {
@@ -152,7 +152,8 @@ namespace FinanceManager.Services
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandText = RegistryScripts.AddGestione;
                     cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    cmd.Parameters.AddWithValue("nome", owner.Nome_Gestione);
+                    cmd.Parameters.AddWithValue("nome_gestione", gestione.Nome_Gestione);
+                    cmd.Parameters.AddWithValue("id_tipo_gestione", gestione.Id_tipo_gestione);
                     cmd.Connection.Open();
                     cmd.ExecuteNonQuery();
                     cmd.Connection.Close();
@@ -168,7 +169,11 @@ namespace FinanceManager.Services
             }
         }
 
-        public void DeleteGestione(int id)
+        /// <summary>
+        /// Elimina una voce dalla tabella gestioni
+        /// </summary>
+        /// <param name="id_gestione">Il record da aggiungere</param>
+        public void DeleteGestione(int id_gestione)
         {
             try
             {
@@ -177,7 +182,7 @@ namespace FinanceManager.Services
                     cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandText = SQL.RegistryScripts.DeleteGestione;
-                    cmd.Parameters.AddWithValue("id", id);
+                    cmd.Parameters.AddWithValue("id_gestione", id_gestione);
                     cmd.Connection.Open();
                     cmd.ExecuteNonQuery();
                     cmd.Connection.Close();
@@ -193,7 +198,8 @@ namespace FinanceManager.Services
             }
         }
         /// <summary>
-        /// Estrae la lista di tutti i gestori
+        /// Ritorna tutti i nominativi legati alle
+        /// gestioni dei conti
         /// </summary>
         /// <returns>Observable Collection</returns>
         public RegistryGestioniList GetGestioneList()
@@ -215,6 +221,8 @@ namespace FinanceManager.Services
                     RegistryGestioni RO = new RegistryGestioni();
                     RO.Id_Gestione = Convert.ToInt32(dr.Field<long>("id_gestione"));
                     RO.Nome_Gestione = dr.Field<string>("nome_gestione");
+                    RO.Id_tipo_gestione = Convert.ToInt32(dr.Field<long>("id_tipo_gestione"));
+                    RO.Tipo_Gestione = dr.Field<string>("tipo_gestione");
                     ROL.Add(RO);
                 }
                 return ROL;
@@ -229,10 +237,10 @@ namespace FinanceManager.Services
             }
         }
         /// <summary>
-        /// Aggiorna i dati di una persona
+        /// Aggiorna i dati di una gestione
         /// </summary>
-        /// <param name="owner">Il record da aggiornare</param>
-        public void UpdateGestioneName(RegistryGestioni owner)
+        /// <param name="gestione">Il record da aggiornare</param>
+        public void UpdateGestioneName(RegistryGestioni gestione)
         {
             try
             {
@@ -241,8 +249,9 @@ namespace FinanceManager.Services
                     cmd.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandText = RegistryScripts.UpdateGestioneName;
-                    cmd.Parameters.AddWithValue("nome", owner.Nome_Gestione);
-                    cmd.Parameters.AddWithValue("id", owner.Id_Gestione);
+                    cmd.Parameters.AddWithValue("nome_gestione", gestione.Nome_Gestione);
+                    cmd.Parameters.AddWithValue("id_gestione", gestione.Id_Gestione);
+                    cmd.Parameters.AddWithValue("id_tipo_gestione", gestione.Id_tipo_gestione);
                     cmd.Connection.Open();
                     cmd.ExecuteNonQuery();
                     cmd.Connection.Close();

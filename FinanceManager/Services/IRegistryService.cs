@@ -23,24 +23,28 @@ namespace FinanceManager.Services
         void DeleteSocio(int id_socio);
         #endregion
 
-        #region Owner
+        #region Gestioni
         /// <summary>
-        /// Ritorna tutti i nominativi legati alla
-        /// gestione dei conti
+        /// Ritorna tutti i nominativi legati alle
+        /// gestioni dei conti
         /// </summary>
         /// <returns>Observable Collection</returns>
         RegistryGestioniList GetGestioneList();
         /// <summary>
-        /// Aggiorna i dati di un gestore
+        /// Aggiorna i dati di una gestione
         /// </summary>
-        /// <param name="owner">Il record da aggiornare</param>
-        void UpdateGestioneName(RegistryGestioni owner);
+        /// <param name="gestione">Il record da aggiornare</param>
+        void UpdateGestioneName(RegistryGestioni gestione);
         /// <summary>
         /// Aggiunge una voce alla tabella gestioni
         /// </summary>
-        /// <param name="owner">Il record da aggiungere</param>
-        void AddGestione(RegistryGestioni owner);
-        void DeleteGestione(int id);
+        /// <param name="gestione">Il record da aggiungere</param>
+        void AddGestione(RegistryGestioni gestione);
+        /// <summary>
+        /// Elimina una voce dalla tabella gestioni
+        /// </summary>
+        /// <param name="id_gestione">Il record da aggiungere</param>
+        void DeleteGestione(int id_gestione);
         #endregion
 
         #region ShareType

@@ -2,20 +2,10 @@
 using FinanceManager.Models;
 using FinanceManager.Services;
 using FinanceManager.Views;
-using NPOI.SS.Formula.Functions;
-using Renci.SshNet.Messages;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace FinanceManager.ViewModels
 {
@@ -42,7 +32,7 @@ namespace FinanceManager.ViewModels
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + ex.Message, "DAF-C Lista Socio");
+                System.Windows.MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + ex.Message, "Gestione Soci", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             CloseMeCommand = new CommandHandler(CloseMe);
         }

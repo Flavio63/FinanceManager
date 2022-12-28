@@ -4,47 +4,99 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FinanceManager.Views"
+             xmlns:viewmodels="clr-namespace:FinanceManager.ViewModels"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             d:DataContext="{d:DesignInstance Type=viewmodels:RegistryGestioniViewModel}"
              Name ="_RegistryGestioniView"
              mc:Ignorable="d" 
              >
-    <Grid MaxWidth="350" Background="Beige" Margin="5,25">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="25"/>
-        </Grid.RowDefinitions>
+    <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Registrazione Valute" FontWeight="Bold" 
-                   FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" 
-                   Margin="50,0,0,0"/>
-        <Button Content="X" Command="{Binding CloseMeCommand}" 
-                CommandParameter="{Binding ElementName=_RegistryGestioniView}" 
-                HorizontalContentAlignment="Center" Grid.Column="1" HorizontalAlignment="Right"
-                    VerticalContentAlignment="Center" Width="25" Height="25" Background="LightGray" 
+        <Border BorderBrush="Black" BorderThickness="1" Margin="25">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="25"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="60"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="Registrazione Soci" FontWeight="Bold" 
+                   FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <Button Content="X" Command="{Binding CloseMeCommand}" Background="Red"
+                CommandParameter="{Binding ElementName=_RegistryGestioniView}" FontWeight="Bold"
+                HorizontalContentAlignment="Center" Grid.Column="2" HorizontalAlignment="Right"
+                    VerticalContentAlignment="Center" Width="25" Height="25" 
                 Margin="0,0, 15, 0"></Button>
-        <DataGrid Grid.Row="1" Grid.ColumnSpan="2" Name="Owner" CanUserAddRows="True" 
-                  CanUserDeleteRows="True" AutoGenerateColumns="False" RowHeaderWidth="16"
-                  SelectionMode="Single" FontSize="14" ItemsSource="{Binding GestioniList, UpdateSourceTrigger=PropertyChanged}" 
-                  Width="315" HorizontalAlignment="Center" AlternatingRowBackground="#FFAEFF90">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="CellEditEnding">
-                    <i:CallMethodAction TargetObject="{Binding}" MethodName="CellChanged"/>
-                </i:EventTrigger>
-                <i:EventTrigger EventName="PreviewKeyDown">
-                    <i:CallMethodAction TargetObject="{Binding}" MethodName="DeleteRow"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" IsReadOnly="True" Binding="{Binding Id_Gestione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
-                                    Width="40"/>
-                <DataGridTextColumn Header="Nome Gestione" IsReadOnly="False" 
-                                    Binding="{Binding Nome_Gestione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-            </DataGrid.Columns>
-        </DataGrid>
+                <Border Grid.Row="1" BorderBrush="DarkMagenta" BorderThickness="2" Margin="15">
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="5" MinWidth="100">
+                            <TextBlock Text="Descrizione Gestione" Margin="2" FontSize="16" FontWeight="DemiBold"/>
+                            <TextBox Name="_name" Text="{Binding Nome_Gestione}" Margin="2" FontSize="16"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="5" MinWidth="100">
+                            <TextBlock Text="Tipo Gestione Utili" Margin="2" FontSize="16" FontWeight="DemiBold"/>
+                            <ComboBox Name="_tipoUtili" SelectedValuePath="Id_tipo_gestione" DisplayMemberPath="Tipo_Gestione" Margin="2"
+                              ItemsSource="{Binding TipoGestioniUtiliList, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                              SelectedValue="{Binding Gestione.Id_tipo_gestione}" FontSize="16">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SelectionChanged">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="CbSelectionChanged"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" Margin="5" MinWidth="100">
+                            <Button Content="Inserisci" Margin="2" Command="{Binding InsertCommand}" FontSize="16"/>
+                            <Button Content="Modifica" Margin="2" Command="{Binding ModifyCommand}" FontSize="16"/>
+                            <Button Content="Elimina" Margin="2" Command="{Binding EraseCommand}" FontSize="16"/>
+                        </StackPanel>
+                    </StackPanel>
 
+                </Border>
+
+                <DataGrid Grid.Row="2" Name="Owner" CanUserAddRows="False" Margin="15"
+                  CanUserDeleteRows="False" AutoGenerateColumns="False" RowHeaderWidth="20"
+                  FontSize="16" FontWeight="Bold" ItemsSource="{Binding GestioniList, UpdateSourceTrigger=PropertyChanged}" 
+                  AlternatingRowBackground="#FFAEFF90" IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id_Gestione, UpdateSourceTrigger=PropertyChanged}" Width="30" 
+                                            CellStyle="{StaticResource NumericCell}"/>
+
+                        <DataGridTextColumn Header="Descrizione Gestione" Binding="{Binding Nome_Gestione, UpdateSourceTrigger=PropertyChanged}" 
+                                            CellStyle="{StaticResource TextCell}"/>
+
+                        <DataGridTextColumn Header="Tipologia Investimenti" Binding="{Binding Tipo_Gestione, UpdateSourceTrigger=PropertyChanged}" 
+                                            CellStyle="{StaticResource TextCell}"/>
+                    </DataGrid.Columns>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:CallMethodAction TargetObject="{Binding}" MethodName="GridSelectionChanged"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </DataGrid>
+
+                <Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" BorderBrush="Blue" 
+                BorderThickness="2" Margin="15" MinWidth="200" MaxWidth="300">
+                    <TextBlock Background="LightBlue" TextWrapping="Wrap" Padding="5" >
+                <Run Text="HELP" FontSize="20" FontWeight="Heavy"/>
+                <LineBreak/>
+                <Run Text="Ogni gestione è asscociata a un tipo di calcolo degli utili." FontSize="18"/>
+                <LineBreak/>
+                <LineBreak/>
+                <Run Text="Per modificare e, se possibile, eliminare seleziona dalla griglia il record." FontSize="18"/>
+                <LineBreak/>
+                <LineBreak/>
+                <Run Text="Per inserire scrivi la descrizione della nuova gestione e attribuscigli una tipologia di calcolo degli utili." FontSize="18"/>
+                    </TextBlock>
+                </Border>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>

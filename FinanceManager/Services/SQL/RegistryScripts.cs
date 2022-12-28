@@ -22,10 +22,11 @@ namespace FinanceManager.Services.SQL
         public readonly static string DeleteTipoGestioniUtili = "DELETE FROM tipo_gestioni WHERE id_tipo_gestione = @id_tipo_gestione;";
 
         #region Gestione
-        public readonly static string GetGestioneList = "SELECT id_gestione, nome_gestione FROM gestioni WHERE id_gestione > 0 ORDER BY id_gestione";
-        public readonly static string UpdateGestioneName = "UPDATE gestioni SET nome_gestione = @nome WHERE id_gestione = @id";
-        public readonly static string AddGestione = "INSERT INTO gestioni (id_gestione, nome_gestione) VALUES (null, @nome)";
-        public readonly static string DeleteGestione = "DELETE FROM gestioni WHERE id_gestione = @id";
+        public readonly static string GetGestioneList = "SELECT id_gestione, nome_gestione, A.id_tipo_gestione, tipo_gestione FROM gestioni A, tipo_gestioni B " +
+            " WHERE A.id_tipo_gestione = B.id_tipo_gestione AND A.id_gestione > 0 ORDER BY id_gestione";
+        public readonly static string UpdateGestioneName = "UPDATE gestioni SET nome_gestione = @nome_gestione, id_tipo_gestione = @id_tipo_gestione WHERE id_gestione = @id_gestione";
+        public readonly static string AddGestione = "INSERT INTO gestioni (id_gestione, nome_gestione, id_tipo_gestione) VALUES (null, @nome_gestione, @id_tipo_gestione)";
+        public readonly static string DeleteGestione = "DELETE FROM gestioni WHERE id_gestione = @id_gestione";
         #endregion
 
         #region TipoTitoli

@@ -12,120 +12,106 @@ using System.Windows;
 
 namespace FinanceManager.ViewModels
 {
-    public class RegistryGestioniViewModel : INotifyPropertyChanged
+    public class RegistryGestioniViewModel : ViewModelBase
     {
         IRegistryServices _services;
-        private RegistryGestioni gestioni;
-        private ObservableCollection<RegistryGestioni> _gestioniList;
+        public ICommand InsertCommand { get; set; }
+        public ICommand ModifyCommand { get; set; }
+        public ICommand EraseCommand { get; set; }
         public ICommand CloseMeCommand { get; set; }
 
-        public RegistryGestioniViewModel(IRegistryServices service)
+        public RegistryGestioniViewModel(IRegistryServices services)
         {
-            _services = service ?? throw new ArgumentNullException("RegistryGestioniModel With No Services");
+            _services = services ?? throw new ArgumentNullException("RegistryGestioniModel With No Services");
             try
             {
-                GestioniList = new ObservableCollection<RegistryGestioni>(service.GetGestioneList());
-                GestioniList.CollectionChanged += CollectionHasChanged;
+                InsertCommand = new CommandHandler(SaveCommand, CanSave);
+                ModifyCommand = new CommandHandler(UpdateCommand, CanModify);
+                EraseCommand = new CommandHandler(DeleteCommand, CanModify);
+                // popolo le liste
+                init();
+                TipoGestioniUtiliList = _services.GetTipoGestioniUtiliList();
             }
             catch (Exception err)
             {
-                MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "DAF-C Lista Gestioni");
+                MessageBox.Show("Errore nella richiesta dei dati." + Environment.NewLine + err.Message, "Gestione Soci", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             CloseMeCommand = new CommandHandler(CloseMe);
         }
 
-        public void CollectionHasChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void init()
         {
+            TipoGestioniUtili = new RegistryTipoGestioniUtili();
+            Gestione = new RegistryGestioni();
+            GestioniList = _services.GetGestioneList();
+            Nome_Gestione = string.Empty;
         }
 
-        /// <summary>
-        /// E' l'evento di edit nella cella di descrizione della gestione
-        /// se il modello ha un valore di id vuol dire che è in modifica
-        /// se il valore è zero vuol dire che è un inserimento di nuova gestione
-        /// </summary>
-        /// <param name="sender">la cella di descrizione</param>
-        /// <param name="e">la conferma o meno della modifica</param>
-        public void CellChanged(object sender, DataGridCellEditEndingEventArgs e)
+        public RegistryGestioniList GestioniList
         {
-            try
-            {
+            get { return GetValue(() => GestioniList); }
+            set { SetValue(() => GestioniList, value); }
+        }
 
-                if (e.EditAction == DataGridEditAction.Commit)
-                {
-                    Gestioni = ((RegistryGestioni)e.Row.Item);
-                    if (Gestioni.Id_Gestione > 0)
-                    {
-                        _services.UpdateGestioneName(Gestioni);
-                    }
-                    else
-                    {
-                        if (Gestioni.Nome_Gestione != null)
-                        {
-                            _services.AddGestione(Gestioni);
-                            GestioniList = new ObservableCollection<RegistryGestioni>(_services.GetGestioneList());
-                        }
-                    }
-                }
-            }
-            catch (Exception err)
-            {
-                MessageBox.Show("Errore nell'aggiornamento dei dati: " + err.Message);
-            }
+        public RegistryGestioni Gestione
+        {
+            get { return GetValue(() => Gestione); }
+            set { SetValue(() => Gestione, value); }
+        }
+
+        public RegistryTipoGestioniUtiliList TipoGestioniUtiliList
+        {
+            get { return GetValue(() => TipoGestioniUtiliList); }
+            set { SetValue(() => TipoGestioniUtiliList, value); }
+        }
+
+        public RegistryTipoGestioniUtili TipoGestioniUtili
+        {
+            get { return GetValue(() => TipoGestioniUtili); }
+            set { SetValue(() => TipoGestioniUtili, value); }
+        }
+
+        public string Nome_Gestione
+        {
+            get { return GetValue(() => Nome_Gestione); }
+            set { SetValue(() => Nome_Gestione, value); Gestione.Nome_Gestione = value; }
         }
         /// <summary>
-        /// Resto in ascolto dei tasti premuti con la griglia attiva
-        /// se è premuto il tasto delete lo intercetto e pongo la 
-        /// domanda se si è sicuri, in caso affermativo elimino la gestione
+        /// Gestore dell'evento nei combo box dei parametri comuni
         /// </summary>
-        /// <param name="sender">tastiera</param>
-        /// <param name="e">tasto premuto</param>
-        public void DeleteRow(object sender, KeyEventArgs e)
+        /// <param name="sender">Combo Box</param>
+        /// <param name="e">Cambio scelta item</param>
+        public void CbSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (e.Key == Key.Delete)
+            if (e.AddedItems.Count > 0)
             {
-                DataGrid dg = sender as DataGrid;
-                if (dg.SelectedIndex > 0)
+                if (e.AddedItems[0] is RegistryTipoGestioniUtili RTGU)
                 {
-                    MessageBoxResult result = MessageBox.Show("Attenzione verrà elemininata la seguente gestione: " +
-                        ((RegistryGestioni)dg.SelectedItem).Nome_Gestione, "DAF-C Gestione Gestioni", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        try
-                        {
-                            _services.DeleteGestione(((RegistryGestioni)dg.SelectedItem).Id_Gestione);
-                            GestioniList = new ObservableCollection<RegistryGestioni>(_services.GetGestioneList());
-                        }
-                        catch (Exception err)
-                        {
-                            MessageBox.Show("Errore nell'eliminazione della gestione: " + Environment.NewLine + err.Message);
-                            e.Handled = true;
-                        }
-                    }
-                    else
-                        e.Handled = true;
+                    TipoGestioniUtili.Id_tipo_gestione = RTGU.Id_tipo_gestione;
+                    TipoGestioniUtili.Tipo_Gestione = RTGU.Tipo_Gestione;
                 }
             }
         }
-
-        public ObservableCollection<RegistryGestioni> GestioniList
+        /// <summary>
+        /// Imposto i campi sopra la griglia quando viene selezionata una riga
+        /// </summary>
+        /// <param name="sender">Grid dei dati</param>
+        /// <param name="e">Cambio di selezione</param>
+        public void GridSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            get { return _gestioniList; }
-            set
+            if (e.AddedItems.Count > 0)
             {
-                _gestioniList = value;
-                NotifyPropertyChanged("GestioniList");
+                if (e.AddedItems[0] is RegistryGestioni RG)
+                {
+                    Gestione = RG;
+                    Nome_Gestione = RG.Nome_Gestione;
+                    TipoGestioniUtili.Id_tipo_gestione = RG.Id_tipo_gestione;
+                    TipoGestioniUtili.Tipo_Gestione = RG.Tipo_Gestione;
+                }
             }
         }
 
-        public RegistryGestioni Gestioni
-        {
-            get { return gestioni; }
-            set
-            {
-                gestioni = value;
-                NotifyPropertyChanged("Gestioni");
-            }
-        }
+
         /// <summary>
         /// Evento di chiusura della view Gestione gestioni
         /// </summary>
@@ -136,11 +122,58 @@ namespace FinanceManager.ViewModels
             DockPanel wp = ROV.Parent as DockPanel;
             wp.Children.Remove(ROV);
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void NotifyPropertyChanged(string propertyName)
+        public void SaveCommand(object param)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            try
+            {
+                _services.AddGestione(Gestione);
+                System.Windows.MessageBox.Show("Aggiornamento effettuato", "Gestione Gestioni", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception err)
+            {
+                System.Windows.MessageBox.Show("Errore nell'aggiornamento dei dati: " + err.Message, "Gestione Gestioni", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            init();
+        }
+        private void UpdateCommand(object param)
+        {
+            try
+            {
+                _services.UpdateGestioneName(Gestione);
+                System.Windows.MessageBox.Show("Aggiornamento effettuato", "Gestione Gestioni", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception err)
+            {
+                System.Windows.MessageBox.Show("Errore nell'aggiornamento dei dati: " + err.Message, "Gestione Gestioni", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            init();
+        }
+        private void DeleteCommand(object param)
+        {
+            try
+            {
+                _services.DeleteGestione(Gestione.Id_Gestione);
+                System.Windows.MessageBox.Show("Aggiornamento effettuato", "Gestione Gestioni", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception err)
+            {
+                System.Windows.MessageBox.Show("Errore nell'aggiornamento dei dati: " + err.Message, "Gestione Gestioni", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            init();
+        }
+
+        public bool CanSave(object param)
+        {
+            if (Gestione.Id_Gestione == 0 && !String.IsNullOrEmpty(Nome_Gestione) && TipoGestioniUtili.Id_tipo_gestione != 0)
+                return true;
+            return false;
+        }
+
+        public bool CanModify (object param) 
+        {
+            if (Gestione.Id_Gestione > 0)
+                return true;
+            return false;
         }
     }
 }
