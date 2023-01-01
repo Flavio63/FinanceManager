@@ -47,6 +47,7 @@ namespace FinanceManager.Models
         public string Note { get; set; }
         public int Attivo { get; set; }
         public int Id_Tipo_Gestione { get; set; }
+        public string Tipo_Gestione { get; set; }
         public DateTime Link_Movimenti { get; set; }
 
         public PortafoglioTitoli()

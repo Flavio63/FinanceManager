@@ -104,8 +104,8 @@
                 </ComboBox>
                 <TextBlock Grid.Row="3" Text="Calcolo Utili" FontSize="16" Margin="0, 2, 5, 2" VerticalAlignment="Center"
                            HorizontalAlignment="Right"/>
-                <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding ListTipoGestione, UpdateSourceTrigger=PropertyChanged}"
-                          SelectedValuePath="Id_Tipo_Gestione" DisplayMemberPath="Desc_tipo_gestione" Margin="5, 2" MinWidth="100"
+                <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding ListTipoGestioni, UpdateSourceTrigger=PropertyChanged}"
+                          SelectedValuePath="Id_tipo_gestione" DisplayMemberPath="Tipo_Gestione" Margin="5, 2" MinWidth="100"
                           IsEnabled="{Binding CanModifyBaseParameters, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                           SelectedValue="{Binding RecordPortafoglioTitoli.Id_Tipo_Gestione}">
                     <i:Interaction.Triggers>
@@ -328,12 +328,10 @@
             </StackPanel>
         </Border>
 
-        <TabControl Grid.Row="3" Grid.ColumnSpan="4" Margin="5">
-            <TabItem Header="Dettaglio Movimenti" Margin="5, 0" FontWeight="Bold" Width="200">
                 <!-- Datagrid con tutti i movimenti del portafoglio -->
                 <DataGrid CanUserAddRows="False" CanUserDeleteRows="False"  AutoGenerateColumns="False" RowHeaderWidth="16" SelectionMode="Single" 
                       FontWeight="Normal"  FontSize="14" AlternatingRowBackground="LightGreen" ItemsSource="{Binding PtfCollectionView, UpdateSourceTrigger=PropertyChanged}"
-                      Margin="5" MaxWidth="{Binding Path=ActualWidth, ElementName=BorderGrid}">
+                      Margin="5" MaxWidth="{Binding Path=ActualWidth, ElementName=BorderGrid}" Grid.Row="3" Grid.ColumnSpan="4">
                 <DataGrid.Resources>
                     <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="LightBlue"/>
                 </DataGrid.Resources>
@@ -350,7 +348,7 @@
                         <DataGridTextColumn Header="Gestione" IsReadOnly="True" Binding="{Binding Nome_Gestione, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="Tipo Movimento" IsReadOnly="True" Binding="{Binding Desc_tipo_movimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     <DataGridTextColumn Header="Tipo Titolo" IsReadOnly="True" Binding="{Binding Desc_tipo_titolo, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                    <DataGridTemplateColumn Header="Titolo" IsReadOnly="True" MaxWidth="100">
+                    <DataGridTemplateColumn Header="Titolo" IsReadOnly="True" MaxWidth="200">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Desc_titolo, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" ToolTipService.ToolTip="{Binding Desc_titolo}"/>
@@ -433,66 +431,19 @@
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-                    <DataGridTemplateColumn Header="Causale" IsReadOnly="True" MaxWidth="100" >
+                    <DataGridTemplateColumn Header="Causale" IsReadOnly="True" MaxWidth="200">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Note, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" ToolTipService.ToolTip="{Binding Note}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                </DataGrid.Columns>
+            </DataGrid.Columns>
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="SelectionChanged">
                         <i:CallMethodAction TargetObject="{Binding}" MethodName="GridSelectionChanged"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </DataGrid>
-            </TabItem>
-            <TabItem Header="Valori Medi di Carico" Margin="5,0" FontWeight="Bold" Width="200">
-                <DataGrid CanUserAddRows="False" CanUserDeleteRows="False"  AutoGenerateColumns="False" RowHeaderWidth="16" SelectionMode="Single" 
-                      FontWeight="Normal" FontSize="14" AlternatingRowBackground="LightGreen" ItemsSource="{Binding CollectionCostiMedi, UpdateSourceTrigger=PropertyChanged}"
-                      Margin="5" MaxWidth="{Binding Path=ActualWidth, ElementName=BorderGrid}">
-                    <DataGrid.Resources>
-                        <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="LightBlue"/>
-                    </DataGrid.Resources>
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Gestione" IsReadOnly="True" Binding="{Binding Nome_Gestione, UpdateSourceTrigger=PropertyChanged}"/>
-                        <DataGridTextColumn Header="Conto" IsReadOnly="True" Binding="{Binding Desc_Conto, UpdateSourceTrigger=PropertyChanged}"/>
-                        <DataGridTextColumn Header="Tipo Titolo" IsReadOnly="True" Binding="{Binding Desc_tipo_titolo, UpdateSourceTrigger=PropertyChanged}"/>
-                        <DataGridTextColumn Header="Titolo" IsReadOnly="True" Binding="{Binding Desc_titolo, UpdateSourceTrigger=PropertyChanged}"/>
-                        <DataGridTextColumn Header="Isin" IsReadOnly="True" Binding="{Binding Isin, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                        <DataGridTextColumn Header="Costo Unitario Medio" IsReadOnly="True" 
-                                    Binding="{Binding Costo_unitario_in_valuta, StringFormat=N3, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged}">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                                    <Setter Property="Margin" Value="5,0,10,0"/>
-                                    <Setter Property="ToolTip" Value="Valori Comprensivi di costi"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="Titoli Attivi" IsReadOnly="True" 
-                                    Binding="{Binding N_titoli, StringFormat=N3, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged}">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                                    <Setter Property="Margin" Value="5,0,10,0"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="Costo Medio" IsReadOnly="True" 
-                                    Binding="{Binding Importo_totale, StringFormat=N2, ConverterCulture=IT-it, UpdateSourceTrigger=PropertyChanged}">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                                    <Setter Property="Margin" Value="5,0,10,0"/>
-                                    <Setter Property="ToolTip" Value="Valori Comprensivi di costi"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-        </TabControl>
     </Grid>
 </UserControl>

@@ -14,16 +14,16 @@ namespace FinanceManager.Services.SQL
         /// </summary>
         public static readonly string AddMovimentoTitoli = "INSERT INTO portafoglio_titoli (id_portafoglio_titoli, id_gestione, id_conto, id_valuta, id_tipo_movimento, " +
             "id_titolo, data_movimento, ammontare, shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ritenuta_fiscale, " +
-            "valore_cambio, note, attivo, link_movimenti) " +
+            "valore_cambio, note, attivo, link_movimenti, id_tipo_gestione) " +
             "VALUES (null, @id_gestione, @id_conto, @id_valuta, @id_tipo_movimento, @id_titolo, @data_movimento, @ammontare, @shares_quantity, " +
-            "@unity_local_value, @total_commission, @tobin_tax, @disaggio_cedole, @ritenuta_fiscale, @valore_cambio, @note, @attivo, @link_movimenti);";
+            "@unity_local_value, @total_commission, @tobin_tax, @disaggio_cedole, @ritenuta_fiscale, @valore_cambio, @note, @attivo, @link_movimenti, @id_tipo_gestione);";
 
         private static readonly string GetListaTitoli = "SELECT id_portafoglio_titoli, B.id_gestione, nome_gestione, C.id_conto, desc_conto, D.id_valuta, cod_valuta, " +
     "E.id_tipo_movimento, desc_Movimento, G.id_tipo_titolo, G.desc_tipo_titolo, H.id_azienda, H.desc_azienda, A.id_titolo, F.desc_titolo, F.isin, data_movimento, " +
-    "shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ritenuta_fiscale, ammontare, valore_cambio, A.note, attivo, link_movimenti " +
-    "FROM portafoglio_titoli A, gestioni B, conti C, valuta D, tipo_movimento E, titoli F, tipo_titoli G, aziende H " +
+    "shares_quantity, unity_local_value, total_commission, tobin_tax, disaggio_cedole, ritenuta_fiscale, ammontare, valore_cambio, A.note, attivo, link_movimenti, A.id_tipo_gestione, tipo_gestione " +
+    "FROM portafoglio_titoli A, gestioni B, conti C, valuta D, tipo_movimento E, titoli F, tipo_titoli G, aziende H, tipo_gestioni I " +
     "WHERE A.id_gestione = B.id_gestione AND A.id_conto = C.id_conto AND A.id_valuta = D.id_valuta AND A.id_tipo_movimento = E.id_tipo_movimento AND A.id_titolo = F.id_titolo AND " +
-    "F.id_tipo_titolo = G.id_tipo_titolo AND F.id_azienda = H.id_azienda AND id_portafoglio_titoli > 0 ";
+    "F.id_tipo_titolo = G.id_tipo_titolo AND F.id_azienda = H.id_azienda AND A.id_tipo_gestione = I.id_tipo_gestione AND id_portafoglio_titoli > 0 ";
 
         /// <summary>
         /// Estrae tutti i movimenti dal portafoglio titoli
@@ -58,17 +58,6 @@ namespace FinanceManager.Services.SQL
             " AND B.id_gestione = @id_gestione AND C.id_conto = @id_conto AND A.id_titolo IS NOT NULL ORDER BY id_portafoglio_titoli DESC LIMIT 1";
 
         /// <summary>
-        /// Calcola ed estrae i costi medi dei titoli suddivisi
-        /// fra conto, gestione, tipo titolo e titolo stesso
-        /// </summary>
-        public static readonly string GetCostiMediPerTitolo = "SELECT C.nome_gestione, D.desc_conto, B.id_tipo_titolo, E.desc_tipo_titolo, B.desc_titolo, B.isin, " +
-    "SUM(ammontare +(total_commission + tobin_tax + disaggio_cedole + ritenuta_fiscale)*-1) AS CostoMedio, SUM(shares_quantity) AS TitoliAttivi, " +
-    "SUM(ammontare + (total_commission + tobin_tax + disaggio_cedole + ritenuta_fiscale) * -1) / SUM(shares_quantity) AS CostoUnitarioMedio " +
-    "FROM portafoglio_titoli A, titoli B, gestioni C, conti D, tipo_titoli E " +
-    "WHERE A.id_gestione<> 0 AND attivo > 0 AND A.id_tipo_movimento <> 6 AND A.id_titolo = B.id_titolo AND A.id_gestione = C.id_gestione AND A.id_conto = D.id_conto AND B.id_tipo_titolo = E.id_tipo_titolo " +
-    "GROUP BY A.id_gestione, A.id_conto, E.id_tipo_titolo, A.id_titolo " +
-    "ORDER BY A.id_gestione, A.id_conto, E.desc_tipo_titolo, B.desc_titolo";
-        /// <summary>
         /// Estrae il numero di azioni possedute dato una gestione, un conto e un id azione
         /// </summary>
         public static readonly string GetSharesQuantity = "SELECT SUM(shares_quantity) TotalShares FROM portafoglio_titoli " +
@@ -80,7 +69,7 @@ namespace FinanceManager.Services.SQL
             "id_tipo_movimento = @id_tipo_movimento, id_titolo = @id_titolo, data_movimento = @data_movimento, ammontare = @ammontare, shares_quantity = @shares_quantity, " +
             "unity_local_value = @unity_local_value, total_commission = @total_commission, tobin_tax = @tobin_tax, disaggio_cedole = @disaggio_cedole, " +
             "ritenuta_fiscale = @ritenuta_fiscale, valore_cambio = @valore_cambio, " +
-            "note = @note, attivo = @attivo, link_movimenti = @link_movimenti WHERE id_portafoglio_titoli = @id_portafoglio_titoli";
+            "note = @note, attivo = @attivo, link_movimenti = @link_movimenti, id_tipo_gestione = @id_tipo_gestione WHERE id_portafoglio_titoli = @id_portafoglio_titoli";
         /// <summary>
         /// Dato un id_titoli, una gestione e un conto restituisce i titoli ancora in portafoglio
         /// </summary>

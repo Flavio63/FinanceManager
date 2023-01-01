@@ -200,6 +200,7 @@ namespace FinanceManager.ViewModels
             {
                 RecordPortafoglioTitoli = PT;
                 UpdateTotals();
+                e.Handled = true;
             }
         }
 
@@ -805,6 +806,16 @@ namespace FinanceManager.ViewModels
                     // estraggo tutti gli acquisti / vendite del titolo ancora attive
                     Ptf_CCList ptf_CCs = _contoTitoliServices.GetListaTitoliAttiviByContoGestioneTitolo(RecordPortafoglioTitoli.Id_gestione,
                         RecordPortafoglioTitoli.Id_Conto, (int)RecordPortafoglioTitoli.Id_titolo);
+                    // devo controllare le date
+                    foreach (Ptf_CC row in ptf_CCs)
+                    {
+                        if (RecordPortafoglioTitoli.Data_Movimento < row.Data_Movimento )
+                        {
+                            MessageBox.Show("Controllare la data inserita, risulta antecedente ad almeno una operazione del passato!",
+                                Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                    }
                     double valoreAcquisto = 0;      // n. azioni per costo unitario in valuta
                     double numeroAzioni = 0;        // n. azioni
                     foreach (Ptf_CC row in ptf_CCs)
@@ -894,6 +905,16 @@ namespace FinanceManager.ViewModels
                     // estraggo tutti gli acquisti / vendite del titolo ancora attive
                     Ptf_CCList ptf_CCs = _contoTitoliServices.GetListaTitoliAttiviByContoGestioneTitolo(RecordPortafoglioTitoli.Id_gestione,
                         RecordPortafoglioTitoli.Id_Conto, (int)RecordPortafoglioTitoli.Id_titolo);
+                    // devo controllare le date
+                    foreach (Ptf_CC row in ptf_CCs)
+                    {
+                        if (RecordPortafoglioTitoli.Data_Movimento > row.Data_Movimento)
+                        {
+                            MessageBox.Show("Controllare la data inserita, risulta posteriore ad almeno una operazione del passato!",
+                                Application.Current.FindResource("DAF_Caption").ToString(), MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                    }
                     for (int x = 0; x < ptf_CCs.Count; x++)
                     {
                         if (RecordPortafoglioTitoli.N_titoli + ptf_CCs[x].N_titoli == 0)
@@ -1118,9 +1139,11 @@ namespace FinanceManager.ViewModels
                                 {
                                     CCcapitale.Id_RowConto = CCs[0].Id_RowConto;
                                     CCcapitale.Causale = RecordPortafoglioTitoli.Note;
+                                    // aggiorno il record in conto corrente con il nuovo valore di capitale
                                     _contoCorrenteServices.UpdateRecordContoCorrente(CCcapitale, TipologiaIDContoCorrente.IdContoCorrente);
                                     CCprofitloss.Id_RowConto = CCs[1].Id_RowConto;
                                     CCprofitloss.Causale = RecordPortafoglioTitoli.Note;
+                                    // aggiorno il record in conto corrente con il nuovo valore di profit/loss
                                     _contoCorrenteServices.UpdateRecordContoCorrente(CCprofitloss, TipologiaIDContoCorrente.IdContoCorrente);
                                     _quoteServices.ModifySingoloGuadagno(CCprofitloss);
                                 }

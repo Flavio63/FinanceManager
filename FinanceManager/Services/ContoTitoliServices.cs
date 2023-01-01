@@ -47,6 +47,7 @@ namespace FinanceManager.Services
                             cmd.Parameters.AddWithValue("note", RecordTitolo.Note);
                             cmd.Parameters.AddWithValue("attivo", RecordTitolo.Attivo);
                             cmd.Parameters.AddWithValue("link_movimenti", RecordTitolo.Link_Movimenti.ToString("yyyy-MM-dd HH:mm:ss"));
+                            cmd.Parameters.AddWithValue("id_tipo_gestione", RecordTitolo.Id_Tipo_Gestione);
                             cmd.ExecuteNonQuery();
                             transaction.Commit();
                         }
@@ -197,48 +198,6 @@ namespace FinanceManager.Services
             return MLA(dt.Rows[0]);
         }
         /// <summary>
-        /// Prelevo le info per i costi medi dei titoli attivi
-        /// </summary>
-        /// <returns></returns>
-        public PortafoglioTitoliList GetCostiMediPerTitolo()
-        {
-            try
-            {
-                DataTable dt = new DataTable();
-                PortafoglioTitoliList PTL = new PortafoglioTitoliList();
-                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
-                {
-                    dbAdapter.SelectCommand = new SQLiteCommand();
-                    dbAdapter.SelectCommand.CommandText = ContoTitoliScript.GetCostiMediPerTitolo;
-                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    dbAdapter.Fill(dt);
-                }
-                foreach (DataRow DR in dt.Rows)
-                {
-                    PortafoglioTitoli PT = new PortafoglioTitoli();
-                    PT.Nome_Gestione = DR.Field<string>("nome_gestione");
-                    PT.Desc_Conto = DR.Field<string>("desc_conto");
-                    PT.Id_tipo_titolo = (uint)DR.Field<long>("id_tipo_titolo");
-                    PT.Desc_tipo_titolo = DR.Field<string>("desc_tipo_titolo");
-                    PT.Desc_titolo = DR.Field<string>("desc_titolo");
-                    PT.Isin = DR.Field<string>("isin");
-                    PT.Importo_totale = DR.Field<double>("CostoMedio");
-                    PT.N_titoli = DR.Field<double>("TitoliAttivi");
-                    PT.Costo_unitario_in_valuta = DR.Field<double>("CostoUnitarioMedio");
-                    PTL.Add(PT);
-                }
-                return PTL;
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-        }
-        /// <summary>
         /// Data una gestione, un conto e il codice di un titolo
         /// restituisce quanti titoli si hanno in portafoglio
         /// </summary>
@@ -275,8 +234,8 @@ namespace FinanceManager.Services
         /// <summary>
         /// Aggiorna i campi di un movimento titoli
         /// </summary>
-        /// <param name="managerLiquidAsset">Il record da modificare</param>
-        public void UpdateMovimentoTitoli(PortafoglioTitoli managerLiquidAsset)
+        /// <param name="RecordPortafoglioTitoli">Il record da modificare</param>
+        public void UpdateMovimentoTitoli(PortafoglioTitoli RecordPortafoglioTitoli)
         {
             try
             {
@@ -284,25 +243,26 @@ namespace FinanceManager.Services
                 {
                     dbComm.CommandType = CommandType.Text;
                     dbComm.CommandText = ContoTitoliScript.UpdateMovimentoTitoli;
-                    dbComm.Parameters.AddWithValue("id_gestione", managerLiquidAsset.Id_gestione);
-                    dbComm.Parameters.AddWithValue("id_conto", managerLiquidAsset.Id_Conto);
-                    dbComm.Parameters.AddWithValue("id_valuta", managerLiquidAsset.Id_valuta);
-                    dbComm.Parameters.AddWithValue("id_tipo_movimento", managerLiquidAsset.Id_tipo_movimento);
-                    dbComm.Parameters.AddWithValue("id_titolo", managerLiquidAsset.Id_titolo);
-                    dbComm.Parameters.AddWithValue("data_movimento", managerLiquidAsset.Data_Movimento.ToString("yyyy-MM-dd"));
-                    dbComm.Parameters.AddWithValue("ammontare", managerLiquidAsset.Importo_totale);
-                    dbComm.Parameters.AddWithValue("shares_quantity", managerLiquidAsset.N_titoli);
-                    dbComm.Parameters.AddWithValue("unity_local_value", managerLiquidAsset.Costo_unitario_in_valuta);
-                    dbComm.Parameters.AddWithValue("total_commission", managerLiquidAsset.Commissioni_totale);
-                    dbComm.Parameters.AddWithValue("tobin_tax", managerLiquidAsset.TobinTax);
-                    dbComm.Parameters.AddWithValue("disaggio_cedole", managerLiquidAsset.Disaggio_anticipo_cedole);
-                    dbComm.Parameters.AddWithValue("ritenuta_fiscale", managerLiquidAsset.RitenutaFiscale);
-                    dbComm.Parameters.AddWithValue("valore_cambio", managerLiquidAsset.Valore_di_cambio);
-                    dbComm.Parameters.AddWithValue("disponibile", managerLiquidAsset.Available);
-                    dbComm.Parameters.AddWithValue("note", managerLiquidAsset.Note);
-                    dbComm.Parameters.AddWithValue("attivo", managerLiquidAsset.Attivo);
-                    dbComm.Parameters.AddWithValue("id_portafoglio_titoli", managerLiquidAsset.Id_portafoglio);
-                    dbComm.Parameters.AddWithValue("link_movimenti", managerLiquidAsset.Link_Movimenti.ToString("yyyy-MM-dd HH:mm:ss"));
+                    dbComm.Parameters.AddWithValue("id_gestione", RecordPortafoglioTitoli.Id_gestione);
+                    dbComm.Parameters.AddWithValue("id_conto", RecordPortafoglioTitoli.Id_Conto);
+                    dbComm.Parameters.AddWithValue("id_valuta", RecordPortafoglioTitoli.Id_valuta);
+                    dbComm.Parameters.AddWithValue("id_tipo_movimento", RecordPortafoglioTitoli.Id_tipo_movimento);
+                    dbComm.Parameters.AddWithValue("id_titolo", RecordPortafoglioTitoli.Id_titolo);
+                    dbComm.Parameters.AddWithValue("data_movimento", RecordPortafoglioTitoli.Data_Movimento.ToString("yyyy-MM-dd"));
+                    dbComm.Parameters.AddWithValue("ammontare", RecordPortafoglioTitoli.Importo_totale);
+                    dbComm.Parameters.AddWithValue("shares_quantity", RecordPortafoglioTitoli.N_titoli);
+                    dbComm.Parameters.AddWithValue("unity_local_value", RecordPortafoglioTitoli.Costo_unitario_in_valuta);
+                    dbComm.Parameters.AddWithValue("total_commission", RecordPortafoglioTitoli.Commissioni_totale);
+                    dbComm.Parameters.AddWithValue("tobin_tax", RecordPortafoglioTitoli.TobinTax);
+                    dbComm.Parameters.AddWithValue("disaggio_cedole", RecordPortafoglioTitoli.Disaggio_anticipo_cedole);
+                    dbComm.Parameters.AddWithValue("ritenuta_fiscale", RecordPortafoglioTitoli.RitenutaFiscale);
+                    dbComm.Parameters.AddWithValue("valore_cambio", RecordPortafoglioTitoli.Valore_di_cambio);
+                    dbComm.Parameters.AddWithValue("disponibile", RecordPortafoglioTitoli.Available);
+                    dbComm.Parameters.AddWithValue("note", RecordPortafoglioTitoli.Note);
+                    dbComm.Parameters.AddWithValue("attivo", RecordPortafoglioTitoli.Attivo);
+                    dbComm.Parameters.AddWithValue("id_portafoglio_titoli", RecordPortafoglioTitoli.Id_portafoglio);
+                    dbComm.Parameters.AddWithValue("link_movimenti", RecordPortafoglioTitoli.Link_Movimenti.ToString("yyyy-MM-dd HH:mm:ss"));
+                    dbComm.Parameters.AddWithValue("id_tipo_gestione", RecordPortafoglioTitoli.Id_Tipo_Gestione);
                     dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
@@ -445,6 +405,8 @@ namespace FinanceManager.Services
             MLA.Note = dr.Field<string>("note");
             MLA.Attivo = (int)dr.Field<long>("attivo");
             MLA.Link_Movimenti = dr.Field<DateTime>("link_movimenti");
+            MLA.Id_Tipo_Gestione = (int)dr.Field<long>("id_tipo_gestione");
+            MLA.Tipo_Gestione = dr.Field<string>("Tipo_Gestione");
             return MLA;
         }
 

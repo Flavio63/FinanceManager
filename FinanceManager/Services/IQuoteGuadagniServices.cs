@@ -1,6 +1,7 @@
 ﻿using FinanceManager.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -74,9 +75,38 @@ namespace FinanceManager.Services
         /// <param name="RecordContoCorrente">record conto corrente con i dati</param>
         void ModifySingoloGuadagno(ContoCorrente RecordContoCorrente);
         /// <summary>
-        /// Tramite l'ultimo record conto_corrente modificato
-        /// calcolo e modifico le quote delle perdite per ogni singolo socio
+        /// Restituisce una tabella con il valore cumulato
+        /// suddiviso fra soci, valuta e tipo di gestione
         /// </summary>
-        /// <param name="RecordContoCorrente">record conto corrente con i dati</param>
+        /// <returns>DataTable</returns>
+        DataTable GetTotaleCumulatoSocio();
+        /// <summary>
+        /// Restituisce una tabella con il valore totale
+        /// suddiviso fra valuta e tipo di gestione
+        /// </summary>
+        /// <returns>DataTable</returns>
+        DataTable GetTotaleGenerale();
+        /// <summary>
+        /// Ritorna una tabella con tutti i movimenti dei capitali
+        /// </summary>
+        /// <returns>QuoteGuadagnoList</returns>
+        QuoteGuadagnoList GetQuoteGuadagni();
+        /// <summary>
+        /// Ritorna il valore di cum_socio, cum_totale nel periodo e per la valuta dati
+        /// </summary>
+        /// <param name="id_socio">il socio</param>
+        /// <param name="id_valuta">la valuta</param>
+        /// <param name="id_tipo_gestione">il tipo di gestione degli utili</param>
+        QuoteGuadagno GetLastRecordBySocioValuta(int id_socio, int id_valuta, int id_tipo_gestione);
+        /// <summary>
+        /// Registra un record di quote guadagno
+        /// </summary>
+        /// <param name="quoteGuadagno">il record da registrare</param>
+        void InsertRecordQuoteGuadagno(QuoteGuadagno quoteGuadagno);
+        /// <summary>
+        /// Modifica i dati di un record di quote guadagno
+        /// </summary>
+        /// <param name="quoteGuadagno">il record da modificare</param>
+        void ModifyQuoteGuadagno(QuoteGuadagno quoteGuadagno);
     }
 }

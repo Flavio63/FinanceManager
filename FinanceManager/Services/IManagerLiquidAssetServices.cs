@@ -52,11 +52,6 @@ namespace FinanceManager.Services
         /// <param name="Id_ActualQuote"></param>
         void DeleteRecordQuoteTab(int Id_ActualQuote);
 
-        
-        
-
-        QuotePerPeriodoList GetAllRecordQuote_Guadagno();
-
         /// <summary>
         /// Trovo l'id del record da modificare
         /// </summary>

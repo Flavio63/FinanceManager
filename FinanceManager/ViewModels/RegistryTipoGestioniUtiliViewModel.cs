@@ -57,13 +57,13 @@ namespace FinanceManager.ViewModels
                 if (e.EditAction == DataGridEditAction.Commit)
                 {
                     tipoGestioniUtili = ((RegistryTipoGestioniUtili)e.Row.Item);
-                    if (tipoGestioniUtili.Id_TipoGestioneUtili > 0)
+                    if (tipoGestioniUtili.Id_tipo_gestione > 0)
                     {
                         _services.UpdateTipoGestioniUtili(tipoGestioniUtili);
                     }
                     else
                     {
-                        if (tipoGestioniUtili.DescrizioneGestioneUtili != null )
+                        if (tipoGestioniUtili.Tipo_Gestione != null )
                         {
                             _services.InsertTipoGestioniUtili(tipoGestioniUtili);
                             TipoGestioniUtiliList = new ObservableCollection<RegistryTipoGestioniUtili>(_services.GetTipoGestioniUtiliList());
@@ -91,12 +91,12 @@ namespace FinanceManager.ViewModels
                 if (dg.SelectedIndex > 0)
                 {
                     MessageBoxResult result = MessageBox.Show("Attenzione verrà elemininata la seguente tipologia quote utili: " +
-                        ((RegistryTipoGestioniUtili)dg.SelectedItem).DescrizioneGestioneUtili, "DAF-C Gestione Tipo Utili", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        ((RegistryTipoGestioniUtili)dg.SelectedItem).Tipo_Gestione, "DAF-C Gestione Tipo Utili", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {
                         try
                         {
-                            _services.DeleteTipoGestioniUtili(((RegistryTipoGestioniUtili)dg.SelectedItem).Id_TipoGestioneUtili);
+                            _services.DeleteTipoGestioniUtili(((RegistryTipoGestioniUtili)dg.SelectedItem).Id_tipo_gestione);
                             TipoGestioniUtiliList = new ObservableCollection<RegistryTipoGestioniUtili>(_services.GetTipoGestioniUtiliList());
                         }
                         catch (Exception err)

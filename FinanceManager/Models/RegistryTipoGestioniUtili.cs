@@ -8,7 +8,7 @@ namespace FinanceManager.Models
 {
     public class RegistryTipoGestioniUtili
     {
-        public int Id_TipoGestioneUtili { get; set; }
-        public string DescrizioneGestioneUtili { get; set; }
+        public int Id_tipo_gestione { get; set; }
+        public string Tipo_Gestione { get; set; }
     }
 }

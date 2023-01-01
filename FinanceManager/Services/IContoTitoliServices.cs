@@ -44,11 +44,6 @@ namespace FinanceManager.Services
         /// <returns>Il record con tutti i campi</returns>
         PortafoglioTitoli GetPortafoglioTitoliById(int IdPortafoglioTitoli);
         /// <summary>
-        /// Prelevo le info per i costi medi dei titoli attivi
-        /// </summary>
-        /// <returns>Lista di records</returns>
-        PortafoglioTitoliList GetCostiMediPerTitolo();
-        /// <summary>
         /// Data una gestione, un conto e il codice di un titolo
         /// restituisce quanti titoli si hanno in portafoglio
         /// </summary>

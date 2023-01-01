@@ -26,7 +26,7 @@ namespace FinanceManager.ViewModels
         Predicate<object> _Filter;
 
         public CapitalsRegisterViewModel
-            (IRegistryServices registryServices, IManagerLiquidAssetServices managerLiquidServices, 
+            (IRegistryServices registryServices, IManagerLiquidAssetServices managerLiquidServices,
             IContoCorrenteServices contoCorrenteServices, IQuoteGuadagniServices quoteServices)
         {
             _registryServices = registryServices ?? throw new ArgumentNullException("Manca collegamento con richiesta dati anagrafica Capitali View Model");
@@ -262,71 +262,78 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                if (ActualContoCorrente.Id_tipo_movimento == 2)
+                // determino chi sta inserendo e su quella base assegno il tipo di gestione utili
+                ActualContoCorrente.Id_Tipo_Gestione = ActualContoCorrente.Id_Socio == 3 ? 2 : 1;
+                // verifico se alla stessa data con lo stesso tipo gestione ci siano altri inserimenti
+                int result = Convert.ToInt16(_quoteServices.VerifyInvestmentDate(ActualContoCorrente, ActualContoCorrente.Id_Tipo_Gestione));
+                if (result == -1)
                 {
-                    ActualContoCorrente.Ammontare = ActualContoCorrente.Ammontare < 0 ?  ActualContoCorrente.Ammontare * -1 : ActualContoCorrente.Ammontare;
-                    // devo verificare di avere i soldi che sto togliendo dal conto finanza
-                    ContoCorrenteList ccl = _contoCorrenteServices.GetTotalAmountByAccount(1, 0, ActualContoCorrente.Id_Socio,
-                        (int)Models.Enumeratori.TipologiaSoldi.Capitale, ActualContoCorrente.Id_Valuta);
-                    if (ccl[0].Ammontare > ActualContoCorrente.Ammontare)
+                    // prelevo l'ultimo record del socio con la stessa valuta
+                    QuoteGuadagno quoteGuadagno = _quoteServices.GetLastRecordBySocioValuta(ActualContoCorrente.Id_Socio, 
+                        ActualContoCorrente.Id_Valuta, ActualContoCorrente.Id_Tipo_Gestione);
+                    // verifico se è inserimento o prelievo
+                    if (ActualContoCorrente.Id_tipo_movimento == 2)
                     {
-                        MessageBox.Show("La cifra che vuoi prelevare è più grande di quella che possiedi! ;) ", "Registrazione Capitali",
-                            MessageBoxButton.OK, MessageBoxImage.Information);
-                        return;
+                        ActualContoCorrente.Ammontare = ActualContoCorrente.Ammontare > 0 ? ActualContoCorrente.Ammontare * -1 : ActualContoCorrente.Ammontare;
+                        // verifico che il totale a disposizione del socio permetta il prelievo
+                        if (quoteGuadagno.cum_socio + ActualContoCorrente.Ammontare < 0)
+                        {
+                            MessageBox.Show("Il prelievo supera la disponibilità.", "Gestioni Capitali", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                            return;
+                        }
                     }
-                    // verifico se alla stessa data con lo stesso tipo gestione ci siano altri prelievi
-                    int result = Convert.ToInt16(_quoteServices.VerifyInvestmentDate(ActualContoCorrente, ActualContoCorrente.Id_Tipo_Gestione));
-                    if (result == -1)
-                    {
-                        // non esiste alla stessa data con il tipo di gestione quindi devo aggiungere un nuovo periodo quote
-                        QuotePeriodi quotePeriodi = _quoteServices.Update_InsertQuotePeriodi(ActualContoCorrente.DataMovimento, ActualContoCorrente.Id_Tipo_Gestione);
-                        ActualContoCorrente.Modified = quotePeriodi.DataInsert;
-                        ActualContoCorrente.Id_Quote_Periodi = quotePeriodi.IdPeriodoQuote;
-                        // registro il prelievo
-                        _contoCorrenteServices.InsertAccountMovement(ActualContoCorrente);
-                        // inserisco la nuova quota di attribuzione utili
-                        _quoteServices.ComputesAndInsertQuoteGuadagno(ActualContoCorrente.Id_Tipo_Gestione, ActualContoCorrente.Id_Quote_Periodi);
-                    }
-                    else
-                    {
-                        // è già stato fatto un inserimento pari data e tipo gestione quindi recupero il valore
-                        ActualContoCorrente.Id_Quote_Periodi = result;
-                        // registro il prelievo
-                        _contoCorrenteServices.InsertAccountMovement(ActualContoCorrente);
-                        // modifico le quote di attribuzione utili
-                        _quoteServices.ComputesAndModifyQuoteGuadagno(ActualContoCorrente.Id_Tipo_Gestione);
-                    }
+                    NuovoInserimento(quoteGuadagno);
                 }
                 else
                 {
-                    // determino chi sta inserendo e su quella base assegno il tipo di gestione utili
-                    ActualContoCorrente.Id_Tipo_Gestione = ActualContoCorrente.Id_Socio == 3 ? 2 : 1;
-                    // verifico se alla stessa data con lo stesso tipo gestione ci siano altri inserimenti
-                    int result = Convert.ToInt16( _quoteServices.VerifyInvestmentDate(ActualContoCorrente, ActualContoCorrente.Id_Tipo_Gestione));
-                    if (result == -1)
+                    // è già stato fatto un inserimento pari data e tipo gestione quindi recupero il valore
+                    ActualContoCorrente.Id_Quote_Periodi = result;
+                    // prelevo l'ultimo record del socio con la stessa valuta
+                    QuoteGuadagno quoteGuadagno = _quoteServices.GetLastRecordBySocioValuta(ActualContoCorrente.Id_Socio, ActualContoCorrente.Id_Valuta, ActualContoCorrente.Id_Tipo_Gestione);
+                    // verifico se è inserimento o prelievo
+                    if (ActualContoCorrente.Id_tipo_movimento == 2)
                     {
-                        // non esiste alla stessa data con il tipo di gestione quindi devo aggiungere un nuovo periodo quote
-                        QuotePeriodi quotePeriodi = _quoteServices.Update_InsertQuotePeriodi(ActualContoCorrente.DataMovimento, ActualContoCorrente.Id_Tipo_Gestione);
-                        ActualContoCorrente.Modified = quotePeriodi.DataInsert;
-                        ActualContoCorrente.Id_Quote_Periodi = quotePeriodi.IdPeriodoQuote;
-                        // registro l'inserimento
-                        _contoCorrenteServices.InsertAccountMovement(ActualContoCorrente);
-                        // inserisco la nuova quota di attribuzione utili
-                        _quoteServices.ComputesAndInsertQuoteGuadagno(ActualContoCorrente.Id_Tipo_Gestione, ActualContoCorrente.Id_Quote_Periodi);
+                        ActualContoCorrente.Ammontare = ActualContoCorrente.Ammontare > 0 ? ActualContoCorrente.Ammontare * -1 : ActualContoCorrente.Ammontare;
+                        // verifico che il totale a disposizione del socio permetta il prelievo
+                        if (quoteGuadagno.cum_socio + ActualContoCorrente.Ammontare < 0)
+                        {
+                            MessageBox.Show("Il prelievo supera la disponibilità.", "Gestioni Capitali", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                            return;
+                        }
                     }
-                    else
+                    // registro l'inserimento
+                    _contoCorrenteServices.InsertAccountMovement(ActualContoCorrente);
+                    // riprendo il record inserito
+                    ActualContoCorrente = _contoCorrenteServices.GetLastContoCorrente();
+                    // calcolo il nuovo totale
+                    double NuovoCumTotale = quoteGuadagno.cum_totale + ActualContoCorrente.Ammontare;
+                    quoteGuadagno.cum_totale = NuovoCumTotale;
+                    // calcolo il nuovo cum_socio
+                    quoteGuadagno.cum_socio = quoteGuadagno.cum_socio + ActualContoCorrente.Ammontare;
+                    // calcolo la nuova quota socio
+                    quoteGuadagno.quota = quoteGuadagno.cum_socio / NuovoCumTotale;
+                    quoteGuadagno.id_conto_corrente = ActualContoCorrente.Id_RowConto;
+                    quoteGuadagno.ammontare = ActualContoCorrente.Ammontare;
+                    // modifico i valori nel record quoteGuadagno
+                    _quoteServices.ModifyQuoteGuadagno(quoteGuadagno);
+                    // per ogni socio modifico il record standard per il calcolo delle quote
+                    RegistrySociList registrySocis = _registryServices.GetSociList();
+                    foreach (RegistrySoci soci in registrySocis)
                     {
-                        // è già stato fatto un inserimento pari data e tipo gestione quindi recupero il valore
-                        ActualContoCorrente.Id_Quote_Periodi = result;
-                        // registro il prelievo
-                        _contoCorrenteServices.InsertAccountMovement(ActualContoCorrente);
-                        // modifico le quote di attribuzione utili
-                        _quoteServices.ComputesAndModifyQuoteGuadagno(ActualContoCorrente.Id_Tipo_Gestione);
+                        if (soci.Id_Socio == ActualContoCorrente.Id_Socio) continue;
+                        // calcolo il nuovo totale
+                        //                            quoteGuadagno = new QuoteGuadagno();
+                        quoteGuadagno = _quoteServices.GetLastRecordBySocioValuta(soci.Id_Socio, ActualContoCorrente.Id_Valuta, ActualContoCorrente.Id_Tipo_Gestione);
+                        quoteGuadagno.cum_totale = NuovoCumTotale;
+                        // calcolo la nuova quota socio
+                        quoteGuadagno.quota = quoteGuadagno.cum_socio / NuovoCumTotale;
+                        // modifico il record delle quote guadagno
+                        _quoteServices.ModifyQuoteGuadagno(quoteGuadagno);
                     }
-                    // si aggiorna il periodo quote in conto corrente e nel caso si deve ricalcolare la tabela dei guadagni totale anno
+
                 }
-                // aggiorno la tabella con i guadagni totali
-                _quoteServices.UpdateGuadagniTotaleAnno(ActualContoCorrente.Id_Quote_Periodi, ActualContoCorrente.Id_Tipo_Gestione);
+                // aggiorno la tabella con i guadagni totali -- 22-12-2022 da verificarne l'utilità IN OGNI caso la prima parte è superata
+                // _quoteServices.UpdateGuadagniTotaleAnno(ActualContoCorrente.Id_Quote_Periodi, ActualContoCorrente.Id_Tipo_Gestione);
                 MessageBox.Show("Il movimento di capitali è stato registrato con successo.", "Registrazione Capitali",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -347,28 +354,103 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                if (ActualContoCorrente.Id_tipo_movimento == 2 && ActualContoCorrente.Ammontare > 0)
-                    ActualContoCorrente.Ammontare = ActualContoCorrente.Ammontare * -1;
-                ContoCorrente conto = _contoCorrenteServices.GetContoCorrenteByIdCC(ActualContoCorrente.Id_RowConto);
-                int Id_Tipo_Gestione = conto.Id_Socio == 3 ? 2 : 1;
-                // se ho cambiato la data devo anche aggiornare le quote per periodo
-                if (conto.DataMovimento != ActualContoCorrente.DataMovimento)
+                // prelevo l'ultimo record delle quote del socio con la stessa valuta
+                QuoteGuadagno quoteGuadagno = _quoteServices.GetLastRecordBySocioValuta(ActualContoCorrente.Id_Socio, ActualContoCorrente.Id_Valuta, ActualContoCorrente.Id_Tipo_Gestione);
+                // verifico se è inserimento o prelievo
+                if (ActualContoCorrente.Id_tipo_movimento == 2)
                 {
-                    // verifico se è una data già esistente
-                    object result = _quoteServices.VerifyInvestmentDate(ActualContoCorrente, Id_Tipo_Gestione); // verifico se alla stessa data c'è già un inserimento
-                    if (result is long) //non è mai stato effettuato un versamento / prelievo in questa data
+                    ActualContoCorrente.Ammontare = ActualContoCorrente.Ammontare > 0 ? ActualContoCorrente.Ammontare * -1 : ActualContoCorrente.Ammontare;
+                    // verifico che il totale a disposizione del socio permetta il prelievo
+                    if (quoteGuadagno.cum_socio + ActualContoCorrente.Ammontare < 0)
                     {
-                        NuovoMovimento(Id_Tipo_Gestione);
+                        MessageBox.Show("Il prelievo supera la disponibilità.", "Gestioni Capitali", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                        return;
                     }
                 }
-                // aggiorno il conto corrente con le modifiche inserite
-                _contoCorrenteServices.UpdateRecordContoCorrente(ActualContoCorrente, Models.Enumeratori.TipologiaIDContoCorrente.IdContoCorrente);
-                // se ho cambiato somma o data devo aggiornare le quote di competenza
-                if (conto.Ammontare != ActualContoCorrente.Ammontare || conto.DataMovimento != ActualContoCorrente.DataMovimento)
+                // prelevo il record prima di modificarlo
+                ContoCorrente conto = _contoCorrenteServices.GetContoCorrenteByIdCC(ActualContoCorrente.Id_RowConto);
+                // se ho cambiato la data devo anche aggiornare le quote per periodo per la vecchia data e poi per la nuova
+                if (conto.DataMovimento != ActualContoCorrente.DataMovimento)
                 {
-                    _quoteServices.ComputesAndModifyQuoteGuadagno(Id_Tipo_Gestione);
-                    // aggiorno la tabella con i guadagni totali
-                    _quoteServices.UpdateGuadagniTotaleAnno(ActualContoCorrente.Id_Quote_Periodi, Id_Tipo_Gestione);
+                    // cambio le quote relative alla data pre-esistente
+                    double NuovoCumTotale = quoteGuadagno.cum_totale - conto.Ammontare;
+                    quoteGuadagno.cum_totale = NuovoCumTotale;
+                    quoteGuadagno.cum_socio = quoteGuadagno.cum_socio - conto.Ammontare;
+                    quoteGuadagno.quota = quoteGuadagno.cum_socio / NuovoCumTotale;
+                    quoteGuadagno.id_conto_corrente = 0;
+                    quoteGuadagno.ammontare = 0;
+                    _quoteServices.ModifyQuoteGuadagno(quoteGuadagno);
+                    // per ogni socio devo modficare le quote alla data pre-esistente
+                    RegistrySociList registrySocis = _registryServices.GetSociList();
+                    foreach (RegistrySoci soci in registrySocis)
+                    {
+                        if (soci.Id_Socio == conto.Id_Socio) continue;
+                        quoteGuadagno = _quoteServices.GetLastRecordBySocioValuta(soci.Id_Socio, conto.Id_Valuta, conto.Id_Tipo_Gestione);
+                        quoteGuadagno.cum_totale = NuovoCumTotale;
+                        quoteGuadagno.quota = quoteGuadagno.cum_socio / NuovoCumTotale;
+                        _quoteServices.ModifyQuoteGuadagno(quoteGuadagno);
+                    }
+                    // verifico se è una data già esistente
+                    int result = Convert.ToInt16(_quoteServices.VerifyInvestmentDate(ActualContoCorrente, ActualContoCorrente.Id_Tipo_Gestione));
+                    if (result == -1) //non è mai stato effettuato un versamento / prelievo in questa data
+                    {
+                        NuovoInserimento(_quoteServices.GetLastRecordBySocioValuta(ActualContoCorrente.Id_Socio, ActualContoCorrente.Id_Valuta, ActualContoCorrente.Id_Tipo_Gestione));
+                    }
+                    else
+                    {
+                        ActualContoCorrente.Id_Quote_Periodi = result;
+                        // prelevo l'ultimo record del socio con la stessa valuta
+                        quoteGuadagno = _quoteServices.GetLastRecordBySocioValuta(ActualContoCorrente.Id_Socio, ActualContoCorrente.Id_Valuta, ActualContoCorrente.Id_Tipo_Gestione);
+                        // registro la modifica del conto
+                        _contoCorrenteServices.UpdateRecordContoCorrente(ActualContoCorrente, Models.Enumeratori.TipologiaIDContoCorrente.IdContoCorrente);
+                        // calcolo il nuovo totale
+                        NuovoCumTotale = quoteGuadagno.cum_totale + ActualContoCorrente.Ammontare;
+                        quoteGuadagno.cum_totale = NuovoCumTotale;
+                        // calcolo il nuovo cum_socio
+                        quoteGuadagno.cum_socio = quoteGuadagno.cum_socio + ActualContoCorrente.Ammontare;
+                        // calcolo la nuova quota socio
+                        quoteGuadagno.quota = quoteGuadagno.cum_socio / NuovoCumTotale;
+                        quoteGuadagno.id_conto_corrente = ActualContoCorrente.Id_RowConto;
+                        quoteGuadagno.ammontare = ActualContoCorrente.Ammontare;
+                        // modifico i valori nel record quoteGuadagno
+                        _quoteServices.ModifyQuoteGuadagno(quoteGuadagno);
+                        // per ogni socio modifico il record standard per il calcolo delle quote
+                        registrySocis = _registryServices.GetSociList();
+                        foreach (RegistrySoci soci in registrySocis)
+                        {
+                            if (soci.Id_Socio == ActualContoCorrente.Id_Socio) continue;
+                            // calcolo il nuovo totale
+                            //                            quoteGuadagno = new QuoteGuadagno();
+                            quoteGuadagno = _quoteServices.GetLastRecordBySocioValuta(soci.Id_Socio, ActualContoCorrente.Id_Valuta, ActualContoCorrente.Id_Tipo_Gestione);
+                            quoteGuadagno.cum_totale = NuovoCumTotale;
+                            // calcolo la nuova quota socio
+                            quoteGuadagno.quota = quoteGuadagno.cum_socio / NuovoCumTotale;
+                            // modifico il record delle quote guadagno
+                            _quoteServices.ModifyQuoteGuadagno(quoteGuadagno);
+                        }
+
+                    }
+                }
+                else
+                {
+                    double NuovoCumTotale = quoteGuadagno.cum_totale - conto.Ammontare + ActualContoCorrente.Ammontare;
+                    quoteGuadagno.cum_totale = NuovoCumTotale;
+                    quoteGuadagno.cum_socio = quoteGuadagno.cum_socio - conto.Ammontare + ActualContoCorrente.Ammontare;
+                    quoteGuadagno.quota = quoteGuadagno.cum_socio / NuovoCumTotale;
+                    quoteGuadagno.ammontare = ActualContoCorrente.Ammontare;
+                    _quoteServices.ModifyQuoteGuadagno(quoteGuadagno);
+                    _contoCorrenteServices.UpdateRecordContoCorrente(ActualContoCorrente, Models.Enumeratori.TipologiaIDContoCorrente.IdContoCorrente);
+                    // per ogni socio devo modficare le quote alla data pre-esistente
+                    RegistrySociList registrySocis = _registryServices.GetSociList();
+                    foreach (RegistrySoci soci in registrySocis)
+                    {
+                        if (soci.Id_Socio == conto.Id_Socio) continue;
+                        quoteGuadagno = _quoteServices.GetLastRecordBySocioValuta(soci.Id_Socio, conto.Id_Valuta, conto.Id_Tipo_Gestione);
+                        quoteGuadagno.cum_totale = NuovoCumTotale;
+                        quoteGuadagno.quota = quoteGuadagno.cum_socio / NuovoCumTotale;
+                        _quoteServices.ModifyQuoteGuadagno(quoteGuadagno);
+                    }
+
                 }
                 MessageBox.Show("La modifica è stata registrata con successo.", "Registrazione Capitali",
                     MessageBoxButton.OK, MessageBoxImage.Information);
@@ -380,33 +462,45 @@ namespace FinanceManager.ViewModels
             }
             ClearMe();
         }
-
-        private void NuovoMovimento(int Id_Tipo_Gestione)
+        private void NuovoInserimento(QuoteGuadagno quoteGuadagno)
         {
-            QuotePeriodi quotePeriodi = _quoteServices.Update_InsertQuotePeriodi(ActualContoCorrente.DataMovimento, Id_Tipo_Gestione);
+            QuotePeriodi quotePeriodi = _quoteServices.Update_InsertQuotePeriodi(ActualContoCorrente.DataMovimento, ActualContoCorrente.Id_Tipo_Gestione);
             ActualContoCorrente.Modified = quotePeriodi.DataInsert;
             ActualContoCorrente.Id_Quote_Periodi = quotePeriodi.IdPeriodoQuote;
-            if (ActualContoCorrente.Id_Socio != 3)
+            // registro l'inserimento
+            _contoCorrenteServices.InsertAccountMovement(ActualContoCorrente);
+            // riprendo il record inserito
+            ActualContoCorrente = _contoCorrenteServices.GetLastContoCorrente();
+            // calcolo il nuovo totale
+            double NuovoCumTotale = quoteGuadagno.cum_totale + ActualContoCorrente.Ammontare;
+            quoteGuadagno.cum_totale = NuovoCumTotale;
+            // calcolo il nuovo cum_socio
+            quoteGuadagno.cum_socio = quoteGuadagno.cum_socio + ActualContoCorrente.Ammontare;
+            // calcolo la nuova quota socio
+            quoteGuadagno.quota = quoteGuadagno.cum_socio / NuovoCumTotale;
+            quoteGuadagno.id_conto_corrente = ActualContoCorrente.Id_RowConto;
+            quoteGuadagno.ammontare = ActualContoCorrente.Ammontare;
+            quoteGuadagno.id_quote_periodi = ActualContoCorrente.Id_Quote_Periodi;
+            // inserisco il record delle quote guadagno
+            _quoteServices.InsertRecordQuoteGuadagno(quoteGuadagno);
+            // per ogni socio inserisco un record standard per il calcolo delle quote
+            RegistrySociList registrySocis = _registryServices.GetSociList();
+            foreach (RegistrySoci soci in registrySocis)
             {
-                _contoCorrenteServices.InsertAccountMovement(ActualContoCorrente); // inserisco il nuovo movimento di capitali
-                ActualContoCorrente.Id_Socio = ActualContoCorrente.Id_Socio == 1 ? 2 : 1;
-                ActualContoCorrente.Ammontare = 0;
-                ActualContoCorrente.Valore_Cambio = 0;
-                ActualContoCorrente.Cod_Valuta = "";
-                ActualContoCorrente.Causale = "Inserimento per Quote";
-                _contoCorrenteServices.InsertAccountMovement(ActualContoCorrente); // inserisco il movimento a 0 per effettuare le quote corrette.
-                _quoteServices.ComputesAndInsertQuoteGuadagno(Id_Tipo_Gestione, ActualContoCorrente.Id_Quote_Periodi);
-            }
-            else if (ActualContoCorrente.Id_Socio == 3)
-            {
-                _contoCorrenteServices.InsertAccountMovement(ActualContoCorrente); // inserisco il nuovo movimento di capitali
-                ActualContoCorrente.Id_Socio = 1; ActualContoCorrente.Ammontare = 0; ActualContoCorrente.Causale = "Inserimento per Quota Aury";
-                _contoCorrenteServices.InsertAccountMovement(ActualContoCorrente); // FLAVIO inserisco il movimento a 0 per effettuare le quote corrette.
-                ActualContoCorrente.Id_Socio = 2;
-                _contoCorrenteServices.InsertAccountMovement(ActualContoCorrente); // DANIELA inserisco il movimento a 0 per effettuare le quote corrette.
-                _quoteServices.ComputesAndInsertQuoteGuadagno(Id_Tipo_Gestione, ActualContoCorrente.Id_Quote_Periodi);
-            }
+                if (soci.Id_Socio == ActualContoCorrente.Id_Socio) continue;
+                // calcolo il nuovo totale
+                //                            quoteGuadagno = new QuoteGuadagno();
+                quoteGuadagno = _quoteServices.GetLastRecordBySocioValuta(soci.Id_Socio, ActualContoCorrente.Id_Valuta, ActualContoCorrente.Id_Tipo_Gestione);
+                quoteGuadagno.cum_totale = NuovoCumTotale;
+                // calcolo la nuova quota socio
 
+                quoteGuadagno.quota = quoteGuadagno.cum_socio / NuovoCumTotale;
+                quoteGuadagno.id_conto_corrente = 0;
+                quoteGuadagno.ammontare = 0;
+                quoteGuadagno.id_quote_periodi = ActualContoCorrente.Id_Quote_Periodi;
+                // inserisco il record delle quote guadagno
+                _quoteServices.InsertRecordQuoteGuadagno(quoteGuadagno);
+            }
         }
         #endregion
     }

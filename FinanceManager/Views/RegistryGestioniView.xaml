@@ -27,7 +27,7 @@
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="60"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="Registrazione Soci" FontWeight="Bold" 
+                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="Registrazione Gestioni" FontWeight="Bold" 
                    FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 <Button Content="X" Command="{Binding CloseMeCommand}" Background="Red"
                 CommandParameter="{Binding ElementName=_RegistryGestioniView}" FontWeight="Bold"
