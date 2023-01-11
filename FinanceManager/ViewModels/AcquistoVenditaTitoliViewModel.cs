@@ -115,7 +115,6 @@ namespace FinanceManager.ViewModels
             {
                 RecordPortafoglioTitoli = new PortafoglioTitoli();
                 ListPortafoglioTitoli = _contoTitoliServices.GetListTitoliByOwnerAndLocation();
-                ListCostiMediTitoli = _contoTitoliServices.GetCostiMediPerTitolo();
             }
             catch (Exception err)
             {
@@ -442,8 +441,6 @@ namespace FinanceManager.ViewModels
                 _conto = value;
                 PtfCollectionView.Filter = _Filter;
                 PtfCollectionView.Refresh();
-                CollectionCostiMedi.Filter = _Filter;
-                CollectionCostiMedi.Refresh();
                 TotaleDisponibiliView.Filter = _Filter;
                 TotaleDisponibiliView.Refresh();
             }
@@ -457,8 +454,6 @@ namespace FinanceManager.ViewModels
                 _gestione = value;
                 PtfCollectionView.Filter = _Filter;
                 PtfCollectionView.Refresh();
-                CollectionCostiMedi.Filter = _Filter;
-                CollectionCostiMedi.Refresh();
                 TotaleDisponibiliView.Filter = _Filter;
                 TotaleDisponibiliView.Refresh();
             }
@@ -472,8 +467,6 @@ namespace FinanceManager.ViewModels
                 _isin = value;
                 PtfCollectionView.Filter = _Filter;
                 PtfCollectionView.Refresh();
-                CollectionCostiMedi.Filter = _Filter;
-                CollectionCostiMedi.Refresh();
             }
         }
         private int _IdTipoTitolo;
@@ -485,8 +478,6 @@ namespace FinanceManager.ViewModels
                 _IdTipoTitolo = value;
                 PtfCollectionView.Filter = _Filter;
                 PtfCollectionView.Refresh();
-                CollectionCostiMedi.Filter = _Filter;
-                CollectionCostiMedi.Refresh();
             }
         }
         #endregion
@@ -653,20 +644,6 @@ namespace FinanceManager.ViewModels
         {
             get { return GetValue(() => PtfCollectionView); }
             set { SetValue(() => PtfCollectionView, value); }
-        }
-        /// <summary>
-        /// Contiene la lista di tutti i titoli attivi,
-        /// con il n. di titoli e il costo medio di carico comprensivo di tutti i costi sostenuti.
-        /// </summary>
-        public PortafoglioTitoliList ListCostiMediTitoli
-        {
-            get { return GetValue(() => ListCostiMediTitoli); }
-            private set { SetValue(() => ListCostiMediTitoli, value); CollectionCostiMedi = CollectionViewSource.GetDefaultView(value); }
-        }
-        public System.ComponentModel.ICollectionView CollectionCostiMedi
-        {
-            get { return GetValue(() => CollectionCostiMedi); }
-            set { SetValue(() => CollectionCostiMedi, value); }
         }
 
         /// <summary>
@@ -1332,8 +1309,8 @@ namespace FinanceManager.ViewModels
         }
         public bool CanSave(object param)
         {
-            if (!string.IsNullOrEmpty(Conto) && !string.IsNullOrEmpty(Gestione) && !string.IsNullOrEmpty(Valuta) && RecordPortafoglioTitoli.Id_portafoglio == 0 &&
-                RecordPortafoglioTitoli.N_titoli != 0 && RecordPortafoglioTitoli.Costo_unitario_in_valuta > 0)
+            if (!string.IsNullOrEmpty(Conto) && !string.IsNullOrEmpty(Gestione) && !string.IsNullOrEmpty(Valuta) && RecordPortafoglioTitoli.Id_portafoglio == 0
+                && RecordPortafoglioTitoli.N_titoli != 0)
                 return true;
             return false;
         }

@@ -206,11 +206,6 @@
 
         <Border Grid.Row="3" BorderBrush="DarkGoldenrod" BorderThickness="5" Margin="0, 10, 5, 10" Padding="15">
             <StackPanel Orientation="Horizontal" Background="LightGreen">
-                <StackPanel Orientation="Vertical" Width="100" Background="LightSalmon" VerticalAlignment="Center" Margin="5">
-                    <Button Content="Inserisci" Margin="10" Width="75" Height="25" Command="{Binding InsertCommand}" CommandParameter="{Binding ElementName=_Giroconto_personale_trading}"/>
-                    <Button Content="Modifica" Margin="10" Width="75" Height="25" Command="{Binding ModifyCommand}" CommandParameter="{Binding ElementName=_Giroconto_personale_trading}"/>
-                    <Button Content="Pulisci" Margin="10" Width="75" Height="25" Command="{Binding ClearMeCommand}" CommandParameter="{Binding ElementName=_Giroconto_personale_trading}"/>
-                </StackPanel>
                 <StackPanel Orientation="Vertical" Background="LightGreen" IsEnabled="{Binding DatiComuni}">
                     <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right"
                                 IsEnabled="{Binding ValutaEnabled}">
@@ -256,7 +251,7 @@
                     <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
                         <TextBlock Text="Cambio" FontSize="18" VerticalAlignment="Center" MinWidth="100" Margin="0,5,10,5"/>
                         <TextBox Name="Val_Cambio" FontSize="18" VerticalAlignment="Center" MinWidth="100" Margin="0,5,10,5" HorizontalContentAlignment="Right"
-                                 Text="{Binding ActualCmittente.Valore_Cambio, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, 
+                                 Text="{Binding ActualCCmittente.Valore_Cambio, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, 
                             ConverterCulture=it-IT, StringFormat=N4}">
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="LostFocus">
@@ -267,7 +262,7 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Height="75" HorizontalAlignment="Right">
                         <TextBlock Text="Note" FontSize="18" VerticalAlignment="Center" Margin="0,5,10,5"/>
-                        <TextBox Name="Causale" FontSize="18" VerticalAlignment="Center" MinWidth="100" Margin="0,5,10,5" TextWrapping="Wrap" MaxWidth="450"
+                        <TextBox Name="Causale" FontSize="18" VerticalAlignment="Center" MinWidth="100" Margin="0,5,10,5" TextWrapping="Wrap" MaxWidth="250"
                                   Text="{Binding ActualCCmittente.Causale, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="LostFocus">
@@ -276,6 +271,11 @@
                             </i:Interaction.Triggers>
                         </TextBox>
                     </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Width="100" Background="LightSalmon" VerticalAlignment="Center" Margin="5">
+                    <Button Content="Inserisci" Margin="10" Width="75" Height="25" Command="{Binding InsertCommand}" CommandParameter="{Binding ElementName=_Giroconto_personale_trading}"/>
+                    <Button Content="Modifica" Margin="10" Width="75" Height="25" Command="{Binding ModifyCommand}" CommandParameter="{Binding ElementName=_Giroconto_personale_trading}"/>
+                    <Button Content="Pulisci" Margin="10" Width="75" Height="25" Command="{Binding ClearMeCommand}" CommandParameter="{Binding ElementName=_Giroconto_personale_trading}"/>
                 </StackPanel>
             </StackPanel>
         </Border>

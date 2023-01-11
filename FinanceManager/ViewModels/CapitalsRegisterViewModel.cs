@@ -321,8 +321,8 @@ namespace FinanceManager.ViewModels
                     foreach (RegistrySoci soci in registrySocis)
                     {
                         if (soci.Id_Socio == ActualContoCorrente.Id_Socio) continue;
+                        if (soci.Id_tipo_gestione != ActualContoCorrente.Id_Tipo_Gestione) continue;
                         // calcolo il nuovo totale
-                        //                            quoteGuadagno = new QuoteGuadagno();
                         quoteGuadagno = _quoteServices.GetLastRecordBySocioValuta(soci.Id_Socio, ActualContoCorrente.Id_Valuta, ActualContoCorrente.Id_Tipo_Gestione);
                         quoteGuadagno.cum_totale = NuovoCumTotale;
                         // calcolo la nuova quota socio
@@ -481,6 +481,9 @@ namespace FinanceManager.ViewModels
             quoteGuadagno.id_conto_corrente = ActualContoCorrente.Id_RowConto;
             quoteGuadagno.ammontare = ActualContoCorrente.Ammontare;
             quoteGuadagno.id_quote_periodi = ActualContoCorrente.Id_Quote_Periodi;
+            quoteGuadagno.id_socio = ActualContoCorrente.Id_Socio;
+            quoteGuadagno.id_valuta = ActualContoCorrente.Id_Valuta;
+            quoteGuadagno.id_tipo_gestione = ActualContoCorrente.Id_Tipo_Gestione;
             // inserisco il record delle quote guadagno
             _quoteServices.InsertRecordQuoteGuadagno(quoteGuadagno);
             // per ogni socio inserisco un record standard per il calcolo delle quote
@@ -489,7 +492,6 @@ namespace FinanceManager.ViewModels
             {
                 if (soci.Id_Socio == ActualContoCorrente.Id_Socio) continue;
                 // calcolo il nuovo totale
-                //                            quoteGuadagno = new QuoteGuadagno();
                 quoteGuadagno = _quoteServices.GetLastRecordBySocioValuta(soci.Id_Socio, ActualContoCorrente.Id_Valuta, ActualContoCorrente.Id_Tipo_Gestione);
                 quoteGuadagno.cum_totale = NuovoCumTotale;
                 // calcolo la nuova quota socio
@@ -498,6 +500,9 @@ namespace FinanceManager.ViewModels
                 quoteGuadagno.id_conto_corrente = 0;
                 quoteGuadagno.ammontare = 0;
                 quoteGuadagno.id_quote_periodi = ActualContoCorrente.Id_Quote_Periodi;
+                quoteGuadagno.id_socio = soci.Id_Socio;
+                quoteGuadagno.id_valuta = ActualContoCorrente.Id_Valuta;
+                quoteGuadagno.id_tipo_gestione = ActualContoCorrente.Id_Tipo_Gestione;
                 // inserisco il record delle quote guadagno
                 _quoteServices.InsertRecordQuoteGuadagno(quoteGuadagno);
             }
