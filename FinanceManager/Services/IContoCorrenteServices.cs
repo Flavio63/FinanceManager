@@ -40,6 +40,14 @@ namespace FinanceManager.Services
         ContoCorrenteList GetContoCorrenteByIdPortafoglio(int idPortafoglioTitoli); // I max 2 movimenti di ContoCorrente associati al trade
 
         /// <summary>
+        /// Dato un tipo di gestione, una data e una valuta
+        /// estraggo tutti i record di conto corrente
+        /// </summary>
+        /// <param name="contoCorrente">la base dei dati</param>
+        /// <returns>Lista di conto correnti</returns>
+        ContoCorrenteList GetContoCorrenteByTipoGestioneDataValuta(ContoCorrente contoCorrente);
+
+        /// <summary>
         /// Preleva dal conto zero la situazione degli investimenti per socio
         /// facendo la somma fra versati, investiti, disinvestiti e prelevati
         /// </summary>

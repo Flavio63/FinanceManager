@@ -221,6 +221,38 @@ namespace FinanceManager.Services
         }
 
         /// <summary>
+        /// Dato un tipo di gestione, una data e una valuta
+        /// estraggo tutti i record di conto corrente
+        /// </summary>
+        /// <param name="contoCorrente">la base dei dati</param>
+        /// <returns>Lista di conto correnti</returns>
+        public ContoCorrenteList GetContoCorrenteByTipoGestioneDataValuta(ContoCorrente contoCorrente)
+        {
+            DataTable DT = new DataTable();
+            try
+            {
+                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new SQLiteCommand();
+                    dbAdapter.SelectCommand.CommandText = ContoCorrenteScript.GetContoCorrenteByTipoGestioneDataValuta;
+                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_tipo_gestione", contoCorrente.Id_Tipo_Gestione);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("data_movimento", contoCorrente.DataMovimento);
+                    dbAdapter.Fill(DT);
+                }
+                return contoCorrentes(DT);
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        /// <summary>
         /// Preleva dal conto zero la situazione degli investimenti per socio
         /// facendo la somma fra versati, investiti, disinvestiti e prelevati
         /// </summary>

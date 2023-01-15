@@ -4,29 +4,33 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-             xmlns:local="clr-namespace:FinanceManager.Views"
+             xmlns:local="clr-namespace:FinanceManager.Views" 
+             xmlns:viewmodels="clr-namespace:FinanceManager.ViewModels" 
+             d:DataContext="{d:DesignInstance Type=viewmodels:CapitalsRegisterViewModel}"
              mc:Ignorable="d" Name="_Versamenti_Prelievi"
               >
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
-            <RowDefinition Height="0.5*"/>
-            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="0.6*"/>
+            <RowDefinition Height="0.85*"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="460"/>
-            <ColumnDefinition Width="220"/>
+            <ColumnDefinition MaxWidth="200"/>
+            <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="26" FontWeight="Bold">
+        <TextBlock Grid.ColumnSpan="4" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="26" FontWeight="Bold">
                 VERSAMENTI E PRELIEVI
         </TextBlock>
         <Button Content="X" Command="{Binding CloseMeCommand}" 
                 CommandParameter="{Binding ElementName=_Versamenti_Prelievi}" 
                 HorizontalContentAlignment="Center" Grid.Column="3" HorizontalAlignment="Right"
                     VerticalContentAlignment="Center" Width="25" Height="25"
-                Margin="0,0, 15, 0" FontWeight="Bold"/>
+                Margin="0,0, 25, 0" FontWeight="Bold"/>
         <Border Grid.Row="1" Grid.ColumnSpan="2" BorderBrush="DarkRed" BorderThickness="5" Margin="10" Padding="5">
             <DataGrid Margin="5, 0" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False"
                       FontSize="16" FontWeight="Bold" ItemsSource="{Binding SintesiCBase, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
@@ -181,7 +185,7 @@
                 </StackPanel>
             </Grid>
         </Border>
-        <Border Grid.Row="2" Grid.Column="1" Grid.RowSpan="2" BorderBrush="DarkGoldenrod" VerticalAlignment="Top"
+        <Border Grid.Row="2" Grid.Column="1" Grid.RowSpan="1" BorderBrush="DarkGoldenrod" VerticalAlignment="Top"
                 BorderThickness="5" Margin="10" Padding="5" Height="200" >
             <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Button Content="Inserisci" Margin="10" Width="100" Height="35" FontSize="18" 
@@ -192,9 +196,17 @@
                         Command="{Binding ClearMeCommand}" CommandParameter="{Binding ElementName=_Giroconto_personale_trading}"/>
             </StackPanel>
         </Border>
-        <Border Grid.Row="1" Grid.Column="2" Grid.RowSpan="3" BorderBrush="DarkGray" BorderThickness="5" Margin="10" Padding="15">
-            <DataGrid Grid.Row="4" Margin="15, 0" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
-                          CanUserReorderColumns="False" FontSize="18" ItemsSource="{Binding InvestCollection, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+        <Border Grid.Row="3" Grid.Column="1" BorderBrush="DarkSeaGreen" BorderThickness="5" Margin="10, 100, 10, 10" Padding="15">
+            <Button Margin="10" Width="100" FontSize="18"
+                        Command="{Binding RicalcolaCommand}" CommandParameter="{Binding ElementName=_Giroconto_personale_trading}">
+                <Button.Content>
+                    <TextBlock Text="Ricalcolo Utili" TextAlignment="Center" TextWrapping="Wrap"/>
+                </Button.Content>
+            </Button>
+        </Border>
+        <Border Grid.Row="1" Grid.Column="2" Grid.RowSpan="3" BorderBrush="DarkGray" BorderThickness="5" Margin="10" Padding="15" MaxWidth="1200">
+            <DataGrid Margin="15, 0" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
+                          CanUserReorderColumns="False" FontSize="16" ItemsSource="{Binding InvestCollection, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID" Binding="{Binding Id_RowConto, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                     <DataGridTextColumn Header="Movimento" Binding="{Binding Desc_tipo_movimento, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
@@ -232,6 +244,22 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </DataGrid>
+        </Border>
+        <Border Grid.Row="4" Grid.Column="0" BorderBrush="Blue" Grid.ColumnSpan="3"
+                BorderThickness="2" Margin="15" MinWidth="200" >
+            <TextBlock Background="LightBlue" TextWrapping="Wrap" Padding="5" >
+                <Run Text="HELP" FontSize="20" FontWeight="Heavy"/>
+                <LineBreak/>
+                <Run Text="Il prelievo e il versamento di CAPITALI determina la quota dei futuri guadagni. Il socio Aurorina partecipa solo agli utili ''volatili'' e non hai costi." FontSize="18"/>
+                <LineBreak/>
+                <Run Text="Nel caso volesse partecipare agli utili ''Long Term'' si dovrà inserire un nuovo socio, a quel punto parteciperà in base alle nuove quote." FontSize="18"/>
+                <LineBreak/>
+                <LineBreak/>
+                <Run Text="Nel caso di inserimenti e/o prelievi inseriti successivamente a movimenti già avvenuti, per correggere gli eventuali
+guadagni / perdite si dovrà utilizzare l'apposito bottone presente in maschera" FontSize="18"/>
+                <LineBreak/>
+                <Run Text="dopo aver inserito i seguenti dati: nome investitore, la data da cui partire per il ricalcolo e la valuta interessata." FontSize="18"/>
+            </TextBlock>
         </Border>
 
 

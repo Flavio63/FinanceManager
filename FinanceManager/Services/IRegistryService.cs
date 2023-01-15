@@ -31,6 +31,12 @@ namespace FinanceManager.Services
         /// <returns>Observable Collection</returns>
         RegistryGestioniList GetGestioneList();
         /// <summary>
+        /// Ritorna il nominativo con associato il tipo di gestione
+        /// </summary>
+        /// <param name="IdGestione">Identificativo</param>
+        /// <returns>Observable Collection</returns>
+        RegistryGestioni GetGestioneById(int IdGestione);
+        /// <summary>
         /// Aggiorna i dati di una gestione
         /// </summary>
         /// <param name="gestione">Il record da aggiornare</param>

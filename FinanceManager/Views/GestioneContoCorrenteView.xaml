@@ -7,9 +7,9 @@
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:local="clr-namespace:FinanceManager.Views"
              mc:Ignorable="d" Name="_GestioneContoCorrente"
-             d:DesignHeight="800" d:DesignWidth="1100">
+             d:DesignHeight="800" d:DesignWidth="1800">
 
-    <Grid Margin="5">
+    <Grid Margin="5" MaxWidth="1800">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="250"/>
@@ -20,14 +20,15 @@
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="50"/>
         </Grid.ColumnDefinitions>
 
         <TextBlock Text="GESTIONE CONTI CORRENTI" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="26" 
-                   FontWeight="Bold" Grid.ColumnSpan="4"/>
+                   FontWeight="Bold" Grid.ColumnSpan="5"/>
         <Button Content="X" Command="{Binding CloseMeCommand}" 
                 CommandParameter="{Binding ElementName=_GestioneContoCorrente}" 
-                HorizontalContentAlignment="Center" Grid.Column="5" HorizontalAlignment="Right"
+                HorizontalContentAlignment="Center" Grid.Column="4" HorizontalAlignment="Right"
                     VerticalContentAlignment="Center" Width="20" Height="20" Background="Red" Foreground="Yellow" FontWeight="Bold" 
                 Margin="0,0, 15, 0"/>
         <Border Grid.Row="1" BorderBrush="BlueViolet" BorderThickness="0.8" Margin="5"
@@ -53,7 +54,7 @@
         </Border>
 
         <!-- Bottoniera -->
-        <StackPanel Grid.Row="1" Grid.Column="1" Margin="5" Orientation="Vertical" HorizontalAlignment="Left">
+        <StackPanel Grid.Row="1" Grid.Column="2" Margin="5" Orientation="Vertical" HorizontalAlignment="Left">
             <Button Content="Inserisci" Margin="10" Command="{Binding InsertCommand}"/>
             <Button Content="Modifica" Margin="10" Command="{Binding ModifyCommand}"/>
             <Button Content="Pulisci" Margin="10" Command="{Binding ClearCommand}"/>
@@ -61,7 +62,7 @@
         </StackPanel>
 
         <!-- Parametri comuni da selezionare -->
-        <Border Grid.Row="1" Grid.Column="2" BorderBrush="LightGray" BorderThickness="0.8" Margin="5">
+        <Border Grid.Row="1" Grid.Column="1" BorderBrush="LightGray" BorderThickness="0.8" Margin="5">
             <Grid Margin="5">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
@@ -208,9 +209,9 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.ColumnSpan="2" Text="REGISTRAZIONE VOLATILI" VerticalAlignment="Center" FontSize="20" 
+                    <TextBlock Grid.ColumnSpan="2" Text="REGISTRAZIONE PROFIT/LOSS A FORFAIT" VerticalAlignment="Center" FontSize="20" 
                    FontWeight="Bold" Margin="5" HorizontalAlignment="Center"/>
-                    <TextBlock Grid.Row="2" Text="Il titolo" FontSize="16" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="2" Text="Il tipo titolo" FontSize="16" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                     <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding BirdsListView}" SelectedValuePath="id_titolo" VerticalAlignment="Center" 
                           SelectedValue="{Binding RecordContoCorrente.Id_Titolo, UpdateSourceTrigger=PropertyChanged}" MinWidth="100" HorizontalAlignment="Left" Margin="5">
                         <TextSearch.TextPath>desc_titolo</TextSearch.TextPath>
@@ -394,5 +395,26 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </DataGrid>
+
+        <Border Grid.Row="1" Grid.Column="3" BorderBrush="Blue"  Grid.RowSpan="3" Grid.ColumnSpan="2"
+                BorderThickness="2" Margin="5" >
+            <TextBlock Background="LightBlue" TextWrapping="Wrap" Padding="5" >
+                <Run Text="HELP" FontSize="20" FontWeight="Heavy"/>
+                <LineBreak/>
+                <LineBreak/>
+                <Run Text="Questa maschera serve solo per la registrazione delle cedole, dei costi e dei Profit/Loss a forfait." FontSize="18"/>
+                <LineBreak/>
+                <Run Text="Il valore dei costi, qualsiasi essi siano, " FontSize="18"/>
+                <Run Text="vanno inseriti in negativo (es.: -23,57)"  FontSize="17" FontWeight="Bold"/>
+                <Run Text=" nella valuta relativa a quanto indicato nel campo e indicando sempre anche il valore del cambio, il quale sarà sempre 
+utilizzato come indicazione all'interno del data base." FontSize="18"/>
+                <LineBreak/>
+                <LineBreak/>
+                <Run Text="Quando si inseriscono le cedole andrà indicato il titolo di competenza, si può cercare tramite il suo codice ISIN o digitando 
+il nome sull'elenco a discesa, mentre quando si carica un Profit/Loss a forfait (es.: mensile) si dovrà indicare il relativo tipo di titolo." FontSize="18"/>
+                
+            </TextBlock>
+        </Border>
+
     </Grid>
 </UserControl>

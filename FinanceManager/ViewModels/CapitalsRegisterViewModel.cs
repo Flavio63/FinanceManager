@@ -23,6 +23,7 @@ namespace FinanceManager.ViewModels
         public ICommand ClearMeCommand { get; set; }
         public ICommand InsertCommand { get; set; }
         public ICommand ModifyCommand { get; set; }
+        public ICommand RicalcolaCommand { get; set; }
         Predicate<object> _Filter;
 
         public CapitalsRegisterViewModel
@@ -37,6 +38,7 @@ namespace FinanceManager.ViewModels
             ClearMeCommand = new CommandHandler(ClearMe);
             InsertCommand = new CommandHandler(SaveCommand, CanSave);
             ModifyCommand = new CommandHandler(UpdateCommand, CanModify);
+            RicalcolaCommand = new CommandHandler(RicalcoloUtili, CanDoIt);
             ListInvestitori = new RegistrySociList();
             ListInvestitori = _registryServices.GetSociList();
             // Filtro la tabella movimenti prendendo solo versamento e prelievo
@@ -339,7 +341,7 @@ namespace FinanceManager.ViewModels
             }
             catch (Exception err)
             {
-                MessageBox.Show(String.Format("La registrazione ha generato il seguente errore:", Environment.NewLine, err.Message), "Registrazione Capitali",
+                MessageBox.Show(String.Format("La registrazione ha generato il seguente errore: {0} {1}", Environment.NewLine, err.Message), "Registrazione Capitali",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             }
             ClearMe();
@@ -457,7 +459,7 @@ namespace FinanceManager.ViewModels
             }
             catch (Exception err)
             {
-                MessageBox.Show(String.Format("La registrazione ha generato il seguente errore:\r\n", err.Message), "Registrazione Capitali",
+                MessageBox.Show(String.Format("La registrazione ha generato il seguente errore: {0} {1}", Environment.NewLine, err.Message), "Registrazione Capitali",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             }
             ClearMe();
@@ -506,6 +508,37 @@ namespace FinanceManager.ViewModels
                 // inserisco il record delle quote guadagno
                 _quoteServices.InsertRecordQuoteGuadagno(quoteGuadagno);
             }
+        }
+        private void RicalcoloUtili(object param)
+        {
+            try
+            {
+                // estraggo il periodo quote inerente alla data e al tipo di gestione
+                ActualContoCorrente.Id_Tipo_Gestione = ActualContoCorrente.Id_Socio == 3 ? 2 : 1;
+                int id_quote_periodi = _quoteServices.GetIdPeriodoQuote(ActualContoCorrente.DataMovimento, ActualContoCorrente.Id_Tipo_Gestione);
+                // estraggo i record di conto_corrente in base a id_quote_periodi, id_tipo_gestione e valuta
+                ContoCorrenteList contoCorrentes = _contoCorrenteServices.GetContoCorrenteByTipoGestioneDataValuta(ActualContoCorrente);
+                // aggiorno l'id_quote_periodi utilizzando la data
+                foreach (ContoCorrente conto in contoCorrentes)
+                {
+                    conto.Id_Quote_Periodi = id_quote_periodi;
+                    _contoCorrenteServices.UpdateRecordContoCorrente(conto, Models.Enumeratori.TipologiaIDContoCorrente.IdContoCorrente);
+                    _quoteServices.UpdateGuadagniTotaleAnno(conto.Id_RowConto);
+                }
+                MessageBox.Show("Le tabelle conto_corrente e guadagni_totale_anno sono state ricalcolate", "Registrazione Capitali", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(String.Format("Il ricalcolo ha generato il seguente errore: {0} {1}", Environment.NewLine, err.Message), "Registrazione Capitali",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private bool CanDoIt(object param)
+        {
+            if (ActualContoCorrente.DataMovimento < DateTime.Now.Date && ActualContoCorrente.Id_Socio > 0)
+                return true;
+            return false;
         }
         #endregion
     }

@@ -29,25 +29,11 @@ namespace FinanceManager.Services
         QuotePeriodi Update_InsertQuotePeriodi(DateTime DataDal, int TipoSoldi);
 
         /// <summary>
-        /// Calcolo le nuove quote e le inserisco nella tabella quote_guadagno
-        /// </summary>
-        /// <param name="Tipo_Gestione">La gestione che determina la quota</param>
-        /// <param name="NuovoPeriodo">Il nuovo periodo da inserire in tabella</param>
-        void ComputesAndInsertQuoteGuadagno(int Tipo_Gestione, int NuovoPeriodo);
-
-        /// <summary>
-        /// Calcolo le nuove quote e modifico la tabella quote_guadagno
-        /// </summary>
-        /// <param name="Tipo_Gestione">Long, Volatili, etc.</param>
-        void ComputesAndModifyQuoteGuadagno(int Tipo_Gestione);
-
-        /// <summary>
         /// Aggiorno la tabella Guadagni_totale_anno con le nuove
         /// quote per il periodo interessato alle modifiche
         /// </summary>
-        /// <param name="Id_Periodo_Quote">il periodo da modificare</param>
-        /// <param name="Tipo_Gestione">La gestione long, volatili, etc</param>
-        void UpdateGuadagniTotaleAnno(int Id_Periodo_Quote, int Tipo_Gestione);
+        /// <param name="Id_RowConto">il codice di riga da aggiornare</param>
+        void UpdateGuadagniTotaleAnno(int Id_RowConto);
 
         /// <summary>
         /// Trovo il codice dei record da ricalcolare con le nuove quote

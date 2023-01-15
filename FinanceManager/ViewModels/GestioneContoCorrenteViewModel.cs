@@ -826,6 +826,8 @@ namespace FinanceManager.ViewModels
             {
                 // Inserisco il codice del periodo quote_guadagno
                 RecordContoCorrente.Id_Quote_Periodi = _quoteServices.GetIdPeriodoQuote(RecordContoCorrente.DataMovimento, RecordContoCorrente.Id_Gestione);
+                // inserisco il codice del tipo di gestione
+                RecordContoCorrente.Id_Tipo_Gestione = _registryServices.GetGestioneById(RecordContoCorrente.Id_Gestione).Id_tipo_gestione;
                 // registro il record
                 _contoCorrenteServices.InsertAccountMovement(RecordContoCorrente);
                 try 

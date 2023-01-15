@@ -522,6 +522,7 @@ namespace FinanceManager.ViewModels
 
         public void SaveCommand(object param)
         {
+            Verifica_tipo_gestione();
             try
             {
                 _contoCorrenteServices.InsertAccountMovement(ActualCCmittente);
@@ -554,6 +555,7 @@ namespace FinanceManager.ViewModels
 
         public void UpdateCommand(object param)
         {
+            Verifica_tipo_gestione();
             try
             {
                 _contoCorrenteServices.UpdateRecordContoCorrente(ActualCCmittente, 0);
@@ -575,6 +577,26 @@ namespace FinanceManager.ViewModels
                     "La modifica dei dati non è avvenuta"), "Errore Trasferimento Soldi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             ClearMe(param);
+        }
+
+        private void Verifica_tipo_gestione()
+        {
+            if (ActualCCmittente.Id_Socio == 3 || ActualCCmittente.Id_Gestione == 7)
+            {
+                ActualCCmittente.Id_Tipo_Gestione = (int)FinanceManager.Models.Enumeratori.TipologiaGestione.Base50;
+            }
+            else if (ActualCCmittente.Id_Socio == 1 || ActualCCmittente.Id_Socio == 2 || ActualCCmittente.Id_Gestione != 7)
+            {
+                ActualCCmittente.Id_Tipo_Gestione = (int)FinanceManager.Models.Enumeratori.TipologiaGestione.BaseQuote;
+            }
+            if (ActualCCricevente.Id_Socio == 3 || ActualCCricevente.Id_Gestione == 7)
+            {
+                ActualCCricevente.Id_Tipo_Gestione = (int)FinanceManager.Models.Enumeratori.TipologiaGestione.Base50;
+            }
+            else if (ActualCCricevente.Id_Socio == 1 || ActualCCricevente.Id_Socio == 2 || ActualCCricevente.Id_Gestione != 7)
+            {
+                ActualCCricevente.Id_Tipo_Gestione = (int)FinanceManager.Models.Enumeratori.TipologiaGestione.BaseQuote;
+            }
         }
 
         #endregion

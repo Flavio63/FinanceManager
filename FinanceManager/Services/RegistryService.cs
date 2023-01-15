@@ -237,6 +237,41 @@ namespace FinanceManager.Services
             }
         }
         /// <summary>
+        /// Ritorna il nominativo con associato il tipo di gestione
+        /// </summary>
+        /// <param name="IdGestione">Identificativo</param>
+        /// <returns>Observable Collection</returns>
+        public RegistryGestioni GetGestioneById(int IdGestione)
+        {
+            DataTable dataTable = new DataTable();
+            RegistryGestioni RO = new RegistryGestioni();
+            try
+            {
+                using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
+                {
+                    dataAdapter.SelectCommand = new SQLiteCommand();
+                    dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dataAdapter.SelectCommand.CommandText = string.Format("SELECT * FROM gestioni WHERE id_gestione = {0}", IdGestione);
+                    dataAdapter.Fill(dataTable);
+                }
+                foreach (DataRow dr in dataTable.Rows)
+                {
+                    RO.Id_Gestione = Convert.ToInt32(dr.Field<long>("id_gestione"));
+                    RO.Nome_Gestione = dr.Field<string>("nome_gestione");
+                    RO.Id_tipo_gestione = Convert.ToInt32(dr.Field<long>("id_tipo_gestione"));
+                }
+                return RO;
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception(err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception("GetGestioneList " + err.Message);
+            }
+        }
+        /// <summary>
         /// Aggiorna i dati di una gestione
         /// </summary>
         /// <param name="gestione">Il record da aggiornare</param>

@@ -19,6 +19,7 @@ namespace FinanceManager.Services.SQL
         public static readonly string GetContoCorrenteByIdCC = ContoCorrente + " AND A.id_fineco_euro = @id_fineco_euro ";
         public static readonly string Get2ContoCorrentes = ContoCorrente + " AND A.modified = @modified ORDER BY  A.ammontare";
         public static readonly string GetContoCorrenteByIdPortafoglio = ContoCorrente + " AND A.id_portafoglio_titoli = @id_portafoglio_titoli ORDER BY A.data_movimento ";
+        public static readonly string GetContoCorrenteByTipoGestioneDataValuta = ContoCorrente + " AND A.id_tipo_gestione = @id_tipo_gestione AND A.data_movimento > @data_movimento ";
 
         public static readonly string GetCCListByInvestmentSituation = ContoCorrente + " AND A.id_conto = 1 AND (A.id_tipo_movimento = 1 OR A.id_tipo_movimento = 2) ORDER BY A.data_movimento ";
 

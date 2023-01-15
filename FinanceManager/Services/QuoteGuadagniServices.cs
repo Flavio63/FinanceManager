@@ -34,10 +34,25 @@ namespace FinanceManager.Services
                 using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter())
                 {
                     dataAdapter.SelectCommand = new SQLiteCommand();
+                    dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dataAdapter.SelectCommand.Connection.Open();
+                    dataAdapter.SelectCommand.CommandText = string.Format("SELECT data_inizio FROM quote_periodi WHERE id_tipo_gestione = {0} ORDER by data_inizio DESC LIMIT 1", 
+                        Id_Tipo_Gestione);
+
+                    SQLiteDataReader reader =  dataAdapter.SelectCommand.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        if ((DateTime)reader["data_inizio"] > ActualCC.DataMovimento)
+                        {
+                            dataAdapter.SelectCommand.Connection.Close();
+                            throw new Exception("La data inserita è antecedente all'ultima registrata.");
+                        }
+                    }
+                    reader.Close();
+                    dataAdapter.SelectCommand.Connection.Close();
                     dataAdapter.SelectCommand.CommandText = QuoteGuadagniScript.VerifyInvestmentDate;
                     dataAdapter.SelectCommand.Parameters.AddWithValue("id_tipo_soldi", Id_Tipo_Gestione);
                     dataAdapter.SelectCommand.Parameters.AddWithValue("data_inizio", ActualCC.DataMovimento.ToString("yyyy-MM-dd"));
-                    dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     dataAdapter.Fill(DT);
                     if (DT.Rows[0].ItemArray[0] is long)
                         return DT.Rows[0].ItemArray[0];
@@ -111,86 +126,11 @@ namespace FinanceManager.Services
         }
 
         /// <summary>
-        /// Calcolo le nuove quote e le inserisco nella tabella quote_guadagno
-        /// </summary>
-        /// <param name="Tipo_Gestione">La gestione che determina la quota</param>
-        /// <param name="NuovoPeriodo">Il nuovo periodo da inserire in tabella</param>
-        public void ComputesAndInsertQuoteGuadagno(int Tipo_Gestione, int NuovoPeriodo)
-        {
-            using (SQLiteConnection con = new SQLiteConnection(DAFconnection.GetConnectionType()))
-            {
-                con.Open();
-                using (SQLiteTransaction transaction = con.BeginTransaction())
-                {
-                    try
-                    {
-                        using (SQLiteCommand cmd = new SQLiteCommand())
-                        {
-                            cmd.CommandText = QuoteGuadagniScript.ComputesQuoteGuadagno;
-                            cmd.Parameters.AddWithValue("Tipo_Gestione", Tipo_Gestione);
-                            cmd.Connection = con;
-                            cmd.ExecuteNonQuery();
-
-                            cmd.CommandText = QuoteGuadagniScript.InsertQuotaGuadagno;
-                            cmd.Parameters.Clear();
-                            cmd.Connection = con;
-                            cmd.Parameters.AddWithValue("Nuovo_Periodo", NuovoPeriodo);
-                            cmd.ExecuteNonQuery();
-                            transaction.Commit();
-                        }
-                    }
-                    catch (SQLiteException err)
-                    {
-                        transaction.Rollback();
-                        throw new Exception(err.Message);
-                    }
-                    catch (Exception err)
-                    {
-                        transaction.Rollback();
-                        throw new Exception(err.Message);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Calcolo le nuove quote e modifico la tabella quote_guadagno
-        /// </summary>
-        /// <param name="Tipo_Gestione">Long, Volatili, etc.</param>
-        public void ComputesAndModifyQuoteGuadagno(int Tipo_Gestione)
-        {
-            try
-            {
-                using (SQLiteCommand dbComm = new SQLiteCommand())
-                {
-                    dbComm.CommandText = QuoteGuadagniScript.ComputesQuoteGuadagno;
-                    dbComm.Parameters.AddWithValue("Tipo_Gestione", Tipo_Gestione);
-                    dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    dbComm.Connection.Open();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.CommandText = QuoteGuadagniScript.UpdateQuotaGuadagno;
-                    dbComm.Parameters.Clear();
-                    dbComm.ExecuteNonQuery();
-                    dbComm.Connection.Close();
-                }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception(err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-        }
-
-        /// <summary>
         /// Aggiorno la tabella Guadagni_totale_anno con le nuove
         /// quote per il periodo interessato alle modifiche
         /// </summary>
-        /// <param name="Id_Periodo_Quote">il periodo da modificare</param>
-        /// <param name="Tipo_Gestione">La gestione long, volatili, etc</param>
-        public void UpdateGuadagniTotaleAnno(int Id_Periodo_Quote, int Tipo_Gestione)
+        /// <param name="Id_RowConto">il codice di riga da aggiornare</param>
+        public void UpdateGuadagniTotaleAnno(int Id_RowConto)
         {
             try
             {
@@ -198,8 +138,7 @@ namespace FinanceManager.Services
                 {
                     dbComm.CommandText = QuoteGuadagniScript.UpdateGuadagniTotaleAnno;
                     dbComm.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    dbComm.Parameters.AddWithValue("IdPeriodoQuote", Id_Periodo_Quote);
-                    dbComm.Parameters.AddWithValue("Tipo_Gestione", Tipo_Gestione);
+                    dbComm.Parameters.AddWithValue("id_fineco_euro", Id_RowConto);
                     dbComm.Connection.Open();
                     dbComm.ExecuteNonQuery();
                     dbComm.Connection.Close();
