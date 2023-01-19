@@ -9,7 +9,7 @@
              mc:Ignorable="d" Name="_GestioneContoCorrente"
              d:DesignHeight="800" d:DesignWidth="1800">
 
-    <Grid Margin="5" MaxWidth="1800">
+    <Grid Margin="5" MaxWidth="{x:Static SystemParameters.PrimaryScreenWidth}">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="250"/>

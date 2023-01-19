@@ -10,7 +10,7 @@
     <UserControl.Resources>
         <TextBlock Text="PortfolioShares" x:Key="ObjName"/>
     </UserControl.Resources>
-    <Grid Margin="5">
+    <Grid Margin="5" MaxWidth="{x:Static SystemParameters.PrimaryScreenWidth}">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="200"/>

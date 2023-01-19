@@ -62,16 +62,34 @@ namespace FinanceManager.Services
         void ModifySingoloGuadagno(ContoCorrente RecordContoCorrente);
         /// <summary>
         /// Restituisce una tabella con il valore cumulato
-        /// suddiviso fra soci, valuta e tipo di gestione
+        /// suddiviso per anno, soci, valuta
         /// </summary>
         /// <returns>DataTable</returns>
-        DataTable GetTotaleCumulatoSocio();
+        DataTable GetTotaleCumulatoAnnoSocioValuta();
         /// <summary>
-        /// Restituisce una tabella con il valore totale
-        /// suddiviso fra valuta e tipo di gestione
+        /// Dato il socio e la valuta restituisce la cifra disponibile
+        /// </summary>
+        /// <param name="id_socio">codice socio</param>
+        /// <param name="id_valuta">codice valuta</param>
+        /// <returns></returns>
+        double GetTotaleSocioValuta(int id_socio, int id_valuta);
+        /// <summary>
+        /// Dato il record di conto corrente appena inserito
+        /// registro i dati del prelievo
+        /// </summary>
+        /// <param name="contoCorrente">il record con i dati</param>
+        void AddPrelievo(ContoCorrente contoCorrente);
+        /// <summary>
+        /// Modifica i dati di prelievo
+        /// </summary>
+        /// <param name="contoCorrente">il record con i dati modificati</param>
+        /// <param name="id_guadagno">l'indice di riga</param>
+        void ModifyPrelievo(ContoCorrente contoCorrente, int id_guadagno);
+        /// <summary>
+        /// Restituisce una tabella con i movimenti dei prelievi
         /// </summary>
         /// <returns>DataTable</returns>
-        DataTable GetTotaleGenerale();
+        DataTable GetMovimentiPrelievi();
         /// <summary>
         /// Ritorna una tabella con tutti i movimenti dei capitali
         /// </summary>

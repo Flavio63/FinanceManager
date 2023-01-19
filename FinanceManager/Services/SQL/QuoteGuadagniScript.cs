@@ -50,6 +50,10 @@ namespace FinanceManager.Services.SQL
             "(SELECT id_fineco_euro FROM conto_corrente C WHERE C.id_tipo_movimento = @id_tipo_movimento AND id_tipo_soldi = @id_tipo_soldi AND id_quote_periodi = @id_quote_periodi ORDER BY id_fineco_euro DESC LIMIT 1) " +
             "GROUP BY B.id_socio, A.id_gestione;";
 
+        public static readonly string AddPrelievo = "INSERT INTO guadagni_totale_anno " +
+            "(id_socio, id_gestione, id_tipo_gestione, id_tipo_soldi, id_tipo_movimento, anno, quota, guadagnato, prelevato, id_valuta, data_operazione, causale, id_quote_periodi, id_conto_corrente) " +
+            "values (@id_socio, 0, 0, 0, @id_tipo_movimento, @year, 0, 0, @prelevato, @id_valuta, @data_operazione, @causale, 0, @id_conto_corrente)";
+
         /// <summary>
         /// Elimino un record della tabella quote_guadagno
         /// </summary>
@@ -64,17 +68,29 @@ namespace FinanceManager.Services.SQL
             "data_movimento, Causale, A.id_quote_periodi, A.id_fineco_euro FROM conto_corrente A, quote_guadagno B, gestioni C WHERE A.id_quote_periodi = B.id_quote_periodi AND " +
             "A.id_gestione = C.id_gestione AND A.id_valuta = B.id_valuta AND A.id_fineco_euro = @id_fineco_euro ) AS BB WHERE guadagni_totale_anno.id_socio = BB.id_socio AND id_conto_corrente = BB.id_fineco_euro;";
 
+        public static readonly string ModifyPrelievo = "UPDATE guadagni_totale_anno SET id_socio = @id_socio, prelevato = @prelevato, id_valuta = @id_valuta, " +
+            "data_operazione = @data_operazione, causale = @causale WHERE id_guadagno = @id_guadagno";
+
         /// estrazione dei dati in quote_guadagno serve a visualizzare i dati caricati
         public static readonly string GetQuoteGuadagni = "SELECT id_quota_guadagno, A.id_socio, B.nome_socio, A.id_quote_periodi, C.data_inizio, C.data_fine, ammontare, " +
             "cum_socio, cum_totale, quota, A.id_conto_corrente, A.id_valuta, D.cod_valuta, A.id_tipo_gestione, E.tipo_gestione FROM quote_guadagno A, soci B, quote_periodi C, valuta D, " +
             "tipo_gestioni E WHERE A.id_socio = B.id_socio AND A.id_quote_periodi = C.id_quote_periodi AND A.id_valuta = D.id_valuta AND A.id_tipo_gestione = E.id_tipo_gestione";
 
         // calcolo valore cumulato per socio
-        public static readonly string GetTotaleCumulatoSocio = "SELECT id_socio, id_valuta, id_tipo_gestione, sum(ammontare) as cum_socio " +
-            "FROM quote_guadagno A, quote_periodi B WHERE A.id_quote_periodi = B.id_quote_periodi GROUP BY id_socio, id_valuta, id_tipo_gestione";
+        public static readonly string GetTotaleCumulatoAnnoSocioValuta = "SELECT A.id_socio, B.nome_socio, A.id_valuta, D.cod_valuta, SUM(guadagnato) AS GuadagnoAnno1, SUM(prelevato) AS Preso, " +
+            "SUM(guadagnato) + SUM(prelevato) AS RisparmioAnno FROM guadagni_totale_anno A, soci B, valuta D " +
+            "WHERE anno >= 2015 AND A.id_socio = B.id_socio AND A.id_valuta = D.id_valuta  AND A.id_tipo_soldi <> 11 GROUP BY A.id_socio, A.id_valuta ORDER BY A.id_socio, A.id_valuta;";
+
+        // calcolo valore cumulato per socio
+        public static readonly string GetTotaleSocioValuta = "SELECT SUM(guadagnato) + SUM(prelevato) AS Risparmio " +
+            "FROM guadagni_totale_anno A, soci B, valuta D " +
+            "WHERE anno >= 2015 AND A.id_socio = B.id_socio AND A.id_valuta = D.id_valuta AND A.id_tipo_soldi <> 11 AND A.id_socio = @id_socio AND A.id_valuta = @id_valuta " +
+            "GROUP BY A.id_socio, A.id_valuta ORDER BY A.id_socio, A.id_valuta;";
+
+
         // calcolo valore totale per tipologia
-        public static readonly string GetTotaleGenerale = "SELECT id_valuta, id_tipo_gestione, sum(ammontare) as cum_totale FROM quote_guadagno A, quote_periodi B " +
-            "WHERE A.id_quote_periodi = B.id_quote_periodi GROUP BY id_valuta, id_tipo_gestione";
+        public static readonly string GetMovimentiPrelievi = "SELECT id_guadagno, A.id_socio, B.nome_socio, prelevato, A.id_valuta, C.cod_valuta, data_operazione, causale, id_conto_corrente " +
+            "FROM guadagni_totale_anno A, soci B, valuta C WHERE A.id_socio = B.id_socio AND A.id_valuta = C.id_valuta AND id_tipo_movimento = 2 ORDER BY data_operazione DESC";
 
         public static readonly string GetLastRecordBySocioValuta = GetQuoteGuadagni + 
             " AND A.id_socio = @id_socio AND A.id_valuta = @id_valuta AND A.id_tipo_gestione = @id_tipo_gestione ORDER BY A.id_quota_guadagno DESC LIMIT 1";

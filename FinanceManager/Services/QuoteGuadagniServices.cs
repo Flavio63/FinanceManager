@@ -7,6 +7,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace FinanceManager.Services
 {
@@ -19,6 +20,7 @@ namespace FinanceManager.Services
             DAFconnection = iDAFconnection ?? throw new ArgumentNullException("Manca la stringa di connessione al db");
         }
 
+        #region INSERIMENTO E CALCOLO UTILI DA VENDITE, DA CEDOLE E DA FORFAIT
         /// <summary>
         /// Verifico se nella data di inserimento è già presente
         /// un investimento
@@ -36,10 +38,10 @@ namespace FinanceManager.Services
                     dataAdapter.SelectCommand = new SQLiteCommand();
                     dataAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
                     dataAdapter.SelectCommand.Connection.Open();
-                    dataAdapter.SelectCommand.CommandText = string.Format("SELECT data_inizio FROM quote_periodi WHERE id_tipo_gestione = {0} ORDER by data_inizio DESC LIMIT 1", 
+                    dataAdapter.SelectCommand.CommandText = string.Format("SELECT data_inizio FROM quote_periodi WHERE id_tipo_gestione = {0} ORDER by data_inizio DESC LIMIT 1",
                         Id_Tipo_Gestione);
 
-                    SQLiteDataReader reader =  dataAdapter.SelectCommand.ExecuteReader();
+                    SQLiteDataReader reader = dataAdapter.SelectCommand.ExecuteReader();
                     while (reader.Read())
                     {
                         if ((DateTime)reader["data_inizio"] > ActualCC.DataMovimento)
@@ -278,108 +280,7 @@ namespace FinanceManager.Services
                 throw new Exception(err.Message);
             }
         }
-        /// <summary>
-        /// Restituisce una tabella con il valore cumulato
-        /// suddiviso fra soci, valuta e tipo di gestione
-        /// </summary>
-        /// <returns>DataTable</returns>
-        public DataTable GetTotaleCumulatoSocio()
-        {
-            DataTable dataTable = new DataTable();
-            try
-            {
-                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
-                {
-                    dbAdapter.SelectCommand = new SQLiteCommand();
-                    dbAdapter.SelectCommand.CommandText = QuoteGuadagniScript.GetTotaleCumulatoSocio;
-                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    dbAdapter.Fill(dataTable);
-                    return dataTable;
-                }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception("GetTotaleCumulatoSocio " + err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception("GetTotaleCumulatoSocio " + err.Message);
-            }
-        }
-        /// <summary>
-        /// Restituisce una tabella con il valore totale
-        /// suddiviso fra valuta e tipo di gestione
-        /// </summary>
-        /// <returns>DataTable</returns>
-        public DataTable GetTotaleGenerale()
-        {
-            DataTable dataTable = new DataTable();
-            try
-            {
-                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
-                {
-                    dbAdapter.SelectCommand = new SQLiteCommand();
-                    dbAdapter.SelectCommand.CommandText = QuoteGuadagniScript.GetTotaleGenerale;
-                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    dbAdapter.Fill(dataTable);
-                    return dataTable;
-                }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception("GetTotaleGenerale " + err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception("GetTotaleGenerale " + err.Message);
-            }
-        }
-        /// <summary>
-        /// Ritorna una tabella con tutti i movimenti dei capitali
-        /// </summary>
-        /// <returns>QuoteGuadagnoList</returns>
-        public QuoteGuadagnoList GetQuoteGuadagni()
-        {
-            QuoteGuadagnoList quoteGuadagnos = new QuoteGuadagnoList();
-            DataTable dataTable = new DataTable();
-            try
-            {
-                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
-                {
-                    dbAdapter.SelectCommand = new SQLiteCommand();
-                    dbAdapter.SelectCommand.CommandText = QuoteGuadagniScript.GetTotaleCumulatoSocio;
-                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
-                    dbAdapter.Fill(dataTable);
-                    foreach (DataRow row in dataTable.Rows)
-                    {
-                        QuoteGuadagno quoteGuadagno = new QuoteGuadagno();
-                        quoteGuadagno.id_quota_guadagno = Convert.ToInt32( row.Field<long>("id_quota_guadagno"));
-                        quoteGuadagno.id_socio = Convert.ToInt32(row.Field<long>("id_socio"));
-                        quoteGuadagno.nome_socio = row.Field<string>("nome_socio");
-                        quoteGuadagno.id_quote_periodi = Convert.ToInt32(row.Field<long>("id_quote_periodi"));
-                        quoteGuadagno.data_inizio = row.Field<DateTime>("data_inizio");
-                        quoteGuadagno.data_fine = row.Field<DateTime>("data_fine");
-                        quoteGuadagno.ammontare = row.Field<double>("ammontare");
-                        quoteGuadagno.cum_socio = row.Field<double>("cum_socio");
-                        quoteGuadagno.cum_totale = row.Field<double>("cum_totale");
-                        quoteGuadagno.quota = row.Field<double>("quota");
-                        quoteGuadagno.id_conto_corrente = Convert.ToInt32(row.Field<long>("id_conto_corrente"));
-                        quoteGuadagno.id_valuta = Convert.ToInt32(row.Field<long>("id_valuta"));
-                        quoteGuadagno.cod_valuta = row.Field<string>("cod_valuta");
-                        quoteGuadagnos.Add(quoteGuadagno);
-                    }
-                    return quoteGuadagnos;
-                }
-            }
-            catch (SQLiteException err)
-            {
-                throw new Exception("GetTotaleCumulatoSocio " + err.Message);
-            }
-            catch (Exception err)
-            {
-                throw new Exception("GetTotaleCumulatoSocio " + err.Message);
-            }
-        }
+
         /// <summary>
         /// Ritorna il valore di cum_socio, cum_totale nel periodo e per la valuta dati
         /// </summary>
@@ -515,6 +416,226 @@ namespace FinanceManager.Services
                 }
             }
         }
+        #endregion
 
+        #region RELATIVO ALLA FORM PRELIEVI UTILI
+        /// <summary>
+        /// Restituisce una tabella con il valore cumulato
+        /// suddiviso per anno, soci e valuta
+        /// </summary>
+        /// <returns>DataTable</returns>
+        public DataTable GetTotaleCumulatoAnnoSocioValuta()
+        {
+            DataTable dataTable = new DataTable();
+            try
+            {
+                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new SQLiteCommand();
+                    dbAdapter.SelectCommand.CommandText = QuoteGuadagniScript.GetTotaleCumulatoAnnoSocioValuta;
+                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.Fill(dataTable);
+                    return dataTable;
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception("GetTotaleCumulatoAnnoSocioValuta " + err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception("GetTotaleCumulatoAnnoSocioValuta " + err.Message);
+            }
+        }
+        /// <summary>
+        /// Dato il socio e la valuta restituisce la cifra disponibile
+        /// </summary>
+        /// <param name="id_socio">codice socio</param>
+        /// <param name="id_valuta">codice valuta</param>
+        /// <returns></returns>
+        public double GetTotaleSocioValuta(int id_socio, int id_valuta)
+        {
+            try
+            {
+                double result = 0;
+                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new SQLiteCommand();
+                    dbAdapter.SelectCommand.CommandText = QuoteGuadagniScript.GetTotaleSocioValuta;
+                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_socio", id_socio);
+                    dbAdapter.SelectCommand.Parameters.AddWithValue("id_valuta", id_valuta);
+                    dbAdapter.SelectCommand.Connection.Open();
+                    SQLiteDataReader reader = dbAdapter.SelectCommand.ExecuteReader();
+                    do
+                    {
+                        reader.Read();
+                        result = Convert.ToDouble(reader["Risparmio"]);
+                    } while (reader.Read());
+                    reader.Close();
+                    dbAdapter.SelectCommand.Connection.Close();
+                }
+                return result;
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception("GetTotaleSocioValuta " + err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception("GetTotaleSocioValuta " + err.Message);
+            }
+        }
+        /// <summary>
+        /// Dato il record di conto corrente appena inserito
+        /// registro i dati del prelievo
+        /// </summary>
+        /// <param name="contoCorrente">il record con i dati</param>
+        public void AddPrelievo(ContoCorrente contoCorrente)
+        {
+            using (SQLiteConnection dbConn = new SQLiteConnection(DAFconnection.GetConnectionType()))
+            {
+                dbConn.Open();
+                using (SQLiteTransaction transaction = dbConn.BeginTransaction())
+                {
+                    try
+                    {
+                        using (SQLiteCommand command = new SQLiteCommand())
+                        {
+                            command.CommandText = QuoteGuadagniScript.AddPrelievo;
+                            command.Parameters.AddWithValue("id_socio", contoCorrente.Id_Socio);
+                            command.Parameters.AddWithValue("id_tipo_movimento", contoCorrente.Id_tipo_movimento);
+                            command.Parameters.AddWithValue("year", contoCorrente.DataMovimento.ToString("yyyy"));
+                            command.Parameters.AddWithValue("prelevato", contoCorrente.Ammontare);
+                            command.Parameters.AddWithValue("id_valuta", contoCorrente.Id_Valuta);
+                            command.Parameters.AddWithValue("data_operazione", contoCorrente.DataMovimento.ToString("yyyy-MM-dd"));
+                            command.Parameters.AddWithValue("causale", contoCorrente.Causale);
+                            command.Parameters.AddWithValue("id_conto_corrente", contoCorrente.Id_RowConto);
+                            command.Connection = dbConn;
+                            command.ExecuteNonQuery();
+                            transaction.Commit();
+                        }
+                    }
+                    catch (SQLiteException err)
+                    {
+                        transaction.Rollback();
+                        throw new Exception("AddPrelievo " + err.Message);
+                    }
+                    catch (Exception err)
+                    {
+                        transaction.Rollback();
+                        throw new Exception("AddPrelievo " + err.Message);
+                    }
+                }
+            }
+        }
+        /// <summary>
+        /// Modifica i dati di prelievo
+        /// </summary>
+        /// <param name="contoCorrente">il record con i dati modificati</param>
+        /// <param name="id_guadagno">l'indice di riga</param>
+        public void ModifyPrelievo(ContoCorrente contoCorrente, int id_guadagno)
+        {
+            try
+            {
+                using (SQLiteCommand command = new SQLiteCommand())
+                {
+                    command.CommandText = QuoteGuadagniScript.ModifyPrelievo;
+                    command.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    command.Parameters.AddWithValue("id_guadagno", id_guadagno);
+                    command.Parameters.AddWithValue("id_socio", contoCorrente.Id_Socio);
+                    command.Parameters.AddWithValue("prelevato", contoCorrente.Ammontare);
+                    command.Parameters.AddWithValue("id_valuta", contoCorrente.Id_Valuta);
+                    command.Parameters.AddWithValue("data_operazione", contoCorrente.DataMovimento);
+                    command.Parameters.AddWithValue("causale", contoCorrente.Causale);
+                    command.Connection.Open();
+                    command.ExecuteNonQuery();
+                    command.Connection.Close();
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception("ModifyPrelievo " + err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception("ModifyPrelievo " + err.Message);
+            }
+        }
+        /// <summary>
+        /// Restituisce una tabella con i movimenti dei prelievi
+        /// </summary>
+        /// <returns>DataTable</returns>
+        public DataTable GetMovimentiPrelievi()
+        {
+            DataTable dataTable = new DataTable();
+            try
+            {
+                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new SQLiteCommand();
+                    dbAdapter.SelectCommand.CommandText = QuoteGuadagniScript.GetMovimentiPrelievi;
+                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.Fill(dataTable);
+                    return dataTable;
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception("GetTotaleGenerale " + err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception("GetTotaleGenerale " + err.Message);
+            }
+        }
+        /// <summary>
+        /// Ritorna una tabella con tutti i movimenti dei capitali
+        /// </summary>
+        /// <returns>QuoteGuadagnoList</returns>
+        public QuoteGuadagnoList GetQuoteGuadagni()
+        {
+            QuoteGuadagnoList quoteGuadagnos = new QuoteGuadagnoList();
+            DataTable dataTable = new DataTable();
+            try
+            {
+                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new SQLiteCommand();
+                    //dbAdapter.SelectCommand.CommandText = QuoteGuadagniScript.GetTotaleCumulatoSocio;
+                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.Fill(dataTable);
+                    foreach (DataRow row in dataTable.Rows)
+                    {
+                        QuoteGuadagno quoteGuadagno = new QuoteGuadagno();
+                        quoteGuadagno.id_quota_guadagno = Convert.ToInt32(row.Field<long>("id_quota_guadagno"));
+                        quoteGuadagno.id_socio = Convert.ToInt32(row.Field<long>("id_socio"));
+                        quoteGuadagno.nome_socio = row.Field<string>("nome_socio");
+                        quoteGuadagno.id_quote_periodi = Convert.ToInt32(row.Field<long>("id_quote_periodi"));
+                        quoteGuadagno.data_inizio = row.Field<DateTime>("data_inizio");
+                        quoteGuadagno.data_fine = row.Field<DateTime>("data_fine");
+                        quoteGuadagno.ammontare = row.Field<double>("ammontare");
+                        quoteGuadagno.cum_socio = row.Field<double>("cum_socio");
+                        quoteGuadagno.cum_totale = row.Field<double>("cum_totale");
+                        quoteGuadagno.quota = row.Field<double>("quota");
+                        quoteGuadagno.id_conto_corrente = Convert.ToInt32(row.Field<long>("id_conto_corrente"));
+                        quoteGuadagno.id_valuta = Convert.ToInt32(row.Field<long>("id_valuta"));
+                        quoteGuadagno.cod_valuta = row.Field<string>("cod_valuta");
+                        quoteGuadagnos.Add(quoteGuadagno);
+                    }
+                    return quoteGuadagnos;
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception("GetTotaleCumulatoAnnoSocioValuta " + err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception("GetTotaleCumulatoAnnoSocioValuta " + err.Message);
+            }
+        }
+
+        #endregion
     }
 }

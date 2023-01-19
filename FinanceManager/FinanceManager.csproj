@@ -290,6 +290,7 @@
     <Compile Include="Services\SQL\ManagerScripts.cs" />
     <Compile Include="Services\SQL\RegistryScripts.cs" />
     <Compile Include="ViewModels\AcquistoVenditaTitoliViewModel.cs" />
+    <Compile Include="ViewModels\ManagerProfitViewModel.cs" />
     <Compile Include="ViewModels\ManagerReportsViewModel.cs" />
     <Compile Include="ViewModels\RegistryContoCorrenteViewModel.cs" />
     <Compile Include="ViewModels\RegistryCurrencyViewModel.cs" />
@@ -325,6 +326,9 @@
     </Compile>
     <Compile Include="Views\GiroContoView.xaml.cs">
       <DependentUpon>GiroContoView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ManagerProfitView.xaml.cs">
+      <DependentUpon>ManagerProfitView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RegistryContoCorrenteView.xaml.cs">
       <DependentUpon>RegistryContoCorrenteView.xaml</DependentUpon>
@@ -399,6 +403,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\GiroContoView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ManagerProfitView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

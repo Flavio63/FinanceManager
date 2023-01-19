@@ -9,7 +9,7 @@
              d:DataContext="{d:DesignInstance Type=viewmodels:CapitalsRegisterViewModel}"
              mc:Ignorable="d" Name="_Versamenti_Prelievi"
               >
-    <Grid>
+    <Grid MaxWidth="{x:Static SystemParameters.PrimaryScreenWidth}">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="0.6*"/>
@@ -204,7 +204,7 @@
                 </Button.Content>
             </Button>
         </Border>
-        <Border Grid.Row="1" Grid.Column="2" Grid.RowSpan="3" BorderBrush="DarkGray" BorderThickness="5" Margin="10" Padding="15" MaxWidth="1200">
+        <Border Grid.Row="1" Grid.Column="2" Grid.RowSpan="3" BorderBrush="DarkGray" BorderThickness="5" Margin="10" Padding="15" MaxWidth="1000">
             <DataGrid Margin="15, 0" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
                           CanUserReorderColumns="False" FontSize="16" ItemsSource="{Binding InvestCollection, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                 <DataGrid.Columns>

@@ -34,7 +34,7 @@ namespace FinanceManager.Services.SQL
         /// </summary>
         public static readonly string GetTotalAmountByAccount = "SELECT A.id_conto, desc_conto as Conto, A.id_socio, nome_socio AS Socio, A.id_gestione, nome_gestione as Gestione, sum(ammontare) as Soldi, " +
             "cod_valuta as Valuta, A.id_tipo_soldi, E.desc_tipo_soldi, A.cambio FROM conto_corrente A, conti B, gestioni C, valuta D, tipo_soldi E, soci F where A.id_conto = B.id_conto " +
-            "AND A.id_gestione = C.id_gestione AND A.id_valuta = D.id_valuta AND A.id_socio = F.id_socio and A.id_tipo_soldi = E.id_tipo_soldi {0} " +
+            "AND A.id_gestione = C.id_gestione AND A.id_valuta = D.id_valuta AND A.id_socio = F.id_socio and A.id_tipo_soldi = E.id_tipo_soldi and A.id_tipo_soldi = 1 {0} " +
             "GROUP BY A.id_conto, A.id_socio, A.id_gestione, A.id_valuta, A.id_tipo_soldi;";
 
         /// <summary>

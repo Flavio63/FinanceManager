@@ -34,6 +34,7 @@ namespace FinanceManager.ViewModels
         public ICommand OnClickManagerReports { get; set; }
         public ICommand OnClickOpenGiroconto { get; set; }
         public ICommand OnClickOpenCapitali { get; set; }
+        public ICommand OnClickOpenManagerUtili { get; set; }
         public ICommand OnClickOpenSchedaTitoli { get; set; }
         public ICommand OnClickOpenCambioValuta { get; set; }
 
@@ -64,6 +65,9 @@ namespace FinanceManager.ViewModels
 
         AcquistoVenditaTitoliViewModel acquistoVenditaTitoliViewModel;
         AcquistoVenditaTitoliView acquistoVenditaTitoliView;
+
+        ManagerProfitViewModel managerProfitViewModel;
+        ManagerProfitView managerProfitView;
 
         GiroContoView giroContoView;
         GiroContoViewModel giroContoViewModel;
@@ -111,6 +115,8 @@ namespace FinanceManager.ViewModels
             OnClickOpenGiroconto = new CommandHandler(OpenGiroconto);
             OnClickOpenCapitali = new CommandHandler(OpenCapitali);
             OnClickOpenCambioValuta = new CommandHandler(OpenCambioValuta);
+
+            OnClickOpenManagerUtili = new CommandHandler(OpenManagerUtili);
         }
 
         #region Anagrafica
@@ -352,6 +358,30 @@ namespace FinanceManager.ViewModels
                 mainGrid.Children.Remove(capitalsRegisterView);
                 capitalsRegisterView = null;
                 capitalsRegisterViewModel = null;
+            }
+        }
+
+        private void OpenManagerUtili(object param)
+        {
+            DockPanel mainGrid = param as DockPanel;
+            if (managerProfitView == null || !mainGrid.Children.Contains(managerProfitView))
+            {
+                try
+                {
+                    managerProfitViewModel = new ManagerProfitViewModel(_quoteServices, _registryServices, _contoCorrenteServices);
+                    managerProfitView = new ManagerProfitView(managerProfitViewModel);
+                    mainGrid.Children.Add(managerProfitView);
+                }
+                catch (System.Exception err)
+                {
+                    System.Windows.MessageBox.Show("Errore in apertura: " + err, "DAF - PROGRAM", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                mainGrid.Children.Remove(managerProfitView);
+                managerProfitView = null;
+                managerProfitViewModel= null;
             }
         }
 

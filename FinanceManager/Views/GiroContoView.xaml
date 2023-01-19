@@ -8,7 +8,7 @@
              Name="_Giroconto_personale_trading"
              mc:Ignorable="d">
 
-    <Grid Margin="20, 5" >
+    <Grid Margin="1" Width="{x:Static SystemParameters.PrimaryScreenWidth}">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="auto"/>
@@ -19,16 +19,18 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="50"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="26" FontWeight="Bold">
+        <TextBlock Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="26" FontWeight="Bold">
                 TRASFERIMENTO DI SOLDI
         </TextBlock>
         <Button Content="X" Command="{Binding CloseMeCommand}" 
                 CommandParameter="{Binding ElementName=_Giroconto_personale_trading}" 
-                HorizontalContentAlignment="Center" Grid.Column="2" HorizontalAlignment="Right"
+                HorizontalContentAlignment="Center" Grid.Column="3" HorizontalAlignment="Right"
                     VerticalContentAlignment="Center" Width="25" Height="25"
                 Margin="0,0, 15, 0" FontWeight="Bold"/>
-        <Border Grid.Row="1" Grid.ColumnSpan="2" BorderBrush="DarkGreen" BorderThickness="5" Margin="0, 10, 5, 10" Padding="15">
+        <Border Grid.Row="1" Grid.ColumnSpan="3" BorderBrush="DarkGreen" BorderThickness="5" Margin="50, 10, 5, 10" Padding="15">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="40"/>
@@ -117,7 +119,7 @@
             </Grid>
         </Border>
 
-        <Border Grid.Row="2" Grid.ColumnSpan="2" BorderBrush="Coral" BorderThickness="5" Margin="0, 10, 5, 10" Padding="15">
+        <Border Grid.Row="2" Grid.ColumnSpan="3" BorderBrush="Coral" BorderThickness="5" Margin="50, 10, 10, 10" Padding="15">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="40"/>
@@ -204,7 +206,7 @@
             </Grid>
         </Border>
 
-        <Border Grid.Row="3" BorderBrush="DarkGoldenrod" BorderThickness="5" Margin="0, 10, 5, 10" Padding="15">
+        <Border Grid.Row="3" BorderBrush="DarkGoldenrod" BorderThickness="5" Margin="50, 10, 5, 10" Padding="15">
             <StackPanel Orientation="Horizontal" Background="LightGreen">
                 <StackPanel Orientation="Vertical" Background="LightGreen" IsEnabled="{Binding DatiComuni}">
                     <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right"
@@ -234,7 +236,6 @@
                                 </i:EventTrigger>
                             </i:Interaction.Triggers>
                         </TextBox>
-
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
                         <TextBlock Text="Data" FontSize="18" VerticalAlignment="Center" Margin="0,5,10,5"/>
@@ -280,7 +281,7 @@
             </StackPanel>
         </Border>
 
-        <Border Grid.Row="3" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="3" BorderBrush="Aquamarine" BorderThickness="5" Margin="0, 10, 5, 10" Padding="5">
+        <Border Grid.Row="3" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="2" BorderBrush="Aquamarine" BorderThickness="5" Margin="0, 10, 5, 10" Padding="5">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -290,7 +291,7 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <TextBlock Text="Trasferimenti già fatti" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                <DataGrid x:Name="CONTOtrasfatti" Grid.Row="1" Grid.Column="1" Margin="15, 0" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
+                <DataGrid x:Name="CONTOtrasfatti" Grid.Row="1" Grid.Column="1" Margin="15, 5" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
                           CanUserReorderColumns="False" FontSize="18" ItemsSource="{Binding ContiCorrenti, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="ID" Binding="{Binding Id_RowConto, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>

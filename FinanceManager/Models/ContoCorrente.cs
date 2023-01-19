@@ -33,8 +33,6 @@ namespace FinanceManager.Models
             }
             set
             {
-                //if (value.Date.ToShortDateString() == "01/01/0001" || value.Date.ToShortDateString() == "01/01/01")
-                //    _MovementDate = DateTime.Now.Date;
                 _MovementDate = value;
             }
         }
@@ -53,6 +51,7 @@ namespace FinanceManager.Models
         /// </summary>
         public ContoCorrente()
         {
+            _MovementDate = DateTime.Now.Date;
             Modified = DateTime.Now;
         }
 
