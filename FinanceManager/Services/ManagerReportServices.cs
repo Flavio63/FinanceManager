@@ -107,12 +107,12 @@ namespace FinanceManager.Services
             }
             gestione = gestione.Substring(0, gestione.Length - 20);
             
-            string anni = "YEAR(data_movimento) = ";
+            string anni = "strftime('%Y', data_movimento) = ";
             foreach(int anno in _selectedYears)
             {
-                anni += anno + " OR YEAR(data_movimento) = ";
+                anni += anno + " OR strftime('%Y', data_movimento) = ";
             }
-            anni = anni.Substring(0, anni.Length - 27);
+            anni = anni.Substring(0, anni.Length - 37);
 
             string query = string.Format("AND ({0}) AND ({1})", gestione, anni);
 

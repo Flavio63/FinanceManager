@@ -112,5 +112,10 @@ namespace FinanceManager.Services
         /// </summary>
         /// <param name="quoteGuadagno">il record da modificare</param>
         void ModifyQuoteGuadagno(QuoteGuadagno quoteGuadagno);
+        /// <summary>
+        /// Ritorna una lista di record della tabella quote periodi
+        /// </summary>
+        /// <returns>QuotePeriodiList</returns>
+        QuotePeriodiList GetQuotePeriodiList();
     }
 }

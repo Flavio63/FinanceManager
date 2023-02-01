@@ -107,7 +107,7 @@ namespace FinanceManager.Services
                     QuotePeriodi QP = new QuotePeriodi
                     {
                         IdPeriodoQuote = Convert.ToInt16(dt.Rows[0].Field<object>("id_quote_periodi")),
-                        IdAggregazione = Convert.ToInt16(dt.Rows[0].Field<object>("id_tipo_gestione")),
+                        IdTipoGestione = Convert.ToInt16(dt.Rows[0].Field<object>("id_tipo_gestione")),
                         DataInizio = dt.Rows[0].Field<DateTime>("data_inizio"),
                         DataFine = dt.Rows[0].Field<DateTime>("data_fine"),
                         DataInsert = dt.Rows[0].Field<DateTime>("data_insert")
@@ -635,7 +635,43 @@ namespace FinanceManager.Services
                 throw new Exception("GetTotaleCumulatoAnnoSocioValuta " + err.Message);
             }
         }
-
+        /// <summary>
+        /// Ritorna una lista di record della tabella quote periodi
+        /// </summary>
+        /// <returns>QuotePeriodiList</returns>
+        public QuotePeriodiList GetQuotePeriodiList()
+        {
+            DataTable dataTable = new DataTable();
+            QuotePeriodiList quotePeriodis = new QuotePeriodiList();
+            try
+            {
+                using (SQLiteDataAdapter dbAdapter = new SQLiteDataAdapter())
+                {
+                    dbAdapter.SelectCommand = new SQLiteCommand();
+                    dbAdapter.SelectCommand.CommandText = QuoteGuadagniScript.GetQuotePeriodiList;
+                    dbAdapter.SelectCommand.Connection = new SQLiteConnection(DAFconnection.GetConnectionType());
+                    dbAdapter.Fill(dataTable);
+                    foreach (DataRow row in dataTable.Rows)
+                    {
+                        QuotePeriodi quotePeriodo = new QuotePeriodi();
+                        quotePeriodo.IdPeriodoQuote = Convert.ToInt32(row.Field<long>("id_quote_periodi"));
+                        quotePeriodo.IdTipoGestione = Convert.ToInt32(row.Field<long>("id_tipo_gestione"));
+                        quotePeriodo.DataInizio = row.Field<DateTime>("data_inizio");
+                        quotePeriodo.DataFine = row.Field<DateTime>("data_fine");
+                        quotePeriodis.Add(quotePeriodo);
+                    }
+                    return quotePeriodis;
+                }
+            }
+            catch (SQLiteException err)
+            {
+                throw new Exception("GetQuotePeriodiList " + err.Message);
+            }
+            catch (Exception err)
+            {
+                throw new Exception("GetQuotePeriodiList " + err.Message);
+            }
+        }
         #endregion
     }
 }

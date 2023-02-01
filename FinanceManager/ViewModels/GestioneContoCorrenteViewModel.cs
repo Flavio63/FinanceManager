@@ -92,6 +92,7 @@ namespace FinanceManager.ViewModels
                 TotaleDisponibili = _contoCorrenteServices.GetTotalAmountByAccount(0);
                 //=====================================================================================
                 RecordContoCorrente = new ContoCorrente();
+                RecordContoCorrente.Valore_Cambio = 1;
                 SrchShares = "";
                 ListContoCorrente = _contoCorrenteServices.GetContoCorrenteList();
                 CommonFieldsEnabled = true;
@@ -807,7 +808,7 @@ namespace FinanceManager.ViewModels
         /// <param name="e">Pressione del tasto</param>
         public void PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (sender is TextBox textBox && (textBox.Name == "Ammontare" || textBox.Name == "Valore_Cambio"))
+            if (sender is TextBox textBox && (textBox.Name == "Ammontare"))
                 if (e.Key == Key.Decimal || e.Key == Key.OemPeriod)
                 {
                     var pos = textBox.SelectionStart;

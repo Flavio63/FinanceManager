@@ -227,6 +227,7 @@
     <Compile Include="Models\Ptf_CCList.cs" />
     <Compile Include="Models\GuadagnoPerQuoteList.cs" />
     <Compile Include="Models\GuadagnoPerQuote.cs" />
+    <Compile Include="Models\QuotePeriodiList.cs" />
     <Compile Include="Models\RegistryTipoGestioniUtili.cs" />
     <Compile Include="Models\RegistryTipoGestioniUtiliList.cs" />
     <Compile Include="Models\ReportMovementDetailed.cs" />

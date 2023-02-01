@@ -77,9 +77,11 @@ namespace FinanceManager.ViewModels
             //===================================================================================================
             ActualCCmittente = new ContoCorrente();
             ActualCCmittente.Id_tipo_movimento = 12;
+            ActualCCmittente.Valore_Cambio = 1;
             ActualCCmittente.DataMovimento = DateTime.Now;
             ActualCCricevente = new ContoCorrente();
             ActualCCricevente.Id_tipo_movimento = 12;
+            ActualCCricevente.Valore_Cambio = 1;
             ActualCCricevente.DataMovimento = DateTime.Now;
 
             TotaleMittenteConto = new ContoCorrenteList();
@@ -353,11 +355,6 @@ namespace FinanceManager.ViewModels
                 }
                 catch { }
             }
-            else if (((TextBox)sender).Text != "" && ((TextBox)sender).Name == "Val_Cambio")
-            {
-                ActualCCmittente.Valore_Cambio = Convert.ToDouble(((TextBox)sender).Text);
-                ActualCCricevente.Valore_Cambio = ActualCCmittente.Valore_Cambio;
-            }
             else if (((TextBox)sender).Text != "" && ((TextBox)sender).Name == "Causale")
             {
                 ActualCCmittente.Causale = ((TextBox)sender).Text;
@@ -403,6 +400,7 @@ namespace FinanceManager.ViewModels
                         break;
                     case "GestioneMittente":
                         ActualCCmittente.Id_Gestione = ((RegistryGestioni)e.AddedItems[0]).Id_Gestione;
+                        ActualCCmittente.Id_Tipo_Gestione = ActualCCmittente.Id_Gestione == 1 ? 1 : 2;
                         TotaleMittenteConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoMittente, IdGestione: IdGestioneMittente);
                         break;
                     case "SocioMittente":
@@ -426,6 +424,7 @@ namespace FinanceManager.ViewModels
                     case "GestioneRicevente":
                         ValutaEnabled = true;
                         ActualCCricevente.Id_Gestione = ((RegistryGestioni)e.AddedItems[0]).Id_Gestione;
+                        ActualCCricevente.Id_Tipo_Gestione = ActualCCricevente.Id_Gestione == 1 ? 1 : 2;
                         TotaleRiceventeConto = _contoCorrenteServices.GetTotalAmountByAccount(IdContoRicevente, IdGestione: IdGestioneRicevente);
                         break;
                     case "SocioRicevente":
@@ -442,7 +441,6 @@ namespace FinanceManager.ViewModels
 
                         break;
                     case "Valuta":
-                        GestioneRicevente = false;
                         ActualCCmittente.Id_Valuta = ((RegistryCurrency)e.AddedItems[0]).IdCurrency;
                         ActualCCricevente.Id_Valuta = ActualCCmittente.Id_Valuta;
                         if (ActualCCmittente.Id_Conto > 1)
@@ -522,7 +520,6 @@ namespace FinanceManager.ViewModels
 
         public void SaveCommand(object param)
         {
-            Verifica_tipo_gestione();
             try
             {
                 _contoCorrenteServices.InsertAccountMovement(ActualCCmittente);
@@ -555,7 +552,6 @@ namespace FinanceManager.ViewModels
 
         public void UpdateCommand(object param)
         {
-            Verifica_tipo_gestione();
             try
             {
                 _contoCorrenteServices.UpdateRecordContoCorrente(ActualCCmittente, 0);
@@ -577,26 +573,6 @@ namespace FinanceManager.ViewModels
                     "La modifica dei dati non è avvenuta"), "Errore Trasferimento Soldi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             ClearMe(param);
-        }
-
-        private void Verifica_tipo_gestione()
-        {
-            if (ActualCCmittente.Id_Socio == 3 || ActualCCmittente.Id_Gestione == 7)
-            {
-                ActualCCmittente.Id_Tipo_Gestione = (int)FinanceManager.Models.Enumeratori.TipologiaGestione.Base50;
-            }
-            else if (ActualCCmittente.Id_Socio == 1 || ActualCCmittente.Id_Socio == 2 || ActualCCmittente.Id_Gestione != 7)
-            {
-                ActualCCmittente.Id_Tipo_Gestione = (int)FinanceManager.Models.Enumeratori.TipologiaGestione.BaseQuote;
-            }
-            if (ActualCCricevente.Id_Socio == 3 || ActualCCricevente.Id_Gestione == 7)
-            {
-                ActualCCricevente.Id_Tipo_Gestione = (int)FinanceManager.Models.Enumeratori.TipologiaGestione.Base50;
-            }
-            else if (ActualCCricevente.Id_Socio == 1 || ActualCCricevente.Id_Socio == 2 || ActualCCricevente.Id_Gestione != 7)
-            {
-                ActualCCricevente.Id_Tipo_Gestione = (int)FinanceManager.Models.Enumeratori.TipologiaGestione.BaseQuote;
-            }
         }
 
         #endregion

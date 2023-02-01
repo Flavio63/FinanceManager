@@ -114,6 +114,7 @@ namespace FinanceManager.ViewModels
             try
             {
                 RecordPortafoglioTitoli = new PortafoglioTitoli();
+                RecordPortafoglioTitoli.Valore_di_cambio = 1;
                 ListPortafoglioTitoli = _contoTitoliServices.GetListTitoliByOwnerAndLocation();
             }
             catch (Exception err)
@@ -252,9 +253,6 @@ namespace FinanceManager.ViewModels
                     case "doubleCommissionValue":
                         RecordPortafoglioTitoli.Commissioni_totale = Convert.ToDouble(TB.Text);
                         break;
-                    case "doubleValore_di_cambio":
-                        RecordPortafoglioTitoli.Valore_di_cambio = Convert.ToDouble(TB.Text);
-                        break;
                     case "doubleTobinTaxValue":
                         RecordPortafoglioTitoli.TobinTax = Convert.ToDouble(TB.Text);
                         break;
@@ -292,7 +290,7 @@ namespace FinanceManager.ViewModels
                     // totale contabile in valuta
                     TotaleContabile = RecordPortafoglioTitoli.Id_valuta == 1 ?
                         TotalLocalValue + (RecordPortafoglioTitoli.TobinTax + RecordPortafoglioTitoli.Disaggio_anticipo_cedole + RecordPortafoglioTitoli.RitenutaFiscale) * -1 :
-                        TotalLocalValue + (RecordPortafoglioTitoli.Disaggio_anticipo_cedole + (RecordPortafoglioTitoli.RitenutaFiscale * RecordPortafoglioTitoli.Valore_di_cambio)) * -1;
+                        TotalLocalValue + (RecordPortafoglioTitoli.Disaggio_anticipo_cedole + (RecordPortafoglioTitoli.RitenutaFiscale)) * -1;
                     // tolta la specifica sul valore cambio != 1 nel successivo if 
                     if ((RecordPortafoglioTitoli.Id_tipo_titolo == 1 || RecordPortafoglioTitoli.Id_tipo_titolo == 4))
                     {
@@ -318,14 +316,12 @@ namespace FinanceManager.ViewModels
                     // totale contabile in valuta
                     TotaleContabile = RecordPortafoglioTitoli.Id_valuta == 1 ?
                         TotalLocalValue - (RecordPortafoglioTitoli.TobinTax + RecordPortafoglioTitoli.Disaggio_anticipo_cedole + RecordPortafoglioTitoli.RitenutaFiscale) :
-                        TotalLocalValue - (RecordPortafoglioTitoli.Disaggio_anticipo_cedole + (RecordPortafoglioTitoli.RitenutaFiscale * RecordPortafoglioTitoli.Valore_di_cambio));
+                        TotalLocalValue - (RecordPortafoglioTitoli.Disaggio_anticipo_cedole + (RecordPortafoglioTitoli.RitenutaFiscale));
                     RitenutaOk = true;
                 }
             }
             AmountChangedValue = TotaleContabile;
-            // totale contabile in euro calcolato solo se è inserito un valore di cambio
-            if (RecordPortafoglioTitoli.Id_valuta != 1)
-                AmountChangedValue = RecordPortafoglioTitoli.Valore_di_cambio == 0 ? 0 : (TotaleContabile / RecordPortafoglioTitoli.Valore_di_cambio);
+            
         }
 
         /// <summary>
@@ -763,9 +759,10 @@ namespace FinanceManager.ViewModels
                     {
                         // ricarico l'ultimo record
                         MLA = _contoTitoliServices.GetLastShareMovementByOwnerAndLocation(RecordPortafoglioTitoli.Id_gestione, RecordPortafoglioTitoli.Id_Conto);
-                        _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(MLA, TotaleContabile,
-                            RecordPortafoglioTitoli.Id_tipo_movimento == 5 ? TipologiaSoldi.Capitale : TipologiaSoldi.Utili_Lordi,
+                        // inserisco l'operazione in conto corrente
+                        _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(MLA, TotaleContabile, TipologiaSoldi.Capitale,
                             _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
+                        // ricarico la tabella nell'interfaccia
                         ListPortafoglioTitoli = _contoTitoliServices.GetListTitoliByOwnerAndLocation();
                     }
                     catch (Exception err)
@@ -803,7 +800,10 @@ namespace FinanceManager.ViewModels
                             //nel caso sia stato comprato in euro e adesso in maschera c'è un valore diverso da euro
                             if (row.Id_valuta == 1 && RecordPortafoglioTitoli.Id_valuta != 1)
                             {
-                                valoreAcquisto += (row.ValoreAzione + (row.Commissioni_totale + row.Disaggio_anticipo_cedole) * -1) * row.Valore_di_cambio;
+                                MessageBox.Show("Attenzione la valuta attualmente inserita non coincide con quella del passato." + Environment.NewLine +
+                                    "Uniformare i valori attuali con la valuta del passato e riprovare l'inserimento dei dati.", "Acquisto Vendita Titoli", 
+                                    MessageBoxButton.OK, MessageBoxImage.Warning) ;
+                                return;
                             }
                             //nel caso sia stato comprato e venduto in una valuta diversa da euro
                             else if (row.Id_valuta == RecordPortafoglioTitoli.Id_valuta && row.Id_valuta != 1)
@@ -868,7 +868,7 @@ namespace FinanceManager.ViewModels
                 {
                     try
                     {
-                        _contoTitoliServices.AddMovimentoTitoli(RecordPortafoglioTitoli);    // ho inserito il movimento in portafoglio
+                        _contoTitoliServices.AddMovimentoTitoli(RecordPortafoglioTitoli);    // ho inserito il movimento in portafoglio titoli
                     }
                     catch (Exception err)
                     {
@@ -980,11 +980,11 @@ namespace FinanceManager.ViewModels
                 _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto * -1, TipologiaSoldi.Capitale,
                     _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
                 _contoCorrenteServices.InsertAccountMovement(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile,
-                    RecordPortafoglioTitoli.Id_gestione == 7 ? TipologiaSoldi.Utili_da_Volatili : TipologiaSoldi.Utili_da_Vendite,
+                    RecordPortafoglioTitoli.Id_gestione == 2 ? TipologiaSoldi.Utili_da_Volatili : TipologiaSoldi.Utili_da_Vendite,
                     _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
                 //inserisco gli utili per quota soci
                 _quoteServices.AddSingoloGuadagno(new ContoCorrente(RecordPortafoglioTitoli, valoreAcquisto + TotaleContabile,
-                    RecordPortafoglioTitoli.Id_gestione == 7 ? TipologiaSoldi.Utili_da_Volatili : TipologiaSoldi.Utili_da_Vendite,
+                    RecordPortafoglioTitoli.Id_gestione == 2 ? TipologiaSoldi.Utili_da_Volatili : TipologiaSoldi.Utili_da_Vendite,
                     _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione)));
 
             }
@@ -1109,7 +1109,7 @@ namespace FinanceManager.ViewModels
                                 CCcapitale = new ContoCorrente(pt, _valoreAcquisto * -1, TipologiaSoldi.Capitale,
                                     _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione));
                                 CCprofitloss = new ContoCorrente(pt, (_valoreAcquisto + _valoreVendita),
-                                   pt.Id_gestione == 7 ? TipologiaSoldi.Utili_da_Volatili : TipologiaSoldi.Utili_da_Vendite,
+                                   pt.Id_gestione == 2 ? TipologiaSoldi.Utili_da_Volatili : TipologiaSoldi.Utili_da_Vendite,
                                     _quoteServices.GetIdPeriodoQuote(RecordPortafoglioTitoli.Data_Movimento, RecordPortafoglioTitoli.Id_gestione));
 
                                 if (CCs[0].Id_Tipo_Soldi == (int)TipologiaSoldi.Capitale)

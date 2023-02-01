@@ -238,7 +238,7 @@
                         </TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
-                        <TextBlock Text="Data" FontSize="18" VerticalAlignment="Center" Margin="0,5,10,5"/>
+                        <TextBlock Text="Data" FontSize="18" VerticalAlignment="Center" Margin="10,5,10,5"/>
                         <DatePicker Name="DataCapitali" VerticalAlignment="Center" Width="150"  FontSize="18" Margin="10"
                                         SelectedDate="{Binding ActualCCmittente.DataMovimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                         DisplayDate="{Binding ActualCCmittente.DataMovimento, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
@@ -248,18 +248,6 @@
                                 </i:EventTrigger>
                             </i:Interaction.Triggers>
                         </DatePicker>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right">
-                        <TextBlock Text="Cambio" FontSize="18" VerticalAlignment="Center" MinWidth="100" Margin="0,5,10,5"/>
-                        <TextBox Name="Val_Cambio" FontSize="18" VerticalAlignment="Center" MinWidth="100" Margin="0,5,10,5" HorizontalContentAlignment="Right"
-                                 Text="{Binding ActualCCmittente.Valore_Cambio, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, 
-                            ConverterCulture=it-IT, StringFormat=N4}">
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="LostFocus">
-                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="LostFocus"/>
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
-                        </TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Height="75" HorizontalAlignment="Right">
                         <TextBlock Text="Note" FontSize="18" VerticalAlignment="Center" Margin="0,5,10,5"/>

@@ -513,17 +513,25 @@ namespace FinanceManager.ViewModels
         {
             try
             {
-                // estraggo il periodo quote inerente alla data e al tipo di gestione
-                ActualContoCorrente.Id_Tipo_Gestione = ActualContoCorrente.Id_Socio == 3 ? 2 : 1;
-                int id_quote_periodi = _quoteServices.GetIdPeriodoQuote(ActualContoCorrente.DataMovimento, ActualContoCorrente.Id_Tipo_Gestione);
+                QuotePeriodiList quotePeriodis = _quoteServices.GetQuotePeriodiList();
                 // estraggo i record di conto_corrente in base a id_quote_periodi, id_tipo_gestione e valuta
-                ContoCorrenteList contoCorrentes = _contoCorrenteServices.GetContoCorrenteByTipoGestioneDataValuta(ActualContoCorrente);
+                ContoCorrenteList contoCorrentes = _contoCorrenteServices.GetContoCorrenteList();
                 // aggiorno l'id_quote_periodi utilizzando la data
                 foreach (ContoCorrente conto in contoCorrentes)
                 {
-                    conto.Id_Quote_Periodi = id_quote_periodi;
-                    _contoCorrenteServices.UpdateRecordContoCorrente(conto, Models.Enumeratori.TipologiaIDContoCorrente.IdContoCorrente);
-                    _quoteServices.UpdateGuadagniTotaleAnno(conto.Id_RowConto);
+                    foreach (QuotePeriodi quotePeriodi in quotePeriodis)
+                    {
+                        if (conto.Id_Gestione == quotePeriodi.IdTipoGestione && conto.DataMovimento >= quotePeriodi.DataInizio && conto.DataMovimento <= quotePeriodi.DataFine)
+                        {
+                            if (conto.Id_Quote_Periodi != quotePeriodi.IdPeriodoQuote)
+                            {
+                                conto.Id_Quote_Periodi = quotePeriodi.IdPeriodoQuote;
+                                _contoCorrenteServices.UpdateRecordContoCorrente(conto, Models.Enumeratori.TipologiaIDContoCorrente.IdContoCorrente);
+                                _quoteServices.UpdateGuadagniTotaleAnno(conto.Id_RowConto);
+                            }
+                            break;
+                        }
+                    }
                 }
                 MessageBox.Show("Le tabelle conto_corrente e guadagni_totale_anno sono state ricalcolate", "Registrazione Capitali", MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -536,9 +544,7 @@ namespace FinanceManager.ViewModels
 
         private bool CanDoIt(object param)
         {
-            if (ActualContoCorrente.DataMovimento < DateTime.Now.Date && ActualContoCorrente.Id_Socio > 0)
-                return true;
-            return false;
+            return true;
         }
         #endregion
     }

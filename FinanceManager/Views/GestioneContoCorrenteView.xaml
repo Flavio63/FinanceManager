@@ -53,14 +53,6 @@
             </DataGrid>
         </Border>
 
-        <!-- Bottoniera -->
-        <StackPanel Grid.Row="1" Grid.Column="2" Margin="5" Orientation="Vertical" HorizontalAlignment="Left">
-            <Button Content="Inserisci" Margin="10" Command="{Binding InsertCommand}"/>
-            <Button Content="Modifica" Margin="10" Command="{Binding ModifyCommand}"/>
-            <Button Content="Pulisci" Margin="10" Command="{Binding ClearCommand}"/>
-            <Button Content="Elimina" Margin="10" Command="{Binding EraseCommand}"/>
-        </StackPanel>
-
         <!-- Parametri comuni da selezionare -->
         <Border Grid.Row="1" Grid.Column="1" BorderBrush="LightGray" BorderThickness="0.8" Margin="5">
             <Grid Margin="5">
@@ -169,7 +161,7 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </TextBox>
-                <TextBlock Grid.Row="4" Grid.Column="2" Text="Cambio" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
+                <!--<TextBlock Grid.Row="4" Grid.Column="2" Text="Cambio" FontSize="16" Margin="10, 2, 5, 2" VerticalAlignment="Center"/>
                 <TextBox Name="Valore_Cambio" Grid.Row="4" Grid.Column="3" Margin="5, 2" Padding="0,0,5,0" HorizontalContentAlignment="Right"
                          Text="{Binding RecordContoCorrente.Valore_Cambio, ConverterCulture=it-IT}">
                     <i:Interaction.Triggers>
@@ -177,7 +169,7 @@
                             <i:CallMethodAction TargetObject="{Binding}" MethodName="PreviewKeyDown"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
-                </TextBox>
+                </TextBox>-->
 
                 <TextBlock Grid.Row="5"  Text="Causale" FontSize="16" Margin="0, 2, 5, 2" HorizontalAlignment="Right"/>
                 <TextBox Name="Causale" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" FontSize="16" Margin="5, 2, 5, 2" 
@@ -186,6 +178,7 @@
                 </TextBox>
             </Grid>
         </Border>
+
         <!-- gruppi dedicati alle singole operazioni -->
         <Grid Grid.Row="2" Grid.ColumnSpan="3">
             <Grid.ColumnDefinitions>
@@ -272,6 +265,15 @@
             </Border>
 
         </Grid>
+
+        <!-- Bottoniera -->
+        <StackPanel Grid.Row="1" Grid.Column="2" Margin="5" Orientation="Vertical" HorizontalAlignment="Left">
+            <Button Content="Inserisci" Margin="10" Command="{Binding InsertCommand}"/>
+            <Button Content="Modifica" Margin="10" Command="{Binding ModifyCommand}"/>
+            <Button Content="Pulisci" Margin="10" Command="{Binding ClearCommand}"/>
+            <Button Content="Elimina" Margin="10" Command="{Binding EraseCommand}"/>
+        </StackPanel>
+
         <!-- La griglia da utilizzare per selezionare un movimento da modificare -->
         <DataGrid Grid.Row="3" Grid.ColumnSpan="3" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="True"
                   ItemsSource="{Binding AccountCollectionView, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" SelectionMode="Single"
@@ -364,14 +366,6 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Valore Cambio" Binding="{Binding Valore_Cambio, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay,
-                    ConverterCulture=it-IT,StringFormat=N6}" IsReadOnly="True" FontSize="14" FontWeight="Normal" MaxWidth="300">
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Margin" Value="5,0,5,0"/>
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
-                </DataGridTextColumn>
                 <DataGridTextColumn Header="Note" Binding="{Binding Causale, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                         IsReadOnly="True" FontSize="14" FontWeight="Normal" MaxWidth="300">
                     <DataGridTextColumn.ElementStyle>
@@ -404,10 +398,14 @@
                 <LineBreak/>
                 <Run Text="Questa maschera serve solo per la registrazione delle cedole, dei costi e dei Profit/Loss a forfait." FontSize="18"/>
                 <LineBreak/>
+                <LineBreak/>
+                <Run Text="I costi vengono assorbiti dagli utili, quindi ''Tipo Soldi'' si sceglierà da vendita o a forfait a seconda dei casi,
+mentre l'operazione si indicherà COSTI." FontSize="18"/>
+                <LineBreak/>
+                <LineBreak/>
                 <Run Text="Il valore dei costi, qualsiasi essi siano, " FontSize="18"/>
                 <Run Text="vanno inseriti in negativo (es.: -23,57)"  FontSize="17" FontWeight="Bold"/>
-                <Run Text=" nella valuta relativa a quanto indicato nel campo e indicando sempre anche il valore del cambio, il quale sarà sempre 
-utilizzato come indicazione all'interno del data base." FontSize="18"/>
+                <Run Text=" nella valuta relativa a quanto indicato nel campo." FontSize="18"/>
                 <LineBreak/>
                 <LineBreak/>
                 <Run Text="Quando si inseriscono le cedole andrà indicato il titolo di competenza, si può cercare tramite il suo codice ISIN o digitando 

@@ -78,6 +78,7 @@ namespace FinanceManager.Models
             Causale = portafoglioTitoli.Note;
             Id_Tipo_Soldi = (int)idTipoSoldi;
             Id_Quote_Periodi = IdQuotePeriodi;
+            Id_Tipo_Gestione = portafoglioTitoli.Id_Tipo_Gestione;
             Modified = DateTime.Now;
         }
     }

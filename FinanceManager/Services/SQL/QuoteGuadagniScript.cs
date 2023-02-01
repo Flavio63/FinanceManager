@@ -101,5 +101,7 @@ namespace FinanceManager.Services.SQL
 
         public static readonly string ModifyQuoteGuadagno = "UPDATE quote_guadagno SET ammontare = @ammontare, cum_socio = @cum_socio, cum_totale = @cum_totale, quota = @quota, " +
             "id_conto_corrente = @id_conto_corrente WHERE id_quota_guadagno = @id_quota_guadagno";
+
+        public static readonly string GetQuotePeriodiList = "SELECT id_quote_periodi, id_tipo_gestione, data_inizio, data_fine FROM quote_periodi WHERE id_quote_periodi > 1";
     }
 }
